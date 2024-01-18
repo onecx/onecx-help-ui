@@ -1,0 +1,354 @@
+---
+openapi: 3.0.3
+info:
+  title: onecx-help bff
+  version: 1.0.0
+servers:
+  - url: 'http://onecx-help-bff:8080'
+tags:
+  - name: helpsInternal
+paths:
+  /helps:
+    get:
+      tags:
+        - helpsInternal
+      description: Return list of helps
+      operationId: getHelps
+      parameters:
+        - name: pageNumber
+          in: query
+          schema:
+            format: int32
+            description: The number of page.
+            default: 0
+            type: integer
+        - name: pageSize
+          in: query
+          schema:
+            format: int32
+            description: The size of page
+            default: 10
+            type: integer
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/HelpPageResult'
+    post:
+      tags:
+        - helpsInternal
+      description: Create new help
+      operationId: createNewHelp
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateHelp'
+      responses:
+        '201':
+          description: New help created
+          headers:
+            Location:
+              required: true
+              schema:
+                type: string
+                format: url
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Help'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetailResponse'
+  /helps/appIds:
+    get:
+      tags:
+        - helpsInternal
+      summary: Get all application IDs to which help items are assigned
+      operationId: getAllAppsWithHelpItems
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HelpAppIds'
+  /helps/{id}:
+    get:
+      tags:
+        - helpsInternal
+      description: Return help by ID
+      operationId: getHelpById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Help'
+        '404':
+          description: Not found
+    put:
+      tags:
+        - helpsInternal
+      description: Update help by ID
+      operationId: updateHelp
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateHelp'
+      responses:
+        '204':
+          description: Help updated
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetailResponse'
+        '404':
+          description: Help not found
+    delete:
+      tags:
+        - helpsInternal
+      description: Delete help by ID
+      operationId: deleteHelp
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: No Content
+  /helps/search:
+    post:
+      tags:
+        - helpsInternal
+      description: Search for helps
+      operationId: searchHelps
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/HelpSearchCriteria'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HelpPageResult'
+  /helps/itemId/{itemId}:
+    get:
+      tags:
+        - helpsInternal
+      description: Load a single help definition
+      operationId: getHelpByItemId
+      parameters:
+        - name: itemId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Help'
+        '404':
+          description: Not found
+components:
+  schemas:
+    HelpSearchCriteria:
+      type: object
+      properties:
+        itemId:
+          type: string
+        context:
+          type: string
+        baseUrl:
+          type: string
+        resourceUrl:
+          type: string
+        appId:
+          type: string
+        pageNumber:
+          format: int32
+          description: The number of page.
+          default: 0
+          type: integer
+        pageSize:
+          format: int32
+          description: The size of page
+          default: 10
+          type: integer
+    HelpPageResult:
+      type: object
+      properties:
+        totalElements:
+          format: int64
+          description: The total elements in the resource.
+          type: integer
+        number:
+          format: int32
+          type: integer
+        size:
+          format: int32
+          type: integer
+        totalPages:
+          format: int64
+          type: integer
+        stream:
+          type: array
+          items:
+            $ref: '#/components/schemas/Help'
+    Help:
+      required:
+        - itemId
+      type: object
+      properties:
+        version:
+          format: int32
+          type: integer
+        creationDate:
+          $ref: '#/components/schemas/OffsetDateTime'
+        creationUser:
+          type: string
+        modificationDate:
+          $ref: '#/components/schemas/OffsetDateTime'
+        modificationUser:
+          type: string
+        id:
+          type: string
+        itemId:
+          type: string
+        context:
+          type: string
+        baseUrl:
+          type: string
+        resourceUrl:
+          type: string
+        appId:
+          type: string
+    OffsetDateTime:
+      format: date-time
+      type: string
+      example: 2022-03-10T12:15:50-04:00
+    ProblemDetailResponse:
+      type: object
+      properties:
+        errorCode:
+          type: string
+        detail:
+          type: string
+        params:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProblemDetailParam'
+        invalidParams:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProblemDetailInvalidParam'
+    ProblemDetailParam:
+      type: object
+      properties:
+        key:
+          type: string
+        value:
+          type: string
+    ProblemDetailInvalidParam:
+      type: object
+      properties:
+        name:
+          type: string
+        message:
+          type: string
+    CreateHelp:
+      required:
+        - itemId
+      type: object
+      properties:
+        version:
+          format: int32
+          type: integer
+        creationDate:
+          $ref: '#/components/schemas/OffsetDateTime'
+        creationUser:
+          type: string
+        modificationDate:
+          $ref: '#/components/schemas/OffsetDateTime'
+        modificationUser:
+          type: string
+        id:
+          type: string
+        itemId:
+          type: string
+        context:
+          type: string
+        baseUrl:
+          type: string
+        resourceUrl:
+          type: string
+        appId:
+          type: string
+    UpdateHelp:
+      required:
+        - name
+      type: object
+      properties:
+        version:
+          format: int32
+          type: integer
+        creationDate:
+          $ref: '#/components/schemas/OffsetDateTime'
+        creationUser:
+          type: string
+        modificationDate:
+          $ref: '#/components/schemas/OffsetDateTime'
+        modificationUser:
+          type: string
+        id:
+          type: string
+        itemId:
+          type: string
+        context:
+          type: string
+        baseUrl:
+          type: string
+        resourceUrl:
+          type: string
+        appId:
+          type: string
+    HelpAppIds:
+      type: object
+      properties:
+        appIds:
+          type: array
+          items:
+            type: string

@@ -1,0 +1,31 @@
+<ocx-search-criteria
+  [disableAdvancedToggle]="true"
+  [disableAdvancedToggle]="true"
+  [header]="'HELP_SEARCH.HEADER' | translate"
+  [subheader]="'HELP_SEARCH.SUBHEADER' | translate"
+  (search)="submitCriteria()"
+  (reset)="resetCriteria()"
+  [actions]="actions"
+>
+  <div simpleCriteria>
+    <div [formGroup]="helpCriteriaGroup" class="flex flex-wrap gap-4 row-gap-3 px-2">
+      <span class="p-float-label">
+        <p-autoComplete
+          id="appId"
+          styleClass="w-18rem"
+          formControlName="appId"
+          [suggestions?]="applicationsIdsFiltered"
+          (completeMethod)="filterApplications($event)"
+          [dropdown]="true"
+          [forceSelection]="true"
+          appendTo="body"
+        ></p-autoComplete>
+        <label for="appId">{{ 'HELP_ITEM.APPLICATION_ID' | translate }}</label>
+      </span>
+      <span class="p-float-label">
+        <input id="helpItemId" pInputText type="text" formControlName="helpItemId" class="w-18rem" />
+        <label for="helpItemId">{{ 'HELP_ITEM.HELP_ITEM_ID' | translate }}</label>
+      </span>
+    </div>
+  </div>
+</ocx-search-criteria>
