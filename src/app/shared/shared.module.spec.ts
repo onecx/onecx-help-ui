@@ -28,7 +28,7 @@ describe('SharedModule', () => {
 
     const result = basePathProvider(mfeInfo)
 
-    expect(result).toEqual('http://localhost:4200/ahm-api')
+    expect(result).toEqual('http://localhost:4200/helps')
   })
 
   it('should return a translate loader', () => {

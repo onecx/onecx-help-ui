@@ -27,11 +27,11 @@ const PROXY_CONFIG = {
     logLevel: 'debug',
     bypass: bypassFn
   },
-  '/ahm-api': {
-    target: 'http://ahm',
+  '/help-bff': {
+    target: 'http://onecx-help-bff',
     secure: false,
     pathRewrite: {
-      '^.*/ahm-api': ''
+      '^.*/help-bff': ''
     },
     changeOrigin: true,
     logLevel: 'debug',

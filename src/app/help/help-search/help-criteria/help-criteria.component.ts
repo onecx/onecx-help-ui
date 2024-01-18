@@ -2,10 +2,11 @@ import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChange
 import { FormControl, FormGroup } from '@angular/forms'
 
 import { Action, PortalMessageService } from '@onecx/portal-integration-angular'
-import { SearchHelpsRequestParams, HelpsInternalAPIService } from '../../../generated'
+import { HelpSearchCriteria, HelpsInternalAPIService } from '../../../generated'
+import { coerceStringArray } from '@angular/cdk/coercion'
 
 export interface HelpCriteriaForm {
-  helpItemId: FormControl<string | null>
+  itemId: FormControl<string | null>
   appId: FormControl<string | null>
 }
 
@@ -17,17 +18,17 @@ export interface HelpCriteriaForm {
 export class HelpCriteriaComponent implements OnInit, OnChanges {
   @Input() public actions: Action[] = []
   @Input() public appsChanged = false
-  @Output() public criteriaEmitter = new EventEmitter<SearchHelpsRequestParams>()
+  @Output() public criteriaEmitter = new EventEmitter<HelpSearchCriteria>()
 
   // private translatedData!: Record<string, string>
   public displayDetailDialog = false
   public helpCriteriaGroup!: FormGroup<HelpCriteriaForm>
-  public applicationsIds: string[] | undefined
-  public applicationsIdsFiltered: string[] | undefined
+  public applicationsIds: string[] = []
+  public applicationsIdsFiltered: string[] = []
 
   constructor(private helpInteralAPIService: HelpsInternalAPIService, private msgService: PortalMessageService) {
     this.helpCriteriaGroup = new FormGroup<HelpCriteriaForm>({
-      helpItemId: new FormControl<string | null>(null),
+      itemId: new FormControl<string | null>(null),
       appId: new FormControl<string | null>(null)
     })
   }
@@ -53,7 +54,7 @@ export class HelpCriteriaComponent implements OnInit, OnChanges {
 
   public submitCriteria() {
     if (this.helpCriteriaGroup.valid) {
-      this.criteriaEmitter.emit(this.helpCriteriaGroup.value as SearchHelpsRequestParams)
+      this.criteriaEmitter.emit(this.helpCriteriaGroup.value as HelpSearchCriteria)
     } else {
       this.msgService.error({ summaryKey: 'HELP_SEARCH.MSG_SEARCH_VALIDATION' })
     }
@@ -61,7 +62,12 @@ export class HelpCriteriaComponent implements OnInit, OnChanges {
 
   public loadAllApps() {
     this.helpInteralAPIService.getAllAppsWithHelpItems().subscribe((ids) => {
-      this.applicationsIds = ids?.appIds
+      if (ids.appIds == undefined) {
+        ids.appIds = []
+        this.applicationsIds = ids.appIds
+      }else{
+        this.applicationsIds = ids.appIds
+      }
       if (this.applicationsIds?.length === 0) {
         this.msgService.info({ summaryKey: 'HELP_SEARCH.NO_APP_IDS_AVAILABLE' })
       }

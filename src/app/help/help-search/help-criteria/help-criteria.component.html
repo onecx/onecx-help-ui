@@ -14,7 +14,7 @@
           id="appId"
           styleClass="w-18rem"
           formControlName="appId"
-          [suggestions?]="applicationsIdsFiltered"
+          [suggestions]="applicationsIdsFiltered"
           (completeMethod)="filterApplications($event)"
           [dropdown]="true"
           [forceSelection]="true"
@@ -23,8 +23,8 @@
         <label for="appId">{{ 'HELP_ITEM.APPLICATION_ID' | translate }}</label>
       </span>
       <span class="p-float-label">
-        <input id="helpItemId" pInputText type="text" formControlName="helpItemId" class="w-18rem" />
-        <label for="helpItemId">{{ 'HELP_ITEM.HELP_ITEM_ID' | translate }}</label>
+        <input id="itemId" pInputText type="text" formControlName="itemId" class="w-18rem" />
+        <label for="itemId">{{ 'HELP_ITEM.HELP_ITEM_ID' | translate }}</label>
       </span>
     </div>
   </div>

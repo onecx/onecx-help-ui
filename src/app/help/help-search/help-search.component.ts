@@ -62,7 +62,7 @@ export class HelpSearchComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.search(this.criteria)
+    this.search(this.criteria.helpSearchCriteria)
     this.filteredColumns = this.columns.filter((a) => {
       return a.active === true
     })
@@ -85,11 +85,14 @@ export class HelpSearchComponent implements OnInit {
    *    - user initiated search with criteria
    *    - re-searching (with current criteria) after changes in detail dialog
    */
-  public search(criteria: SearchHelpsRequestParams, reuseCriteria: boolean = false): void {
+  public search(criteria: HelpSearchCriteria, reuseCriteria: boolean = false): void {
+    var criteriaSearchParams: SearchHelpsRequestParams = {
+      helpSearchCriteria: criteria
+    }
     if (!reuseCriteria) {
-      if (criteria.helpSearchCriteria.appId === '') criteria.helpSearchCriteria.appId = undefined
-      if (criteria.helpSearchCriteria.itemId === '') criteria.helpSearchCriteria.itemId = undefined
-      this.criteria = criteria
+      if (criteriaSearchParams.helpSearchCriteria?.appId === '') criteriaSearchParams.helpSearchCriteria.appId = undefined
+      if (criteriaSearchParams.helpSearchCriteria?.itemId === '') criteriaSearchParams.helpSearchCriteria.itemId = undefined
+      this.criteria = criteriaSearchParams
     }
     this.searchInProgress = true
     this.helpInternalAPIService
@@ -102,6 +105,7 @@ export class HelpSearchComponent implements OnInit {
           if (data.stream?.length === 0) {
             this.msgService.info({ summaryKey: 'GENERAL.SEARCH.MSG_NO_RESULTS' })
           }
+
           this.appsChanged = false
         },
         error: () => this.msgService.error({ summaryKey: 'GENERAL.SEARCH.MSG_SEARCH_FAILED' })
@@ -110,7 +114,7 @@ export class HelpSearchComponent implements OnInit {
   public onSearch() {
     this.changeMode = 'NEW'
     this.appsChanged = true
-    this.search(this.criteria, true)
+    this.search(this.criteria.helpSearchCriteria, true)
   }
 
   // default sorting: 1. appId, 2.itemId
