@@ -1,0 +1,72 @@
+<form [formGroup]="formGroup">
+  <ng-template pTemplate="header">
+    <span>{{ 'HELPITEM_CREATION.HEADER' | translate }}</span>
+  </ng-template>
+  <div class="flex flex-wrap flex-column gap-4 justify-content-between mt-2">
+    <div [title]="'HELP_ITEM.TOOLTIPS.APPLICATION_ID' | translate">
+      <span class="p-float-label mb-1" controlErrorAnchor>
+        <input
+          [readonly]="changeMode === 'EDIT'"
+          pInputText
+          type="text"
+          id="ah_mgmt_help_management_detail_app_id"
+          class="w-full pt-3 pb-2"
+          formControlName="appId"
+        />
+        <label class="ocx-required-label" for="ah_mgmt_help_management_detail_app_id">
+          {{ 'HELP_ITEM.APPLICATION_ID' | translate }}</label
+        >
+      </span>
+    </div>
+    <div [title]="'HELP_ITEM.TOOLTIPS.HELP_ITEM_ID' | translate">
+      <span class="p-float-label mb-1" controlErrorAnchor>
+        <input
+          pInputText
+          type="text"
+          id="ah_mgmt_help_management_detail_app_id"
+          class="w-full pt-3 pb-2"
+          formControlName="itemId"
+        />
+        <label class="ocx-required-label" for="ah_mgmt_help_management_detail_app_id">
+          {{ 'HELP_ITEM.HELP_ITEM_ID' | translate }}</label
+        >
+      </span>
+    </div>
+    <div [title]="'HELP_ITEM.TOOLTIPS.CONTEXT' | translate">
+      <span class="p-float-label mb-1">
+        <input
+          pInputText
+          type="text"
+          id="ah_mgmt_help_management_detail_app_id"
+          class="w-full pt-3 pb-2"
+          formControlName="context"
+        />
+        <label class="" for="ah_mgmt_help_management_detail_app_id">{{ 'HELP_ITEM.CONTEXT' | translate }}</label>
+      </span>
+    </div>
+    <div [title]="'HELP_ITEM.TOOLTIPS.BASE_URL' | translate">
+      <span class="p-float-label mb-1">
+        <input
+          pInputText
+          type="text"
+          id="ah_mgmt_help_management_detail_app_id"
+          class="w-full pt-3 pb-2"
+          formControlName="baseUrl"
+        />
+        <label class="" for="ah_mgmt_help_management_detail_app_id">{{ 'HELP_ITEM.BASE_URL' | translate }}</label>
+      </span>
+    </div>
+    <div [title]="'HELP_ITEM.TOOLTIPS.RESOURCE_URL' | translate">
+      <span class="p-float-label mb-1">
+        <input
+          pInputText
+          type="text"
+          id="ah_mgmt_help_management_detail_app_id"
+          class="w-full pt-3 pb-2"
+          formControlName="resourceUrl"
+        />
+        <label class="" for="ah_mgmt_help_management_detail_app_id">{{ 'HELP_ITEM.RESOURCE_URL' | translate }}</label>
+      </span>
+    </div>
+  </div>
+</form>

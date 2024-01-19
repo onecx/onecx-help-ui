@@ -1,0 +1,135 @@
+{
+  "ACTIONS": {
+    "CONFIRMATION": {
+      "NO": "Nein",
+      "YES": "Ja",
+      "NO.TOOLTIP": "Abbruch der Aktion",
+      "YES.TOOLTIP": "Fortfahren mit der Aktion"
+    },
+    "COPY": {
+      "LABEL": "Kopieren",
+      "HELP_ITEM.TOOLTIP": "Mit den Daten einen neuen Hilfeartikel anlegen",
+      "CLIPBOARD.TOOLTIP": "In die Zwischenablage kopieren"
+    },
+    "CREATE": {
+      "LABEL": "Erstellen",
+      "HELP_ITEM": "Hilfeartikel erstellen",
+      "HELP_ITEM.TOOLTIP": "Einen neuen Hilfeartikel erstellen",
+      "MESSAGE": {
+        "HELP_ITEM_ALREADY_EXIST": "Ein Hilfeartikel mit dieser ID existert schon",
+        "HELP_ITEM.CREATE_OK": "Der Hilfeartikel wurde erfolgreich erstellt",
+        "HELP_ITEM.CREATE_NOK": "Ein Fehler ist aufgetreten. Der Hilfeartikel wurde nicht erstellt."
+      }
+    },
+    "DELETE": {
+      "LABEL": "Löschen",
+      "HELP_ITEM": "Hilfeartikel löschen",
+      "HELP_ITEM.TOOLTIP": "Diesen Hilfeartikel löschen",
+      "MESSAGE_TEXT": "Möchten Sie \"{{ITEM}}\" löschen?",
+      "MESSAGE_INFO": "Diese Aktion kann nicht rückgängig gemacht werden!",
+      "MESSAGE": {
+        "HELP_ITEM_OK": "Der Hilfeartikel wurde erfolgreich gelöscht",
+        "HELP_ITEM_NOK": "Ein Fehler ist aufgetreten. Der Hilfeartikel wurde nicht gelöscht."
+      }
+    },
+    "EDIT": {
+      "HELP_ITEM": "Hilfeartikel bearbeiten",
+      "HELP_ITEM.TOOLTIP": "Den Hilfeartikel bearbeiten",
+      "MESSAGE": {
+        "HELP_OK": "Der Hilfeartikel wurde erfolgreich gespeichert",
+        "HELP_NOK": "Ein Fehler ist aufgetreten. Der Hilfeartikel wurde nicht gespeichert."
+      }
+    }
+  },
+  "GENERAL": {
+    "CLOSE": "Schließen",
+    "CANCEL": "Abbrechen",
+    "SAVE": "Speichern",
+    "VIEW": "Ansehen",
+    "WORKSPACE": "Workspace",
+    "APP": "App",
+    "DETAIL": {
+      "CREATION_DATE": "Erstellt am",
+      "CREATION_USER": "Erstellt von",
+      "MODIFICATION_DATE": "Geändert am",
+      "MODIFICATION_USER": "Geändert von",
+      "TOOLTIPS": {
+        "CREATION_DATE": "Zeitpunkt der Erstellung",
+        "CREATION_USER": "Name des Benutzers der Erstellung",
+        "MODIFICATION_DATE": "Zeitpunkt der letzten Änderung",
+        "MODIFICATION_USER": "Name des Benutzers der letzten änderung"
+      }
+    },
+    "SEARCH": {
+      "ACTION": "Aktionen",
+      "SEARCH": "Suchen",
+      "SEARCH.TOOLTIP": "Suche starten",
+      "RESET": "Zurücksetzen",
+      "RESET_TOOLTIP": "Suchkriterien löschen",
+      "NO_DATA": "Keine Ergebnisse",
+      "MSG_NO_RESULTS": "Die Suche ergab keine Ergebnisse",
+      "MSG_SEARCH_FAILED": "Die Suche ist fehlgeschlagen"
+    },
+    "TOOLTIPS": {
+      "CLOSE": "Dialog verlassen",
+      "CANCEL": "Die Aktion abbrechen",
+      "CANCEL_EDIT": "Den Änderungsmodus verlassen",
+      "CANCEL_AND_CLOSE": "Abbrechen und Dialog schließen",
+      "CANCEL_WITHOUT_SAVE": "Die Aktion ohne Speichern abbrechen",
+      "EDIT": "Daten bearbeiten",
+      "SAVE": "Die Änderungen speichern"
+    }
+  },
+  "BREADCRUMBS": {
+    "CREATE": "Neu",
+    "DETAILS": "Details",
+    "RELOAD": "Neu Laden",
+    "SWITCH_TO_EDIT_MODE": "Bearbeiten"
+  },
+  "HELP_ITEM": {
+    "APPLICATION_ID": "Anwendungs ID",
+    "HELP_ITEM_ID": "Hilfeartikel ID",
+    "CONTEXT": "Kontext",
+    "BASE_URL": "Basis URL",
+    "RESOURCE_URL": "Ressource URL",
+    "TOOLTIPS": {
+      "APPLICATION_ID": "Anwendungs-Kontext des Hilfeartikels",
+      "HELP_ITEM_ID": "Hilfeartikel ID im Kontext der Anwendung",
+      "CONTEXT": "Kontext innerhalb der Seite",
+      "BASE_URL": "Basis URL, die der Ressource URL vorangestellt wird",
+      "RESOURCE_URL": "Teil der URL für den Hilfeartikel"
+    }
+  },
+  "HELP_SEARCH": {
+    "HEADER": "Hilfeartikel Verwaltung",
+    "SUBHEADER": "Suchen und Verwalten von Hilfeartikeln",
+    "SEARCH_TOOLTIP": "Suchen nach Hilfeartikeln mit vorgegebenen Kriterien",
+    "MSG_SEARCH_VALIDATION": "Eine Anwendungs ID ist für die Suche erforderlich",
+    "NO_APP_IDS_AVAILABLE": "Keine Anwendungen gefunden"
+  },
+  "HELP_DETAIL": {
+    "HEADER": "Hilfeartikel Details",
+    "UPDATE_SUCCESSFUL": "Der Hilfeartikel wurde erfolgreich aktualisiert",
+    "UPDATE_ERROR": "Der Hilfeartikel konnte nicht aktualisiert werden",
+    "VALIDATION_ERROR": "Das Formular ist ungültig. Der Hilfeartikel kann so nicht gespeichert werden."
+  },
+  "HELPITEM_CREATION": {
+    "HEADER": "Hilfeartikel erstellen",
+    "CREATION_SUCCESS": "Der Hilfeartikel wurde erfolgreich erstellt.",
+    "CREATION_FAILED": "Der Hilfeartikel konnte nicht erstellt werden.",
+    "UNIQUE_CONSTRAINT": "Hilfeartikel existiert bereits",
+    "VALIDATION_ERROR": "Das Formular ist ungültig. Der Hilfeartikel kann so nicht gespeichert werden."
+  },
+  "VALIDATION": {
+    "HINTS": {
+      "FORMAT_URL": "Format: "
+    },
+    "ERRORS": {
+      "INTERNAL_ERROR": "Interner Fehler",
+      "EMPTY_REQUIRED_FIELD": "Dieses Feld ist ein Pflichtfeld.",
+      "MAXIMUM_LENGTH": "Es sind nur {{chars}} Zeichen erlaubt.",
+      "MINIMUM_LENGTH": "Es sind mindestens {{chars}} Zeichen erforderlich.",
+      "PATTERN_ERROR": "Ihre Eingabe entspricht nicht dem benötigten Format."
+    }
+  }
+}

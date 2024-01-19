@@ -1,0 +1,21 @@
+{
+  "id": "ONECX_HELP_UI",
+  {{- if .Values.app.routing.hostName }}
+  "remoteEntry": "https://{{ .Values.app.routing.hostName }}{{ .Values.app.routing.path }}remoteEntry.js",
+  {{- else if .Values.global.hostName }}
+  "remoteEntry": "https://{{ .Values.global.hostName }}{{ .Values.app.routing.path }}remoteEntry.js",
+  {{- end }}
+  "remoteName": "HelpMgmtModule",
+  {{- if .Values.app.routing.hostName }}
+  "remoteBaseUrl": "https://{{ .Values.app.routing.hostName }}{{ .Values.app.routing.path }}",
+  {{- else if .Values.global.hostName }}
+  "remoteBaseUrl": "https://{{ .Values.global.hostName }}{{ .Values.app.routing.path }}",
+  {{- end }}
+  "exposedModule": "./HelpMgmtModule",
+  "displayName": "OneCX Help Mgmt",
+  "moduleType": "ANGULAR",
+  "wcTagName": "UPMF",
+  "appVersion": "{{ .Chart.Version }}",
+  "note": "OneCX Help Mgmt Module auto import via MF operator",
+  "contact": "onecx@1000kit.org"
+}

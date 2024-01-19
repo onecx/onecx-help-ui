@@ -1,0 +1,39 @@
+<p-dialog
+  header="{{ (this.changeMode === 'EDIT' ? 'HELP_DETAIL.HEADER' : 'HELPITEM_CREATION.HEADER') | translate }}"
+  [(visible)]="displayDetailDialog"
+  (onHide)="onDialogHide()"
+  [baseZIndex]="10000"
+  [draggable]="true"
+  [resizable]="true"
+  [closable]="true"
+  [modal]="true"
+  [style]="{ width: '350px' }"
+  [showHeader]="true"
+  [breakpoints]="{
+    '992px': '50vw',
+    '700px': '70vw',
+    '600px': '80vw',
+    '500px': '90vw',
+    '400px': '100vw',
+      }"
+>
+  <hm-help-form [changeMode]="changeMode" [helpItem]="helpItem"></hm-help-form>
+
+  <ng-template pTemplate="footer">
+    <div class="flex flex-wrap justify-content-end gap-2 mb-1">
+      <p-button
+        id="ah_help_detail_button_close"
+        [label]="'GENERAL.CANCEL' | translate"
+        (onClick)="onDialogHide()"
+        icon="pi pi-times"
+      ></p-button>
+      <p-button
+        id="ah_help_detail_button_save"
+        [label]="'GENERAL.SAVE' | translate"
+        (onClick)="onSave()"
+        icon="pi pi-save"
+        [disabled]="!helpFormComponent.formGroup.valid"
+      ></p-button>
+    </div>
+  </ng-template>
+</p-dialog>

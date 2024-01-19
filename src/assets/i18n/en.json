@@ -1,0 +1,135 @@
+{
+  "ACTIONS": {
+    "CONFIRMATION": {
+      "NO": "No",
+      "YES": "Yes",
+      "NO.TOOLTIP": "Cancel the action",
+      "YES.TOOLTIP": "Proceed with the action"
+    },
+    "COPY": {
+      "LABEL": "Copy",
+      "HELP_ITEM.TOOLTIP": "Create a new Help Item with the data",
+      "CLIPBOARD.TOOLTIP": "Copy to clipboard"
+    },
+    "CREATE": {
+      "LABEL": "Create",
+      "HELP_ITEM": "Create Theme",
+      "HELP_ITEM.TOOLTIP": "Create a new Help Item",
+      "MESSAGE": {
+        "HELP_ITEM_ALREADY_EXIST": "A Help Item with that ID already exists",
+        "HELP_ITEM.CREATE_OK": "The Help Item was created successfully",
+        "HELP_ITEM.CREATE_NOK": "An error has occurred. The Help Item was not created."
+      }
+    },
+    "DELETE": {
+      "LABEL": "Delete",
+      "HELP_ITEM": "Delete this Help Item",
+      "HELP_ITEM.TOOLTIP": "Delete Help Item",
+      "MESSAGE_TEXT": "Do you want to delete \"{{ITEM}}\"?",
+      "MESSAGE_INFO": "This action cannot be undone!",
+      "MESSAGE": {
+        "HELP_ITEM_OK": "The Help Item was deleted successfully",
+        "HELP_ITEM_NOK": "An error has occurred. The Help Item was not deleted."
+      }
+    },
+    "EDIT": {
+      "HELP_ITEM": "Edit Help Item",
+      "HELP_ITEM.TOOLTIP": "Edit the Help Item properties",
+      "MESSAGE": {
+        "HELP_ITEM_OK": "The Help Item was saved successfully",
+        "HELP_ITEM_NOK": "An error has occurred. The Help Item was not saved."
+      }
+    }
+  },
+  "GENERAL": {
+    "CLOSE": "Close",
+    "CANCEL": "Cancel",
+    "SAVE": "Save",
+    "VIEW": "View",
+    "WORKSPACE": "Workspace",
+    "APP": "App",
+    "DETAIL": {
+      "CREATION_DATE": "Created on",
+      "CREATION_USER": "Created by",
+      "MODIFICATION_DATE": "Changed on",
+      "MODIFICATION_USER": "Changed by",
+      "TOOLTIPS": {
+        "CREATION_DATE": "Timestamp of the creation",
+        "CREATION_USER": "Name of the user of the creation",
+        "MODIFICATION_DATE": "Timestamp of the last change",
+        "MODIFICATION_USER": "Name of the user of the last change"
+      }
+    },
+    "SEARCH": {
+      "ACTION": "Action",
+      "SEARCH": "Search",
+      "SEARCH.TOOLTIP": "Start Searching",
+      "RESET": "Reset",
+      "RESET_TOOLTIP": "Clear given criteria",
+      "NO_DATA": "No data",
+      "MSG_NO_RESULTS": "Search returned no results",
+      "MSG_SEARCH_FAILED": "Search failed"
+    },
+    "TOOLTIPS": {
+      "CLOSE": "Leave dialog",
+      "CANCEL": "Cancel action",
+      "CANCEL_EDIT": "Cancel edit mode",
+      "CANCEL_AND_CLOSE": "Cancel and close dialog",
+      "CANCEL_WITHOUT_SAVE": "Cancel action without saving",
+      "EDIT": "Edit data",
+      "SAVE": "Save changes"
+    }
+  },
+  "BREADCRUMBS": {
+    "CREATE": "New",
+    "DETAILS": "Details",
+    "RELOAD": "Reload",
+    "SWITCH_TO_EDIT_MODE": "Edit"
+  },
+  "HELP_ITEM": {
+    "APPLICATION_ID": "Application ID",
+    "HELP_ITEM_ID": "Help Item ID",
+    "CONTEXT": "Context",
+    "BASE_URL": "Base URL",
+    "RESOURCE_URL": "Resource URL",
+    "TOOLTIPS": {
+      "APPLICATION_ID": "Application context of the Help Item",
+      "HELP_ITEM_ID": "Help Item ID within the context of the application",
+      "CONTEXT": "Context within the page",
+      "BASE_URL": "Base URL that precedes the resource URL",
+      "RESOURCE_URL": "Resource URL"
+    }
+  },
+  "HELP_SEARCH": {
+    "HEADER": "Help Item Management",
+    "SUBHEADER": "Searching and Managing of Help Items",
+    "SEARCH_TOOLTIP": "Search for the Help Items with given criteria",
+    "MSG_SEARCH_VALIDATION": "Application ID is required for search",
+    "NO_APP_IDS_AVAILABLE": "Could not find any applications"
+  },
+  "HELP_DETAIL": {
+    "HEADER": "Help Item Details",
+    "UPDATE_SUCCESSFUL": "The Help Item was successfully updated",
+    "UPDATE_ERROR": "The Help Item could not be updated",
+    "VALIDATION_ERROR": "The Help Item form is invalid. The Help Item cannot be saved this way."
+  },
+  "HELPITEM_CREATION": {
+    "HEADER": "Help Item Creation",
+    "CREATION_SUCCESS": "The Help Item was sucessfully created.",
+    "CREATION_FAILED": "The Help Item could not be created",
+    "UNIQUE_CONSTRAINT": "Help Item already exists",
+    "VALIDATION_ERROR": "The Help Item form is invalid. The Help Item cannot be saved this way."
+  },
+  "VALIDATION": {
+    "HINTS": {
+      "FORMAT_URL": "Format: "
+    },
+    "ERRORS": {
+      "INTERNAL_ERROR": "Internal error",
+      "EMPTY_REQUIRED_FIELD": "This field is required.",
+      "MAXIMUM_LENGTH": "Only {{chars}} characters are allowed.",
+      "MINIMUM_LENGTH": "At least {{chars}} characters are required.",
+      "PATTERN_ERROR": "Your input does not match the required pattern"
+    }
+  }
+}
