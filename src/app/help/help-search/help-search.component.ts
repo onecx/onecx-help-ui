@@ -20,7 +20,7 @@ export class HelpSearchComponent implements OnInit {
   public changeMode: ChangeMode = 'NEW'
   public actions: Action[] = []
   public helpItem: Help | undefined
-  public results: Help[] | undefined
+  public results: Help[] = []
   public criteria: SearchHelpsRequestParams = {
     helpSearchCriteria: {}
   }
@@ -43,7 +43,7 @@ export class HelpSearchComponent implements OnInit {
       translationPrefix: 'HELP_ITEM',
       css: 'hidden sm:table-cell'
     },
-    { field: 'helpItemId', header: 'HELP_ITEM_ID', active: true, translationPrefix: 'HELP_ITEM' },
+    { field: 'itemId', header: 'HELP_ITEM_ID', active: true, translationPrefix: 'HELP_ITEM' },
     { field: 'context', header: 'CONTEXT', active: true, translationPrefix: 'HELP_ITEM', css: 'hidden xl:table-cell' },
     { field: 'baseUrl', header: 'BASE_URL', active: true, translationPrefix: 'HELP_ITEM', css: 'hidden lg:table-cell' },
     {
@@ -100,7 +100,9 @@ export class HelpSearchComponent implements OnInit {
       .pipe(finalize(() => (this.searchInProgress = false)))
       .subscribe({
         next: (data) => {
-          this.results = data.stream
+          if(data.stream !== undefined){
+            this.results = data.stream
+          }
           this.results?.sort(this.sortHelpItemByDefault)
           if (data.stream?.length === 0) {
             this.msgService.info({ summaryKey: 'GENERAL.SEARCH.MSG_NO_RESULTS' })
