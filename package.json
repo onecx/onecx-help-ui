@@ -1,5 +1,5 @@
 {
-  "name": "help-mgmt-ui",
+  "name": "onecx-help-ui",
   "private": true,
   "version": "0.0.0",
   "license": "Apache-2.0",
@@ -7,7 +7,7 @@
     "OneCX Development Team <onecx-development-team@onecx.org>"
   ],
   "config": {
-    "openapiYaml": "src/assets/api/openapi-help-bff.yaml",
+    "openapiYaml": "src/assets/api/help-bff-api.yaml",
     "openapiOutput": "src/app/generated"
   },
   "scripts": {

@@ -17,16 +17,6 @@ const bypassFn = function (req, res) {
 }
 
 const PROXY_CONFIG = {
-  '/portal-api': {
-    target: 'http://tkit-portal-server',
-    secure: false,
-    pathRewrite: {
-      '^.*/portal-api': ''
-    },
-    changeOrigin: true,
-    logLevel: 'debug',
-    bypass: bypassFn
-  },
   '/help-bff': {
     target: 'http://onecx-help-bff',
     secure: false,
@@ -35,7 +25,7 @@ const PROXY_CONFIG = {
     },
     changeOrigin: true,
     logLevel: 'debug',
-    bypass: logFn
+    bypass: bypassFn
   }
 }
 

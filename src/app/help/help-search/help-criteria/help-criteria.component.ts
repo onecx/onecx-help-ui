@@ -3,7 +3,6 @@ import { FormControl, FormGroup } from '@angular/forms'
 
 import { Action, PortalMessageService } from '@onecx/portal-integration-angular'
 import { HelpSearchCriteria, HelpsInternalAPIService } from '../../../generated'
-import { coerceStringArray } from '@angular/cdk/coercion'
 
 export interface HelpCriteriaForm {
   itemId: FormControl<string | null>
@@ -65,7 +64,7 @@ export class HelpCriteriaComponent implements OnInit, OnChanges {
       if (ids.appIds == undefined) {
         ids.appIds = []
         this.applicationsIds = ids.appIds
-      }else{
+      } else {
         this.applicationsIds = ids.appIds
       }
       if (this.applicationsIds?.length === 0) {

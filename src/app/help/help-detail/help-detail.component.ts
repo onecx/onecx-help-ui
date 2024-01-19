@@ -1,7 +1,7 @@
 import { Component, EventEmitter, Input, Output, ViewChild, OnChanges } from '@angular/core'
 import { PortalMessageService } from '@onecx/portal-integration-angular'
 
-import { HelpsInternalAPIService, Help,  CreateHelp } from '../../generated'
+import { HelpsInternalAPIService, Help, CreateHelp } from '../../generated'
 import { HelpFormComponent } from '../help-form/help-form.component'
 
 @Component({
@@ -45,7 +45,6 @@ export class HelpDetailComponent implements OnChanges {
   }
 
   private createHelpItem() {
-    
     if (this.helpFormComponent.formGroup.valid) {
       this.helpApi
         .createNewHelp({

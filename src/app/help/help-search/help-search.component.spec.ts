@@ -125,13 +125,13 @@ describe('HelpSearchComponent', () => {
   it('should reuse criteria if reuseCriteria is true', () => {
     apiServiceSpy.getHelpItemsForAllApps.and.returnValue(of([]))
     component.criteria = {
-      helpSearchCriteria : {
+      helpSearchCriteria: {
         appId: 'help-mgmt-ui',
         itemId: 'id'
       }
     }
     const newCriteria = {
-      helpSearchCriteria : {
+      helpSearchCriteria: {
         appId: 'ap-mgmt',
         itemId: 'newId'
       }
@@ -161,9 +161,8 @@ describe('HelpSearchComponent', () => {
       id: newHelpItemArr[0].id,
       appId: newHelpItemArr[0].appId,
       itemId: newHelpItemArr[0].itemId
-  }
-    
-    
+    }
+
     component.onDeleteConfirmation()
 
     expect(apiServiceSpy.deleteHelpItemById).toHaveBeenCalled()
@@ -175,9 +174,9 @@ describe('HelpSearchComponent', () => {
     apiServiceSpy.deleteHelpItemById.and.returnValue(throwError(() => new Error()))
     component.results = newHelpItemArr
     component.helpItem = {
-        id: newHelpItemArr[0].id,
-        appId: newHelpItemArr[0].appId,
-        itemId: newHelpItemArr[0].itemId
+      id: newHelpItemArr[0].id,
+      appId: newHelpItemArr[0].appId,
+      itemId: newHelpItemArr[0].itemId
     }
 
     component.onDeleteConfirmation()
@@ -304,8 +303,8 @@ describe('HelpSearchComponent', () => {
 
   it('should set appId and itemId as undefined if criteria strings empty', () => {
     const criteria: SearchHelpsRequestParams = {
-      helpSearchCriteria : {
-        appId: '', 
+      helpSearchCriteria: {
+        appId: '',
         itemId: ''
       }
     }

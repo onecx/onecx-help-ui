@@ -90,8 +90,10 @@ export class HelpSearchComponent implements OnInit {
       helpSearchCriteria: criteria
     }
     if (!reuseCriteria) {
-      if (criteriaSearchParams.helpSearchCriteria?.appId === '') criteriaSearchParams.helpSearchCriteria.appId = undefined
-      if (criteriaSearchParams.helpSearchCriteria?.itemId === '') criteriaSearchParams.helpSearchCriteria.itemId = undefined
+      if (criteriaSearchParams.helpSearchCriteria?.appId === '')
+        criteriaSearchParams.helpSearchCriteria.appId = undefined
+      if (criteriaSearchParams.helpSearchCriteria?.itemId === '')
+        criteriaSearchParams.helpSearchCriteria.itemId = undefined
       this.criteria = criteriaSearchParams
     }
     this.searchInProgress = true
@@ -100,7 +102,7 @@ export class HelpSearchComponent implements OnInit {
       .pipe(finalize(() => (this.searchInProgress = false)))
       .subscribe({
         next: (data) => {
-          if(data.stream !== undefined){
+          if (data.stream !== undefined) {
             this.results = data.stream
           }
           this.results?.sort(this.sortHelpItemByDefault)
@@ -169,8 +171,7 @@ export class HelpSearchComponent implements OnInit {
   }
   public onDeleteConfirmation(): void {
     if (this.helpItem?.id && typeof this.helpItem.appId === 'string') {
-
-      this.helpInternalAPIService.deleteHelp({id: this.helpItem?.id }).subscribe({
+      this.helpInternalAPIService.deleteHelp({ id: this.helpItem?.id }).subscribe({
         next: () => {
           this.displayDeleteDialog = false
           this.results = this.results?.filter((a) => a.id !== this.helpItem?.id)
