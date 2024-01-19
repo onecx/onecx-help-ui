@@ -18,8 +18,8 @@ describe('HelpDetailComponent', () => {
 
   const msgServiceSpy = jasmine.createSpyObj<PortalMessageService>('PortalMessageService', ['success', 'error'])
   const apiServiceSpy = {
-    addHelpItem: jasmine.createSpy('addHelpItem').and.returnValue(of({})),
-    updateHelpItemById: jasmine.createSpy('updateHelpItemById').and.returnValue(of({}))
+    createNewHelp: jasmine.createSpy('createNewHelp').and.returnValue(of({})),
+    updateHelp: jasmine.createSpy('updateHelp').and.returnValue(of({}))
   }
 
   @Component({
@@ -29,7 +29,7 @@ describe('HelpDetailComponent', () => {
   class MockHelpFormComponent {
     formGroup = new FormGroup({
       appId: new FormControl(''),
-      helpItemId: new FormControl('')
+      itemId: new FormControl('')
     })
     changeMode = ''
     helpItem: undefined
@@ -70,8 +70,8 @@ describe('HelpDetailComponent', () => {
   afterEach(() => {
     msgServiceSpy.success.calls.reset()
     msgServiceSpy.error.calls.reset()
-    apiServiceSpy.addHelpItem.calls.reset()
-    apiServiceSpy.updateHelpItemById.calls.reset()
+    apiServiceSpy.createNewHelp.calls.reset()
+    apiServiceSpy.updateHelp.calls.reset()
   })
 
   it('should create', () => {
@@ -79,12 +79,12 @@ describe('HelpDetailComponent', () => {
   })
 
   it('should create a help item onSave', () => {
-    apiServiceSpy.addHelpItem.and.returnValue(of({}))
+    apiServiceSpy.createNewHelp.and.returnValue(of({}))
     component.changeMode = 'NEW'
     let mockHelpForm = new MockHelpFormComponent()
     mockHelpForm.formGroup.setValue({
       appId: 'value',
-      helpItemId: 'value2'
+      itemId: 'value2'
     })
     component.helpFormComponent = mockHelpForm
     spyOn(component.searchEmitter, 'emit')
@@ -93,9 +93,8 @@ describe('HelpDetailComponent', () => {
 
     expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'HELPITEM_CREATION.CREATION_SUCCESS' })
     expect(component.searchEmitter.emit).toHaveBeenCalled()
-    expect(apiServiceSpy.addHelpItem).toHaveBeenCalledWith({
-      appId: component.helpFormComponent.formGroup.value['appId'],
-      creatHelp: component.helpFormComponent.formGroup.value as CreateHelp
+    expect(apiServiceSpy.createNewHelp).toHaveBeenCalledWith({
+      createHelp: component.helpFormComponent.formGroup.value as CreateHelp
     })
   })
 
@@ -105,12 +104,12 @@ describe('HelpDetailComponent', () => {
         key: 'SERVER_ERROR'
       }
     }
-    apiServiceSpy.addHelpItem.and.returnValue(throwError(() => mockError))
+    apiServiceSpy.createNewHelp.and.returnValue(throwError(() => mockError))
     component.changeMode = 'NEW'
     let mockHelpForm = new MockHelpFormComponent()
     mockHelpForm.formGroup.setValue({
       appId: 'help-mgmt-ui',
-      helpItemId: 'PAGE_HELP_SEARCH'
+      itemId: 'PAGE_HELP_SEARCH'
     })
     component.helpFormComponent = mockHelpForm
 
@@ -125,12 +124,12 @@ describe('HelpDetailComponent', () => {
         key: 'PERSIST_ENTITY_FAILED'
       }
     }
-    apiServiceSpy.addHelpItem.and.returnValue(throwError(() => mockError))
+    apiServiceSpy.createNewHelp.and.returnValue(throwError(() => mockError))
     component.changeMode = 'NEW'
     let mockHelpForm = new MockHelpFormComponent()
     mockHelpForm.formGroup.setValue({
       appId: 'help-mgmt-ui',
-      helpItemId: 'PAGE_HELP_SEARCH'
+      itemId: 'PAGE_HELP_SEARCH'
     })
     component.helpFormComponent = mockHelpForm
 
@@ -147,7 +146,7 @@ describe('HelpDetailComponent', () => {
     let invalidMockHelpForm = new MockHelpFormComponent()
     invalidMockHelpForm.formGroup = new FormGroup({
       appId: new FormControl('', Validators.required),
-      helpItemId: new FormControl('', Validators.required)
+      itemId: new FormControl('', Validators.required)
     })
     component.helpFormComponent = invalidMockHelpForm
 
@@ -157,40 +156,39 @@ describe('HelpDetailComponent', () => {
   })
 
   it('should update help item', () => {
-    apiServiceSpy.updateHelpItemById.and.returnValue(of({}))
+    apiServiceSpy.updateHelp.and.returnValue(of({}))
     component.changeMode = 'EDIT'
     let mockHelpForm = new MockHelpFormComponent()
     mockHelpForm.formGroup.setValue({
       appId: 'help-mgmt-ui',
-      helpItemId: 'PAGE_HELP_SEARCH'
+      itemId: 'PAGE_HELP_SEARCH'
     })
     component.helpFormComponent = mockHelpForm
     component.appId = 'help-mgmt-ui'
-    component.helpItemId = 'PAGE_HELP_SEARCH'
+    component.itemId = 'PAGE_HELP_SEARCH'
     spyOn(component.searchEmitter, 'emit')
 
     component.onSave()
 
     expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'HELP_DETAIL.UPDATE_SUCCESSFUL' })
     expect(component.searchEmitter.emit).toHaveBeenCalled()
-    expect(apiServiceSpy.updateHelpItemById).toHaveBeenCalledWith({
-      id: component.helpItemId,
-      appId: component.appId,
-      helpItemDetailDTO: component.helpFormComponent.formGroup.value
+    expect(apiServiceSpy.updateHelp).toHaveBeenCalledWith({
+      id: component.itemId,
+      updateHelp: component.helpFormComponent.formGroup.value
     })
   })
 
   it('should display update error', () => {
-    apiServiceSpy.updateHelpItemById.and.returnValue(throwError(() => new Error()))
+    apiServiceSpy.updateHelp.and.returnValue(throwError(() => new Error()))
     component.changeMode = 'EDIT'
     let mockHelpForm = new MockHelpFormComponent()
     mockHelpForm.formGroup.setValue({
       appId: 'help-mgmt-ui',
-      helpItemId: 'PAGE_HELP_SEARCH'
+      itemId: 'PAGE_HELP_SEARCH'
     })
     component.helpFormComponent = mockHelpForm
     component.appId = 'help-mgmt-ui'
-    component.helpItemId = 'PAGE_HELP_SEARCH'
+    component.itemId = 'PAGE_HELP_SEARCH'
 
     component.onSave()
 
@@ -202,11 +200,11 @@ describe('HelpDetailComponent', () => {
     let invalidMockHelpForm = new MockHelpFormComponent()
     invalidMockHelpForm.formGroup = new FormGroup({
       appId: new FormControl('', Validators.required),
-      helpItemId: new FormControl('', Validators.required)
+      itemId: new FormControl('', Validators.required)
     })
     component.helpFormComponent = invalidMockHelpForm
     component.appId = undefined
-    component.helpItemId = undefined
+    component.itemId = undefined
 
     component.onSave()
 
@@ -220,24 +218,24 @@ describe('HelpDetailComponent', () => {
     expect(component.displayDetailDialogChange.emit).toHaveBeenCalledWith(false)
   })
 
-  it('should update ids OnChanges: helpItemId in edit mode', () => {
+  it('should update ids OnChanges: itemId in edit mode', () => {
     component.changeMode = 'EDIT'
     component.helpItem = {
       id: 'id',
       itemId: 'itemId'
     }
-    component.helpItemId = 'noId'
+    component.itemId = 'noId'
 
     component.ngOnChanges()
 
-    expect(component.helpItemId).toEqual('id')
+    expect(component.itemId).toEqual('id')
   })
 
-  it('should update ids OnChanges: helpItemId in new mode', () => {
+  it('should update ids OnChanges: itemId in new mode', () => {
     component.changeMode = 'NEW'
 
     component.ngOnChanges()
 
-    expect(component.helpItemId).toEqual(undefined)
+    expect(component.itemId).toEqual(undefined)
   })
 })

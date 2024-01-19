@@ -16,9 +16,9 @@ describe('HelpSearchComponent', () => {
 
   const msgServiceSpy = jasmine.createSpyObj<PortalMessageService>('PortalMessageService', ['success', 'error', 'info'])
   const apiServiceSpy = {
-    getHelpItemsForAllApps: jasmine.createSpy('getHelpItemsForAllApps').and.returnValue(of({})),
+    searchHelps: jasmine.createSpy('searchHelps').and.returnValue(of({})),
     addHelpItem: jasmine.createSpy('addHelpItem').and.returnValue(of({})),
-    deleteHelpItemById: jasmine.createSpy('deleteHelpItemById').and.returnValue(of({}))
+    deleteHelp: jasmine.createSpy('deleteHelp').and.returnValue(of({}))
   }
   const translateServiceSpy = jasmine.createSpyObj('TranslateService', ['get'])
 
@@ -62,9 +62,9 @@ describe('HelpSearchComponent', () => {
     msgServiceSpy.success.calls.reset()
     msgServiceSpy.error.calls.reset()
     msgServiceSpy.info.calls.reset()
-    apiServiceSpy.getHelpItemsForAllApps.calls.reset()
+    apiServiceSpy.searchHelps.calls.reset()
     apiServiceSpy.addHelpItem.calls.reset()
-    apiServiceSpy.deleteHelpItemById.calls.reset()
+    apiServiceSpy.deleteHelp.calls.reset()
   })
 
   it('should create component and set columns', () => {
@@ -100,30 +100,45 @@ describe('HelpSearchComponent', () => {
   })
 
   it('should correctly assign results if API call returns some data', () => {
-    apiServiceSpy.getHelpItemsForAllApps.and.returnValue(of([{ appId: 'help-mgmt-ui', itemId: 'id' }]))
+    const helpPageResultMock = {
+      totalElements: 0,
+      number: 0,
+      size: 0,
+      totalPages: 0,
+      stream: [
+        {
+          itemId: 'id',
+          appId: 'help-mgmt-ui'
+        }
+      ]
+    }
+    apiServiceSpy.searchHelps.and.returnValue(of(helpPageResultMock))
     component.results = []
 
-    component.search({
-      helpSearchCriteria: {}
-    })
+    component.search({})
 
     expect(component.results[0]).toEqual({ appId: 'help-mgmt-ui', itemId: 'id' })
   })
 
   it('should handle empty results on search', () => {
-    apiServiceSpy.getHelpItemsForAllApps.and.returnValue(of([]))
+    const helpPageResultMock = {
+      totalElements: 0,
+      number: 0,
+      size: 0,
+      totalPages: 0,
+      stream: []
+    }
+    apiServiceSpy.searchHelps.and.returnValue(of(helpPageResultMock))
     component.results = []
 
-    component.search({
-      helpSearchCriteria: {}
-    })
+    component.search({})
 
     expect(component.results.length).toEqual(0)
     expect(msgServiceSpy.info).toHaveBeenCalledOnceWith({ summaryKey: 'GENERAL.SEARCH.MSG_NO_RESULTS' })
   })
 
   it('should reuse criteria if reuseCriteria is true', () => {
-    apiServiceSpy.getHelpItemsForAllApps.and.returnValue(of([]))
+    apiServiceSpy.searchHelps.and.returnValue(of([]))
     component.criteria = {
       helpSearchCriteria: {
         appId: 'help-mgmt-ui',
@@ -139,23 +154,21 @@ describe('HelpSearchComponent', () => {
 
     const reuseCriteria = true
 
-    component.search(component.criteria, reuseCriteria)
+    component.search(component.criteria.helpSearchCriteria, reuseCriteria)
 
     expect(component.criteria).not.toBe(newCriteria)
   })
 
   it('should handle API call error', () => {
-    apiServiceSpy.getHelpItemsForAllApps.and.returnValue(throwError(() => new Error()))
+    apiServiceSpy.searchHelps.and.returnValue(throwError(() => new Error()))
 
-    component.search({
-      helpSearchCriteria: {}
-    })
+    component.search({})
 
     expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'GENERAL.SEARCH.MSG_SEARCH_FAILED' })
   })
 
   it('should delete help item', () => {
-    apiServiceSpy.deleteHelpItemById({ appId: newHelpItemArr[0].appId, itemId: newHelpItemArr[0].id })
+    apiServiceSpy.deleteHelp({ appId: newHelpItemArr[0].appId, itemId: newHelpItemArr[0].id })
     component.results = newHelpItemArr
     component.helpItem = {
       id: newHelpItemArr[0].id,
@@ -165,13 +178,13 @@ describe('HelpSearchComponent', () => {
 
     component.onDeleteConfirmation()
 
-    expect(apiServiceSpy.deleteHelpItemById).toHaveBeenCalled()
+    expect(apiServiceSpy.deleteHelp).toHaveBeenCalled()
     expect(component.results.length).toBe(0)
     expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.DELETE.MESSAGE.HELP_ITEM_OK' })
   })
 
   it('should display error on deleteHelpItem failure', () => {
-    apiServiceSpy.deleteHelpItemById.and.returnValue(throwError(() => new Error()))
+    apiServiceSpy.deleteHelp.and.returnValue(throwError(() => new Error()))
     component.results = newHelpItemArr
     component.helpItem = {
       id: newHelpItemArr[0].id,
@@ -310,7 +323,7 @@ describe('HelpSearchComponent', () => {
     }
     const reuseCriteria = false
 
-    component.search(criteria, reuseCriteria)
+    component.search(criteria.helpSearchCriteria, reuseCriteria)
 
     expect(component.criteria.helpSearchCriteria.appId).not.toBeDefined()
     expect(component.criteria.helpSearchCriteria.itemId).not.toBeDefined()

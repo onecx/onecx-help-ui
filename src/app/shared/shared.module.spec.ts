@@ -22,13 +22,13 @@ describe('SharedModule', () => {
     const mfeInfo: MfeInfo = {
       mountPath: '',
       remoteBaseUrl: 'http://localhost:4200/',
-      baseHref: '',
+      baseHref: 'helps',
       shellName: ''
     }
 
     const result = basePathProvider(mfeInfo)
 
-    expect(result).toEqual('http://localhost:4200/helps')
+    expect(result).toEqual('http://localhost:4200/help-bff')
   })
 
   it('should return a translate loader', () => {

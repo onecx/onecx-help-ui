@@ -9,7 +9,7 @@ import { of } from 'rxjs'
 import { PortalMessageService } from '@onecx/portal-integration-angular'
 import { HttpLoaderFactory } from 'src/app/shared/shared.module'
 import { HelpCriteriaComponent, HelpCriteriaForm } from './help-criteria.component'
-import { GetHelpItemsRequestParams, HelpItemInternalAPIService } from '../../../generated'
+import { HelpSearchCriteria, HelpsInternalAPIService } from '../../../generated'
 
 describe('HelpDetailComponent', () => {
   let component: HelpCriteriaComponent
@@ -17,7 +17,7 @@ describe('HelpDetailComponent', () => {
 
   const msgServiceSpy = jasmine.createSpyObj<PortalMessageService>('PortalMessageService', ['error', 'info'])
   const formGroupSpy = jasmine.createSpyObj<FormGroup<HelpCriteriaForm>>('HelpCriteriaGroup', ['reset'])
-  const criteriaEmitterSpy = jasmine.createSpyObj<EventEmitter<GetHelpItemsRequestParams>>('EventEmitter', ['emit'])
+  const criteriaEmitterSpy = jasmine.createSpyObj<EventEmitter<HelpSearchCriteria>>('EventEmitter', ['emit'])
   const apiServiceSpy = { getAllAppsWithHelpItems: jasmine.createSpy('getAllAppsWithHelpItem').and.returnValue(of([])) }
 
   beforeEach(waitForAsync(() => {
@@ -36,7 +36,7 @@ describe('HelpDetailComponent', () => {
       schemas: [NO_ERRORS_SCHEMA],
       providers: [
         { provide: PortalMessageService, useValue: msgServiceSpy },
-        { provide: HelpItemInternalAPIService, useValue: apiServiceSpy }
+        { provide: HelpsInternalAPIService, useValue: apiServiceSpy }
       ]
     }).compileComponents(),
       msgServiceSpy.error.calls.reset()
@@ -55,10 +55,12 @@ describe('HelpDetailComponent', () => {
 
   it('should update appIds OnInit', () => {
     component.appsChanged = true
-    const mockIds = [{ id: '1' }, { id: '2' }]
-    component.applicationsIds = []
-    apiServiceSpy.getAllAppsWithHelpItems.and.returnValue(of(mockIds))
 
+    const mockHelpAppIds = {
+      appIds: ['1', '2']
+    }
+    component.applicationsIds = []
+    apiServiceSpy.getAllAppsWithHelpItems.and.returnValue(of(mockHelpAppIds))
     component.ngOnInit()
 
     expect(component.applicationsIds).toEqual(['', '1', '2'])
@@ -66,9 +68,11 @@ describe('HelpDetailComponent', () => {
 
   it('should update appIds OnChanges if appsChanged', () => {
     component.appsChanged = true
-    const mockIds = [{ id: '1' }, { id: '2' }]
+    const mockHelpAppIds = {
+      appIds: ['1', '2']
+    }
     component.applicationsIds = []
-    apiServiceSpy.getAllAppsWithHelpItems.and.returnValue(of(mockIds))
+    apiServiceSpy.getAllAppsWithHelpItems.and.returnValue(of(mockHelpAppIds))
 
     component.ngOnChanges({
       appsChanged: new SimpleChange(false, true, false)
@@ -99,18 +103,18 @@ describe('HelpDetailComponent', () => {
     component.criteriaEmitter = criteriaEmitterSpy
     component.helpCriteriaGroup = new FormGroup<HelpCriteriaForm>({
       appId: new FormControl('help-mgmt-ui'),
-      helpItemId: new FormControl('PAGE_HELP_SEARCH')
+      itemId: new FormControl('PAGE_HELP_SEARCH')
     })
 
     component.submitCriteria()
 
-    expect(criteriaEmitterSpy.emit).toHaveBeenCalledWith(component.helpCriteriaGroup.value as GetHelpItemsRequestParams)
+    expect(criteriaEmitterSpy.emit).toHaveBeenCalledWith(component.helpCriteriaGroup.value as HelpSearchCriteria)
   })
 
   it('should display error on invalid criteria', () => {
     component.helpCriteriaGroup = new FormGroup<HelpCriteriaForm>({
       appId: new FormControl('', Validators.required),
-      helpItemId: new FormControl('', Validators.required)
+      itemId: new FormControl('', Validators.required)
     })
 
     component.submitCriteria()

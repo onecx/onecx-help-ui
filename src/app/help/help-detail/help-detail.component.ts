@@ -18,18 +18,18 @@ export class HelpDetailComponent implements OnChanges {
 
   @ViewChild(HelpFormComponent, { static: false }) helpFormComponent!: HelpFormComponent
 
-  public helpItemId: string | undefined
+  public itemId: string | undefined
   public appId: string | undefined
 
   constructor(private helpApi: HelpsInternalAPIService, private msgService: PortalMessageService) {}
 
   ngOnChanges() {
     if (this.changeMode === 'EDIT') {
-      this.helpItemId = this.helpItem?.id
+      this.itemId = this.helpItem?.id
       this.appId = this.helpItem?.appId
     }
     if (this.changeMode === 'NEW') {
-      this.helpItemId = undefined
+      this.itemId = undefined
     }
   }
 
@@ -72,10 +72,10 @@ export class HelpDetailComponent implements OnChanges {
   }
 
   private updateHelpItem(): void {
-    if (this.helpFormComponent.formGroup.valid && this.appId && this.helpItemId) {
+    if (this.helpFormComponent.formGroup.valid && this.appId && this.itemId) {
       this.helpApi
         .updateHelp({
-          id: this.helpItemId,
+          id: this.itemId,
           updateHelp: this.helpFormComponent.formGroup.value
         })
         .subscribe({
