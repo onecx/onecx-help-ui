@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "help-mgmt-ui": {
+    "onecx-help-ui": {
       "projectType": "application",
       "schematics": {},
       "root": "",
