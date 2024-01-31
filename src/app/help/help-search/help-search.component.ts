@@ -86,7 +86,7 @@ export class HelpSearchComponent implements OnInit {
    *    - re-searching (with current criteria) after changes in detail dialog
    */
   public search(criteria: HelpSearchCriteria, reuseCriteria: boolean = false): void {
-    var criteriaSearchParams: SearchHelpsRequestParams = {
+    let criteriaSearchParams: SearchHelpsRequestParams = {
       helpSearchCriteria: criteria
     }
     if (!reuseCriteria) {
@@ -124,12 +124,8 @@ export class HelpSearchComponent implements OnInit {
   // default sorting: 1. appId, 2.itemId
   private sortHelpItemByDefault(a: Help, b: Help): number {
     return (
-      (a.appId ? (a.appId as string).toUpperCase() : '').localeCompare(
-        b.appId ? (b.appId as string).toUpperCase() : ''
-      ) ||
-      (a.itemId ? (a.itemId as string).toUpperCase() : '').localeCompare(
-        b.itemId ? (b.itemId as string).toUpperCase() : ''
-      )
+      (a.appId ? a.appId.toUpperCase() : '').localeCompare(b.appId ? b.appId.toUpperCase() : '') ||
+      (a.itemId ? a.itemId.toUpperCase() : '').localeCompare(b.itemId ? b.itemId.toUpperCase() : '')
     )
   }
 

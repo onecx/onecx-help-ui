@@ -51,7 +51,6 @@ export class HelpDetailComponent implements OnChanges {
           createHelp: this.helpFormComponent.formGroup.value as CreateHelp
         })
         .subscribe({
-          /* eslint-disable @typescript-eslint/no-unused-vars */ /* TODO: fix help processing */
           next: () => {
             this.searchEmitter.emit()
             this.msgService.success({ summaryKey: 'HELPITEM_CREATION.CREATION_SUCCESS' })
