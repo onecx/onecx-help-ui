@@ -2,7 +2,7 @@ import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChange
 import { FormControl, FormGroup } from '@angular/forms'
 
 import { Action, PortalMessageService } from '@onecx/portal-integration-angular'
-import { HelpSearchCriteria, HelpsInternalAPIService } from '../../../generated'
+import { HelpSearchCriteria, HelpsInternalAPIService } from 'src/app/shared/generated'
 
 export interface HelpCriteriaForm {
   itemId: FormControl<string | null>
@@ -10,9 +10,8 @@ export interface HelpCriteriaForm {
 }
 
 @Component({
-  selector: 'hm-help-criteria',
-  templateUrl: './help-criteria.component.html',
-  styleUrls: ['./help-criteria.component.scss']
+  selector: 'app-help-criteria',
+  templateUrl: './help-criteria.component.html'
 })
 export class HelpCriteriaComponent implements OnInit, OnChanges {
   @Input() public actions: Action[] = []

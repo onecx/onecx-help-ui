@@ -5,10 +5,9 @@ import { HttpClientTestingModule } from '@angular/common/http/testing'
 import { TranslateLoader, TranslateModule } from '@ngx-translate/core'
 import { of, throwError } from 'rxjs'
 
-import { Column, PortalMessageService } from '@onecx/portal-integration-angular'
-import { HttpLoaderFactory } from 'src/app/shared/shared.module'
+import { AppStateService, createTranslateLoader, Column, PortalMessageService } from '@onecx/portal-integration-angular'
+import { HelpsInternalAPIService, Help, SearchHelpsRequestParams } from 'src/app/shared/generated'
 import { HelpSearchComponent } from './help-search.component'
-import { HelpsInternalAPIService, Help, SearchHelpsRequestParams } from '../../generated'
 
 describe('HelpSearchComponent', () => {
   let component: HelpSearchComponent
@@ -38,8 +37,8 @@ describe('HelpSearchComponent', () => {
         TranslateModule.forRoot({
           loader: {
             provide: TranslateLoader,
-            useFactory: HttpLoaderFactory,
-            deps: [HttpClient]
+            useFactory: createTranslateLoader,
+            deps: [HttpClient, AppStateService]
           }
         })
       ],
@@ -251,7 +250,7 @@ describe('HelpSearchComponent', () => {
     expect(component.displayDeleteDialog).toBeTrue()
   })
 
-  it('should correctly sort appIds using sortHelpItemsByDefault', () => {
+  it('should correctly sort appIds using sortHelpItemsByDefault 1', () => {
     component.results = [
       { appId: 'B', itemId: '2' },
       { appId: 'A', itemId: '1' }
@@ -261,6 +260,53 @@ describe('HelpSearchComponent', () => {
     expect(component.results).toEqual([
       { appId: 'A', itemId: '1' },
       { appId: 'B', itemId: '2' }
+    ])
+  })
+
+  it('should correctly sort appIds using sortHelpItemsByDefault 2', () => {
+    component.results = [
+      { appId: '', itemId: '1' },
+      { appId: 'A', itemId: '2' }
+    ]
+    component.results.sort(component['sortHelpItemByDefault'])
+
+    expect(component.results).toEqual([
+      { appId: '', itemId: '1' },
+      { appId: 'A', itemId: '2' }
+    ])
+  })
+
+  it('should correctly sort appIds using sortHelpItemsByDefault 3', () => {
+    component.results = [
+      { appId: 'A', itemId: '2' },
+      { appId: '', itemId: '1' }
+    ]
+    component.results.sort(component['sortHelpItemByDefault'])
+
+    expect(component.results).toEqual([
+      { appId: '', itemId: '1' },
+      { appId: 'A', itemId: '2' }
+    ])
+  })
+
+  it('should correctly sort appIds using sortHelpItemsByDefault 4', () => {
+    component.results = [
+      { appId: 'A', itemId: '' },
+      { appId: 'A', itemId: '2' },
+      { appId: 'A', itemId: '1' },
+      { appId: '', itemId: '1' },
+      { appId: '', itemId: '2' },
+      { appId: '', itemId: '' }
+    ]
+    component.results.sort(component['sortHelpItemByDefault'])
+
+    expect(component.results).toEqual([
+      { appId: '', itemId: '' },
+      { appId: '', itemId: '1' },
+      { appId: '', itemId: '2' },
+      { appId: 'A', itemId: '' },
+      { appId: 'A', itemId: '1' },
+      { appId: 'A', itemId: '2' }
     ])
   })
 

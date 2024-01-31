@@ -1,5 +1,5 @@
 export const environment = {
   production: true,
-  BASE_PATH: '/help-bff',
-  apiPrefix: 'help-bff'
+  BASE_PATH: '/bff',
+  apiPrefix: 'bff'
 }

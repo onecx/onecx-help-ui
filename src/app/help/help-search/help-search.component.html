@@ -1,9 +1,9 @@
 <ocx-portal-page permission="HELP#SEARCH" helpArticleId="PAGE_HELP_SEARCH">
-  <hm-help-criteria
+  <app-help-criteria
     [actions]="actions"
     [appsChanged]="appsChanged"
     (criteriaEmitter)="search($event)"
-  ></hm-help-criteria>
+  ></app-help-criteria>
   <ocx-page-content styleClass="px-3">
     <p-table
       #table
@@ -157,9 +157,9 @@
   </ng-template>
 </p-dialog>
 
-<hm-help-detail
+<app-help-detail
   [(displayDetailDialog)]="displayDetailDialog"
   [helpItem]="helpItem"
   [changeMode]="changeMode"
   (searchEmitter)="onSearch()"
-></hm-help-detail>
+></app-help-detail>

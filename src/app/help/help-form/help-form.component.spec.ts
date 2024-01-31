@@ -9,7 +9,7 @@ import { TranslateModule, TranslateLoader } from '@ngx-translate/core'
 import { HttpClient } from '@angular/common/http'
 import { MessageService } from 'primeng/api'
 
-import { HttpLoaderFactory } from 'src/app/shared/shared.module'
+import { AppStateService, createTranslateLoader } from '@onecx/portal-integration-angular'
 
 describe('HelpFormComponent', () => {
   let component: HelpFormComponent
@@ -28,8 +28,8 @@ describe('HelpFormComponent', () => {
         TranslateModule.forRoot({
           loader: {
             provide: TranslateLoader,
-            useFactory: HttpLoaderFactory,
-            deps: [HttpClient]
+            useFactory: createTranslateLoader,
+            deps: [HttpClient, AppStateService]
           }
         })
       ],

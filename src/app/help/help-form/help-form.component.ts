@@ -2,7 +2,7 @@ import { Component, Input, OnChanges, SimpleChanges } from '@angular/core'
 import { FormControl, FormGroup, Validators } from '@angular/forms'
 
 import { Column } from '@onecx/portal-integration-angular'
-import { CreateHelp } from 'src/app/generated'
+import { CreateHelp } from 'src/app/shared/generated'
 
 export interface HelpDetailForm {
   appId: FormControl<string | null>
@@ -13,9 +13,8 @@ export interface HelpDetailForm {
 }
 
 @Component({
-  selector: 'hm-help-form',
-  templateUrl: './help-form.component.html',
-  styleUrls: ['./help-form.component.scss']
+  selector: 'app-help-form',
+  templateUrl: './help-form.component.html'
 })
 export class HelpFormComponent implements OnChanges {
   @Input() helpItem: CreateHelp | undefined

@@ -1,11 +1,11 @@
 import { Component, EventEmitter, Input, Output, ViewChild, OnChanges } from '@angular/core'
 import { PortalMessageService } from '@onecx/portal-integration-angular'
 
-import { HelpsInternalAPIService, Help, CreateHelp } from '../../generated'
+import { HelpsInternalAPIService, Help, CreateHelp } from 'src/app/shared/generated'
 import { HelpFormComponent } from '../help-form/help-form.component'
 
 @Component({
-  selector: 'hm-help-detail',
+  selector: 'app-help-detail',
   templateUrl: './help-detail.component.html',
   styleUrls: ['./help-detail.component.scss']
 })

@@ -1,5 +1,0 @@
-PERMISSION NAME;PERMISSION_KEY;onecx-help-admin;onecx-help-user
-Show search page for Help items;HELP#SEARCH;x;x
-Show details of Help item;HELP#VIEW;x;x
-Edit Help item;HELP#EDIT;x;
-Delete Help item;HELP#DELETE;x;
