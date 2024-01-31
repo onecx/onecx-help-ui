@@ -7,6 +7,7 @@
   <ocx-page-content styleClass="px-3">
     <p-table
       #table
+      id="help_search_table"
       responsiveLayout="scroll"
       [value]="loadingResults ? [] : results"
       [columns]="filteredColumns"
@@ -38,16 +39,21 @@
 
       <ng-template pTemplate="emptymessage">
         <tr>
-          <td colspan="16">{{ 'GENERAL.SEARCH.NO_DATA' | translate }}</td>
+          <td id="help_search_table_no_data" colspan="16">{{ 'GENERAL.SEARCH.NO_DATA' | translate }}</td>
         </tr>
       </ng-template>
       <ng-template pTemplate="header" let-columns>
-        <tr>
-          <th class="text-center white-space-nowrap" title="{{ 'GENERAL.SEARCH.ACTION' | translate }}">
+        <tr id="help_search_table_header">
+          <th
+            id="help_search_table_header_action"
+            class="text-center white-space-nowrap"
+            title="{{ 'GENERAL.SEARCH.ACTION' | translate }}"
+          >
             {{ 'GENERAL.SEARCH.ACTION' | translate }}
           </th>
           <th
             *ngFor="let col of columns"
+            [id]="'help_search_table_header_' + col.field"
             [class]="col.css"
             [pSortableColumn]="col.field"
             title="  {{ 'HELP_ITEM.TOOLTIPS.' + col.header | translate }}"
@@ -59,14 +65,14 @@
         </tr>
       </ng-template>
       <ng-template pTemplate="body" let-row="rowIndex" let-rowData let-columns="columns">
-        <tr>
+        <tr [id]="'help_search_table_row_' + row">
           <td class="text-center white-space-nowrap">
             <ng-container *ocxIfNotPermission="'HELP#EDIT'">
               <button
                 pbutton
                 type="button"
                 *ocxIfPermission="'HELP#VIEW'"
-                [id]="'ahm_help_search_table_row_' + row + '_view_action'"
+                [id]="'help_search_table_row_' + row + '_view_action'"
                 (click)="onDetail($event, rowData, 'VIEW')"
                 [title]="'GENERAL.VIEW' | translate"
                 class="my-0 mr-1 p-1 p-button-rounded font-medium p-button-text p-button p-component p-button-icon-only"
@@ -78,7 +84,7 @@
               pbutton
               type="button"
               *ocxIfPermission="'HELP#EDIT'"
-              [id]="'ahm_help_search_table_row_' + row + '_edit_action'"
+              [id]="'help_search_table_row_' + row + '_edit_action'"
               (click)="onDetail($event, rowData, 'EDIT')"
               [title]="'ACTIONS.EDIT.HELP_ITEM.TOOLTIP' | translate"
               class="my-0 mr-1 p-1 p-button-rounded font-medium p-button-text p-button p-component p-button-icon-only"
@@ -89,7 +95,7 @@
               pbutton
               type="button"
               *ocxIfPermission="'HELP#EDIT'"
-              [id]="'ahm_help_search_table_row_' + row + '_copy_action'"
+              [id]="'help_search_table_row_' + row + '_copy_action'"
               (click)="onCopy($event, rowData)"
               [title]="'ACTIONS.COPY.HELP_ITEM.TOOLTIP' | translate"
               class="mr-1 my-0 p-1 p-button-rounded font-medium p-button-text p-button p-component p-button-icon-only"
@@ -100,7 +106,7 @@
               pbutton
               type="button"
               *ocxIfPermission="'HELP#DELETE'"
-              [id]="'ahm_help_search_table_row_' + row + '_delete_action'"
+              [id]="'help_search_table_row_' + row + '_delete_action'"
               (click)="onDelete($event, rowData)"
               [title]="'ACTIONS.DELETE.HELP_ITEM.TOOLTIP' | translate"
               class="my-0 p-1 p-button-rounded font-medium p-button-text p-button p-component p-button-icon-only"
@@ -108,7 +114,9 @@
               <span class="danger-action-text font-medium p-button-icon pi pi-trash" aria-hidden="true"></span>
             </button>
           </td>
-          <td *ngFor="let col of columns" [class]="col.css">{{ rowData[col.field] }}</td>
+          <td [id]="'help_search_table_row_' + row + '_' + col.field" *ngFor="let col of columns" [class]="col.css">
+            {{ rowData[col.field] }}
+          </td>
         </tr>
       </ng-template>
     </p-table>
@@ -139,6 +147,7 @@
         class="m-0"
         icon="pi pi-times"
         iconPos="left"
+        [id]="'help_delete_button_no'"
         [label]="'ACTIONS.CONFIRMATION.NO' | translate"
         [title]="'ACTIONS.CONFIRMATION.NO.TOOLTIP' | translate"
         (click)="displayDeleteDialog = false"
@@ -149,6 +158,7 @@
         class="m-0"
         icon="pi pi-check"
         iconPos="left"
+        [id]="'help_delete_button_yes'"
         [label]="'ACTIONS.CONFIRMATION.YES' | translate"
         [title]="'ACTIONS.CONFIRMATION.YES.TOOLTIP' | translate"
         (click)="onDeleteConfirmation()"
