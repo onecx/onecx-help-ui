@@ -7,7 +7,7 @@
   [resizable]="true"
   [closable]="true"
   [modal]="true"
-  [style]="{ width: '350px' }"
+  [style]="{ width: '400px' }"
   [showHeader]="true"
   [breakpoints]="{
     '992px': '50vw',
@@ -17,7 +17,7 @@
     '400px': '100vw',
       }"
 >
-  <hm-help-form [changeMode]="changeMode" [helpItem]="helpItem"></hm-help-form>
+  <app-help-form [changeMode]="changeMode" [helpItem]="helpItem"></app-help-form>
 
   <ng-template pTemplate="footer">
     <div class="flex flex-wrap justify-content-end gap-2 mb-1">

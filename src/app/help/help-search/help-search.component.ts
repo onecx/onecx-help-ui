@@ -4,13 +4,13 @@ import { finalize, Observable } from 'rxjs'
 import { Table } from 'primeng/table'
 
 import { Action, Column, PortalMessageService } from '@onecx/portal-integration-angular'
-import { HelpsInternalAPIService, Help, SearchHelpsRequestParams, HelpSearchCriteria } from '../../generated'
+import { HelpsInternalAPIService, Help, SearchHelpsRequestParams, HelpSearchCriteria } from 'src/app/shared/generated'
 
 type ExtendedColumn = Column & { css?: string; limit?: boolean }
 type ChangeMode = 'VIEW' | 'NEW' | 'EDIT'
 
 @Component({
-  selector: 'hm-help-search',
+  selector: 'app-help-search',
   templateUrl: './help-search.component.html',
   styleUrls: ['./help-search.component.scss']
 })

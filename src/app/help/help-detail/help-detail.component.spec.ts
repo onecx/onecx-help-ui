@@ -6,11 +6,9 @@ import { TranslateLoader, TranslateModule } from '@ngx-translate/core'
 import { of, throwError } from 'rxjs'
 import { FormControl, FormGroup, Validators } from '@angular/forms'
 
-import { PortalMessageService, Column } from '@onecx/portal-integration-angular'
-import { HttpLoaderFactory } from 'src/app/shared/shared.module'
-
+import { AppStateService, createTranslateLoader, Column, PortalMessageService } from '@onecx/portal-integration-angular'
+import { HelpsInternalAPIService, CreateHelp } from 'src/app/shared/generated'
 import { HelpDetailComponent } from './help-detail.component'
-import { HelpsInternalAPIService, CreateHelp } from 'src/app/generated'
 
 describe('HelpDetailComponent', () => {
   let component: HelpDetailComponent
@@ -23,7 +21,7 @@ describe('HelpDetailComponent', () => {
   }
 
   @Component({
-    selector: 'hm-help-form',
+    selector: 'app-help-form',
     template: ''
   })
   class MockHelpFormComponent {
@@ -48,8 +46,8 @@ describe('HelpDetailComponent', () => {
         TranslateModule.forRoot({
           loader: {
             provide: TranslateLoader,
-            useFactory: HttpLoaderFactory,
-            deps: [HttpClient]
+            useFactory: createTranslateLoader,
+            deps: [HttpClient, AppStateService]
           }
         })
       ],
