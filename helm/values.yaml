@@ -11,7 +11,7 @@ app:
       enabled: true
       spec:
         exposedModule: "./OneCXHelpModule"
-        description: "OneCX Help"
+        description: "OneCX Help UI"
         note: "OneCX Help UI auto import via MF operator"
     # Permission
     permission:
