@@ -11,45 +11,28 @@ app:
       enabled: true
       spec:
         exposedModule: "./OneCXHelpModule"
-        description: "OneCX Help Mgmt"
-        note: "OneCX Help Mgmt module auto import via MF operator"
+        description: "OneCX Help"
+        note: "OneCX Help UI auto import via MF operator"
     # Permission
     permission:
       enabled: true
       spec:
         permissions:
           HELP:
-            CREATE: Create announcement
-            EDIT: Edit announcement
-            DELETE: Delete announcement
-            SAVE: Update and save announcement
-            IMPORT: Import announcement
-            EXPORT: Export announcement
-            VIEW: View mode for announcement
-            SEARCH: Search announcement
+            CREATE: Create help
+            DELETE: Delete help
+            EDIT: Edit help
+            SAVE: Update and save help
+            SEARCH: Search help
+            VIEW: View mode for help
+            EXPORT: Export help            
+            IMPORT: Import help
+    # Keycloak
     keycloak:
-      enabled: true
-      client: |-
-        {
-          "clientId": "onecx-help-ui",
-          "enabled": true,
-          "description": "Keycloak client for onecx-help-ui",
-          "redirectUris": ["*"],
-          "webOrigins": ["*"],
-          "publicClient": true,
-          "protocol": "openid-connect"
-        }
-      roles: |-
-        [
-           {
-             "name": "onecx-help-admin",
-             "description": "OneCX Help admin"
-           },
-           {
-             "name": "onecx-help-user",
-             "description": "OneCX Help user"
-           }
-         ]
+      client:
+        enabled: true
+        spec:
+          kcConfig:
+            clientId: "onecx-help-ui"
 
 # PIPE Config
-
