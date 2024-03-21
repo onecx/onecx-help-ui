@@ -131,5 +131,14 @@
       "MINIMUM_LENGTH": "At least {{chars}} characters are required.",
       "PATTERN_ERROR": "Your input does not match the required pattern"
     }
+  },
+  "SHOW_HELP": {
+    "LABEL": "Show Help for this article",
+    "HELP_PAGE_ERROR": "Help Item URL not valid",
+    "NO_HELP_ITEM": {
+      "HEADER": "No help item defined for this page",
+      "CONTENT": "No help items were found for this page. Please ask your system administrator to add it.",
+      "ITEM_HINT": "The help Item ID for this page is:"
+    }
   }
 }

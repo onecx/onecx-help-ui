@@ -1,0 +1,13 @@
+<ng-container *ocxIfPermission="'PORTAL_HEADER_HELP#VIEW'; permissions: permissions">
+  <a
+    id="show-help-button"
+    pRipple
+    (click)="openHelpPage($event)"
+    [ngClass]="linkItemClass"
+    [title]="labelKey | translate"
+    [pTooltip]="labelKey | translate"
+    tooltipPosition="bottom"
+  >
+    <i id="show-help-button-icon" [ngClass]="[icon, iconItemClass]"></i>
+  </a>
+</ng-container>
