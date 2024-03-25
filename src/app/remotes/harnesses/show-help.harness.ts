@@ -1,6 +1,5 @@
 import { ComponentHarness } from '@angular/cdk/testing'
 
-// import { AHarness } from '@onecx/angular-testing'
 import { AHarness } from './a.harness'
 import { IHarness } from './i.harness'
 

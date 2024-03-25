@@ -5,7 +5,8 @@ const config = withModuleFederationPlugin({
   name: 'onecx-help-ui',
   filename: 'remoteEntry.js',
   exposes: {
-    './OneCXHelpModule': 'src/app/onecx-help-remote.module.ts'
+    './OneCXHelpModule': 'src/app/onecx-help-remote.module.ts',
+    './ShowHelpComponent': 'src/app/remotes/components/show-help/show-help.component.ts'
   },
   shared: share({
     '@angular/core': { singleton: true, strictVersion: true, requiredVersion: 'auto' },

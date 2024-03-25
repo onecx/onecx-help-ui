@@ -1,40 +1,34 @@
-import { Component, Input, OnInit, inject } from '@angular/core'
-import { Router } from '@angular/router'
-import { HttpClient, HttpClientModule } from '@angular/common/http'
+import { Component, Input, OnInit } from '@angular/core'
+import { HttpClientModule } from '@angular/common/http'
 import { CommonModule } from '@angular/common'
 import { TranslateModule, TranslateService } from '@ngx-translate/core'
-import { Observable, catchError, first, map, mergeMap, of, withLatestFrom } from 'rxjs'
+import { BehaviorSubject, Observable, catchError, first, map, mergeMap, of, withLatestFrom } from 'rxjs'
 import { PrimeIcons } from 'primeng/api'
 import { RippleModule } from 'primeng/ripple'
 import { TooltipModule } from 'primeng/tooltip'
-import { DialogService } from 'primeng/dynamicdialog'
+import { DialogService, DynamicDialogModule } from 'primeng/dynamicdialog'
 import { RemoteComponentConfig, ocxRemoteComponent } from '@onecx/angular-remote-components'
-import { PortalMessageService } from '@onecx/portal-integration-angular'
+import { PortalCoreModule, PortalMessageService } from '@onecx/portal-integration-angular'
 import { AppStateService } from '@onecx/angular-integration-interface'
-import { AngularAcceleratorModule } from '@onecx/angular-accelerator'
-import { HelpData } from '../../model/help-data.model'
-import { HelpAPIService } from '../../service/help-api-service'
 import { NoHelpItemComponent } from '../no-help-item/no-help-item.component'
+import { Help } from 'src/app/shared/generated'
+import { HelpsRemoteAPIService } from '../../service/helpsRemote.service'
 
-// TODO: Make sure all dependencies are fullfield in shell
-//   imports: [
-//     DynamicDialogModule,
-//     NoHelpItemComponent,
-//     PortalCoreModule
-//   ],
-// })
 @Component({
   selector: 'app-ocx-show-help',
   templateUrl: './show-help.component.html',
   standalone: true,
-  imports: [CommonModule, HttpClientModule, RippleModule, TooltipModule, TranslateModule, AngularAcceleratorModule],
-  providers: [
-    {
-      provide: HelpAPIService,
-      useFactory: () => new HelpAPIService(inject(HttpClient))
-    },
-    DialogService
-  ]
+  imports: [
+    CommonModule,
+    HttpClientModule,
+    RippleModule,
+    TooltipModule,
+    DynamicDialogModule,
+    TranslateModule,
+    PortalCoreModule,
+    NoHelpItemComponent
+  ],
+  providers: [HelpsRemoteAPIService, DialogService]
 })
 export class ShowHelpRemoteComponent implements OnInit, ocxRemoteComponent {
   @Input()
@@ -47,17 +41,17 @@ export class ShowHelpRemoteComponent implements OnInit, ocxRemoteComponent {
   iconItemClass: string = ''
 
   helpArticleId$: Observable<string> | undefined
-  // applicationId$: Observable<string> | undefined
-  helpDataItem$: Observable<HelpData> | undefined
-  applicationId: string | undefined
-  bffUrl: string = ''
-  baseUrl: string = ''
+  helpDataItem$: Observable<Help> | undefined
+
+  private bffSubject = new BehaviorSubject<string | undefined>(undefined)
+  bff$ = this.bffSubject.asObservable()
   permissions: string[] = []
+  applicationId: string | undefined
 
   constructor(
     private appStateService: AppStateService,
-    private router: Router,
-    private helpDataService: HelpAPIService,
+    // private router: Router,
+    private helpDataService: HelpsRemoteAPIService,
     private dialogService: DialogService,
     private portalMessageService: PortalMessageService,
     private translateService: TranslateService
@@ -82,52 +76,51 @@ export class ShowHelpRemoteComponent implements OnInit, ocxRemoteComponent {
         return page?.helpArticleId ?? page?.pageName ?? ''
       })
     )
-    // this.applicationId$ = combineLatest([
-    //   this.appStateService.currentPage$.asObservable(),
-    //   this.appStateService.currentMfe$.asObservable()
-    // ]).pipe(
-    //   map(([page, mfe]) => {
-    //     console.warn('new applicationId data')
-    //     console.warn(page, ' ', mfe)
-    //     return page?.applicationId ?? mfe.displayName ?? ''
-    //   })
-    // )
     this.helpDataItem$ = this.helpArticleId$.pipe(
       mergeMap((helpArticleId) => {
-        if (this.applicationId && helpArticleId) return this.loadHelpArticle(this.applicationId, helpArticleId)
-        return of({})
+        if (helpArticleId && this.applicationId) return this.loadHelpArticle(helpArticleId)
+        return of({} as Help)
       }),
       catchError(() => {
         console.log(`Failed to load help article`)
-        return of({})
+        return of({} as Help)
       })
     )
+    this.helpDataService.setBasePath(this.bff$)
   }
 
   ngOnInit(): void {
     // TODO: REMOVE (testing purposes)
     // TODO: Write tests
-    // TODO: Research CurrentPageTopic -> check portal-page.component.ts -> I think its fine to get helpArticleId from here
     // TODO: Check component in shell
     this.ocxInitRemoteComponent({
       appId: 'my-appId',
       productName: 'my-product',
       // permissions: ['PORTAL_HEADER_GIVE_FEEDBACK#VIEW'],
       permissions: ['PORTAL_HEADER_HELP#VIEW'],
-      bffUrl: 'http://onecx-help-bff',
+      // bffUrl: 'http://localhost:8080',
+      bffUrl: '/bff',
       baseUrl: 'my-base-url'
     })
   }
 
   ocxInitRemoteComponent(config: RemoteComponentConfig): void {
-    this.applicationId = config.appId
-    this.bffUrl = config.bffUrl
-    this.baseUrl = config.baseUrl
+    this.bffSubject.next(config.bffUrl)
     this.permissions = config.permissions
+    this.applicationId = config.appId
   }
 
-  private loadHelpArticle(appId: string, helpItemId: string) {
-    return this.helpDataService.getHelpDataItem(this.bffUrl, this.baseUrl, appId, helpItemId)
+  private loadHelpArticle(helpItemId: string): Observable<Help> {
+    return this.helpDataService
+      .searchHelps({ helpSearchCriteria: { itemId: helpItemId, appId: this.applicationId } })
+      .pipe(
+        map((helpPageResult) => {
+          if (helpPageResult.totalElements !== 1) {
+            return {} as Help
+          }
+          return helpPageResult.stream!.at(0)!
+        })
+      )
   }
 
   public openHelpPage(event: any) {
