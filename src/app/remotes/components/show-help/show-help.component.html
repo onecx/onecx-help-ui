@@ -3,11 +3,10 @@
     id="show-help-button"
     pRipple
     (click)="openHelpPage($event)"
-    [ngClass]="linkItemClass"
-    [title]="labelKey | translate"
-    [pTooltip]="labelKey | translate"
+    [title]="LABEL_KEY | translate"
+    [pTooltip]="LABEL_KEY | translate"
     tooltipPosition="bottom"
   >
-    <i id="show-help-button-icon" [ngClass]="[icon, iconItemClass]"></i>
+    <i id="show-help-button-icon" class="{{ ICON }}"></i>
   </a>
 </ng-container>

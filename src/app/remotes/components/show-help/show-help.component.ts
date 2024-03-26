@@ -1,8 +1,8 @@
-import { Component, Input, OnInit } from '@angular/core'
+import { Component, OnInit } from '@angular/core'
 import { HttpClientModule } from '@angular/common/http'
-import { CommonModule } from '@angular/common'
+import { CommonModule, Location } from '@angular/common'
 import { TranslateModule, TranslateService } from '@ngx-translate/core'
-import { BehaviorSubject, Observable, catchError, first, map, mergeMap, of, withLatestFrom } from 'rxjs'
+import { Observable, catchError, combineLatest, first, map, mergeMap, of, withLatestFrom } from 'rxjs'
 import { PrimeIcons } from 'primeng/api'
 import { RippleModule } from 'primeng/ripple'
 import { TooltipModule } from 'primeng/tooltip'
@@ -11,8 +11,9 @@ import { RemoteComponentConfig, ocxRemoteComponent } from '@onecx/angular-remote
 import { PortalCoreModule, PortalMessageService } from '@onecx/portal-integration-angular'
 import { AppStateService } from '@onecx/angular-integration-interface'
 import { NoHelpItemComponent } from '../no-help-item/no-help-item.component'
-import { Help } from 'src/app/shared/generated'
+import { Configuration, Help } from 'src/app/shared/generated'
 import { HelpsRemoteAPIService } from '../../service/helpsRemote.service'
+import { environment } from 'src/environments/environment'
 
 @Component({
   selector: 'app-ocx-show-help',
@@ -28,25 +29,21 @@ import { HelpsRemoteAPIService } from '../../service/helpsRemote.service'
     PortalCoreModule,
     NoHelpItemComponent
   ],
-  providers: [HelpsRemoteAPIService, DialogService]
+  // TODO: REMOVE
+  // configuration provider for testing purposes
+  providers: [HelpsRemoteAPIService, DialogService, { provide: Configuration, useValue: new Configuration() }]
 })
 export class ShowHelpRemoteComponent implements OnInit, ocxRemoteComponent {
-  @Input()
-  labelKey: string = 'SHOW_HELP.LABEL'
-  @Input()
-  icon: string = PrimeIcons.QUESTION_CIRCLE
-  @Input()
-  linkItemClass: string = ''
-  @Input()
-  iconItemClass: string = ''
+  // TODO: Figure out translations with KIM
+  // TODO: Style component
+  LABEL_KEY: string = 'SHOW_HELP.LABEL'
+  ICON: string = PrimeIcons.QUESTION_CIRCLE
 
   helpArticleId$: Observable<string> | undefined
+  applicationId$: Observable<string> | undefined
   helpDataItem$: Observable<Help> | undefined
 
-  private bffSubject = new BehaviorSubject<string | undefined>(undefined)
-  bff$ = this.bffSubject.asObservable()
   permissions: string[] = []
-  applicationId: string | undefined
 
   constructor(
     private appStateService: AppStateService,
@@ -76,9 +73,16 @@ export class ShowHelpRemoteComponent implements OnInit, ocxRemoteComponent {
         return page?.helpArticleId ?? page?.pageName ?? ''
       })
     )
-    this.helpDataItem$ = this.helpArticleId$.pipe(
-      mergeMap((helpArticleId) => {
-        if (helpArticleId && this.applicationId) return this.loadHelpArticle(helpArticleId)
+    // TODO: REMOVE Testing purposes
+    this.applicationId$ = combineLatest([
+      this.appStateService.currentPage$.asObservable(),
+      this.appStateService.currentMfe$.asObservable()
+      // ]).pipe(map(([page, mfe]) => page?.applicationId ?? mfe.displayName ?? ''))
+    ]).pipe(map(([page, mfe]) => 'asd'))
+
+    this.helpDataItem$ = combineLatest([this.applicationId$, this.helpArticleId$]).pipe(
+      mergeMap(([applicationId, helpArticleId]) => {
+        if (applicationId && helpArticleId) return this.loadHelpArticle(applicationId, helpArticleId)
         return of({} as Help)
       }),
       catchError(() => {
@@ -86,7 +90,6 @@ export class ShowHelpRemoteComponent implements OnInit, ocxRemoteComponent {
         return of({} as Help)
       })
     )
-    this.helpDataService.setBasePath(this.bff$)
   }
 
   ngOnInit(): void {
@@ -99,28 +102,27 @@ export class ShowHelpRemoteComponent implements OnInit, ocxRemoteComponent {
       // permissions: ['PORTAL_HEADER_GIVE_FEEDBACK#VIEW'],
       permissions: ['PORTAL_HEADER_HELP#VIEW'],
       // bffUrl: 'http://localhost:8080',
-      bffUrl: '/bff',
-      baseUrl: 'my-base-url'
+      bffUrl: 'WILL_BE_REMOVED', // WILL BE REMOVED
+      // baseUrl: 'my-base-url'
+      baseUrl: ''
+      // my-base-url/bff/helps
     })
   }
 
   ocxInitRemoteComponent(config: RemoteComponentConfig): void {
-    this.bffSubject.next(config.bffUrl)
     this.permissions = config.permissions
-    this.applicationId = config.appId
+    this.helpDataService.configuration.basePath = Location.joinWithSlash(config.baseUrl, environment.apiPrefix)
   }
 
-  private loadHelpArticle(helpItemId: string): Observable<Help> {
-    return this.helpDataService
-      .searchHelps({ helpSearchCriteria: { itemId: helpItemId, appId: this.applicationId } })
-      .pipe(
-        map((helpPageResult) => {
-          if (helpPageResult.totalElements !== 1) {
-            return {} as Help
-          }
-          return helpPageResult.stream!.at(0)!
-        })
-      )
+  private loadHelpArticle(appId: string, helpItemId: string): Observable<Help> {
+    return this.helpDataService.searchHelps({ helpSearchCriteria: { itemId: helpItemId, appId: appId } }).pipe(
+      map((helpPageResult) => {
+        if (helpPageResult.totalElements !== 1) {
+          return {} as Help
+        }
+        return helpPageResult.stream!.at(0)!
+      })
+    )
   }
 
   public openHelpPage(event: any) {
