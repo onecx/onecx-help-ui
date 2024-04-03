@@ -14,13 +14,9 @@ import {
   BASE_URL,
   provideTranslateServiceForRoot
 } from '@onecx/angular-remote-components'
-import {
-  PortalMessageService,
-  AppStateService,
-  createRemoteComponentTranslateLoader,
-  AppConfigService,
-  UserService
-} from '@onecx/portal-integration-angular'
+import { UserService, AppStateService } from '@onecx/angular-integration-interface'
+import { createRemoteComponentTranslateLoader, AppConfigService } from '@onecx/angular-accelerator'
+import { PortalMessageService, PortalCoreModule } from '@onecx/portal-integration-angular'
 import { NoHelpItemComponent } from '../no-help-item/no-help-item.component'
 import { Help } from 'src/app/shared/generated'
 import { HelpsRemoteAPIService } from '../../service/helpsRemote.service'
@@ -38,6 +34,7 @@ import { environment } from 'src/environments/environment'
     DynamicDialogModule,
     NoHelpItemComponent,
     TranslateModule,
+    PortalCoreModule,
     AngularRemoteComponentsModule
   ],
   // TODO: REMOVE
