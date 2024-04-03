@@ -1,17 +1,28 @@
-import { Component, OnInit } from '@angular/core'
-import { HttpClientModule } from '@angular/common/http'
+import { Component, Inject, OnInit } from '@angular/core'
+import { HttpClient, HttpClientModule } from '@angular/common/http'
 import { CommonModule, Location } from '@angular/common'
-import { TranslateModule, TranslateService } from '@ngx-translate/core'
-import { Observable, catchError, combineLatest, first, map, mergeMap, of, withLatestFrom } from 'rxjs'
+import { TranslateLoader, TranslateModule, TranslateService } from '@ngx-translate/core'
+import { Observable, ReplaySubject, catchError, combineLatest, first, map, mergeMap, of, withLatestFrom } from 'rxjs'
 import { PrimeIcons } from 'primeng/api'
 import { RippleModule } from 'primeng/ripple'
 import { TooltipModule } from 'primeng/tooltip'
 import { DialogService, DynamicDialogModule } from 'primeng/dynamicdialog'
-import { RemoteComponentConfig, ocxRemoteComponent } from '@onecx/angular-remote-components'
-import { PortalCoreModule, PortalMessageService } from '@onecx/portal-integration-angular'
-import { AppStateService } from '@onecx/angular-integration-interface'
+import {
+  AngularRemoteComponentsModule,
+  RemoteComponentConfig,
+  ocxRemoteComponent,
+  BASE_URL,
+  provideTranslateServiceForRoot
+} from '@onecx/angular-remote-components'
+import {
+  PortalMessageService,
+  AppStateService,
+  createRemoteComponentTranslateLoader,
+  AppConfigService,
+  UserService
+} from '@onecx/portal-integration-angular'
 import { NoHelpItemComponent } from '../no-help-item/no-help-item.component'
-import { Configuration, Help } from 'src/app/shared/generated'
+import { Help } from 'src/app/shared/generated'
 import { HelpsRemoteAPIService } from '../../service/helpsRemote.service'
 import { environment } from 'src/environments/environment'
 
@@ -25,16 +36,31 @@ import { environment } from 'src/environments/environment'
     RippleModule,
     TooltipModule,
     DynamicDialogModule,
+    NoHelpItemComponent,
     TranslateModule,
-    PortalCoreModule,
-    NoHelpItemComponent
+    AngularRemoteComponentsModule
   ],
   // TODO: REMOVE
   // configuration provider for testing purposes
-  providers: [HelpsRemoteAPIService, DialogService, { provide: Configuration, useValue: new Configuration() }]
+  // providers: [HelpsRemoteAPIService, DialogService, { provide: Configuration, useValue: new Configuration() }]
+  providers: [
+    HelpsRemoteAPIService,
+    DialogService,
+    {
+      provide: BASE_URL,
+      useValue: new ReplaySubject<string>(1)
+    },
+    provideTranslateServiceForRoot({
+      isolate: true,
+      loader: {
+        provide: TranslateLoader,
+        useFactory: createRemoteComponentTranslateLoader,
+        deps: [HttpClient, BASE_URL]
+      }
+    })
+  ]
 })
 export class ShowHelpRemoteComponent implements OnInit, ocxRemoteComponent {
-  // TODO: Figure out translations with KIM
   // TODO: Style component
   LABEL_KEY: string = 'SHOW_HELP.LABEL'
   ICON: string = PrimeIcons.QUESTION_CIRCLE
@@ -46,14 +72,18 @@ export class ShowHelpRemoteComponent implements OnInit, ocxRemoteComponent {
   permissions: string[] = []
 
   constructor(
+    private appConfigService: AppConfigService,
+    @Inject(BASE_URL) private baseUrl: ReplaySubject<string>,
     private appStateService: AppStateService,
+    private userService: UserService,
     // private router: Router,
     private helpDataService: HelpsRemoteAPIService,
     private dialogService: DialogService,
     private portalMessageService: PortalMessageService,
     private translateService: TranslateService
   ) {
-    // TODO: Figure out router
+    this.userService.lang$.subscribe((lang) => this.translateService.use(lang))
+    // TODO: Make router work
     // this.helpArticleId$ = combineLatest([
     //   this.appStateService.currentPage$.asObservable(),
     //   this.router.events.pipe(filter((event) => event instanceof NavigationEnd))
@@ -73,12 +103,12 @@ export class ShowHelpRemoteComponent implements OnInit, ocxRemoteComponent {
         return page?.helpArticleId ?? page?.pageName ?? ''
       })
     )
-    // TODO: REMOVE Testing purposes
     this.applicationId$ = combineLatest([
       this.appStateService.currentPage$.asObservable(),
       this.appStateService.currentMfe$.asObservable()
-      // ]).pipe(map(([page, mfe]) => page?.applicationId ?? mfe.displayName ?? ''))
-    ]).pipe(map(([page, mfe]) => 'asd'))
+    ]).pipe(map(([page, mfe]) => page?.applicationId ?? mfe.displayName ?? ''))
+    // TODO: REMOVE Testing purposes
+    // ]).pipe(map(([page, mfe]) => 'asd'))
 
     this.helpDataItem$ = combineLatest([this.applicationId$, this.helpArticleId$]).pipe(
       mergeMap(([applicationId, helpArticleId]) => {
@@ -93,23 +123,26 @@ export class ShowHelpRemoteComponent implements OnInit, ocxRemoteComponent {
   }
 
   ngOnInit(): void {
+    console.log('HELP COMPONENT INIT')
     // TODO: REMOVE (testing purposes)
     // TODO: Write tests
-    // TODO: Check component in shell
-    this.ocxInitRemoteComponent({
-      appId: 'my-appId',
-      productName: 'my-product',
-      // permissions: ['PORTAL_HEADER_GIVE_FEEDBACK#VIEW'],
-      permissions: ['PORTAL_HEADER_HELP#VIEW'],
-      // bffUrl: 'http://localhost:8080',
-      bffUrl: 'WILL_BE_REMOVED', // WILL BE REMOVED
-      // baseUrl: 'my-base-url'
-      baseUrl: ''
-      // my-base-url/bff/helps
-    })
+    // this.ocxInitRemoteComponent({
+    //   appId: 'my-appId',
+    //   productName: 'my-product',
+    //   // permissions: ['PORTAL_HEADER_GIVE_FEEDBACK#VIEW'],
+    //   permissions: ['PORTAL_HEADER_HELP#VIEW'],
+    //   // bffUrl: 'http://localhost:8080',
+    //   bffUrl: 'WILL_BE_REMOVED', // WILL BE REMOVED
+    //   // baseUrl: 'my-base-url'
+    //   baseUrl: ''
+    //   // my-base-url/bff/helps
+    // })
   }
 
   ocxInitRemoteComponent(config: RemoteComponentConfig): void {
+    console.log('OCX INIT HELP COMPONENT')
+    this.baseUrl.next(config.baseUrl)
+    this.appConfigService.init(config['baseUrl'])
     this.permissions = config.permissions
     this.helpDataService.configuration.basePath = Location.joinWithSlash(config.baseUrl, environment.apiPrefix)
   }
