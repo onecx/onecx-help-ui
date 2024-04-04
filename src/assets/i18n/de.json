@@ -131,5 +131,14 @@
       "MINIMUM_LENGTH": "Es sind mindestens {{chars}} Zeichen erforderlich.",
       "PATTERN_ERROR": "Ihre Eingabe entspricht nicht dem benötigten Format."
     }
+  },
+  "SHOW_HELP": {
+    "LABEL": "DE: Show Help for this article",
+    "HELP_PAGE_ERROR": "Hilfeartikel URL nicht gültig",
+    "NO_HELP_ITEM": {
+      "HEADER": "Kein Hilfeartikel ist für diese Seite definiert",
+      "CONTENT": "DE: No help items were found for this page. Please ask your system administrator to add it.",
+      "ITEM_HINT": "DE: The help Item ID for this page is:"
+    }
   }
 }

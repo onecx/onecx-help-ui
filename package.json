@@ -50,10 +50,14 @@
     "@ngx-translate/core": "^14.0.0",
     "@ngx-translate/http-loader": "^7.0.0",
     "@onecx/accelerator": "^4.1.2",
+    "@onecx/angular-accelerator": "^4.1.2",
+    "@onecx/angular-integration-interface": "^4.1.2",
     "@onecx/integration-interface": "^4.1.2",
     "@onecx/keycloak-auth": "^4.1.2",
     "@onecx/portal-integration-angular": "^4.1.2",
     "@onecx/portal-layout-styles": "^4.1.2",
+    "@onecx/angular-remote-components": "^4.1.2",
+    "@onecx/angular-testing": "^4.1.2",
     "file-saver": "^2.0.5",
     "i18n-iso-countries": "^7.6.0",
     "ngx-color": "^8.0.3",
@@ -63,7 +67,8 @@
     "rxjs": "7.8.1",
     "tslib": "^2.5.0",
     "zod": "^3.22.1",
-    "zone.js": "~0.12.0"
+    "zone.js": "~0.12.0",
+    "ngx-timeago": "^2.0.0"
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "15.2.6",
