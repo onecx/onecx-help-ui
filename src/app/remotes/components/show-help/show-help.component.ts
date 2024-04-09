@@ -1,4 +1,4 @@
-import { Component, Inject, OnInit } from '@angular/core'
+import { Component, Inject } from '@angular/core'
 import { HttpClient, HttpClientModule } from '@angular/common/http'
 import { CommonModule, Location } from '@angular/common'
 import { TranslateLoader, TranslateModule, TranslateService } from '@ngx-translate/core'
@@ -22,10 +22,12 @@ import { Configuration, Help } from 'src/app/shared/generated'
 import { HelpsRemoteAPIService } from '../../service/helpsRemote.service'
 import { environment } from 'src/environments/environment'
 import { SharedModule } from 'src/app/shared/shared.module'
+import { Router } from '@angular/router'
 
 @Component({
   selector: 'app-ocx-show-help',
   templateUrl: './show-help.component.html',
+  styleUrls: ['./show-help.component.scss'],
   standalone: true,
   imports: [
     CommonModule,
@@ -35,13 +37,11 @@ import { SharedModule } from 'src/app/shared/shared.module'
     DynamicDialogModule,
     NoHelpItemComponent,
     TranslateModule,
+    SharedModule,
     PortalCoreModule,
     AngularRemoteComponentsModule,
     SharedModule
   ],
-  // TODO: REMOVE
-  // configuration provider for testing purposes
-  // providers: [HelpsRemoteAPIService, DialogService, { provide: Configuration, useValue: new Configuration() }]
   providers: [
     HelpsRemoteAPIService,
     DialogService,
@@ -59,8 +59,7 @@ import { SharedModule } from 'src/app/shared/shared.module'
     })
   ]
 })
-export class OneCXShowHelpComponent implements OnInit, ocxRemoteComponent {
-  // TODO: Style component
+export class OneCXShowHelpComponent implements ocxRemoteComponent {
   LABEL_KEY: string = 'SHOW_HELP.LABEL'
   ICON: string = PrimeIcons.QUESTION_CIRCLE
 
@@ -74,39 +73,30 @@ export class OneCXShowHelpComponent implements OnInit, ocxRemoteComponent {
     @Inject(BASE_URL) private baseUrl: ReplaySubject<string>,
     private appStateService: AppStateService,
     private userService: UserService,
-    // private router: Router,
+    private router: Router,
     private helpDataService: HelpsRemoteAPIService,
     private dialogService: DialogService,
     private portalMessageService: PortalMessageService,
     private translateService: TranslateService
   ) {
     this.userService.lang$.subscribe((lang) => this.translateService.use(lang))
-    // TODO: Make router work
-    // this.helpArticleId$ = combineLatest([
-    //   this.appStateService.currentPage$.asObservable(),
-    //   this.router.events.pipe(filter((event) => event instanceof NavigationEnd))
-    // ]).pipe(
-    //   map(([page, routerEvent]) => {
-    //     console.warn('new helpArticleId')
-    //     console.warn(page, ' ', routerEvent)
-    //     return (
-    //       page?.helpArticleId ??
-    //       page?.pageName ??
-    //       (routerEvent instanceof NavigationEnd ? routerEvent.url.split('#')[0] : '')
-    //     )
-    //   })
-    // )
     this.helpArticleId$ = this.appStateService.currentPage$.asObservable().pipe(
       map((page) => {
-        return page?.helpArticleId ?? page?.pageName ?? ''
+        return page?.helpArticleId
+          ? page?.helpArticleId
+          : page?.pageName
+          ? page?.pageName
+          : router.routerState.snapshot.url.split('#')[0] ?? ''
       })
     )
     this.applicationId$ = combineLatest([
       this.appStateService.currentPage$.asObservable(),
       this.appStateService.currentMfe$.asObservable()
-    ]).pipe(map(([page, mfe]) => page?.applicationId ?? mfe.displayName ?? ''))
-    // TODO: REMOVE Testing purposes
-    // ]).pipe(map(([page, mfe]) => 'asd'))
+    ]).pipe(
+      map(([page, mfe]) => {
+        return page?.applicationId ? page.applicationId : mfe.appId ? mfe.appId : ''
+      })
+    )
 
     this.helpDataItem$ = combineLatest([this.applicationId$, this.helpArticleId$]).pipe(
       mergeMap(([applicationId, helpArticleId]) => {
@@ -118,23 +108,6 @@ export class OneCXShowHelpComponent implements OnInit, ocxRemoteComponent {
         return of({} as Help)
       })
     )
-  }
-
-  ngOnInit(): void {
-    console.log('HELP COMPONENT INIT')
-    // TODO: REMOVE (testing purposes)
-    // TODO: Write tests
-    // this.ocxInitRemoteComponent({
-    //   appId: 'my-appId',
-    //   productName: 'my-product',
-    //   // permissions: ['PORTAL_HEADER_GIVE_FEEDBACK#VIEW'],
-    //   permissions: ['PORTAL_HEADER_HELP#VIEW'],
-    //   // bffUrl: 'http://localhost:8080',
-    //   bffUrl: 'WILL_BE_REMOVED', // WILL BE REMOVED
-    //   // baseUrl: 'my-base-url'
-    //   baseUrl: ''
-    //   // my-base-url/bff/helps
-    // })
   }
 
   ocxInitRemoteComponent(config: RemoteComponentConfig): void {
@@ -158,7 +131,7 @@ export class OneCXShowHelpComponent implements OnInit, ocxRemoteComponent {
   }
 
   public openHelpPage(event: any) {
-    this.helpDataItem$?.pipe(withLatestFrom(this.helpArticleId$ ?? of()), first()).subscribe({
+    this.helpDataItem$?.pipe(withLatestFrom(this.helpArticleId$!), first()).subscribe({
       next: ([helpDataItem, helpArticleId]) => {
         if (helpDataItem && helpDataItem.id) {
           const url = helpDataItem.resourceUrl
