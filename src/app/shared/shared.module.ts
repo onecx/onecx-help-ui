@@ -1,4 +1,4 @@
-import { CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA, NgModule } from '@angular/core'
+import { NgModule } from '@angular/core'
 import { CommonModule } from '@angular/common'
 import { FormsModule, ReactiveFormsModule } from '@angular/forms'
 import { TranslateModule, TranslateService } from '@ngx-translate/core'
@@ -25,7 +25,8 @@ import {
   AppStateService,
   ConfigurationService,
   PortalDialogService,
-  PortalApiConfiguration
+  PortalApiConfiguration,
+  PortalCoreModule
 } from '@onecx/portal-integration-angular'
 
 import { Configuration } from 'src/app/shared/generated'
@@ -39,6 +40,7 @@ export function apiConfigProvider(configService: ConfigurationService, appStateS
 @NgModule({
   declarations: [],
   imports: [
+    PortalCoreModule.forMicroFrontend(),
     AutoCompleteModule,
     CommonModule,
     ConfirmDialogModule,
@@ -107,7 +109,6 @@ export function apiConfigProvider(configService: ConfigurationService, appStateS
     LabelResolver,
     { provide: DialogService, useClass: PortalDialogService },
     { provide: Configuration, useFactory: apiConfigProvider, deps: [ConfigurationService, AppStateService] }
-  ],
-  schemas: [NO_ERRORS_SCHEMA, CUSTOM_ELEMENTS_SCHEMA]
+  ]
 })
 export class SharedModule {}

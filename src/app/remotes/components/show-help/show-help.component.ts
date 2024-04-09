@@ -14,14 +14,9 @@ import {
   BASE_URL,
   provideTranslateServiceForRoot
 } from '@onecx/angular-remote-components'
-import {
-  PortalMessageService,
-  PortalCoreModule,
-  UserService,
-  AppStateService,
-  createRemoteComponentTranslateLoader,
-  AppConfigService
-} from '@onecx/portal-integration-angular'
+import { UserService, AppStateService } from '@onecx/angular-integration-interface'
+import { createRemoteComponentTranslateLoader } from '@onecx/angular-accelerator'
+import { PortalMessageService, PortalCoreModule } from '@onecx/portal-integration-angular'
 import { NoHelpItemComponent } from '../no-help-item/no-help-item.component'
 import { Configuration, Help } from 'src/app/shared/generated'
 import { HelpsRemoteAPIService } from '../../service/helpsRemote.service'
@@ -44,7 +39,8 @@ import { Router } from '@angular/router'
     TranslateModule,
     SharedModule,
     PortalCoreModule,
-    AngularRemoteComponentsModule
+    AngularRemoteComponentsModule,
+    SharedModule
   ],
   providers: [
     HelpsRemoteAPIService,
@@ -74,7 +70,6 @@ export class OneCXShowHelpComponent implements ocxRemoteComponent {
   permissions: string[] = []
 
   constructor(
-    private appConfigService: AppConfigService,
     @Inject(BASE_URL) private baseUrl: ReplaySubject<string>,
     private appStateService: AppStateService,
     private userService: UserService,
@@ -118,7 +113,6 @@ export class OneCXShowHelpComponent implements ocxRemoteComponent {
   ocxInitRemoteComponent(config: RemoteComponentConfig): void {
     console.log('OCX INIT HELP COMPONENT')
     this.baseUrl.next(config.baseUrl)
-    this.appConfigService.init(config['baseUrl'])
     this.permissions = config.permissions
     this.helpDataService.configuration = new Configuration({
       basePath: Location.joinWithSlash(config.baseUrl, environment.apiPrefix)
