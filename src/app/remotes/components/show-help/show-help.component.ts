@@ -15,12 +15,13 @@ import {
   provideTranslateServiceForRoot
 } from '@onecx/angular-remote-components'
 import { UserService, AppStateService } from '@onecx/angular-integration-interface'
-import { createRemoteComponentTranslateLoader, AppConfigService } from '@onecx/angular-accelerator'
+import { createRemoteComponentTranslateLoader } from '@onecx/angular-accelerator'
 import { PortalMessageService, PortalCoreModule } from '@onecx/portal-integration-angular'
 import { NoHelpItemComponent } from '../no-help-item/no-help-item.component'
-import { Help } from 'src/app/shared/generated'
+import { Configuration, Help } from 'src/app/shared/generated'
 import { HelpsRemoteAPIService } from '../../service/helpsRemote.service'
 import { environment } from 'src/environments/environment'
+import { SharedModule } from 'src/app/shared/shared.module'
 
 @Component({
   selector: 'app-ocx-show-help',
@@ -35,7 +36,8 @@ import { environment } from 'src/environments/environment'
     NoHelpItemComponent,
     TranslateModule,
     PortalCoreModule,
-    AngularRemoteComponentsModule
+    AngularRemoteComponentsModule,
+    SharedModule
   ],
   // TODO: REMOVE
   // configuration provider for testing purposes
@@ -57,7 +59,7 @@ import { environment } from 'src/environments/environment'
     })
   ]
 })
-export class ShowHelpRemoteComponent implements OnInit, ocxRemoteComponent {
+export class OneCXShowHelpComponent implements OnInit, ocxRemoteComponent {
   // TODO: Style component
   LABEL_KEY: string = 'SHOW_HELP.LABEL'
   ICON: string = PrimeIcons.QUESTION_CIRCLE
@@ -69,7 +71,6 @@ export class ShowHelpRemoteComponent implements OnInit, ocxRemoteComponent {
   permissions: string[] = []
 
   constructor(
-    private appConfigService: AppConfigService,
     @Inject(BASE_URL) private baseUrl: ReplaySubject<string>,
     private appStateService: AppStateService,
     private userService: UserService,
@@ -139,9 +140,10 @@ export class ShowHelpRemoteComponent implements OnInit, ocxRemoteComponent {
   ocxInitRemoteComponent(config: RemoteComponentConfig): void {
     console.log('OCX INIT HELP COMPONENT')
     this.baseUrl.next(config.baseUrl)
-    this.appConfigService.init(config['baseUrl'])
     this.permissions = config.permissions
-    this.helpDataService.configuration.basePath = Location.joinWithSlash(config.baseUrl, environment.apiPrefix)
+    this.helpDataService.configuration = new Configuration({
+      basePath: Location.joinWithSlash(config.baseUrl, environment.apiPrefix)
+    })
   }
 
   private loadHelpArticle(appId: string, helpItemId: string): Observable<Help> {
