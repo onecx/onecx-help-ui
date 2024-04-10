@@ -13,7 +13,7 @@ import { Help, HelpsInternalAPIService } from 'src/app/shared/generated'
 import { OneCXShowHelpComponent } from './show-help.component'
 import { OneCXShowHelpHarness } from './show-help.harness'
 
-fdescribe('OneCXShowHelpComponent', () => {
+describe('OneCXShowHelpComponent', () => {
   let component: OneCXShowHelpComponent
   let fixture: ComponentFixture<OneCXShowHelpComponent>
   let oneCXShowHelpHarness: OneCXShowHelpHarness
