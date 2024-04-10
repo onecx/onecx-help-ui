@@ -17,9 +17,8 @@ import {
 import { UserService, AppStateService } from '@onecx/angular-integration-interface'
 import { createRemoteComponentTranslateLoader } from '@onecx/angular-accelerator'
 import { PortalMessageService, PortalCoreModule } from '@onecx/portal-integration-angular'
-import { NoHelpItemComponent } from '../no-help-item/no-help-item.component'
-import { Configuration, Help } from 'src/app/shared/generated'
-import { HelpsRemoteAPIService } from '../../service/helpsRemote.service'
+import { NoHelpItemComponent } from './no-help-item/no-help-item.component'
+import { Configuration, Help, HelpsInternalAPIService } from 'src/app/shared/generated'
 import { environment } from 'src/environments/environment'
 import { SharedModule } from 'src/app/shared/shared.module'
 import { Router } from '@angular/router'
@@ -39,11 +38,9 @@ import { Router } from '@angular/router'
     TranslateModule,
     SharedModule,
     PortalCoreModule,
-    AngularRemoteComponentsModule,
-    SharedModule
+    AngularRemoteComponentsModule
   ],
   providers: [
-    HelpsRemoteAPIService,
     DialogService,
     {
       provide: BASE_URL,
@@ -67,14 +64,14 @@ export class OneCXShowHelpComponent implements ocxRemoteComponent {
   applicationId$: Observable<string> | undefined
   helpDataItem$: Observable<Help> | undefined
 
-  permissions: string[] = []
+  permissions: string[] | undefined
 
   constructor(
     @Inject(BASE_URL) private baseUrl: ReplaySubject<string>,
     private appStateService: AppStateService,
     private userService: UserService,
     private router: Router,
-    private helpDataService: HelpsRemoteAPIService,
+    private helpDataService: HelpsInternalAPIService,
     private dialogService: DialogService,
     private portalMessageService: PortalMessageService,
     private translateService: TranslateService
@@ -103,7 +100,8 @@ export class OneCXShowHelpComponent implements ocxRemoteComponent {
         if (applicationId && helpArticleId) return this.loadHelpArticle(applicationId, helpArticleId)
         return of({} as Help)
       }),
-      catchError(() => {
+      catchError((err) => {
+        console.log(err)
         console.log(`Failed to load help article`)
         return of({} as Help)
       })
@@ -120,8 +118,13 @@ export class OneCXShowHelpComponent implements ocxRemoteComponent {
   }
 
   private loadHelpArticle(appId: string, helpItemId: string): Observable<Help> {
+    console.log('heherererer')
+    console.log(appId)
+    console.log(helpItemId)
     return this.helpDataService.searchHelps({ helpSearchCriteria: { itemId: helpItemId, appId: appId } }).pipe(
       map((helpPageResult) => {
+        console.log('awwwwww')
+        console.log(helpPageResult)
         if (helpPageResult.totalElements !== 1) {
           return {} as Help
         }
