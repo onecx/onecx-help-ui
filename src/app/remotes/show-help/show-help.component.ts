@@ -41,6 +41,7 @@ import { Router } from '@angular/router'
     AngularRemoteComponentsModule
   ],
   providers: [
+    HelpsInternalAPIService,
     DialogService,
     {
       provide: BASE_URL,
@@ -64,7 +65,7 @@ export class OneCXShowHelpComponent implements ocxRemoteComponent {
   applicationId$: Observable<string> | undefined
   helpDataItem$: Observable<Help> | undefined
 
-  permissions: string[] | undefined
+  permissions: string[] = []
 
   constructor(
     @Inject(BASE_URL) private baseUrl: ReplaySubject<string>,
@@ -100,8 +101,7 @@ export class OneCXShowHelpComponent implements ocxRemoteComponent {
         if (applicationId && helpArticleId) return this.loadHelpArticle(applicationId, helpArticleId)
         return of({} as Help)
       }),
-      catchError((err) => {
-        console.log(err)
+      catchError(() => {
         console.log(`Failed to load help article`)
         return of({} as Help)
       })
@@ -118,13 +118,8 @@ export class OneCXShowHelpComponent implements ocxRemoteComponent {
   }
 
   private loadHelpArticle(appId: string, helpItemId: string): Observable<Help> {
-    console.log('heherererer')
-    console.log(appId)
-    console.log(helpItemId)
     return this.helpDataService.searchHelps({ helpSearchCriteria: { itemId: helpItemId, appId: appId } }).pipe(
       map((helpPageResult) => {
-        console.log('awwwwww')
-        console.log(helpPageResult)
         if (helpPageResult.totalElements !== 1) {
           return {} as Help
         }
