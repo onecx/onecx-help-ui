@@ -5,7 +5,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing'
 import { Router } from '@angular/router'
 import { ReplaySubject, of, throwError } from 'rxjs'
 import { DialogService } from 'primeng/dynamicdialog'
-import { AppStateService, PortalMessageService, UserService } from '@onecx/angular-integration-interface'
+import { AppStateService, PortalMessageService } from '@onecx/angular-integration-interface'
 import { PortalCoreModule } from '@onecx/portal-integration-angular'
 import { BASE_URL, RemoteComponentConfig } from '@onecx/angular-remote-components'
 import { Help, HelpsInternalAPIService } from 'src/app/shared/generated'
@@ -42,7 +42,11 @@ describe('OneCXShowHelpComponent', () => {
       providers: [
         // { provide: UserService, useClass: MockUserService },
         provideHttpClient(),
-        provideHttpClientTesting()
+        provideHttpClientTesting(),
+        {
+          provide: BASE_URL,
+          useValue: new ReplaySubject<string>(1)
+        }
       ]
     })
       .overrideComponent(OneCXShowHelpComponent, {
@@ -50,10 +54,6 @@ describe('OneCXShowHelpComponent', () => {
           imports: [PortalCoreModule],
           providers: [
             { provide: HelpsInternalAPIService, useValue: helpApiServiceSpy },
-            {
-              provide: BASE_URL,
-              useValue: new ReplaySubject<string>(1)
-            },
             { provide: DialogService, useValue: dialogServiceSpy },
             { provide: PortalMessageService, useValue: messageServiceSpy }
           ]
@@ -74,7 +74,7 @@ describe('OneCXShowHelpComponent', () => {
     expect(component).toBeTruthy()
   })
 
-  it('should init remote component', () => {
+  it('should init remote component', (done: DoneFn) => {
     fixture = TestBed.createComponent(OneCXShowHelpComponent)
     component = fixture.componentInstance
     fixture.detectChanges()
@@ -86,17 +86,17 @@ describe('OneCXShowHelpComponent', () => {
 
     expect(component.permissions).toEqual(['HELP#VIEW'])
     expect(helpApiServiceSpy.configuration.basePath).toEqual('base_url/bff')
-    // const baseUrl = TestBed.inject<ReplaySubject<string>>(BASE_URL)
-    // baseUrl.subscribe((item) => {
-    //   expect(item).toEqual('base_url')
-    //   done()
-    // })
+    const baseUrl = TestBed.inject<ReplaySubject<string>>(BASE_URL)
+    baseUrl.subscribe((item) => {
+      expect(item).toEqual('base_url')
+      done()
+    })
   })
 
   it('should not show button if permissions are not met', async () => {
-    // Temporary solution until correct module import is implemented
-    const userSerivce = TestBed.inject(UserService)
-    spyOn(userSerivce, 'hasPermission').and.returnValue(false)
+    // // Temporary solution until correct module import is implemented
+    // const userSerivce = TestBed.inject(UserService)
+    // spyOn(userSerivce, 'hasPermission').and.returnValue(false)
 
     fixture = TestBed.createComponent(OneCXShowHelpComponent)
     component = fixture.componentInstance
