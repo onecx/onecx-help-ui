@@ -41,6 +41,7 @@ import { Router } from '@angular/router'
     AngularRemoteComponentsModule
   ],
   providers: [
+    HelpsInternalAPIService,
     DialogService,
     {
       provide: BASE_URL,
@@ -64,7 +65,7 @@ export class OneCXShowHelpComponent implements ocxRemoteComponent {
   applicationId$: Observable<string> | undefined
   helpDataItem$: Observable<Help> | undefined
 
-  permissions: string[] | undefined
+  permissions: string[] = []
 
   constructor(
     @Inject(BASE_URL) private baseUrl: ReplaySubject<string>,
