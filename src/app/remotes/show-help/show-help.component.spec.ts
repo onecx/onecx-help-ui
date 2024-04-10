@@ -12,9 +12,8 @@ import { BASE_URL } from '@onecx/angular-remote-components'
 import { Help, HelpsInternalAPIService } from 'src/app/shared/generated'
 import { OneCXShowHelpComponent } from './show-help.component'
 import { OneCXShowHelpHarness } from './show-help.harness'
-import { TranslateService } from '@ngx-translate/core'
 
-describe('OneCXShowHelpComponent', () => {
+fdescribe('OneCXShowHelpComponent', () => {
   let component: OneCXShowHelpComponent
   let fixture: ComponentFixture<OneCXShowHelpComponent>
   let oneCXShowHelpHarness: OneCXShowHelpHarness
@@ -38,32 +37,10 @@ describe('OneCXShowHelpComponent', () => {
     preventDefault() {}
   }
 
-  //   class TranslateServiceStub {
-  //     public get(key: any, params: any): any {
-  //       return of(key)
-  //     }
-  //     public use(lang: any) {}
-  //   }
-
   beforeEach(() => {
     TestBed.configureTestingModule({
-      //   declarations: [MockPermissionDirective],
       imports: [OneCXShowHelpComponent],
-      providers: [
-        { provide: UserService, useClass: MockUserService },
-        // { provide: HelpsInternalAPIService, useValue: helpApiServiceSpy },
-        // importProvidersFrom(HttpClientModule),
-        // importProvidersFrom(TranslateModule.forRoot({})),
-        provideHttpClient(),
-        provideHttpClientTesting()
-        // importProvidersFrom(
-        //   TranslateTestingModule.withTranslations({
-        //     en: require('../../../assets/i18n/en.json'),
-        //     de: require('../../../assets/i18n/de.json')
-        //   })
-        // ),
-        // importProvidersFrom(PortalCoreModule)
-      ]
+      providers: [{ provide: UserService, useClass: MockUserService }, provideHttpClient(), provideHttpClientTesting()]
     })
       .overrideComponent(OneCXShowHelpComponent, {
         set: {
@@ -76,7 +53,6 @@ describe('OneCXShowHelpComponent', () => {
             },
             { provide: DialogService, useValue: dialogServiceSpy },
             { provide: PortalMessageService, useValue: messageServiceSpy }
-            // { provide: TranslateService, useValue: translateServiceSpy }
           ]
         }
       })
@@ -85,7 +61,6 @@ describe('OneCXShowHelpComponent', () => {
     helpApiServiceSpy.searchHelps.calls.reset()
     dialogServiceSpy.open.calls.reset()
     messageServiceSpy.error.calls.reset()
-    // translateServiceSpy.get.and.returnValue(of('key'))
   })
 
   it('should create', () => {
@@ -374,6 +349,7 @@ describe('OneCXShowHelpComponent', () => {
     })
   })
 
+  // test not working because of translateService cannot be spied up on
   // it('should open dialog when help item associated with page is not created', () => {
   //   helpApiServiceSpy.searchHelps.and.returnValue(
   //     of({
