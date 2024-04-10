@@ -17,9 +17,8 @@ import {
 import { UserService, AppStateService } from '@onecx/angular-integration-interface'
 import { createRemoteComponentTranslateLoader } from '@onecx/angular-accelerator'
 import { PortalMessageService, PortalCoreModule } from '@onecx/portal-integration-angular'
-import { NoHelpItemComponent } from '../no-help-item/no-help-item.component'
-import { Configuration, Help } from 'src/app/shared/generated'
-import { HelpsRemoteAPIService } from '../../service/helpsRemote.service'
+import { NoHelpItemComponent } from './no-help-item/no-help-item.component'
+import { Configuration, Help, HelpsInternalAPIService } from 'src/app/shared/generated'
 import { environment } from 'src/environments/environment'
 import { SharedModule } from 'src/app/shared/shared.module'
 import { Router } from '@angular/router'
@@ -39,11 +38,10 @@ import { Router } from '@angular/router'
     TranslateModule,
     SharedModule,
     PortalCoreModule,
-    AngularRemoteComponentsModule,
-    SharedModule
+    AngularRemoteComponentsModule
   ],
   providers: [
-    HelpsRemoteAPIService,
+    HelpsInternalAPIService,
     DialogService,
     {
       provide: BASE_URL,
@@ -74,7 +72,7 @@ export class OneCXShowHelpComponent implements ocxRemoteComponent {
     private appStateService: AppStateService,
     private userService: UserService,
     private router: Router,
-    private helpDataService: HelpsRemoteAPIService,
+    private helpDataService: HelpsInternalAPIService,
     private dialogService: DialogService,
     private portalMessageService: PortalMessageService,
     private translateService: TranslateService
