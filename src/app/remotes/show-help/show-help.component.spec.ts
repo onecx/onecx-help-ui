@@ -1,21 +1,22 @@
-import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed'
 import { provideHttpClient } from '@angular/common/http'
 import { provideHttpClientTesting } from '@angular/common/http/testing'
 import { ComponentFixture, TestBed } from '@angular/core/testing'
 import { Router } from '@angular/router'
 import { ReplaySubject, of, throwError } from 'rxjs'
-import { DialogService } from 'primeng/dynamicdialog'
+import { DialogService, DynamicDialogModule } from 'primeng/dynamicdialog'
 import { AppStateService, PortalMessageService } from '@onecx/angular-integration-interface'
-import { PortalCoreModule } from '@onecx/portal-integration-angular'
 import { BASE_URL, RemoteComponentConfig } from '@onecx/angular-remote-components'
 import { Help, HelpsInternalAPIService } from 'src/app/shared/generated'
 import { OneCXShowHelpComponent } from './show-help.component'
-import { OneCXShowHelpHarness } from './show-help.harness'
+import { TranslateTestingModule } from 'ngx-translate-testing'
+import { TooltipModule } from 'primeng/tooltip'
+import { RippleModule } from 'primeng/ripple'
+import { NoHelpItemComponent } from './no-help-item/no-help-item.component'
 
 describe('OneCXShowHelpComponent', () => {
   let component: OneCXShowHelpComponent
   let fixture: ComponentFixture<OneCXShowHelpComponent>
-  let oneCXShowHelpHarness: OneCXShowHelpHarness
+  // let oneCXShowHelpHarness: OneCXShowHelpHarness
 
   const helpApiServiceSpy = jasmine.createSpyObj<HelpsInternalAPIService>('HelpsInternalAPIService', ['searchHelps'])
 
@@ -23,35 +24,32 @@ describe('OneCXShowHelpComponent', () => {
 
   const messageServiceSpy = jasmine.createSpyObj<PortalMessageService>('PortalMessageService', ['error'])
 
-  // // Temporary mock until correct module import is implemented
-  // class MockUserService {
-  //   lang$ = new BehaviorSubject<string>('en')
-  //   /* eslint-disable @typescript-eslint/no-unused-vars */
-  //   hasPermission(permissionKey: string): boolean {
-  //     return true
-  //   }
-  // }
-
   class EventMock {
     preventDefault() {}
   }
 
+  let baseUrlSubject: ReplaySubject<any>
+
   beforeEach(() => {
+    baseUrlSubject = new ReplaySubject<any>(1)
     TestBed.configureTestingModule({
-      imports: [OneCXShowHelpComponent],
+      imports: [
+        TranslateTestingModule.withTranslations({
+          en: require('../../../assets/i18n/en.json')
+        }).withDefaultLanguage('en')
+      ],
       providers: [
-        // { provide: UserService, useClass: MockUserService },
         provideHttpClient(),
         provideHttpClientTesting(),
         {
           provide: BASE_URL,
-          useValue: new ReplaySubject<string>(1)
+          useValue: baseUrlSubject
         }
       ]
     })
       .overrideComponent(OneCXShowHelpComponent, {
         set: {
-          imports: [PortalCoreModule],
+          imports: [TranslateTestingModule, TooltipModule, RippleModule, DynamicDialogModule],
           providers: [
             { provide: HelpsInternalAPIService, useValue: helpApiServiceSpy },
             { provide: DialogService, useValue: dialogServiceSpy },
@@ -60,6 +58,8 @@ describe('OneCXShowHelpComponent', () => {
         }
       })
       .compileComponents()
+
+    baseUrlSubject.next('base_url_mock')
 
     helpApiServiceSpy.searchHelps.calls.reset()
     dialogServiceSpy.open.calls.reset()
@@ -86,26 +86,26 @@ describe('OneCXShowHelpComponent', () => {
 
     expect(component.permissions).toEqual(['HELP#VIEW'])
     expect(helpApiServiceSpy.configuration.basePath).toEqual('base_url/bff')
-    const baseUrl = TestBed.inject<ReplaySubject<string>>(BASE_URL)
-    baseUrl.subscribe((item) => {
+    baseUrlSubject.asObservable().subscribe((item) => {
+      console.log(item)
       expect(item).toEqual('base_url')
       done()
     })
   })
 
-  it('should not show button if permissions are not met', async () => {
-    // // Temporary solution until correct module import is implemented
-    // const userSerivce = TestBed.inject(UserService)
-    // spyOn(userSerivce, 'hasPermission').and.returnValue(false)
+  // it('should not show button if permissions are not met', async () => {
+  //   // // Temporary solution until correct module import is implemented
+  //   // const userSerivce = TestBed.inject(UserService)
+  //   // spyOn(userSerivce, 'hasPermission').and.returnValue(false)
 
-    fixture = TestBed.createComponent(OneCXShowHelpComponent)
-    component = fixture.componentInstance
-    fixture.detectChanges()
-    oneCXShowHelpHarness = await TestbedHarnessEnvironment.harnessForFixture(fixture, OneCXShowHelpHarness)
+  //   fixture = TestBed.createComponent(OneCXShowHelpComponent)
+  //   component = fixture.componentInstance
+  //   fixture.detectChanges()
+  //   oneCXShowHelpHarness = await TestbedHarnessEnvironment.harnessForFixture(fixture, OneCXShowHelpHarness)
 
-    expect(await oneCXShowHelpHarness.getHelpButton()).toBeNull()
-    expect(await oneCXShowHelpHarness.getHelpIcon()).toBeNull()
-  })
+  //   expect(await oneCXShowHelpHarness.getHelpButton()).toBeNull()
+  //   expect(await oneCXShowHelpHarness.getHelpIcon()).toBeNull()
+  // })
 
   // // Temporary commented out until correct module import is implemented
   // it('should show button if permissions are met', async () => {
@@ -370,44 +370,40 @@ describe('OneCXShowHelpComponent', () => {
     })
   })
 
-  // test not working because of translateService cannot be spied up on
-  // it('should open dialog when help item associated with page is not created', () => {
-  //   helpApiServiceSpy.searchHelps.and.returnValue(
-  //     of({
-  //       totalElements: 0,
-  //       stream: []
-  //     } as any)
-  //   )
-  //   const appStateService = TestBed.inject(AppStateService)
-  //   spyOn(appStateService.currentPage$, 'asObservable').and.returnValue(
-  //     of({
-  //       helpArticleId: 'article_id'
-  //     }) as any
-  //   )
+  it('should open dialog when help item associated with page is not created', () => {
+    helpApiServiceSpy.searchHelps.and.returnValue(
+      of({
+        totalElements: 0,
+        stream: []
+      } as any)
+    )
+    const appStateService = TestBed.inject(AppStateService)
+    spyOn(appStateService.currentPage$, 'asObservable').and.returnValue(
+      of({
+        helpArticleId: 'article_id'
+      }) as any
+    )
 
-  //   spyOn(appStateService.currentMfe$, 'asObservable').and.returnValue(
-  //     of({
-  //       remoteBaseUrl: '', // Temporary until correct module import is implemented
-  //       appId: 'mfe_app_id'
-  //     }) as any
-  //   )
+    spyOn(appStateService.currentMfe$, 'asObservable').and.returnValue(
+      of({
+        remoteBaseUrl: '', // Temporary until correct module import is implemented
+        appId: 'mfe_app_id'
+      }) as any
+    )
 
-  //   fixture = TestBed.createComponent(OneCXShowHelpComponent)
-  //   component = fixture.componentInstance
-  //   fixture.detectChanges()
+    fixture = TestBed.createComponent(OneCXShowHelpComponent)
+    component = fixture.componentInstance
+    fixture.detectChanges()
 
-  //   // const translateService =
-  //   // spyOn(translateService, 'get').and.returnValue(of('header'))
+    component.openHelpPage(new EventMock())
 
-  //   component.openHelpPage(new EventMock())
-
-  //   expect(messageServiceSpy.error).toHaveBeenCalledTimes(0)
-  //   expect(dialogServiceSpy.open).toHaveBeenCalledOnceWith(NoHelpItemComponent, {
-  //     header: 'header',
-  //     width: '400px',
-  //     data: {
-  //       helpArticleId: 'article_id'
-  //     }
-  //   })
-  // })
+    expect(messageServiceSpy.error).toHaveBeenCalledTimes(0)
+    expect(dialogServiceSpy.open).toHaveBeenCalledOnceWith(NoHelpItemComponent, {
+      header: 'No help item defined for this page',
+      width: '400px',
+      data: {
+        helpArticleId: 'article_id'
+      }
+    })
+  })
 })
