@@ -12,12 +12,6 @@
 
 
 export interface CreateHelp { 
-    version?: number;
-    creationDate?: string;
-    creationUser?: string;
-    modificationDate?: string;
-    modificationUser?: string;
-    id?: string;
     itemId: string;
     context?: string;
     baseUrl?: string;

@@ -12,13 +12,9 @@
 
 
 export interface UpdateHelp { 
-    version?: number;
-    creationDate?: string;
-    creationUser?: string;
-    modificationDate?: string;
-    modificationUser?: string;
+    modificationCount: number;
     id?: string;
-    itemId?: string;
+    itemId: string;
     context?: string;
     baseUrl?: string;
     resourceUrl?: string;
