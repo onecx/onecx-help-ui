@@ -84,7 +84,7 @@ export class OneCXShowHelpComponent implements ocxRemoteComponent {
           ? page?.helpArticleId
           : page?.pageName
           ? page?.pageName
-          : router.routerState.snapshot.url.split('#')[0] ?? ''
+          : router.routerState.snapshot.url.split('#')[0]
       })
     )
     this.applicationId$ = combineLatest([

@@ -14,10 +14,6 @@ export class OneCXShowHelpHarness extends ComponentHarness {
     await (await this.getHelpButton())?.click()
   }
 
-  async hasHelpButtonClass(c: string): Promise<boolean | undefined> {
-    return (await (await this.getHelpButton())?.getAttribute('class'))?.includes(c)
-  }
-
   async hasHelpIconClass(c: string): Promise<boolean | undefined> {
     return (await (await this.getHelpIcon())?.getAttribute('class'))?.includes(c)
   }

@@ -56,10 +56,6 @@ describe('OneCXShowHelpComponent', () => {
 
   const messageServiceSpy = jasmine.createSpyObj<PortalMessageService>('PortalMessageService', ['error'])
 
-  class EventMock {
-    preventDefault() {}
-  }
-
   let baseUrlSubject: ReplaySubject<any>
 
   beforeEach(() => {
@@ -340,7 +336,7 @@ describe('OneCXShowHelpComponent', () => {
     })
   })
 
-  it('should open new window with help article', () => {
+  it('should open new window with help article', async () => {
     spyOn(window, 'open')
     helpApiServiceSpy.searchHelps.and.returnValue(
       of({
@@ -364,13 +360,18 @@ describe('OneCXShowHelpComponent', () => {
 
     fixture = TestBed.createComponent(OneCXShowHelpComponent)
     component = fixture.componentInstance
+    component.ocxInitRemoteComponent({
+      permissions: ['HELP#VIEW'],
+      baseUrl: 'base_url'
+    } as RemoteComponentConfig)
     fixture.detectChanges()
 
-    component.openHelpPage(new EventMock())
+    oneCXShowHelpHarness = await TestbedHarnessEnvironment.harnessForFixture(fixture, OneCXShowHelpHarness)
+    await oneCXShowHelpHarness.clickHelpButton()
     expect(window.open).toHaveBeenCalledOnceWith(new URL('http://resource_url'), '_blank')
   })
 
-  it('should display error message on failed window opening', () => {
+  it('should display error message on failed window opening', async () => {
     spyOn(window, 'open').and.throwError('')
     helpApiServiceSpy.searchHelps.and.returnValue(
       of({
@@ -394,16 +395,21 @@ describe('OneCXShowHelpComponent', () => {
 
     fixture = TestBed.createComponent(OneCXShowHelpComponent)
     component = fixture.componentInstance
+    component.ocxInitRemoteComponent({
+      permissions: ['HELP#VIEW'],
+      baseUrl: 'base_url'
+    } as RemoteComponentConfig)
     fixture.detectChanges()
 
-    component.openHelpPage(new EventMock())
+    oneCXShowHelpHarness = await TestbedHarnessEnvironment.harnessForFixture(fixture, OneCXShowHelpHarness)
+    await oneCXShowHelpHarness.clickHelpButton()
     expect(window.open).toHaveBeenCalledOnceWith(new URL('http://resource_url'), '_blank')
     expect(messageServiceSpy.error).toHaveBeenCalledOnceWith({
       summaryKey: 'SHOW_HELP.HELP_PAGE_ERROR'
     })
   })
 
-  it('should open dialog when help item associated with page is not created', () => {
+  it('should open dialog when help item associated with page is not created', async () => {
     helpApiServiceSpy.searchHelps.and.returnValue(
       of({
         totalElements: 0,
@@ -426,9 +432,14 @@ describe('OneCXShowHelpComponent', () => {
 
     fixture = TestBed.createComponent(OneCXShowHelpComponent)
     component = fixture.componentInstance
+    component.ocxInitRemoteComponent({
+      permissions: ['HELP#VIEW'],
+      baseUrl: 'base_url'
+    } as RemoteComponentConfig)
     fixture.detectChanges()
 
-    component.openHelpPage(new EventMock())
+    oneCXShowHelpHarness = await TestbedHarnessEnvironment.harnessForFixture(fixture, OneCXShowHelpHarness)
+    await oneCXShowHelpHarness.clickHelpButton()
 
     expect(messageServiceSpy.error).toHaveBeenCalledTimes(0)
     expect(dialogServiceSpy.open).toHaveBeenCalledOnceWith(NoHelpItemComponent, {
