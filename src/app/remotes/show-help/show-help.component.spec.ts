@@ -1,22 +1,54 @@
+import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed'
 import { provideHttpClient } from '@angular/common/http'
 import { provideHttpClientTesting } from '@angular/common/http/testing'
 import { ComponentFixture, TestBed } from '@angular/core/testing'
+import { Directive, Input, OnInit, Optional, TemplateRef, ViewContainerRef } from '@angular/core'
 import { Router } from '@angular/router'
-import { ReplaySubject, of, throwError } from 'rxjs'
-import { DialogService, DynamicDialogModule } from 'primeng/dynamicdialog'
 import { AppStateService, PortalMessageService } from '@onecx/angular-integration-interface'
 import { BASE_URL, RemoteComponentConfig } from '@onecx/angular-remote-components'
-import { Help, HelpsInternalAPIService } from 'src/app/shared/generated'
-import { OneCXShowHelpComponent } from './show-help.component'
 import { TranslateTestingModule } from 'ngx-translate-testing'
+import { ReplaySubject, of, throwError } from 'rxjs'
+import { DialogService, DynamicDialogModule } from 'primeng/dynamicdialog'
+import { PrimeIcons } from 'primeng/api'
 import { TooltipModule } from 'primeng/tooltip'
 import { RippleModule } from 'primeng/ripple'
+import { Help, HelpsInternalAPIService } from 'src/app/shared/generated'
+import { OneCXShowHelpComponent } from './show-help.component'
+import { OneCXShowHelpHarness } from './show-help.harness'
 import { NoHelpItemComponent } from './no-help-item/no-help-item.component'
+
+@Directive({
+  // eslint-disable-next-line @angular-eslint/directive-selector
+  selector: '[ocxIfPermission]',
+  standalone: true
+})
+class IfPermissionDirective implements OnInit {
+  @Input('ocxIfPermission') permission: string | undefined
+  @Input() ocxIfPermissionPermissions: string[] = []
+  negate = false
+  constructor(private viewContainer: ViewContainerRef, @Optional() private templateRef?: TemplateRef<any>) {}
+
+  ngOnInit() {
+    if (this.permission) {
+      if (!this.hasPermission(this.permission)) {
+        this.viewContainer.clear()
+      } else {
+        if (this.templateRef) {
+          this.viewContainer.createEmbeddedView(this.templateRef)
+        }
+      }
+    }
+  }
+
+  hasPermission(permission: string) {
+    return this.ocxIfPermissionPermissions?.includes(permission)
+  }
+}
 
 describe('OneCXShowHelpComponent', () => {
   let component: OneCXShowHelpComponent
   let fixture: ComponentFixture<OneCXShowHelpComponent>
-  // let oneCXShowHelpHarness: OneCXShowHelpHarness
+  let oneCXShowHelpHarness: OneCXShowHelpHarness
 
   const helpApiServiceSpy = jasmine.createSpyObj<HelpsInternalAPIService>('HelpsInternalAPIService', ['searchHelps'])
 
@@ -49,7 +81,7 @@ describe('OneCXShowHelpComponent', () => {
     })
       .overrideComponent(OneCXShowHelpComponent, {
         set: {
-          imports: [TranslateTestingModule, TooltipModule, RippleModule, DynamicDialogModule],
+          imports: [IfPermissionDirective, TranslateTestingModule, TooltipModule, RippleModule, DynamicDialogModule],
           providers: [
             { provide: HelpsInternalAPIService, useValue: helpApiServiceSpy },
             { provide: DialogService, useValue: dialogServiceSpy },
@@ -93,30 +125,31 @@ describe('OneCXShowHelpComponent', () => {
     })
   })
 
-  // it('should not show button if permissions are not met', async () => {
-  //   // // Temporary solution until correct module import is implemented
-  //   // const userSerivce = TestBed.inject(UserService)
-  //   // spyOn(userSerivce, 'hasPermission').and.returnValue(false)
+  it('should not show button if permissions are not met', async () => {
+    fixture = TestBed.createComponent(OneCXShowHelpComponent)
+    component = fixture.componentInstance
+    fixture.detectChanges()
+    oneCXShowHelpHarness = await TestbedHarnessEnvironment.harnessForFixture(fixture, OneCXShowHelpHarness)
 
-  //   fixture = TestBed.createComponent(OneCXShowHelpComponent)
-  //   component = fixture.componentInstance
-  //   fixture.detectChanges()
-  //   oneCXShowHelpHarness = await TestbedHarnessEnvironment.harnessForFixture(fixture, OneCXShowHelpHarness)
+    expect(await oneCXShowHelpHarness.getHelpButton()).toBeNull()
+    expect(await oneCXShowHelpHarness.getHelpIcon()).toBeNull()
+  })
 
-  //   expect(await oneCXShowHelpHarness.getHelpButton()).toBeNull()
-  //   expect(await oneCXShowHelpHarness.getHelpIcon()).toBeNull()
-  // })
+  it('should show button if permissions are met', async () => {
+    fixture = TestBed.createComponent(OneCXShowHelpComponent)
+    component = fixture.componentInstance
+    component.ocxInitRemoteComponent({
+      permissions: ['HELP#VIEW'],
+      baseUrl: 'base_url'
+    } as RemoteComponentConfig)
 
-  // // Temporary commented out until correct module import is implemented
-  // it('should show button if permissions are met', async () => {
-  //   fixture = TestBed.createComponent(OneCXShowHelpComponent)
-  //   component = fixture.componentInstance
-  //   fixture.detectChanges()
-  //   oneCXShowHelpHarness = await TestbedHarnessEnvironment.harnessForFixture(fixture, OneCXShowHelpHarness)
-  //   expect(await oneCXShowHelpHarness.getHelpButtonTitle()).toBe('Show Help for this article')
+    fixture.detectChanges()
+    oneCXShowHelpHarness = await TestbedHarnessEnvironment.harnessForFixture(fixture, OneCXShowHelpHarness)
 
-  //   expect(await oneCXShowHelpHarness.hasHelpIconClass(PrimeIcons.QUESTION_CIRCLE)).toBe(true)
-  // })
+    expect(await oneCXShowHelpHarness.getHelpButtonTitle()).toBe('Show Help for this article')
+
+    expect(await oneCXShowHelpHarness.hasHelpIconClass(PrimeIcons.QUESTION_CIRCLE)).toBe(true)
+  })
 
   it('should contain helpArticleId from current page help id', (done: DoneFn) => {
     const appStateService = TestBed.inject(AppStateService)

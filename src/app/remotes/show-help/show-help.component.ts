@@ -109,7 +109,6 @@ export class OneCXShowHelpComponent implements ocxRemoteComponent {
   }
 
   ocxInitRemoteComponent(config: RemoteComponentConfig): void {
-    console.log('OCX INIT HELP COMPONENT')
     this.baseUrl.next(config.baseUrl)
     this.permissions = config.permissions
     this.helpDataService.configuration = new Configuration({
