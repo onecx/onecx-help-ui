@@ -2,7 +2,7 @@ import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed'
 import { provideHttpClient } from '@angular/common/http'
 import { provideHttpClientTesting } from '@angular/common/http/testing'
 import { ComponentFixture, TestBed } from '@angular/core/testing'
-import { Directive, Input, OnInit, Optional, TemplateRef, ViewContainerRef } from '@angular/core'
+import { NgModule } from '@angular/core'
 import { Router } from '@angular/router'
 import { AppStateService, PortalMessageService } from '@onecx/angular-integration-interface'
 import { BASE_URL, RemoteComponentConfig } from '@onecx/angular-remote-components'
@@ -16,34 +16,14 @@ import { Help, HelpsInternalAPIService } from 'src/app/shared/generated'
 import { OneCXShowHelpComponent } from './show-help.component'
 import { OneCXShowHelpHarness } from './show-help.harness'
 import { NoHelpItemComponent } from './no-help-item/no-help-item.component'
+import { IfPermissionDirective } from '@onecx/angular-accelerator'
 
-@Directive({
-  // eslint-disable-next-line @angular-eslint/directive-selector
-  selector: '[ocxIfPermission]',
-  standalone: true
+@NgModule({
+  imports: [],
+  declarations: [IfPermissionDirective],
+  exports: [IfPermissionDirective]
 })
-class IfPermissionDirective implements OnInit {
-  @Input('ocxIfPermission') permission: string | undefined
-  @Input() ocxIfPermissionPermissions: string[] = []
-  negate = false
-  constructor(private viewContainer: ViewContainerRef, @Optional() private templateRef?: TemplateRef<any>) {}
-
-  ngOnInit() {
-    if (this.permission) {
-      if (!this.hasPermission(this.permission)) {
-        this.viewContainer.clear()
-      } else {
-        if (this.templateRef) {
-          this.viewContainer.createEmbeddedView(this.templateRef)
-        }
-      }
-    }
-  }
-
-  hasPermission(permission: string) {
-    return this.ocxIfPermissionPermissions?.includes(permission)
-  }
-}
+class PortalDependencyModule {}
 
 describe('OneCXShowHelpComponent', () => {
   let component: OneCXShowHelpComponent
@@ -61,6 +41,7 @@ describe('OneCXShowHelpComponent', () => {
   beforeEach(() => {
     baseUrlSubject = new ReplaySubject<any>(1)
     TestBed.configureTestingModule({
+      declarations: [],
       imports: [
         TranslateTestingModule.withTranslations({
           en: require('../../../assets/i18n/en.json')
@@ -77,7 +58,7 @@ describe('OneCXShowHelpComponent', () => {
     })
       .overrideComponent(OneCXShowHelpComponent, {
         set: {
-          imports: [IfPermissionDirective, TranslateTestingModule, TooltipModule, RippleModule, DynamicDialogModule],
+          imports: [PortalDependencyModule, TranslateTestingModule, TooltipModule, RippleModule, DynamicDialogModule],
           providers: [
             { provide: HelpsInternalAPIService, useValue: helpApiServiceSpy },
             { provide: DialogService, useValue: dialogServiceSpy },
