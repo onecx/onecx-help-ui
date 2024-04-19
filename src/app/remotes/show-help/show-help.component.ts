@@ -84,7 +84,7 @@ export class OneCXShowHelpComponent implements ocxRemoteComponent {
           ? page?.helpArticleId
           : page?.pageName
           ? page?.pageName
-          : router.routerState.snapshot.url.split('#')[0] ?? ''
+          : router.routerState.snapshot.url.split('#')[0]
       })
     )
     this.applicationId$ = combineLatest([
@@ -109,7 +109,6 @@ export class OneCXShowHelpComponent implements ocxRemoteComponent {
   }
 
   ocxInitRemoteComponent(config: RemoteComponentConfig): void {
-    console.log('OCX INIT HELP COMPONENT')
     this.baseUrl.next(config.baseUrl)
     this.permissions = config.permissions
     this.helpDataService.configuration = new Configuration({
