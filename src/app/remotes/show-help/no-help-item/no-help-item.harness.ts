@@ -1,7 +1,7 @@
 import { ComponentHarness } from '@angular/cdk/testing'
 
 export class NoHelpItemHarness extends ComponentHarness {
-  static hostSelector = 'app-ocx-no-help-item'
+  static readonly hostSelector = 'app-ocx-no-help-item'
 
   getContentSpan = this.locatorFor('#no-help-item-content')
   getHintSpan = this.locatorForOptional('#no-help-item-hint')

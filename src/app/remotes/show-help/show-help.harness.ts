@@ -1,7 +1,7 @@
 import { ComponentHarness } from '@angular/cdk/testing'
 
 export class OneCXShowHelpHarness extends ComponentHarness {
-  static hostSelector = 'app-ocx-show-help'
+  static readonly hostSelector = 'app-ocx-show-help'
 
   getHelpButton = this.locatorForOptional('#show-help-button')
   getHelpIcon = this.locatorForOptional('#show-help-button-icon')
