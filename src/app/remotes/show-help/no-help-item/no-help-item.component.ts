@@ -16,8 +16,4 @@ export class NoHelpItemComponent {
   constructor(public config: DynamicDialogConfig, public ref: DynamicDialogRef) {
     this.helpArticleId = config.data.helpArticleId
   }
-
-  close() {
-    this.ref.close()
-  }
 }
