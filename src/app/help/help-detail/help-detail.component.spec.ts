@@ -7,7 +7,7 @@ import { of, throwError } from 'rxjs'
 import { FormControl, FormGroup, Validators } from '@angular/forms'
 
 import { AppStateService, createTranslateLoader, Column, PortalMessageService } from '@onecx/portal-integration-angular'
-import { HelpsInternalAPIService, CreateHelp } from 'src/app/shared/generated'
+import { Help, HelpsInternalAPIService, CreateHelp } from 'src/app/shared/generated'
 import { HelpDetailComponent } from './help-detail.component'
 
 describe('HelpDetailComponent', () => {
@@ -18,6 +18,10 @@ describe('HelpDetailComponent', () => {
   const apiServiceSpy = {
     createNewHelp: jasmine.createSpy('createNewHelp').and.returnValue(of({})),
     updateHelp: jasmine.createSpy('updateHelp').and.returnValue(of({}))
+  }
+  const dummyHelpItem = {
+    appId: 'appId',
+    itemId: 'itemId'
   }
 
   @Component({
@@ -156,14 +160,16 @@ describe('HelpDetailComponent', () => {
   it('should update help item', () => {
     apiServiceSpy.updateHelp.and.returnValue(of({}))
     component.changeMode = 'EDIT'
+    component.helpItem = { modificationCount: 0, ...dummyHelpItem } as Help
+    component.appId = dummyHelpItem.appId
+    component.itemId = dummyHelpItem.itemId
     let mockHelpForm = new MockHelpFormComponent()
-    mockHelpForm.formGroup.setValue({
-      appId: 'help-mgmt-ui',
-      itemId: 'PAGE_HELP_SEARCH'
+    mockHelpForm.formGroup.patchValue({
+      appId: dummyHelpItem.appId,
+      itemId: dummyHelpItem.itemId
     })
     component.helpFormComponent = mockHelpForm
-    component.appId = 'help-mgmt-ui'
-    component.itemId = 'PAGE_HELP_SEARCH'
+
     spyOn(component.searchEmitter, 'emit')
 
     component.onSave()
@@ -172,7 +178,7 @@ describe('HelpDetailComponent', () => {
     expect(component.searchEmitter.emit).toHaveBeenCalled()
     expect(apiServiceSpy.updateHelp).toHaveBeenCalledWith({
       id: component.itemId,
-      updateHelp: component.helpFormComponent.formGroup.value
+      updateHelp: { ...component.helpFormComponent.formGroup.value, modificationCount: 0 }
     })
   })
 

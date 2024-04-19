@@ -75,7 +75,7 @@ export class HelpDetailComponent implements OnChanges {
       this.helpApi
         .updateHelp({
           id: this.itemId,
-          updateHelp: this.helpFormComponent.formGroup.value
+          updateHelp: { ...this.helpFormComponent.formGroup.value, modificationCount: this.helpItem?.modificationCount }
         })
         .subscribe({
           next: () => {
