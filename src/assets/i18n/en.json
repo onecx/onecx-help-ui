@@ -140,5 +140,9 @@
       "CONTENT": "No help items were found for this page. Please ask your system administrator to add it.",
       "ITEM_HINT": "The help Item ID for this page is:"
     }
+  },
+  "HELP_ITEM_EDITOR": {
+    "LABEL": "Edit Help for this article",
+    "HEADER": "Edit help item for this page"
   }
 }

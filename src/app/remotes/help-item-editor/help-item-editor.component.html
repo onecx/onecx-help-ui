@@ -1,0 +1,13 @@
+<div class="layout-topbar-item" *ocxIfPermission="'PORTAL_HEADER_HELP_ITEM_EDITOR#VIEW'; permissions: permissions">
+  <div
+    id="help-item-editor-button"
+    class="layout-topbar-action rounded-circle help-item-editor-button"
+    pRipple
+    (click)="openHelpPageEditor($event)"
+    [title]="'HELP_ITEM_EDITOR.LABEL' | translate"
+    [pTooltip]="'HELP_ITEM_EDITOR.LABEL' | translate"
+    tooltipPosition="bottom"
+  >
+    <i id="help-item-editor-button-icon" class="{{ ICON }} fs-xlarge"></i>
+  </div>
+</div>
