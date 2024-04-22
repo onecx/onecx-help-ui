@@ -1,47 +1,59 @@
-// import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core'
-// import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms'
-// import { PortalMessageService } from '@onecx/angular-integration-interface'
-// import { HelpData } from '@onecx/portal-integration-angular/lib/model/help-data'
+import { Component, Input, OnChanges, SimpleChanges } from '@angular/core'
+import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms'
+import { TranslateModule } from '@ngx-translate/core'
+import { DialogButtonClicked, DialogResult, DialogState, PortalMessageService } from '@onecx/portal-integration-angular'
+import { InputTextModule } from 'primeng/inputtext'
+import { Observable } from 'rxjs'
+import { Help } from 'src/app/shared/generated'
 
-// @Component({
-//   selector: 'app-ocx-help-item-editor',
-//   standalone: true,
-//   templateUrl: './help-item-editor-dialog.component.html',
-//   styleUrls: ['./help-item-editor-dialog.component.scss']
-// })
-// export class HelpItemEditorDialogComponent implements OnChanges {
-//   @Input() public displayDialog = true
-//   @Output() public displayDialogChange = new EventEmitter<boolean>()
+@Component({
+  selector: 'app-ocx-help-item-editor',
+  standalone: true,
+  templateUrl: './help-item-editor-dialog.component.html',
+  styleUrls: ['./help-item-editor-dialog.component.scss'],
+  imports: [InputTextModule, ReactiveFormsModule, TranslateModule],
+  providers: [PortalMessageService, FormBuilder]
+})
+export class HelpItemEditorDialogComponent implements DialogResult<Help>, DialogButtonClicked, OnChanges {
+  @Input()
+  helpItem!: Help
+  dialogResult!: Help
+  public formGroup!: FormGroup
 
-//   @Input() helpItem!: HelpData | undefined
-//   @Output() saveHelpItem = new EventEmitter<HelpData>()
+  constructor(private fb: FormBuilder, private portalMessageService: PortalMessageService) {
+    this.formGroup = this.fb.group({
+      appId: new FormControl({ value: null, disabled: true }, [Validators.required]),
+      helpItemId: new FormControl({ value: null, disabled: true }, [Validators.required]),
+      resourceUrl: new FormControl(null, Validators.required)
+    })
+  }
 
-//   public formGroup!: FormGroup
-//   constructor(private fb: FormBuilder, private portalMessageService: PortalMessageService) {
-//     this.formGroup = this.fb.group({
-//       appId: new FormControl({ value: null, disabled: true }, [Validators.required]),
-//       helpItemId: new FormControl({ value: null, disabled: true }, [Validators.required]),
-//       resourceUrl: new FormControl(null, Validators.required)
-//     })
-//   }
-//   public ngOnChanges(changes: SimpleChanges): void {
-//     if (changes['helpItem'] && this.helpItem) {
-//       this.formGroup.patchValue({ ...this.helpItem })
-//     }
-//   }
+  public ngOnChanges(changes: SimpleChanges): void {
+    if (changes['helpItem'] && this.helpItem) {
+      this.dialogResult = {
+        ...this.helpItem
+      }
+      this.formGroup.patchValue({
+        appId: this.dialogResult.appId,
+        helpItemId: this.dialogResult.itemId,
+        resourceUrl: this.dialogResult.resourceUrl
+      })
+    }
+  }
 
-//   public save() {
-//     if (this.formGroup.valid && this.helpItem) {
-//       this.helpItem.resourceUrl = this.formGroup.value['resourceUrl']
-//       this.saveHelpItem.emit(this.helpItem)
-//     } else {
-//       this.portalMessageService.error({
-//         summaryKey: 'OCX_HELP_ITEM_EDITOR.SAVE_ERROR'
-//       })
-//     }
-//   }
+  ocxDialogButtonClicked(state: DialogState<Help>): boolean | Observable<boolean> | Promise<boolean> | undefined {
+    if (state.button === 'secondary') {
+      return true
+    }
 
-//   public close(): void {
-//     this.displayDialogChange.emit(false)
-//   }
-// }
+    if (this.formGroup.valid && this.helpItem) {
+      this.dialogResult = { ...this.helpItem, resourceUrl: this.formGroup.value['resourceUrl'] }
+      return true
+    } else {
+      this.portalMessageService.error({
+        summaryKey: 'HELP_ITEM_EDITOR.SAVE_ERROR'
+      })
+      return false
+    }
+  }
+}

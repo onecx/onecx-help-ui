@@ -10,7 +10,6 @@ import { ConfirmPopupModule } from 'primeng/confirmpopup'
 import { ConfirmationService } from 'primeng/api'
 import { DataViewModule } from 'primeng/dataview'
 import { DialogModule } from 'primeng/dialog'
-import { DialogService } from 'primeng/dynamicdialog'
 import { DropdownModule } from 'primeng/dropdown'
 import { InputTextModule } from 'primeng/inputtext'
 import { InputTextareaModule } from 'primeng/inputtextarea'
@@ -24,7 +23,6 @@ import { ToastModule } from 'primeng/toast'
 import {
   AppStateService,
   ConfigurationService,
-  PortalDialogService,
   PortalApiConfiguration,
   PortalCoreModule
 } from '@onecx/portal-integration-angular'
@@ -107,7 +105,6 @@ export function apiConfigProvider(configService: ConfigurationService, appStateS
   providers: [
     ConfirmationService,
     LabelResolver,
-    { provide: DialogService, useClass: PortalDialogService },
     { provide: Configuration, useFactory: apiConfigProvider, deps: [ConfigurationService, AppStateService] }
   ]
 })

@@ -143,6 +143,17 @@
   },
   "HELP_ITEM_EDITOR": {
     "LABEL": "Edit Help for this article",
-    "HEADER": "Edit help item for this page"
+    "HEADER": "Edit help item for this page",
+    "OPEN_HELP_PAGE_EDITOR_ERROR": "Cannot edit the Help Item. HelpItemId or ApplicationId are undefined or null.",
+    "SAVE": "Save",
+    "CANCEL": "Cancel",
+    "UPDATE_HELP_ARTICLE_ERROR": "Help Item definition update failed",
+    "SAVE_ERROR": "Form is not valid. Cannot update the Help Item.",
+    "UPDATE_HELP_ARTICLE_INFO": "Help Item definition updated",
+    "DIALOG": {
+      "HELP_ITEM_ID": "Help Item Id",
+      "APPLICATION_ID": "Applicaiton Id",
+      "RESOURCE_URL": "URL"
+    }
   }
 }

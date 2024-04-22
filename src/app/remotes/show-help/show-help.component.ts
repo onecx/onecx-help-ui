@@ -43,6 +43,7 @@ import { Router } from '@angular/router'
   providers: [
     HelpsInternalAPIService,
     DialogService,
+    PortalMessageService,
     {
       provide: BASE_URL,
       useValue: new ReplaySubject<string>(1)

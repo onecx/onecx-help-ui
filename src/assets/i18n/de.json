@@ -143,6 +143,17 @@
   },
   "HELP_ITEM_EDITOR": {
     "LABEL": "DE: Edit Help for this article",
-    "HEADER": "DE: Edit help item for this page"
+    "HEADER": "DE: Edit help item for this page",
+    "OPEN_HELP_PAGE_EDITOR_ERROR": "Der Hilfeartikel kann nicht bearbeitet werden. Hilfeartikel ID oder Anwendungs ID sind undefiniert oder null.",
+    "SAVE": "DE: Save",
+    "CANCEL": "DE: Cancel",
+    "UPDATE_HELP_ARTICLE_ERROR": "Aktualisierung des Hilfeartikels fehlgeschlagen",
+    "SAVE_ERROR": "Das Formular ist nicht gültig. Der Hilfeartikel kann nicht aktualisiert werden.",
+    "UPDATE_HELP_ARTICLE_INFO": "Definition des Hilfeartikels aktualisiert",
+    "DIALOG": {
+      "HELP_ITEM_ID": "DE: Help Item Id",
+      "APPLICATION_ID": "DE: Applicaiton Id",
+      "RESOURCE_URL": "DE: URL"
+    }
   }
 }
