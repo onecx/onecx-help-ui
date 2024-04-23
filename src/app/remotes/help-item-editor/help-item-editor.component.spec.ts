@@ -708,7 +708,7 @@ describe('OneCXHelpItemEditorComponent', () => {
     expect(helpApiServiceSpy.createNewHelp).toHaveBeenCalledTimes(0)
   })
 
-  it('should load updated help article and inform about successful update', async () => {
+  it('should load updated help article and inform about successful update for existing item', async () => {
     const appStateService = TestBed.inject(AppStateService)
     spyOn(appStateService.currentPage$, 'asObservable').and.returnValue(
       of({
@@ -744,6 +744,75 @@ describe('OneCXHelpItemEditorComponent', () => {
     )
 
     helpApiServiceSpy.updateHelp.and.returnValue(of({} as any))
+
+    fixture = TestBed.createComponent(OneCXHelpItemEditorComponent)
+    component = fixture.componentInstance
+    component.ocxInitRemoteComponent({
+      permissions: ['PORTAL_HEADER_HELP_ITEM_EDITOR#VIEW'],
+      baseUrl: 'base_url'
+    } as RemoteComponentConfig)
+    fixture.detectChanges()
+
+    oneCXHelpItemEditorHarness = await TestbedHarnessEnvironment.harnessForFixture(fixture, OneCXHelpItemEditorHarness)
+    await oneCXHelpItemEditorHarness.clickHelpEditorButton()
+
+    expect(messageServiceSpy.info).toHaveBeenCalledOnceWith({
+      summaryKey: 'OCX_PORTAL_VIEWPORT.UPDATE_HELP_ARTICLE_INFO'
+    })
+    expect(helpApiServiceSpy.searchHelps).toHaveBeenCalledWith({
+      helpSearchCriteria: {
+        itemId: 'article_id',
+        appId: 'mfe_app_id'
+      }
+    })
+    expect(helpApiServiceSpy.searchHelps).toHaveBeenCalledWith({
+      helpSearchCriteria: {
+        itemId: 'result_item_id',
+        appId: 'result_app_id'
+      }
+    })
+  })
+
+  it('should load updated help article and inform about successful update for new item', async () => {
+    const appStateService = TestBed.inject(AppStateService)
+    spyOn(appStateService.currentPage$, 'asObservable').and.returnValue(
+      of({
+        helpArticleId: 'article_id'
+      }) as any
+    )
+    spyOn(appStateService.currentMfe$, 'asObservable').and.returnValue(
+      of({
+        remoteBaseUrl: '',
+        appId: 'mfe_app_id'
+      }) as any
+    )
+    helpApiServiceSpy.searchHelps.and.returnValue(
+      of({
+        totalElements: 0,
+        stream: []
+      } as any)
+    )
+
+    const dialogResult = {
+      id: 'result_id',
+      appId: 'result_app_id',
+      itemId: 'result_item_id',
+      resourceUrl: 'result_resource_url',
+      modificationCount: 1
+    }
+    portalDialogServiceSpy.openDialog.and.returnValue(
+      of({
+        button: 'primary',
+        result: dialogResult
+      }) as any
+    )
+
+    helpApiServiceSpy.createNewHelp.and.returnValue(
+      of({
+        itemId: 'result_item_id',
+        appId: 'result_app_id'
+      } as any)
+    )
 
     fixture = TestBed.createComponent(OneCXHelpItemEditorComponent)
     component = fixture.componentInstance
