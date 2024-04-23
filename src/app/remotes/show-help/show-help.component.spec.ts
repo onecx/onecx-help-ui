@@ -123,7 +123,7 @@ describe('OneCXShowHelpComponent', () => {
     fixture.detectChanges()
     oneCXShowHelpHarness = await TestbedHarnessEnvironment.harnessForFixture(fixture, OneCXShowHelpHarness)
 
-    expect(await oneCXShowHelpHarness.getHelpButtonTitle()).toBe('Show Help for this article')
+    expect(await oneCXShowHelpHarness.getHelpButtonTitle()).toBe('Show Help for this page')
 
     expect(await oneCXShowHelpHarness.hasHelpIconClass(PrimeIcons.QUESTION_CIRCLE)).toBe(true)
   })

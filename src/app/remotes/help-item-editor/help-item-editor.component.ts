@@ -87,11 +87,9 @@ export class OneCXHelpItemEditorComponent implements ocxRemoteComponent {
     this.userService.lang$.subscribe((lang) => this.translateService.use(lang))
     this.helpArticleId$ = this.appStateService.currentPage$.asObservable().pipe(
       map((page) => {
-        return page?.helpArticleId
-          ? page?.helpArticleId
-          : page?.pageName
-          ? page?.pageName
-          : router.routerState.snapshot.url.split('#')[0]
+        if (page?.helpArticleId) return page.helpArticleId
+        if (page?.pageName) return page.pageName
+        return router.routerState.snapshot.url.split('#')[0]
       })
     )
     this.applicationId$ = combineLatest([
@@ -99,7 +97,9 @@ export class OneCXHelpItemEditorComponent implements ocxRemoteComponent {
       this.appStateService.currentMfe$.asObservable()
     ]).pipe(
       map(([page, mfe]) => {
-        return page?.applicationId ? page.applicationId : mfe.appId ? mfe.appId : ''
+        if (page?.applicationId) return page.applicationId
+        if (mfe.appId) return mfe.appId
+        return ''
       })
     )
 

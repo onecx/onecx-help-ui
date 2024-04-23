@@ -131,7 +131,7 @@ describe('OneCXHelpItemEditorComponent', () => {
     fixture.detectChanges()
     oneCXHelpItemEditorHarness = await TestbedHarnessEnvironment.harnessForFixture(fixture, OneCXHelpItemEditorHarness)
 
-    expect(await oneCXHelpItemEditorHarness.getHelpButtonEditorTitle()).toBe('Edit Help for this article')
+    expect(await oneCXHelpItemEditorHarness.getHelpButtonEditorTitle()).toBe('Edit Help for this page')
 
     expect(await oneCXHelpItemEditorHarness.hasHelpEditorIconClass(PrimeIcons.PENCIL)).toBe(true)
   })
