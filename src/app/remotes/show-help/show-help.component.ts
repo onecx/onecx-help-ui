@@ -128,6 +128,10 @@ export class OneCXShowHelpComponent implements ocxRemoteComponent {
     )
   }
 
+  public onEnterClick() {
+    return this.openHelpPage({})
+  }
+
   public openHelpPage(event: any) {
     this.helpDataItem$?.pipe(withLatestFrom(this.helpArticleId$!), first()).subscribe({
       next: ([helpDataItem, helpArticleId]) => {

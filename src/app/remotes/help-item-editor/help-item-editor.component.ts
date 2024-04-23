@@ -177,6 +177,10 @@ export class OneCXHelpItemEditorComponent implements ocxRemoteComponent {
       .pipe(map((): [string, string] => [dialogState.result!.itemId, dialogState.result!.appId!]))
   }
 
+  public onEnterClick() {
+    return this.editHelpPage({})
+  }
+
   public editHelpPage(event: any) {
     combineLatest([this.helpArticleId$, this.applicationId$, this.helpDataItem$])
       .pipe(
