@@ -194,7 +194,7 @@ describe('OneCXShowHelpComponent', () => {
     )
     spyOn(appStateService.currentMfe$, 'asObservable').and.returnValue(
       of({
-        remoteBaseUrl: '', // Temporary until correct module import is implemented
+        remoteBaseUrl: '',
         app_id: 'mfe_page_app_id'
       }) as any
     )
@@ -215,7 +215,7 @@ describe('OneCXShowHelpComponent', () => {
 
     spyOn(appStateService.currentMfe$, 'asObservable').and.returnValue(
       of({
-        remoteBaseUrl: '', // Temporary until correct module import is implemented
+        remoteBaseUrl: '',
         appId: 'mfe_app_id'
       }) as any
     )
@@ -246,7 +246,7 @@ describe('OneCXShowHelpComponent', () => {
 
     spyOn(appStateService.currentMfe$, 'asObservable').and.returnValue(
       of({
-        remoteBaseUrl: '', // Temporary until correct module import is implemented
+        remoteBaseUrl: '',
         appId: 'mfe_app_id'
       }) as any
     )
@@ -298,7 +298,7 @@ describe('OneCXShowHelpComponent', () => {
 
     spyOn(appStateService.currentMfe$, 'asObservable').and.returnValue(
       of({
-        remoteBaseUrl: '', // Temporary until correct module import is implemented
+        remoteBaseUrl: '',
         appId: 'mfe_app_id'
       }) as any
     )
@@ -334,7 +334,7 @@ describe('OneCXShowHelpComponent', () => {
 
     spyOn(appStateService.currentMfe$, 'asObservable').and.returnValue(
       of({
-        remoteBaseUrl: '', // Temporary until correct module import is implemented
+        remoteBaseUrl: '',
         appId: 'mfe_app_id'
       }) as any
     )
@@ -369,7 +369,7 @@ describe('OneCXShowHelpComponent', () => {
 
     spyOn(appStateService.currentMfe$, 'asObservable').and.returnValue(
       of({
-        remoteBaseUrl: '', // Temporary until correct module import is implemented
+        remoteBaseUrl: '',
         appId: 'mfe_app_id'
       }) as any
     )
@@ -406,7 +406,7 @@ describe('OneCXShowHelpComponent', () => {
 
     spyOn(appStateService.currentMfe$, 'asObservable').and.returnValue(
       of({
-        remoteBaseUrl: '', // Temporary until correct module import is implemented
+        remoteBaseUrl: '',
         appId: 'mfe_app_id'
       }) as any
     )

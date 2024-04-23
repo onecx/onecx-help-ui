@@ -135,13 +135,13 @@ export class OneCXHelpItemEditorComponent implements ocxRemoteComponent {
   }
 
   public editHelpPage(event: any) {
-    combineLatest([this.helpArticleId$ ?? of(), this.applicationId$ ?? of(), this.helpDataItem$ ?? of()])
+    combineLatest([this.helpArticleId$, this.applicationId$, this.helpDataItem$])
       .pipe(
         first(),
         mergeMap(([helpArticleId, applicationId, helpDataItem]) => {
           let isNewItem = false
           if (helpArticleId && applicationId) {
-            if (!helpDataItem.itemId) {
+            if (!helpDataItem!.itemId) {
               helpDataItem = { appId: applicationId, itemId: helpArticleId }
               isNewItem = true
             }
