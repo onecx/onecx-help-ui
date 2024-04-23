@@ -123,9 +123,19 @@ describe('OneCXShowHelpComponent', () => {
     fixture.detectChanges()
     oneCXShowHelpHarness = await TestbedHarnessEnvironment.harnessForFixture(fixture, OneCXShowHelpHarness)
 
-    expect(await oneCXShowHelpHarness.getHelpButtonTitle()).toBe('Show Help for this article')
+    expect(await oneCXShowHelpHarness.getHelpButtonTitle()).toBe('Show Help for this page')
 
     expect(await oneCXShowHelpHarness.hasHelpIconClass(PrimeIcons.QUESTION_CIRCLE)).toBe(true)
+  })
+
+  it('should call openHelpPage on enter click', () => {
+    fixture = TestBed.createComponent(OneCXShowHelpComponent)
+    component = fixture.componentInstance
+    fixture.detectChanges()
+
+    spyOn(component, 'openHelpPage')
+    component.onEnterClick()
+    expect(component.openHelpPage).toHaveBeenCalledTimes(1)
   })
 
   it('should contain helpArticleId from current page help id', (done: DoneFn) => {
@@ -194,7 +204,7 @@ describe('OneCXShowHelpComponent', () => {
     )
     spyOn(appStateService.currentMfe$, 'asObservable').and.returnValue(
       of({
-        remoteBaseUrl: '', // Temporary until correct module import is implemented
+        remoteBaseUrl: '',
         app_id: 'mfe_page_app_id'
       }) as any
     )
@@ -215,7 +225,7 @@ describe('OneCXShowHelpComponent', () => {
 
     spyOn(appStateService.currentMfe$, 'asObservable').and.returnValue(
       of({
-        remoteBaseUrl: '', // Temporary until correct module import is implemented
+        remoteBaseUrl: '',
         appId: 'mfe_app_id'
       }) as any
     )
@@ -246,7 +256,7 @@ describe('OneCXShowHelpComponent', () => {
 
     spyOn(appStateService.currentMfe$, 'asObservable').and.returnValue(
       of({
-        remoteBaseUrl: '', // Temporary until correct module import is implemented
+        remoteBaseUrl: '',
         appId: 'mfe_app_id'
       }) as any
     )
@@ -298,7 +308,7 @@ describe('OneCXShowHelpComponent', () => {
 
     spyOn(appStateService.currentMfe$, 'asObservable').and.returnValue(
       of({
-        remoteBaseUrl: '', // Temporary until correct module import is implemented
+        remoteBaseUrl: '',
         appId: 'mfe_app_id'
       }) as any
     )
@@ -334,7 +344,7 @@ describe('OneCXShowHelpComponent', () => {
 
     spyOn(appStateService.currentMfe$, 'asObservable').and.returnValue(
       of({
-        remoteBaseUrl: '', // Temporary until correct module import is implemented
+        remoteBaseUrl: '',
         appId: 'mfe_app_id'
       }) as any
     )
@@ -369,7 +379,7 @@ describe('OneCXShowHelpComponent', () => {
 
     spyOn(appStateService.currentMfe$, 'asObservable').and.returnValue(
       of({
-        remoteBaseUrl: '', // Temporary until correct module import is implemented
+        remoteBaseUrl: '',
         appId: 'mfe_app_id'
       }) as any
     )
@@ -406,7 +416,7 @@ describe('OneCXShowHelpComponent', () => {
 
     spyOn(appStateService.currentMfe$, 'asObservable').and.returnValue(
       of({
-        remoteBaseUrl: '', // Temporary until correct module import is implemented
+        remoteBaseUrl: '',
         appId: 'mfe_app_id'
       }) as any
     )

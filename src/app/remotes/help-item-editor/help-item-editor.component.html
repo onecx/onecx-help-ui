@@ -1,0 +1,18 @@
+<div
+  class="layout-topbar-item flex relative h-full w-full align-items-center justify-content-center"
+  *ocxIfPermission="'PORTAL_HEADER_HELP_ITEM_EDITOR#VIEW'; permissions: permissions"
+>
+  <button
+    id="help-item-editor-button"
+    class="layout-topbar-action rounded-circle help-item-editor-button"
+    pRipple
+    pButton
+    (click)="editHelpPage($event)"
+    [title]="'HELP_ITEM_EDITOR.LABEL' | translate"
+    [pTooltip]="'HELP_ITEM_EDITOR.LABEL' | translate"
+    tooltipPosition="bottom"
+    (keydown.enter.t)="onEnterClick()"
+  >
+    <i id="help-item-editor-button-icon" class="{{ ICON }} fs-xlarge"></i>
+  </button>
+</div>

@@ -6,7 +6,8 @@ const config = withModuleFederationPlugin({
   filename: 'remoteEntry.js',
   exposes: {
     './OneCXHelpModule': 'src/app/onecx-help-remote.module.ts',
-    './OneCXShowHelpComponent': 'src/app/remotes/show-help/show-help.component.ts'
+    './OneCXShowHelpComponent': 'src/app/remotes/show-help/show-help.component.ts',
+    './OneCXHelpItemEditorComponent': 'src/app/remotes/help-item-editor/help-item-editor.component.ts'
   },
   shared: share({
     '@angular/core': { singleton: true, requiredVersion: 'auto' },
@@ -38,7 +39,8 @@ const config = withModuleFederationPlugin({
     '@onecx/angular-testing': { requiredVersion: 'auto', includeSecondaries: true },
     '@onecx/integration-interface': { requiredVersion: 'auto', includeSecondaries: true },
     '@onecx/keycloak-auth': { requiredVersion: 'auto', includeSecondaries: true },
-    '@onecx/portal-integration-angular': { requiredVersion: 'auto', includeSecondaries: true }
+    '@onecx/portal-integration-angular': { requiredVersion: 'auto', includeSecondaries: true },
+    primeng: { requiredVersion: 'auto', includeSecondaries: true }
   }),
   sharedMappings: ['@onecx/portal-integration-angular']
 })
