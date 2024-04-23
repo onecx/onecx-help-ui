@@ -133,7 +133,7 @@
     }
   },
   "SHOW_HELP": {
-    "LABEL": "Show Help for this article",
+    "LABEL": "Show Help for this page",
     "HELP_PAGE_ERROR": "Help Item URL not valid",
     "NO_HELP_ITEM": {
       "HEADER": "No help item defined for this page",
@@ -142,7 +142,7 @@
     }
   },
   "HELP_ITEM_EDITOR": {
-    "LABEL": "Edit Help for this article",
+    "LABEL": "Edit Help for this page",
     "HEADER": "Edit help item for this page",
     "OPEN_HELP_PAGE_EDITOR_ERROR": "Cannot edit the Help Item. HelpItemId or ApplicationId are undefined or null.",
     "SAVE": "Save",

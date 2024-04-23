@@ -133,27 +133,27 @@
     }
   },
   "SHOW_HELP": {
-    "LABEL": "DE: Show Help for this article",
+    "LABEL": "Hilfe für diese Seite anzeigen",
     "HELP_PAGE_ERROR": "Hilfeartikel URL nicht gültig",
     "NO_HELP_ITEM": {
       "HEADER": "Kein Hilfeartikel ist für diese Seite definiert",
-      "CONTENT": "DE: No help items were found for this page. Please ask your system administrator to add it.",
-      "ITEM_HINT": "DE: The help Item ID for this page is:"
+      "CONTENT": "Für diese Seite wurden keine Hilfeartikel gefunden. Bitten Sie Ihren Systemadministrator, sie hinzuzufügen.",
+      "ITEM_HINT": "Die Hilfe-Artikel-ID für diese Seite lautet:"
     }
   },
   "HELP_ITEM_EDITOR": {
-    "LABEL": "DE: Edit Help for this article",
-    "HEADER": "DE: Edit help item for this page",
+    "LABEL": "Hilfe für diese Seite bearbeiten",
+    "HEADER": "Hilfeartikel für diese Seite bearbeiten",
     "OPEN_HELP_PAGE_EDITOR_ERROR": "Der Hilfeartikel kann nicht bearbeitet werden. Hilfeartikel ID oder Anwendungs ID sind undefiniert oder null.",
-    "SAVE": "DE: Save",
-    "CANCEL": "DE: Cancel",
+    "SAVE": "Speichern",
+    "CANCEL": "Abbrechen",
     "UPDATE_HELP_ARTICLE_ERROR": "Aktualisierung des Hilfeartikels fehlgeschlagen",
     "SAVE_ERROR": "Das Formular ist nicht gültig. Der Hilfeartikel kann nicht aktualisiert werden.",
     "UPDATE_HELP_ARTICLE_INFO": "Definition des Hilfeartikels aktualisiert",
     "DIALOG": {
-      "HELP_ITEM_ID": "DE: Help Item Id",
-      "APPLICATION_ID": "DE: Applicaiton Id",
-      "RESOURCE_URL": "DE: URL"
+      "HELP_ITEM_ID": "Hilfeartikel ID",
+      "APPLICATION_ID": "Anwendungs ID",
+      "RESOURCE_URL": "Ressource URL"
     }
   }
 }
