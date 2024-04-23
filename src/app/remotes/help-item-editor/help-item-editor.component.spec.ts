@@ -136,6 +136,16 @@ describe('OneCXHelpItemEditorComponent', () => {
     expect(await oneCXHelpItemEditorHarness.hasHelpEditorIconClass(PrimeIcons.PENCIL)).toBe(true)
   })
 
+  it('should call editHelpPage on enter click', () => {
+    fixture = TestBed.createComponent(OneCXHelpItemEditorComponent)
+    component = fixture.componentInstance
+    fixture.detectChanges()
+
+    spyOn(component, 'editHelpPage')
+    component.onEnterClick()
+    expect(component.editHelpPage).toHaveBeenCalledTimes(1)
+  })
+
   it('should contain helpArticleId from current page help id', (done: DoneFn) => {
     const appStateService = TestBed.inject(AppStateService)
     spyOn(appStateService.currentPage$, 'asObservable').and.returnValue(

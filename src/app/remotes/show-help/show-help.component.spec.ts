@@ -128,6 +128,16 @@ describe('OneCXShowHelpComponent', () => {
     expect(await oneCXShowHelpHarness.hasHelpIconClass(PrimeIcons.QUESTION_CIRCLE)).toBe(true)
   })
 
+  it('should call openHelpPage on enter click', () => {
+    fixture = TestBed.createComponent(OneCXShowHelpComponent)
+    component = fixture.componentInstance
+    fixture.detectChanges()
+
+    spyOn(component, 'openHelpPage')
+    component.onEnterClick()
+    expect(component.openHelpPage).toHaveBeenCalledTimes(1)
+  })
+
   it('should contain helpArticleId from current page help id', (done: DoneFn) => {
     const appStateService = TestBed.inject(AppStateService)
     spyOn(appStateService.currentPage$, 'asObservable').and.returnValue(
