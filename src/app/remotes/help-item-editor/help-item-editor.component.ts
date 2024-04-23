@@ -134,6 +134,49 @@ export class OneCXHelpItemEditorComponent implements ocxRemoteComponent {
     )
   }
 
+  private openHelpEditorDialog(helpItem: Help): Observable<DialogState<Help>> {
+    return this.portalDialogService.openDialog<Help>(
+      'HELP_ITEM_EDITOR.HEADER',
+      {
+        type: HelpItemEditorDialogComponent,
+        inputs: {
+          helpItem: helpItem
+        }
+      },
+      {
+        key: 'HELP_ITEM_EDITOR.SAVE',
+        icon: PrimeIcons.CHECK
+      },
+      {
+        key: 'HELP_ITEM_EDITOR.CANCEL',
+        icon: PrimeIcons.TIMES
+      },
+      false
+    )
+  }
+
+  private udateHelpItem(
+    dialogState: DialogState<Help>,
+    isNewHelpItem: boolean
+  ): Observable<[itemId: string, appId: string]> {
+    if (isNewHelpItem) {
+      return this.helpDataService
+        .createNewHelp({
+          createHelp: dialogState.result!
+        })
+        .pipe(map((help): [string, string] => [help.itemId, help.appId!]))
+    }
+    return this.helpDataService
+      .updateHelp({
+        id: dialogState.result!.id!,
+        updateHelp: {
+          ...dialogState.result!,
+          modificationCount: dialogState.result!.modificationCount!
+        }
+      })
+      .pipe(map((): [string, string] => [dialogState.result!.itemId, dialogState.result!.appId!]))
+  }
+
   public editHelpPage(event: any) {
     combineLatest([this.helpArticleId$, this.applicationId$, this.helpDataItem$])
       .pipe(
@@ -145,26 +188,9 @@ export class OneCXHelpItemEditorComponent implements ocxRemoteComponent {
               helpDataItem = { appId: applicationId, itemId: helpArticleId }
               isNewItem = true
             }
-            return this.portalDialogService
-              .openDialog<Help>(
-                'HELP_ITEM_EDITOR.HEADER',
-                {
-                  type: HelpItemEditorDialogComponent,
-                  inputs: {
-                    helpItem: helpDataItem
-                  }
-                },
-                {
-                  key: 'HELP_ITEM_EDITOR.SAVE',
-                  icon: PrimeIcons.CHECK
-                },
-                {
-                  key: 'HELP_ITEM_EDITOR.CANCEL',
-                  icon: PrimeIcons.TIMES
-                },
-                false
-              )
-              .pipe(map((dialogState): [DialogState<Help>, boolean] => [dialogState, isNewItem]))
+            return this.openHelpEditorDialog(helpDataItem).pipe(
+              map((dialogState): [DialogState<Help>, boolean] => [dialogState, isNewItem])
+            )
           } else {
             this.portalMessageService.error({
               summaryKey: 'HELP_ITEM_EDITOR.OPEN_HELP_PAGE_EDITOR_ERROR'
@@ -174,22 +200,7 @@ export class OneCXHelpItemEditorComponent implements ocxRemoteComponent {
         }),
         mergeMap(([dialogState, isNewHelpItem]) => {
           if (dialogState?.button === 'primary') {
-            if (isNewHelpItem) {
-              return this.helpDataService
-                .createNewHelp({
-                  createHelp: dialogState.result!
-                })
-                .pipe(map((help): [string, string] => [help.itemId, help.appId!]))
-            }
-            return this.helpDataService
-              .updateHelp({
-                id: dialogState.result!.id!,
-                updateHelp: {
-                  ...dialogState.result!,
-                  modificationCount: dialogState.result!.modificationCount!
-                }
-              })
-              .pipe(map((): [string, string] => [dialogState.result!.itemId, dialogState.result!.appId!]))
+            return this.udateHelpItem(dialogState, isNewHelpItem)
           }
           return of([])
         })
