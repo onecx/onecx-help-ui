@@ -332,12 +332,17 @@ describe('OneCXHelpItemEditorComponent', () => {
         helpArticleId: 'article_id'
       }) as any
     )
-
     spyOn(appStateService.currentMfe$, 'asObservable').and.returnValue(
       of({
         remoteBaseUrl: '',
         appId: 'mfe_app_id'
       }) as any
+    )
+    helpApiServiceSpy.searchHelps.and.returnValue(
+      of({
+        totalElements: 0,
+        stream: []
+      } as any)
     )
 
     fixture = TestBed.createComponent(OneCXHelpItemEditorComponent)
@@ -386,6 +391,12 @@ describe('OneCXHelpItemEditorComponent', () => {
         appId: 'mfe_app_id'
       }) as any
     )
+    helpApiServiceSpy.searchHelps.and.returnValue(
+      of({
+        totalElements: 0,
+        stream: []
+      } as any)
+    )
 
     fixture = TestBed.createComponent(OneCXHelpItemEditorComponent)
     component = fixture.componentInstance
@@ -397,9 +408,13 @@ describe('OneCXHelpItemEditorComponent', () => {
 
     oneCXHelpItemEditorHarness = await TestbedHarnessEnvironment.harnessForFixture(fixture, OneCXHelpItemEditorHarness)
     await oneCXHelpItemEditorHarness.clickHelpEditorButton()
+    expect(messageServiceSpy.error).toHaveBeenCalledTimes(1)
+    expect(messageServiceSpy.info).toHaveBeenCalledTimes(0)
     expect(messageServiceSpy.error).toHaveBeenCalledOnceWith({
       summaryKey: 'HELP_ITEM_EDITOR.OPEN_HELP_PAGE_EDITOR_ERROR'
     })
+    expect(helpApiServiceSpy.createNewHelp).toHaveBeenCalledTimes(0)
+    expect(helpApiServiceSpy.updateHelp).toHaveBeenCalledTimes(0)
   })
 
   it('should be unable to create help item when application not defined', async () => {
@@ -414,6 +429,12 @@ describe('OneCXHelpItemEditorComponent', () => {
         remoteBaseUrl: ''
       }) as any
     )
+    helpApiServiceSpy.searchHelps.and.returnValue(
+      of({
+        totalElements: 0,
+        stream: []
+      } as any)
+    )
 
     fixture = TestBed.createComponent(OneCXHelpItemEditorComponent)
     component = fixture.componentInstance
@@ -425,30 +446,33 @@ describe('OneCXHelpItemEditorComponent', () => {
 
     oneCXHelpItemEditorHarness = await TestbedHarnessEnvironment.harnessForFixture(fixture, OneCXHelpItemEditorHarness)
     await oneCXHelpItemEditorHarness.clickHelpEditorButton()
+    expect(messageServiceSpy.error).toHaveBeenCalledTimes(1)
+    expect(messageServiceSpy.info).toHaveBeenCalledTimes(0)
     expect(messageServiceSpy.error).toHaveBeenCalledOnceWith({
       summaryKey: 'HELP_ITEM_EDITOR.OPEN_HELP_PAGE_EDITOR_ERROR'
     })
+    expect(helpApiServiceSpy.createNewHelp).toHaveBeenCalledTimes(0)
+    expect(helpApiServiceSpy.updateHelp).toHaveBeenCalledTimes(0)
   })
 
   it('should open help item editor dialog for new item', async () => {
-    helpApiServiceSpy.searchHelps.and.returnValue(
-      of({
-        totalElements: 0,
-        stream: []
-      } as any)
-    )
     const appStateService = TestBed.inject(AppStateService)
     spyOn(appStateService.currentPage$, 'asObservable').and.returnValue(
       of({
         helpArticleId: 'article_id'
       }) as any
     )
-
     spyOn(appStateService.currentMfe$, 'asObservable').and.returnValue(
       of({
         remoteBaseUrl: '',
         appId: 'mfe_app_id'
       }) as any
+    )
+    helpApiServiceSpy.searchHelps.and.returnValue(
+      of({
+        totalElements: 0,
+        stream: []
+      } as any)
     )
 
     fixture = TestBed.createComponent(OneCXHelpItemEditorComponent)
@@ -485,25 +509,25 @@ describe('OneCXHelpItemEditorComponent', () => {
   })
 
   it('should open help item editor dialog for existing item', async () => {
-    const helpItem = { id: 'id_1', itemId: 'item_1', appId: 'app_id_1' }
-    helpApiServiceSpy.searchHelps.and.returnValue(
-      of({
-        totalElements: 1,
-        stream: [helpItem]
-      } as any)
-    )
     const appStateService = TestBed.inject(AppStateService)
     spyOn(appStateService.currentPage$, 'asObservable').and.returnValue(
       of({
         helpArticleId: 'article_id'
       }) as any
     )
-
     spyOn(appStateService.currentMfe$, 'asObservable').and.returnValue(
       of({
         remoteBaseUrl: '',
         appId: 'mfe_app_id'
       }) as any
+    )
+    // itemId and appId different only for testing purposes
+    const helpItem = { id: 'id_1', itemId: 'item_1', appId: 'app_id_1' }
+    helpApiServiceSpy.searchHelps.and.returnValue(
+      of({
+        totalElements: 1,
+        stream: [helpItem]
+      } as any)
     )
 
     fixture = TestBed.createComponent(OneCXHelpItemEditorComponent)
@@ -537,22 +561,27 @@ describe('OneCXHelpItemEditorComponent', () => {
   })
 
   it('should not react to secondary button click', async () => {
-    portalDialogServiceSpy.openDialog.and.returnValue(
-      of({
-        button: 'secondary'
-      }) as any
-    )
     const appStateService = TestBed.inject(AppStateService)
     spyOn(appStateService.currentPage$, 'asObservable').and.returnValue(
       of({
         helpArticleId: 'article_id'
       }) as any
     )
-
     spyOn(appStateService.currentMfe$, 'asObservable').and.returnValue(
       of({
         remoteBaseUrl: '',
         appId: 'mfe_app_id'
+      }) as any
+    )
+    helpApiServiceSpy.searchHelps.and.returnValue(
+      of({
+        totalElements: 0,
+        stream: []
+      } as any)
+    )
+    portalDialogServiceSpy.openDialog.and.returnValue(
+      of({
+        button: 'secondary'
       }) as any
     )
 
@@ -572,6 +601,25 @@ describe('OneCXHelpItemEditorComponent', () => {
   })
 
   it('should create new help item on primary button click', async () => {
+    const appStateService = TestBed.inject(AppStateService)
+    spyOn(appStateService.currentPage$, 'asObservable').and.returnValue(
+      of({
+        helpArticleId: 'article_id'
+      }) as any
+    )
+    spyOn(appStateService.currentMfe$, 'asObservable').and.returnValue(
+      of({
+        remoteBaseUrl: '',
+        appId: 'mfe_app_id'
+      }) as any
+    )
+    helpApiServiceSpy.searchHelps.and.returnValue(
+      of({
+        totalElements: 0,
+        stream: []
+      } as any)
+    )
+
     const dialogResult = {
       appId: 'result_app_id',
       itemId: 'result_item_id',
@@ -581,25 +629,6 @@ describe('OneCXHelpItemEditorComponent', () => {
       of({
         button: 'primary',
         result: dialogResult
-      }) as any
-    )
-    helpApiServiceSpy.searchHelps.and.returnValue(
-      of({
-        totalElements: 0,
-        stream: []
-      } as any)
-    )
-    const appStateService = TestBed.inject(AppStateService)
-    spyOn(appStateService.currentPage$, 'asObservable').and.returnValue(
-      of({
-        helpArticleId: 'article_id'
-      }) as any
-    )
-
-    spyOn(appStateService.currentMfe$, 'asObservable').and.returnValue(
-      of({
-        remoteBaseUrl: '',
-        appId: 'mfe_app_id'
       }) as any
     )
 
@@ -621,6 +650,26 @@ describe('OneCXHelpItemEditorComponent', () => {
   })
 
   it('should update help item on primary button click', async () => {
+    const appStateService = TestBed.inject(AppStateService)
+    spyOn(appStateService.currentPage$, 'asObservable').and.returnValue(
+      of({
+        helpArticleId: 'article_id'
+      }) as any
+    )
+    spyOn(appStateService.currentMfe$, 'asObservable').and.returnValue(
+      of({
+        remoteBaseUrl: '',
+        appId: 'mfe_app_id'
+      }) as any
+    )
+    const helpItem = { id: 'id_1', itemId: 'item_1', appId: 'app_id_1', modificationCount: 1 }
+    helpApiServiceSpy.searchHelps.and.returnValue(
+      of({
+        totalElements: 1,
+        stream: [helpItem]
+      } as any)
+    )
+
     const dialogResult = {
       id: 'result_id',
       appId: 'result_app_id',
@@ -632,26 +681,6 @@ describe('OneCXHelpItemEditorComponent', () => {
       of({
         button: 'primary',
         result: dialogResult
-      }) as any
-    )
-    const helpItem = { id: 'id_1', itemId: 'item_1', appId: 'app_id_1', modificationCount: 1 }
-    helpApiServiceSpy.searchHelps.and.returnValue(
-      of({
-        totalElements: 1,
-        stream: [helpItem]
-      } as any)
-    )
-    const appStateService = TestBed.inject(AppStateService)
-    spyOn(appStateService.currentPage$, 'asObservable').and.returnValue(
-      of({
-        helpArticleId: 'article_id'
-      }) as any
-    )
-
-    spyOn(appStateService.currentMfe$, 'asObservable').and.returnValue(
-      of({
-        remoteBaseUrl: '',
-        appId: 'mfe_app_id'
       }) as any
     )
 
@@ -680,6 +709,26 @@ describe('OneCXHelpItemEditorComponent', () => {
   })
 
   it('should load updated help article and inform about successful update', async () => {
+    const appStateService = TestBed.inject(AppStateService)
+    spyOn(appStateService.currentPage$, 'asObservable').and.returnValue(
+      of({
+        helpArticleId: 'article_id'
+      }) as any
+    )
+    spyOn(appStateService.currentMfe$, 'asObservable').and.returnValue(
+      of({
+        remoteBaseUrl: '',
+        appId: 'mfe_app_id'
+      }) as any
+    )
+    const helpItem = { id: 'id_1', itemId: 'item_1', appId: 'app_id_1', modificationCount: 1 }
+    helpApiServiceSpy.searchHelps.and.returnValue(
+      of({
+        totalElements: 1,
+        stream: [helpItem]
+      } as any)
+    )
+
     const dialogResult = {
       id: 'result_id',
       appId: 'result_app_id',
@@ -693,27 +742,8 @@ describe('OneCXHelpItemEditorComponent', () => {
         result: dialogResult
       }) as any
     )
-    const helpItem = { id: 'id_1', itemId: 'item_1', appId: 'app_id_1', modificationCount: 1 }
-    helpApiServiceSpy.searchHelps.and.returnValue(
-      of({
-        totalElements: 1,
-        stream: [helpItem]
-      } as any)
-    )
-    helpApiServiceSpy.updateHelp.and.returnValue(of({} as any))
-    const appStateService = TestBed.inject(AppStateService)
-    spyOn(appStateService.currentPage$, 'asObservable').and.returnValue(
-      of({
-        helpArticleId: 'article_id'
-      }) as any
-    )
 
-    spyOn(appStateService.currentMfe$, 'asObservable').and.returnValue(
-      of({
-        remoteBaseUrl: '',
-        appId: 'mfe_app_id'
-      }) as any
-    )
+    helpApiServiceSpy.updateHelp.and.returnValue(of({} as any))
 
     fixture = TestBed.createComponent(OneCXHelpItemEditorComponent)
     component = fixture.componentInstance
@@ -745,6 +775,25 @@ describe('OneCXHelpItemEditorComponent', () => {
 
   it('should display error if new help item creation failed', async () => {
     spyOn(console, 'log')
+    const appStateService = TestBed.inject(AppStateService)
+    spyOn(appStateService.currentPage$, 'asObservable').and.returnValue(
+      of({
+        helpArticleId: 'article_id'
+      }) as any
+    )
+    spyOn(appStateService.currentMfe$, 'asObservable').and.returnValue(
+      of({
+        remoteBaseUrl: '',
+        appId: 'mfe_app_id'
+      }) as any
+    )
+    helpApiServiceSpy.searchHelps.and.returnValue(
+      of({
+        totalElements: 0,
+        stream: []
+      } as any)
+    )
+
     const dialogResult = {
       id: 'result_id',
       appId: 'result_app_id',
@@ -758,12 +807,7 @@ describe('OneCXHelpItemEditorComponent', () => {
         result: dialogResult
       }) as any
     )
-    helpApiServiceSpy.searchHelps.and.returnValue(
-      of({
-        totalElements: 0,
-        stream: []
-      } as any)
-    )
+
     helpApiServiceSpy.createNewHelp.and.returnValue(
       throwError(
         () =>
@@ -771,19 +815,6 @@ describe('OneCXHelpItemEditorComponent', () => {
             status: 404
           })
       )
-    )
-    const appStateService = TestBed.inject(AppStateService)
-    spyOn(appStateService.currentPage$, 'asObservable').and.returnValue(
-      of({
-        helpArticleId: 'article_id'
-      }) as any
-    )
-
-    spyOn(appStateService.currentMfe$, 'asObservable').and.returnValue(
-      of({
-        remoteBaseUrl: '',
-        appId: 'mfe_app_id'
-      }) as any
     )
 
     fixture = TestBed.createComponent(OneCXHelpItemEditorComponent)
@@ -806,6 +837,27 @@ describe('OneCXHelpItemEditorComponent', () => {
 
   it('should display error if help item update failed', async () => {
     spyOn(console, 'log')
+
+    const appStateService = TestBed.inject(AppStateService)
+    spyOn(appStateService.currentPage$, 'asObservable').and.returnValue(
+      of({
+        helpArticleId: 'article_id'
+      }) as any
+    )
+    spyOn(appStateService.currentMfe$, 'asObservable').and.returnValue(
+      of({
+        remoteBaseUrl: '',
+        appId: 'mfe_app_id'
+      }) as any
+    )
+    const helpItem = { id: 'id_1', itemId: 'item_1', appId: 'app_id_1', modificationCount: 1 }
+    helpApiServiceSpy.searchHelps.and.returnValue(
+      of({
+        totalElements: 1,
+        stream: [helpItem]
+      } as any)
+    )
+
     const dialogResult = {
       id: 'result_id',
       appId: 'result_app_id',
@@ -819,13 +871,7 @@ describe('OneCXHelpItemEditorComponent', () => {
         result: dialogResult
       }) as any
     )
-    const helpItem = { id: 'id_1', itemId: 'item_1', appId: 'app_id_1', modificationCount: 1 }
-    helpApiServiceSpy.searchHelps.and.returnValue(
-      of({
-        totalElements: 1,
-        stream: [helpItem]
-      } as any)
-    )
+
     helpApiServiceSpy.updateHelp.and.returnValue(
       throwError(
         () =>
@@ -833,19 +879,6 @@ describe('OneCXHelpItemEditorComponent', () => {
             status: 404
           })
       )
-    )
-    const appStateService = TestBed.inject(AppStateService)
-    spyOn(appStateService.currentPage$, 'asObservable').and.returnValue(
-      of({
-        helpArticleId: 'article_id'
-      }) as any
-    )
-
-    spyOn(appStateService.currentMfe$, 'asObservable').and.returnValue(
-      of({
-        remoteBaseUrl: '',
-        appId: 'mfe_app_id'
-      }) as any
     )
 
     fixture = TestBed.createComponent(OneCXHelpItemEditorComponent)
