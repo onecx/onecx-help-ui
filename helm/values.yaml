@@ -13,7 +13,7 @@ app:
         main:
           exposedModule: "./OneCXHelpModule"
           description: "OneCX Help UI"
-          note: "OneCX Help UI auto import via MF operator",
+          note: "OneCX Help UI auto import via MF operator"
           type: MODULE
         show-help:
           exposedModule: "./OneCXShowHelpComponent"
