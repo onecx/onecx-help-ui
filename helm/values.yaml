@@ -9,10 +9,20 @@ app:
     # Microfrontend
     microfrontend:
       enabled: true
-      spec:
-        exposedModule: "./OneCXHelpModule"
-        description: "OneCX Help UI"
-        note: "OneCX Help UI auto import via MF operator"
+      specs:
+        main:
+          exposedModule: "./OneCXHelpModule"
+          description: "OneCX Help UI"
+          note: "OneCX Help UI auto import via MF operator"
+          type: MODULE
+        show-help:
+          exposedModule: "./OneCXShowHelpComponent"
+          description: "Show help item"
+          type: COMPONENT
+        help-item-editor:
+          exposedModule: "./OneCXHelpItemEditorComponent"
+          description: "Edit help item"
+          type: COMPONENT
     # Permission
     permission:
       enabled: true
