@@ -97,11 +97,11 @@ describe('OneCXHelpItemEditorComponent', () => {
     fixture.detectChanges()
 
     component.ocxInitRemoteComponent({
-      permissions: ['PORTAL_HEADER_HELP_ITEM_EDITOR#VIEW'],
+      permissions: ['HELP#EDIT'],
       baseUrl: 'base_url'
     } as RemoteComponentConfig)
 
-    expect(component.permissions).toEqual(['PORTAL_HEADER_HELP_ITEM_EDITOR#VIEW'])
+    expect(component.permissions).toEqual(['HELP#EDIT'])
     expect(helpApiServiceSpy.configuration.basePath).toEqual('base_url/bff')
     baseUrlSubject.asObservable().subscribe((item) => {
       console.log(item)
@@ -124,7 +124,7 @@ describe('OneCXHelpItemEditorComponent', () => {
     fixture = TestBed.createComponent(OneCXHelpItemEditorComponent)
     component = fixture.componentInstance
     component.ocxInitRemoteComponent({
-      permissions: ['PORTAL_HEADER_HELP_ITEM_EDITOR#VIEW'],
+      permissions: ['HELP#EDIT'],
       baseUrl: 'base_url'
     } as RemoteComponentConfig)
 
@@ -358,7 +358,7 @@ describe('OneCXHelpItemEditorComponent', () => {
     fixture = TestBed.createComponent(OneCXHelpItemEditorComponent)
     component = fixture.componentInstance
     component.ocxInitRemoteComponent({
-      permissions: ['PORTAL_HEADER_HELP_ITEM_EDITOR#VIEW'],
+      permissions: ['HELP#EDIT'],
       baseUrl: 'base_url'
     } as RemoteComponentConfig)
     fixture.detectChanges()
@@ -411,7 +411,7 @@ describe('OneCXHelpItemEditorComponent', () => {
     fixture = TestBed.createComponent(OneCXHelpItemEditorComponent)
     component = fixture.componentInstance
     component.ocxInitRemoteComponent({
-      permissions: ['PORTAL_HEADER_HELP_ITEM_EDITOR#VIEW'],
+      permissions: ['HELP#EDIT'],
       baseUrl: 'base_url'
     } as RemoteComponentConfig)
     fixture.detectChanges()
@@ -449,7 +449,7 @@ describe('OneCXHelpItemEditorComponent', () => {
     fixture = TestBed.createComponent(OneCXHelpItemEditorComponent)
     component = fixture.componentInstance
     component.ocxInitRemoteComponent({
-      permissions: ['PORTAL_HEADER_HELP_ITEM_EDITOR#VIEW'],
+      permissions: ['HELP#EDIT'],
       baseUrl: 'base_url'
     } as RemoteComponentConfig)
     fixture.detectChanges()
@@ -488,7 +488,7 @@ describe('OneCXHelpItemEditorComponent', () => {
     fixture = TestBed.createComponent(OneCXHelpItemEditorComponent)
     component = fixture.componentInstance
     component.ocxInitRemoteComponent({
-      permissions: ['PORTAL_HEADER_HELP_ITEM_EDITOR#VIEW'],
+      permissions: ['HELP#EDIT'],
       baseUrl: 'base_url'
     } as RemoteComponentConfig)
     fixture.detectChanges()
@@ -543,7 +543,7 @@ describe('OneCXHelpItemEditorComponent', () => {
     fixture = TestBed.createComponent(OneCXHelpItemEditorComponent)
     component = fixture.componentInstance
     component.ocxInitRemoteComponent({
-      permissions: ['PORTAL_HEADER_HELP_ITEM_EDITOR#VIEW'],
+      permissions: ['HELP#EDIT'],
       baseUrl: 'base_url'
     } as RemoteComponentConfig)
     fixture.detectChanges()
@@ -598,7 +598,7 @@ describe('OneCXHelpItemEditorComponent', () => {
     fixture = TestBed.createComponent(OneCXHelpItemEditorComponent)
     component = fixture.componentInstance
     component.ocxInitRemoteComponent({
-      permissions: ['PORTAL_HEADER_HELP_ITEM_EDITOR#VIEW'],
+      permissions: ['HELP#EDIT'],
       baseUrl: 'base_url'
     } as RemoteComponentConfig)
     fixture.detectChanges()
@@ -645,7 +645,7 @@ describe('OneCXHelpItemEditorComponent', () => {
     fixture = TestBed.createComponent(OneCXHelpItemEditorComponent)
     component = fixture.componentInstance
     component.ocxInitRemoteComponent({
-      permissions: ['PORTAL_HEADER_HELP_ITEM_EDITOR#VIEW'],
+      permissions: ['HELP#EDIT'],
       baseUrl: 'base_url'
     } as RemoteComponentConfig)
     fixture.detectChanges()
@@ -697,7 +697,7 @@ describe('OneCXHelpItemEditorComponent', () => {
     fixture = TestBed.createComponent(OneCXHelpItemEditorComponent)
     component = fixture.componentInstance
     component.ocxInitRemoteComponent({
-      permissions: ['PORTAL_HEADER_HELP_ITEM_EDITOR#VIEW'],
+      permissions: ['HELP#EDIT'],
       baseUrl: 'base_url'
     } as RemoteComponentConfig)
     fixture.detectChanges()
@@ -758,7 +758,7 @@ describe('OneCXHelpItemEditorComponent', () => {
     fixture = TestBed.createComponent(OneCXHelpItemEditorComponent)
     component = fixture.componentInstance
     component.ocxInitRemoteComponent({
-      permissions: ['PORTAL_HEADER_HELP_ITEM_EDITOR#VIEW'],
+      permissions: ['HELP#EDIT'],
       baseUrl: 'base_url'
     } as RemoteComponentConfig)
     fixture.detectChanges()
@@ -827,7 +827,7 @@ describe('OneCXHelpItemEditorComponent', () => {
     fixture = TestBed.createComponent(OneCXHelpItemEditorComponent)
     component = fixture.componentInstance
     component.ocxInitRemoteComponent({
-      permissions: ['PORTAL_HEADER_HELP_ITEM_EDITOR#VIEW'],
+      permissions: ['HELP#EDIT'],
       baseUrl: 'base_url'
     } as RemoteComponentConfig)
     fixture.detectChanges()
@@ -899,7 +899,7 @@ describe('OneCXHelpItemEditorComponent', () => {
     fixture = TestBed.createComponent(OneCXHelpItemEditorComponent)
     component = fixture.componentInstance
     component.ocxInitRemoteComponent({
-      permissions: ['PORTAL_HEADER_HELP_ITEM_EDITOR#VIEW'],
+      permissions: ['HELP#EDIT'],
       baseUrl: 'base_url'
     } as RemoteComponentConfig)
     fixture.detectChanges()
@@ -963,7 +963,7 @@ describe('OneCXHelpItemEditorComponent', () => {
     fixture = TestBed.createComponent(OneCXHelpItemEditorComponent)
     component = fixture.componentInstance
     component.ocxInitRemoteComponent({
-      permissions: ['PORTAL_HEADER_HELP_ITEM_EDITOR#VIEW'],
+      permissions: ['HELP#EDIT'],
       baseUrl: 'base_url'
     } as RemoteComponentConfig)
     fixture.detectChanges()
