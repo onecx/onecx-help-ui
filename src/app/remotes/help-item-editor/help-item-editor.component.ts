@@ -17,7 +17,8 @@ import {
   PortalDialogService,
   PortalMessageService,
   UserService,
-  createRemoteComponentTranslateLoader
+  createRemoteComponentTranslateLoader,
+  providePortalDialogService
 } from '@onecx/portal-integration-angular'
 import { PrimeIcons } from 'primeng/api'
 import { RippleModule } from 'primeng/ripple'
@@ -27,7 +28,6 @@ import { Configuration, Help, HelpsInternalAPIService } from 'src/app/shared/gen
 import { SharedModule } from 'src/app/shared/shared.module'
 import { environment } from 'src/environments/environment'
 import { HelpItemEditorDialogComponent } from './help-item-editor-dialog/help-item-editor-dialog.component'
-import { DialogService, DynamicDialogModule } from 'primeng/dynamicdialog'
 
 @Component({
   selector: 'app-ocx-help-item-editor',
@@ -39,7 +39,6 @@ import { DialogService, DynamicDialogModule } from 'primeng/dynamicdialog'
     HttpClientModule,
     RippleModule,
     TooltipModule,
-    DynamicDialogModule,
     HelpItemEditorDialogComponent,
     TranslateModule,
     SharedModule,
@@ -49,8 +48,7 @@ import { DialogService, DynamicDialogModule } from 'primeng/dynamicdialog'
   providers: [
     HelpsInternalAPIService,
     PortalMessageService,
-    DialogService,
-    PortalDialogService,
+    providePortalDialogService(),
     {
       provide: BASE_URL,
       useValue: new ReplaySubject<string>(1)
