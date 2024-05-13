@@ -146,9 +146,7 @@ export class OneCXShowHelpComponent implements ocxRemoteComponent {
           } catch (e) {
             console.log(`Could not construct help page url ${helpDataItem.resourceUrl}`, e)
             // construct relative url
-            console.log(window.location.href.split(workspaceUrl)[0])
-            console.log(window.location.href.split(workspaceUrl))
-            const relativeUrl = window.location.href.split(workspaceUrl)[0] + helpDataItem.resourceUrl
+            const relativeUrl = this.getCurrentUrl().split(workspaceUrl)[0] + helpDataItem.resourceUrl
             try {
               window.open(new URL(relativeUrl), '_blank')?.focus
             } catch (e) {
@@ -172,5 +170,9 @@ export class OneCXShowHelpComponent implements ocxRemoteComponent {
       }
     })
     event.preventDefault()
+  }
+
+  public getCurrentUrl(): string {
+    return window.location.href
   }
 }

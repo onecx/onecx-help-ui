@@ -73,6 +73,13 @@ describe('OneCXShowHelpComponent', () => {
     helpApiServiceSpy.searchHelps.calls.reset()
     dialogServiceSpy.open.calls.reset()
     messageServiceSpy.error.calls.reset()
+
+    const appStateService = TestBed.inject(AppStateService)
+    spyOn(appStateService.currentWorkspace$, 'asObservable').and.returnValue(
+      of({
+        baseUrl: '/admin'
+      }) as any
+    )
   })
 
   it('should create', () => {
@@ -362,12 +369,50 @@ describe('OneCXShowHelpComponent', () => {
     expect(window.open).toHaveBeenCalledOnceWith(new URL('http://resource_url'), '_blank')
   })
 
-  it('should display error message on failed window opening', async () => {
-    spyOn(window, 'open').and.throwError('')
+  it('should open new window with help article with reltiveUrl', async () => {
+    spyOn(window, 'open')
     helpApiServiceSpy.searchHelps.and.returnValue(
       of({
         totalElements: 1,
-        stream: [{ id: '1', resourceUrl: 'http://resource_url' }]
+        stream: [{ id: '1', resourceUrl: '/admin/helpItem' }]
+      } as any)
+    )
+    const appStateService = TestBed.inject(AppStateService)
+    spyOn(appStateService.currentPage$, 'asObservable').and.returnValue(
+      of({
+        helpArticleId: 'article_id'
+      }) as any
+    )
+
+    spyOn(appStateService.currentMfe$, 'asObservable').and.returnValue(
+      of({
+        remoteBaseUrl: '',
+        appId: 'mfe_app_id'
+      }) as any
+    )
+
+    fixture = TestBed.createComponent(OneCXShowHelpComponent)
+    component = fixture.componentInstance
+    component.ocxInitRemoteComponent({
+      permissions: ['HELP#VIEW'],
+      baseUrl: 'base_url'
+    } as RemoteComponentConfig)
+    fixture.detectChanges()
+
+    spyOn(component, 'getCurrentUrl').and.returnValue('http://localhost:1234/admin/somePage')
+
+    oneCXShowHelpHarness = await TestbedHarnessEnvironment.harnessForFixture(fixture, OneCXShowHelpHarness)
+    await oneCXShowHelpHarness.clickHelpButton()
+    expect(window.open).toHaveBeenCalledOnceWith(new URL('http://localhost:1234/admin/helpItem'), '_blank')
+  })
+
+  it('should display error message on failed window opening', async () => {
+    spyOn(window, 'open').and.throwError('')
+    spyOn(window.location.href, 'split').and.returnValue([''])
+    helpApiServiceSpy.searchHelps.and.returnValue(
+      of({
+        totalElements: 1,
+        stream: [{ id: '1' }]
       } as any)
     )
     const appStateService = TestBed.inject(AppStateService)
@@ -394,7 +439,6 @@ describe('OneCXShowHelpComponent', () => {
 
     oneCXShowHelpHarness = await TestbedHarnessEnvironment.harnessForFixture(fixture, OneCXShowHelpHarness)
     await oneCXShowHelpHarness.clickHelpButton()
-    expect(window.open).toHaveBeenCalledOnceWith(new URL('http://resource_url'), '_blank')
     expect(messageServiceSpy.error).toHaveBeenCalledOnceWith({
       summaryKey: 'SHOW_HELP.HELP_PAGE_ERROR'
     })
