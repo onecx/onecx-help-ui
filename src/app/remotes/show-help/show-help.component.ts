@@ -65,6 +65,7 @@ export class OneCXShowHelpComponent implements ocxRemoteComponent {
   helpArticleId$: Observable<string> | undefined
   applicationId$: Observable<string> | undefined
   helpDataItem$: Observable<Help> | undefined
+  workspaceUrl$: Observable<string> | undefined
 
   permissions: string[] = []
 
@@ -107,6 +108,10 @@ export class OneCXShowHelpComponent implements ocxRemoteComponent {
         return of({} as Help)
       })
     )
+
+    this.workspaceUrl$ = this.appStateService.currentWorkspace$
+      .asObservable()
+      .pipe(map((workspace) => workspace.baseUrl))
   }
 
   ocxInitRemoteComponent(config: RemoteComponentConfig): void {
@@ -133,16 +138,21 @@ export class OneCXShowHelpComponent implements ocxRemoteComponent {
   }
 
   public openHelpPage(event: any) {
-    this.helpDataItem$?.pipe(withLatestFrom(this.helpArticleId$!), first()).subscribe({
-      next: ([helpDataItem, helpArticleId]) => {
+    this.helpDataItem$?.pipe(withLatestFrom(this.helpArticleId$!, this.workspaceUrl$!), first()).subscribe({
+      next: ([helpDataItem, helpArticleId, workspaceUrl]) => {
         if (helpDataItem && helpDataItem.id) {
-          const url = helpDataItem.resourceUrl
-          if (url) {
-            console.log(`navigate to help page: ${url}`)
+          try {
+            window.open(new URL(helpDataItem.resourceUrl ?? ''), '_blank')?.focus
+          } catch (e) {
+            console.log(`Could not construct help page url ${helpDataItem.resourceUrl}`, e)
+            // construct relative url
+            console.log(window.location.href.split(workspaceUrl)[0])
+            console.log(window.location.href.split(workspaceUrl))
+            const relativeUrl = window.location.href.split(workspaceUrl)[0] + helpDataItem.resourceUrl
             try {
-              window.open(new URL(url), '_blank')?.focus
+              window.open(new URL(relativeUrl), '_blank')?.focus
             } catch (e) {
-              console.log(`Error constructing help page URL`, e)
+              console.log(`Could not construct help page url ${relativeUrl}`, e)
               this.portalMessageService.error({
                 summaryKey: 'SHOW_HELP.HELP_PAGE_ERROR'
               })
