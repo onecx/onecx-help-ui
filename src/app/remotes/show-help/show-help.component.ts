@@ -150,7 +150,7 @@ export class OneCXShowHelpComponent implements ocxRemoteComponent {
             try {
               window.open(new URL(relativeUrl), '_blank')?.focus
             } catch (e) {
-              console.log(`Could not construct help page url ${relativeUrl}`, e)
+              console.log(`Could not construct help page url %s`, relativeUrl, e)
               this.portalMessageService.error({
                 summaryKey: 'SHOW_HELP.HELP_PAGE_ERROR'
               })
