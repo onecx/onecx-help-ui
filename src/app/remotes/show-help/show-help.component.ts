@@ -22,6 +22,7 @@ import { Configuration, Help, HelpsInternalAPIService } from 'src/app/shared/gen
 import { environment } from 'src/environments/environment'
 import { SharedModule } from 'src/app/shared/shared.module'
 import { Router } from '@angular/router'
+import { getLocation } from '@onecx/accelerator'
 
 @Component({
   selector: 'app-ocx-show-help',
@@ -62,10 +63,9 @@ export class OneCXShowHelpComponent implements ocxRemoteComponent {
   LABEL_KEY: string = 'SHOW_HELP.LABEL'
   ICON: string = PrimeIcons.QUESTION_CIRCLE
 
-  helpArticleId$: Observable<string> | undefined
-  applicationId$: Observable<string> | undefined
-  helpDataItem$: Observable<Help> | undefined
-  workspaceUrl$: Observable<string> | undefined
+  helpArticleId$: Observable<string>
+  applicationId$: Observable<string>
+  helpDataItem$: Observable<Help>
 
   permissions: string[] = []
 
@@ -108,10 +108,6 @@ export class OneCXShowHelpComponent implements ocxRemoteComponent {
         return of({} as Help)
       })
     )
-
-    this.workspaceUrl$ = this.appStateService.currentWorkspace$
-      .asObservable()
-      .pipe(map((workspace) => workspace.baseUrl))
   }
 
   ocxInitRemoteComponent(config: RemoteComponentConfig): void {
@@ -138,23 +134,20 @@ export class OneCXShowHelpComponent implements ocxRemoteComponent {
   }
 
   public openHelpPage(event: any) {
-    this.helpDataItem$?.pipe(withLatestFrom(this.helpArticleId$!, this.workspaceUrl$!), first()).subscribe({
-      next: ([helpDataItem, helpArticleId, workspaceUrl]) => {
+    this.helpDataItem$?.pipe(withLatestFrom(this.helpArticleId$), first()).subscribe({
+      next: ([helpDataItem, helpArticleId]) => {
         if (helpDataItem && helpDataItem.id) {
+          const currentLocation = getLocation()
+          const url = new URL(helpDataItem.resourceUrl ?? '', currentLocation.origin + currentLocation.deploymentPath)
+          console.log(currentLocation)
+          console.log(`navigate to help page: ${url.toString()}`)
           try {
-            window.open(new URL(helpDataItem.resourceUrl ?? ''), '_blank')?.focus
+            window.open(url, '_blank')?.focus
           } catch (e) {
-            console.log(`Could not construct help page url ${helpDataItem.resourceUrl}`, e)
-            // construct relative url
-            const relativeUrl = this.getCurrentUrl().split(workspaceUrl)[0] + helpDataItem.resourceUrl
-            try {
-              window.open(new URL(relativeUrl), '_blank')?.focus
-            } catch (e) {
-              console.log(`Could not construct help page url %s`, relativeUrl, e)
-              this.portalMessageService.error({
-                summaryKey: 'SHOW_HELP.HELP_PAGE_ERROR'
-              })
-            }
+            console.log(`Could not construct help page url ${url.toString()}`, e)
+            this.portalMessageService.error({
+              summaryKey: 'SHOW_HELP.HELP_PAGE_ERROR'
+            })
           }
         } else {
           this.translateService.get('SHOW_HELP.NO_HELP_ITEM.HEADER').subscribe((dialogTitle) => {
@@ -170,9 +163,5 @@ export class OneCXShowHelpComponent implements ocxRemoteComponent {
       }
     })
     event.preventDefault()
-  }
-
-  public getCurrentUrl(): string {
-    return window.location.href
   }
 }

@@ -73,13 +73,6 @@ describe('OneCXShowHelpComponent', () => {
     helpApiServiceSpy.searchHelps.calls.reset()
     dialogServiceSpy.open.calls.reset()
     messageServiceSpy.error.calls.reset()
-
-    const appStateService = TestBed.inject(AppStateService)
-    spyOn(appStateService.currentWorkspace$, 'asObservable').and.returnValue(
-      of({
-        baseUrl: '/admin'
-      }) as any
-    )
   })
 
   it('should create', () => {
@@ -399,11 +392,9 @@ describe('OneCXShowHelpComponent', () => {
     } as RemoteComponentConfig)
     fixture.detectChanges()
 
-    spyOn(component, 'getCurrentUrl').and.returnValue('http://localhost:1234/admin/somePage')
-
     oneCXShowHelpHarness = await TestbedHarnessEnvironment.harnessForFixture(fixture, OneCXShowHelpHarness)
     await oneCXShowHelpHarness.clickHelpButton()
-    expect(window.open).toHaveBeenCalledOnceWith(new URL('http://localhost:1234/admin/helpItem'), '_blank')
+    expect(window.open).toHaveBeenCalledOnceWith(new URL(window.location.origin + '/admin/helpItem'), '_blank')
   })
 
   it('should display error message on failed window opening', async () => {
