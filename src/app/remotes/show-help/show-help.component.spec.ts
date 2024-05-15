@@ -362,7 +362,7 @@ describe('OneCXShowHelpComponent', () => {
     expect(window.open).toHaveBeenCalledOnceWith(new URL('http://resource_url'), '_blank')
   })
 
-  it('should open new window with help article with reltiveUrl', async () => {
+  it('should open new window with help article with relativeUrl', async () => {
     spyOn(window, 'open')
     helpApiServiceSpy.searchHelps.and.returnValue(
       of({
