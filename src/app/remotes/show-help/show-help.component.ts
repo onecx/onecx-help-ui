@@ -140,7 +140,7 @@ export class OneCXShowHelpComponent implements ocxRemoteComponent {
           if (helpDataItem.resourceUrl) {
             const currentLocation = getLocation()
             const url = new URL(
-              helpDataItem.resourceUrl ?? '',
+              helpDataItem.resourceUrl,
               Location.joinWithSlash(currentLocation.origin, currentLocation.deploymentPath)
             )
             console.log(`navigate to help page: ${url.toString()}`)
