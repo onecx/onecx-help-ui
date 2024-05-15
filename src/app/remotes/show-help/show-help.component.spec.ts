@@ -399,11 +399,10 @@ describe('OneCXShowHelpComponent', () => {
 
   it('should display error message on failed window opening', async () => {
     spyOn(window, 'open').and.throwError('')
-    spyOn(window.location.href, 'split').and.returnValue([''])
     helpApiServiceSpy.searchHelps.and.returnValue(
       of({
         totalElements: 1,
-        stream: [{ id: '1' }]
+        stream: [{ id: '1', resourceUrl: '/admin/helpItem' }]
       } as any)
     )
     const appStateService = TestBed.inject(AppStateService)
