@@ -137,19 +137,21 @@ export class OneCXShowHelpComponent implements ocxRemoteComponent {
     this.helpDataItem$?.pipe(withLatestFrom(this.helpArticleId$), first()).subscribe({
       next: ([helpDataItem, helpArticleId]) => {
         if (helpDataItem && helpDataItem.id) {
-          const currentLocation = getLocation()
-          const url = new URL(
-            helpDataItem.resourceUrl ?? '',
-            Location.joinWithSlash(currentLocation.origin, currentLocation.deploymentPath)
-          )
-          console.log(`navigate to help page: ${url.toString()}`)
-          try {
-            window.open(url, '_blank')?.focus()
-          } catch (e) {
-            console.log(`Could not construct help page url ${url.toString()}`, e)
-            this.portalMessageService.error({
-              summaryKey: 'SHOW_HELP.HELP_PAGE_ERROR'
-            })
+          if (helpDataItem.resourceUrl) {
+            const currentLocation = getLocation()
+            const url = new URL(
+              helpDataItem.resourceUrl ?? '',
+              Location.joinWithSlash(currentLocation.origin, currentLocation.deploymentPath)
+            )
+            console.log(`navigate to help page: ${url.toString()}`)
+            try {
+              window.open(url, '_blank')?.focus()
+            } catch (e) {
+              console.log(`Could not construct help page url ${url.toString()}`, e)
+              this.portalMessageService.error({
+                summaryKey: 'SHOW_HELP.HELP_PAGE_ERROR'
+              })
+            }
           }
         } else {
           this.translateService.get('SHOW_HELP.NO_HELP_ITEM.HEADER').subscribe((dialogTitle) => {
