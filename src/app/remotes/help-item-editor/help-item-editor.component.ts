@@ -124,16 +124,14 @@ export class OneCXHelpItemEditorComponent implements ocxRemoteComponent {
   }
 
   private loadHelpArticle(productName: string, helpItemId: string): Observable<Help> {
-    return this.helpDataService
-      .searchHelps({ helpSearchCriteria: { itemId: helpItemId, productName: productName } })
-      .pipe(
-        map((helpPageResult) => {
-          if (helpPageResult.totalElements !== 1) {
-            return {} as Help
-          }
-          return helpPageResult.stream!.at(0)!
-        })
-      )
+    return this.helpDataService.searchHelps({ helpSearchCriteria: { itemId: helpItemId, productName: productName } }).pipe(
+      map((helpPageResult) => {
+        if (helpPageResult.totalElements !== 1) {
+          return {} as Help
+        }
+        return helpPageResult.stream!.at(0)!
+      })
+    )
   }
 
   private openHelpEditorDialog(helpItem: Help): Observable<DialogState<Help>> {
