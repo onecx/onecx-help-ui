@@ -7,8 +7,15 @@ import { of, throwError } from 'rxjs'
 import { FormControl, FormGroup, Validators } from '@angular/forms'
 
 import { AppStateService, createTranslateLoader, Column, PortalMessageService } from '@onecx/portal-integration-angular'
-import { Help, HelpsInternalAPIService, CreateHelp } from 'src/app/shared/generated'
+import { Help, HelpsInternalAPIService, CreateHelp, Product } from 'src/app/shared/generated'
 import { HelpDetailComponent } from './help-detail.component'
+
+function convertFormGroupProductToProductName(formGroup: FormGroup) {
+  const expectedArgument = formGroup.value
+  expectedArgument.productName = expectedArgument.product.name
+  delete expectedArgument.product
+  return expectedArgument
+}
 
 describe('HelpDetailComponent', () => {
   let component: HelpDetailComponent
@@ -20,7 +27,7 @@ describe('HelpDetailComponent', () => {
     updateHelp: jasmine.createSpy('updateHelp').and.returnValue(of({}))
   }
   const dummyHelpItem = {
-    appId: 'appId',
+    product: 'productName',
     itemId: 'itemId'
   }
 
@@ -30,12 +37,17 @@ describe('HelpDetailComponent', () => {
   })
   class MockHelpFormComponent {
     formGroup = new FormGroup({
-      appId: new FormControl(''),
+      product: new FormControl(''),
       itemId: new FormControl('')
     })
     changeMode = ''
     helpItem: undefined
     columns!: Column[]
+    products: Product[] = []
+    productsFiltered: Product[] = []
+    filterProducts(event: { query: string }): void {
+      console.log('Filtering products with query:', event.query)
+    }
     // eslint-disable-next-line @angular-eslint/use-lifecycle-interface
     ngOnChanges(changes: SimpleChanges): void {
       console.log('On changes')
@@ -85,8 +97,8 @@ describe('HelpDetailComponent', () => {
     component.changeMode = 'NEW'
     let mockHelpForm = new MockHelpFormComponent()
     mockHelpForm.formGroup.setValue({
-      appId: 'value',
-      itemId: 'value2'
+      product: 'product2',
+      itemId: 'itemId2'
     })
     component.helpFormComponent = mockHelpForm
     spyOn(component.searchEmitter, 'emit')
@@ -95,8 +107,9 @@ describe('HelpDetailComponent', () => {
 
     expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'HELPITEM_CREATION.CREATION_SUCCESS' })
     expect(component.searchEmitter.emit).toHaveBeenCalled()
+    const expectedArgument = convertFormGroupProductToProductName(component.helpFormComponent.formGroup)
     expect(apiServiceSpy.createNewHelp).toHaveBeenCalledWith({
-      createHelp: component.helpFormComponent.formGroup.value as CreateHelp
+      createHelp: expectedArgument as CreateHelp
     })
   })
 
@@ -110,7 +123,7 @@ describe('HelpDetailComponent', () => {
     component.changeMode = 'NEW'
     let mockHelpForm = new MockHelpFormComponent()
     mockHelpForm.formGroup.setValue({
-      appId: 'help-mgmt-ui',
+      product: 'help-mgmt-ui',
       itemId: 'PAGE_HELP_SEARCH'
     })
     component.helpFormComponent = mockHelpForm
@@ -130,7 +143,7 @@ describe('HelpDetailComponent', () => {
     component.changeMode = 'NEW'
     let mockHelpForm = new MockHelpFormComponent()
     mockHelpForm.formGroup.setValue({
-      appId: 'help-mgmt-ui',
+      product: 'help-mgmt-ui',
       itemId: 'PAGE_HELP_SEARCH'
     })
     component.helpFormComponent = mockHelpForm
@@ -147,7 +160,7 @@ describe('HelpDetailComponent', () => {
     component.changeMode = 'NEW'
     let invalidMockHelpForm = new MockHelpFormComponent()
     invalidMockHelpForm.formGroup = new FormGroup({
-      appId: new FormControl('', Validators.required),
+      product: new FormControl('', Validators.required),
       itemId: new FormControl('', Validators.required)
     })
     component.helpFormComponent = invalidMockHelpForm
@@ -161,11 +174,11 @@ describe('HelpDetailComponent', () => {
     apiServiceSpy.updateHelp.and.returnValue(of({}))
     component.changeMode = 'EDIT'
     component.helpItem = { modificationCount: 0, ...dummyHelpItem } as Help
-    component.appId = dummyHelpItem.appId
+    component.productName = dummyHelpItem.product
     component.itemId = dummyHelpItem.itemId
     let mockHelpForm = new MockHelpFormComponent()
     mockHelpForm.formGroup.patchValue({
-      appId: dummyHelpItem.appId,
+      product: dummyHelpItem.product,
       itemId: dummyHelpItem.itemId
     })
     component.helpFormComponent = mockHelpForm
@@ -176,9 +189,10 @@ describe('HelpDetailComponent', () => {
 
     expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'HELP_DETAIL.UPDATE_SUCCESSFUL' })
     expect(component.searchEmitter.emit).toHaveBeenCalled()
+    const expectedArgument = convertFormGroupProductToProductName(component.helpFormComponent.formGroup)
     expect(apiServiceSpy.updateHelp).toHaveBeenCalledWith({
       id: component.itemId,
-      updateHelp: { ...component.helpFormComponent.formGroup.value, modificationCount: 0 }
+      updateHelp: { ...expectedArgument, modificationCount: 0 }
     })
   })
 
@@ -187,11 +201,11 @@ describe('HelpDetailComponent', () => {
     component.changeMode = 'EDIT'
     let mockHelpForm = new MockHelpFormComponent()
     mockHelpForm.formGroup.setValue({
-      appId: 'help-mgmt-ui',
+      product: 'help-mgmt-ui',
       itemId: 'PAGE_HELP_SEARCH'
     })
     component.helpFormComponent = mockHelpForm
-    component.appId = 'help-mgmt-ui'
+    component.productName = 'help-mgmt-ui'
     component.itemId = 'PAGE_HELP_SEARCH'
 
     component.onSave()
@@ -203,11 +217,11 @@ describe('HelpDetailComponent', () => {
     component.changeMode = 'EDIT'
     let invalidMockHelpForm = new MockHelpFormComponent()
     invalidMockHelpForm.formGroup = new FormGroup({
-      appId: new FormControl('', Validators.required),
+      product: new FormControl('', Validators.required),
       itemId: new FormControl('', Validators.required)
     })
     component.helpFormComponent = invalidMockHelpForm
-    component.appId = undefined
+    component.productName = undefined
     component.itemId = undefined
 
     component.onSave()

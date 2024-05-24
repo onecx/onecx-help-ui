@@ -11,19 +11,8 @@
  */
 
 
-export interface HelpSearchCriteria {
-    itemId?: string;
-    context?: string;
-    baseUrl?: string;
-    resourceUrl?: string;
-    productName?: string;
-    /**
-     * The number of page.
-     */
-    pageNumber?: number;
-    /**
-     * The size of page
-     */
-    pageSize?: number;
+export interface Product {
+    name: string;
+    displayName: string;
 }
 

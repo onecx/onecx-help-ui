@@ -4,7 +4,15 @@ import { finalize, Observable } from 'rxjs'
 import { Table } from 'primeng/table'
 
 import { Action, Column, PortalMessageService } from '@onecx/portal-integration-angular'
-import { HelpsInternalAPIService, Help, SearchHelpsRequestParams, HelpSearchCriteria } from 'src/app/shared/generated'
+import {
+  HelpsInternalAPIService,
+  Help,
+  SearchHelpsRequestParams,
+  HelpSearchCriteria,
+  SearchProductsByCriteriaRequestParams,
+  ProductsPageResult,
+  Product
+} from 'src/app/shared/generated'
 
 type ExtendedColumn = Column & { css?: string; limit?: boolean }
 type ChangeMode = 'VIEW' | 'NEW' | 'EDIT'
@@ -21,6 +29,9 @@ export class HelpSearchComponent implements OnInit {
   public actions: Action[] = []
   public helpItem: Help | undefined
   public results: Help[] = []
+  public resultsForDisplay: any[] = []
+  public products: Product[] = []
+  public productsLoaded: boolean = false
   public criteria: SearchHelpsRequestParams = {
     helpSearchCriteria: {}
   }
@@ -29,7 +40,7 @@ export class HelpSearchComponent implements OnInit {
   public loadingResults = false
   public displayDeleteDialog = false
   public displayDetailDialog = false
-  public appsChanged = false
+  public productsChanged = false
   public rowsPerPage = 10
   public rowsPerPageOptions = [10, 20, 50]
   public items$!: Observable<any>
@@ -37,8 +48,8 @@ export class HelpSearchComponent implements OnInit {
   public filteredColumns: Column[] = []
   public columns: ExtendedColumn[] = [
     {
-      field: 'appId',
-      header: 'APPLICATION_ID',
+      field: 'productDisplayName',
+      header: 'PRODUCT_NAME',
       active: true,
       translationPrefix: 'HELP_ITEM',
       css: 'hidden sm:table-cell'
@@ -62,7 +73,16 @@ export class HelpSearchComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.search(this.criteria.helpSearchCriteria)
+    const criteria: SearchProductsByCriteriaRequestParams = {
+      productsSearchCriteria: { pageNumber: 0, pageSize: 1000 }
+    }
+    this.helpInternalAPIService
+      .searchProductsByCriteria(criteria)
+      .subscribe((productsPageResult: ProductsPageResult) => {
+        this.processProducts(productsPageResult)
+        this.search(this.criteria.helpSearchCriteria)
+      })
+
     this.filteredColumns = this.columns.filter((a) => {
       return a.active === true
     })
@@ -79,6 +99,15 @@ export class HelpSearchComponent implements OnInit {
     })
   }
 
+  private processProducts(productsPageResult: ProductsPageResult) {
+    this.products = productsPageResult.stream ?? []
+    if (this.products?.length === 0) {
+      this.msgService.info({ summaryKey: 'HELP_SEARCH.NO_PRODUCTS_AVAILABLE' })
+    }
+    this.products = this.products?.filter((product) => product !== null)
+    this.productsLoaded = true
+  }
+
   /****************************************************************************
    *  SEARCHING
    *    - initial, without any criteria => to be checked again with stakeholder
@@ -90,8 +119,8 @@ export class HelpSearchComponent implements OnInit {
       helpSearchCriteria: criteria
     }
     if (!reuseCriteria) {
-      if (criteriaSearchParams.helpSearchCriteria?.appId === '')
-        criteriaSearchParams.helpSearchCriteria.appId = undefined
+      if (criteriaSearchParams.helpSearchCriteria?.productName === '')
+        criteriaSearchParams.helpSearchCriteria.productName = undefined
       if (criteriaSearchParams.helpSearchCriteria?.itemId === '')
         criteriaSearchParams.helpSearchCriteria.itemId = undefined
       this.criteria = criteriaSearchParams
@@ -101,31 +130,43 @@ export class HelpSearchComponent implements OnInit {
       .searchHelps(this.criteria)
       .pipe(finalize(() => (this.searchInProgress = false)))
       .subscribe({
+        error: () => this.msgService.error({ summaryKey: 'GENERAL.SEARCH.MSG_SEARCH_FAILED' }),
         next: (data) => {
           if (data.stream !== undefined) {
+            data.stream?.sort(this.sortHelpItemByDefault)
             this.results = data.stream
+            this.resultsForDisplay = data.stream.map((result) => {
+              const resultForDisplay = { ...result } as any
+              resultForDisplay['productName'] = result.productName
+              const product = this.products.find((product) => product.name === result.productName)
+              resultForDisplay['productDisplayName'] = product?.displayName
+              resultForDisplay['product'] = {
+                name: result.productName,
+                displayName: this.products.find((product) => product.name === result.productName)?.displayName
+              }
+              return resultForDisplay
+            })
           }
-          this.results?.sort(this.sortHelpItemByDefault)
+
           if (data.stream?.length === 0) {
             this.msgService.info({ summaryKey: 'GENERAL.SEARCH.MSG_NO_RESULTS' })
           }
-
-          this.appsChanged = false
-        },
-        error: () => this.msgService.error({ summaryKey: 'GENERAL.SEARCH.MSG_SEARCH_FAILED' })
+          this.productsChanged = false
+        }
       })
   }
   public onSearch() {
     this.changeMode = 'NEW'
-    this.appsChanged = true
+    this.productsChanged = true
     this.search(this.criteria.helpSearchCriteria, true)
   }
 
-  // default sorting: 1. appId, 2.itemId
+  // default sorting: 1. productName, 2.itemId
   private sortHelpItemByDefault(a: Help, b: Help): number {
     return (
-      (a.appId ? a.appId.toUpperCase() : '').localeCompare(b.appId ? b.appId.toUpperCase() : '') ||
-      (a.itemId ? a.itemId.toUpperCase() : '').localeCompare(b.itemId ? b.itemId.toUpperCase() : '')
+      (a.productName ? a.productName.toUpperCase() : '').localeCompare(
+        b.productName ? b.productName.toUpperCase() : ''
+      ) || (a.itemId ? a.itemId.toUpperCase() : '').localeCompare(b.itemId ? b.itemId.toUpperCase() : '')
     )
   }
 
@@ -141,38 +182,39 @@ export class HelpSearchComponent implements OnInit {
    */
   public onCreate() {
     this.changeMode = 'NEW'
-    this.appsChanged = false
+    this.productsChanged = false
     this.helpItem = undefined
     this.displayDetailDialog = true
   }
   public onDetail(ev: MouseEvent, item: Help, mode: ChangeMode): void {
     ev.stopPropagation()
     this.changeMode = mode
-    this.appsChanged = false
+    this.productsChanged = false
     this.helpItem = item
     this.displayDetailDialog = true
   }
   public onCopy(ev: MouseEvent, item: Help) {
     ev.stopPropagation()
     this.changeMode = 'NEW'
-    this.appsChanged = false
+    this.productsChanged = false
     this.helpItem = item
     this.displayDetailDialog = true
   }
   public onDelete(ev: MouseEvent, item: Help): void {
     ev.stopPropagation()
     this.helpItem = item
-    this.appsChanged = false
+    this.productsChanged = false
     this.displayDeleteDialog = true
   }
   public onDeleteConfirmation(): void {
-    if (this.helpItem?.id && typeof this.helpItem.appId === 'string') {
+    if (this.helpItem?.id && typeof this.helpItem.productName === 'string') {
       this.helpInternalAPIService.deleteHelp({ id: this.helpItem?.id }).subscribe({
         next: () => {
           this.displayDeleteDialog = false
           this.results = this.results?.filter((a) => a.id !== this.helpItem?.id)
+          this.resultsForDisplay = this.resultsForDisplay?.filter((a) => a.id !== this.helpItem?.id)
           this.helpItem = undefined
-          this.appsChanged = true
+          this.productsChanged = true
           this.msgService.success({ summaryKey: 'ACTIONS.DELETE.MESSAGE.HELP_ITEM_OK' })
         },
         error: () => this.msgService.error({ summaryKey: 'ACTIONS.DELETE.MESSAGE.HELP_ITEM_NOK' })
