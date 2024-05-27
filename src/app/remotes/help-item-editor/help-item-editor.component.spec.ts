@@ -203,30 +203,6 @@ describe('OneCXHelpItemEditorComponent', () => {
     })
   })
 
-  it('should contain productName from page', (done: DoneFn) => {
-    const appStateService = TestBed.inject(AppStateService)
-    spyOn(appStateService.currentPage$, 'asObservable').and.returnValue(
-      of({
-        applicationId: 'page_product_name_app_id'
-      }) as any
-    )
-    spyOn(appStateService.currentMfe$, 'asObservable').and.returnValue(
-      of({
-        remoteBaseUrl: '',
-        product_name: 'mfe_page_product_name'
-      }) as any
-    )
-
-    fixture = TestBed.createComponent(OneCXHelpItemEditorComponent)
-    component = fixture.componentInstance
-    fixture.detectChanges()
-
-    component.productName$?.subscribe((productName) => {
-      expect(productName).toEqual('page_product_name_app_id')
-      done()
-    })
-  })
-
   it('should contain productName from mfe', (done: DoneFn) => {
     const appStateService = TestBed.inject(AppStateService)
     spyOn(appStateService.currentPage$, 'asObservable').and.returnValue(of({}) as any)

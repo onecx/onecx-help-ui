@@ -49,7 +49,7 @@ export class HelpDetailComponent implements OnChanges {
     this.changeMode === 'NEW' ? this.createHelpItem(helpObject) : this.updateHelpItem(helpObject)
   }
 
-  private createHelpItem(helpObject: any) {
+  private createHelpItem(helpObject: CreateHelp) {
     if (this.helpFormComponent.formGroup.valid) {
       this.helpApi
         .createNewHelp({
@@ -75,12 +75,12 @@ export class HelpDetailComponent implements OnChanges {
     }
   }
 
-  private updateHelpItem(helpObject: any): void {
+  private updateHelpItem(helpObject: CreateHelp): void {
     if (this.helpFormComponent.formGroup.valid && this.productName && this.itemId) {
       this.helpApi
         .updateHelp({
           id: this.itemId,
-          updateHelp: { ...helpObject, modificationCount: this.helpItem?.modificationCount }
+          updateHelp: { ...helpObject, modificationCount: this.helpItem?.modificationCount ?? 0 }
         })
         .subscribe({
           next: () => {

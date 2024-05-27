@@ -16,6 +16,7 @@ import {
 
 type ExtendedColumn = Column & { css?: string; limit?: boolean }
 type ChangeMode = 'VIEW' | 'NEW' | 'EDIT'
+type HelpForDisplay = Help & { productDisplayName?: string; product?: { name?: string; displayName?: string } }
 
 @Component({
   selector: 'app-help-search',
@@ -28,8 +29,7 @@ export class HelpSearchComponent implements OnInit {
   public changeMode: ChangeMode = 'NEW'
   public actions: Action[] = []
   public helpItem: Help | undefined
-  public results: Help[] = []
-  public resultsForDisplay: any[] = []
+  public resultsForDisplay: HelpForDisplay[] = []
   public products: Product[] = []
   public productsLoaded: boolean = false
   public criteria: SearchHelpsRequestParams = {
@@ -134,7 +134,6 @@ export class HelpSearchComponent implements OnInit {
         next: (data) => {
           if (data.stream !== undefined) {
             data.stream?.sort(this.sortHelpItemByDefault)
-            this.results = data.stream
             this.resultsForDisplay = data.stream.map((result) => {
               const resultForDisplay = { ...result } as any
               resultForDisplay['productName'] = result.productName
@@ -211,7 +210,6 @@ export class HelpSearchComponent implements OnInit {
       this.helpInternalAPIService.deleteHelp({ id: this.helpItem?.id }).subscribe({
         next: () => {
           this.displayDeleteDialog = false
-          this.results = this.results?.filter((a) => a.id !== this.helpItem?.id)
           this.resultsForDisplay = this.resultsForDisplay?.filter((a) => a.id !== this.helpItem?.id)
           this.helpItem = undefined
           this.productsChanged = true

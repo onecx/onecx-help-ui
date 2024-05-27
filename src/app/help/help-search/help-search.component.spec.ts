@@ -6,7 +6,7 @@ import { TranslateLoader, TranslateModule } from '@ngx-translate/core'
 import { of, throwError } from 'rxjs'
 
 import { AppStateService, createTranslateLoader, Column, PortalMessageService } from '@onecx/portal-integration-angular'
-import { HelpsInternalAPIService, Help, SearchHelpsRequestParams } from 'src/app/shared/generated'
+import { HelpsInternalAPIService, Help, SearchHelpsRequestParams, Product } from 'src/app/shared/generated'
 import { HelpSearchComponent } from './help-search.component'
 
 describe('HelpSearchComponent', () => {
@@ -113,11 +113,16 @@ describe('HelpSearchComponent', () => {
       ]
     }
     apiServiceSpy.searchHelps.and.returnValue(of(helpPageResultMock))
-    component.results = []
+    component.products = [
+      { name: 'help-mgmt-ui', displayName: 'Help Mgmt UI' },
+      { name: '2', displayName: '2dn' }
+    ] as Product[]
+    component.resultsForDisplay = []
 
     component.search({})
 
-    expect(component.results[0]).toEqual({ productName: 'help-mgmt-ui', itemId: 'id' })
+    expect(component.resultsForDisplay[0].productDisplayName).toEqual('Help Mgmt UI')
+    expect(component.resultsForDisplay[0].itemId).toEqual('id')
   })
 
   it('should handle empty results on search', () => {
@@ -130,11 +135,11 @@ describe('HelpSearchComponent', () => {
     }
     apiServiceSpy.searchHelps.and.returnValue(of(helpPageResultMock))
     apiServiceSpy.searchProductsByCriteria.and.returnValue(of(helpPageResultMock))
-    component.results = []
+    component.resultsForDisplay = []
 
     component.search({})
 
-    expect(component.results.length).toEqual(0)
+    expect(component.resultsForDisplay.length).toEqual(0)
     expect(msgServiceSpy.info).toHaveBeenCalledWith({ summaryKey: 'HELP_SEARCH.NO_PRODUCTS_AVAILABLE' })
   })
 
@@ -170,7 +175,6 @@ describe('HelpSearchComponent', () => {
 
   it('should delete help item', () => {
     apiServiceSpy.deleteHelp({ productName: newHelpItemArr[0].productName, itemId: newHelpItemArr[0].id })
-    component.results = newHelpItemArr
     component.resultsForDisplay = newHelpItemArr
     component.helpItem = {
       id: newHelpItemArr[0].id,
@@ -181,14 +185,14 @@ describe('HelpSearchComponent', () => {
     component.onDeleteConfirmation()
 
     expect(apiServiceSpy.deleteHelp).toHaveBeenCalled()
-    expect(component.results.length).toBe(0)
+    expect(component.resultsForDisplay.length).toBe(0)
     expect(component.resultsForDisplay.length).toBe(0)
     expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.DELETE.MESSAGE.HELP_ITEM_OK' })
   })
 
   it('should display error on deleteHelpItem failure', () => {
     apiServiceSpy.deleteHelp.and.returnValue(throwError(() => new Error()))
-    component.results = newHelpItemArr
+    component.resultsForDisplay = newHelpItemArr
     component.helpItem = {
       id: newHelpItemArr[0].id,
       productName: newHelpItemArr[0].productName,
@@ -255,46 +259,46 @@ describe('HelpSearchComponent', () => {
   })
 
   it('should correctly sort productNames using sortHelpItemsByDefault 1', () => {
-    component.results = [
+    component.resultsForDisplay = [
       { productName: 'B', itemId: '2' },
       { productName: 'A', itemId: '1' }
     ]
-    component.results.sort(component['sortHelpItemByDefault'])
+    component.resultsForDisplay.sort(component['sortHelpItemByDefault'])
 
-    expect(component.results).toEqual([
+    expect(component.resultsForDisplay).toEqual([
       { productName: 'A', itemId: '1' },
       { productName: 'B', itemId: '2' }
     ])
   })
 
   it('should correctly sort productNames using sortHelpItemsByDefault 2', () => {
-    component.results = [
+    component.resultsForDisplay = [
       { productName: '', itemId: '1' },
       { productName: 'A', itemId: '2' }
     ]
-    component.results.sort(component['sortHelpItemByDefault'])
+    component.resultsForDisplay.sort(component['sortHelpItemByDefault'])
 
-    expect(component.results).toEqual([
+    expect(component.resultsForDisplay).toEqual([
       { productName: '', itemId: '1' },
       { productName: 'A', itemId: '2' }
     ])
   })
 
   it('should correctly sort productNames using sortHelpItemsByDefault 3', () => {
-    component.results = [
+    component.resultsForDisplay = [
       { productName: 'A', itemId: '2' },
       { productName: '', itemId: '1' }
     ]
-    component.results.sort(component['sortHelpItemByDefault'])
+    component.resultsForDisplay.sort(component['sortHelpItemByDefault'])
 
-    expect(component.results).toEqual([
+    expect(component.resultsForDisplay).toEqual([
       { productName: '', itemId: '1' },
       { productName: 'A', itemId: '2' }
     ])
   })
 
   it('should correctly sort productNames using sortHelpItemsByDefault 4', () => {
-    component.results = [
+    component.resultsForDisplay = [
       { productName: 'A', itemId: '' },
       { productName: 'A', itemId: '2' },
       { productName: 'A', itemId: '1' },
@@ -302,9 +306,9 @@ describe('HelpSearchComponent', () => {
       { productName: '', itemId: '2' },
       { productName: '', itemId: '' }
     ]
-    component.results.sort(component['sortHelpItemByDefault'])
+    component.resultsForDisplay.sort(component['sortHelpItemByDefault'])
 
-    expect(component.results).toEqual([
+    expect(component.resultsForDisplay).toEqual([
       { productName: '', itemId: '' },
       { productName: '', itemId: '1' },
       { productName: '', itemId: '2' },
@@ -315,13 +319,13 @@ describe('HelpSearchComponent', () => {
   })
 
   it('should correctly sort itemIds using sortHelpItemsByDefault', () => {
-    component.results = [
+    component.resultsForDisplay = [
       { productName: 'A', itemId: '2' },
       { productName: 'A', itemId: '1' }
     ]
-    component.results.sort(component['sortHelpItemByDefault'])
+    component.resultsForDisplay.sort(component['sortHelpItemByDefault'])
 
-    expect(component.results).toEqual([
+    expect(component.resultsForDisplay).toEqual([
       { productName: 'A', itemId: '1' },
       { productName: 'A', itemId: '2' }
     ])

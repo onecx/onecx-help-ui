@@ -36,7 +36,7 @@
       </ng-template>
 
       <ng-template pTemplate="paginatorleft" let-state>
-        <ocx-paging-info [resultsCount]="results ? results.length : -1" [state]="state"></ocx-paging-info>
+        <ocx-paging-info [resultsCount]="resultsForDisplay ? resultsForDisplay.length : -1" [state]="state"></ocx-paging-info>
       </ng-template>
 
       <ng-template pTemplate="emptymessage">

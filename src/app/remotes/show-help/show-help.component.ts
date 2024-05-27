@@ -92,7 +92,6 @@ export class OneCXShowHelpComponent implements ocxRemoteComponent {
       this.appStateService.currentMfe$.asObservable()
     ]).pipe(
       map(([page, mfe]) => {
-        if (page?.applicationId) return page.applicationId
         if (mfe.productName) return mfe.productName
         return ''
       })
