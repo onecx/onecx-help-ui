@@ -53,7 +53,7 @@ export class HelpDetailComponent implements OnChanges {
     if (this.helpFormComponent.formGroup.valid) {
       this.helpApi
         .createNewHelp({
-          createHelp: helpObject as CreateHelp
+          createHelp: helpObject
         })
         .subscribe({
           next: () => {
