@@ -5,8 +5,8 @@ export class HelpItemEditorDialogHarness extends ComponentHarness {
 
   getHelpItemIdInput = this.locatorFor('#helpItemId')
   getHelpItemIdLabel = this.locatorFor('label[for=helpItemId]')
-  getAppIdInput = this.locatorFor('#appId')
-  getAppIdLabel = this.locatorFor('label[for=appId]')
+  getProductNameInput = this.locatorFor('#productName')
+  getProductNameLabel = this.locatorFor('label[for=productName]')
   getResourceUrlInput = this.locatorFor('#resourceUrl')
   getResourceUrlLabel = this.locatorFor('label[for=resourceUrl]')
 
@@ -18,12 +18,12 @@ export class HelpItemEditorDialogHarness extends ComponentHarness {
     return await (await this.getHelpItemIdLabel())?.text()
   }
 
-  async getAppIdValue(): Promise<string> {
-    return await (await this.getAppIdInput()).getProperty<string>('value')
+  async getProductNameValue(): Promise<string> {
+    return await (await this.getProductNameInput()).getProperty<string>('value')
   }
 
-  async getAppIdLabelText(): Promise<string | undefined> {
-    return await (await this.getAppIdLabel())?.text()
+  async getProductNameLabelText(): Promise<string | undefined> {
+    return await (await this.getProductNameLabel())?.text()
   }
 
   async getResourceUrlValue(): Promise<string> {

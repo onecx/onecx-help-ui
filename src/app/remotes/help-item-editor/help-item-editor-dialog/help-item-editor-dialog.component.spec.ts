@@ -58,19 +58,19 @@ describe('HelpItemEditorDialogComponent', () => {
 
   it('should display correct labels', async () => {
     expect(await helpItemEditorDialogHarness.getHelpItemIdLabelText()).toEqual('Help Item Id')
-    expect(await helpItemEditorDialogHarness.getAppIdLabelText()).toEqual('Applicaiton Id')
+    expect(await helpItemEditorDialogHarness.getProductNameLabelText()).toEqual('Product Name')
     expect(await helpItemEditorDialogHarness.getResourceUrlLabelText()).toEqual('URL')
   })
 
   it('should initially have empty values', async () => {
     expect(await helpItemEditorDialogHarness.getHelpItemIdValue()).toEqual('')
-    expect(await helpItemEditorDialogHarness.getAppIdValue()).toEqual('')
+    expect(await helpItemEditorDialogHarness.getProductNameValue()).toEqual('')
     expect(await helpItemEditorDialogHarness.getResourceUrlValue()).toEqual('')
   })
 
   it('should update form and result on changes', async () => {
     const helpItem = {
-      appId: 'new_app_id',
+      productName: 'new_product_name',
       itemId: 'new_item_id',
       resourceUrl: 'new_resource_url'
     }
@@ -81,7 +81,7 @@ describe('HelpItemEditorDialogComponent', () => {
     fixture.detectChanges()
 
     expect(await helpItemEditorDialogHarness.getHelpItemIdValue()).toEqual('new_item_id')
-    expect(await helpItemEditorDialogHarness.getAppIdValue()).toEqual('new_app_id')
+    expect(await helpItemEditorDialogHarness.getProductNameValue()).toEqual('new_product_name')
     expect(await helpItemEditorDialogHarness.getResourceUrlValue()).toEqual('new_resource_url')
     expect(component.dialogResult).toEqual(helpItem)
   })
@@ -92,13 +92,13 @@ describe('HelpItemEditorDialogComponent', () => {
 
   it('should allow to close dialog and update dialogResult on primary button click if form was valid and helpItem was provided', () => {
     const helpItem = {
-      appId: 'new_app_id',
+      productName: 'new_product_name',
       itemId: 'new_item_id',
       resourceUrl: 'new_resource_url'
     }
     component.helpItem = helpItem
     component.formGroup.patchValue({
-      appId: 'form_app_id',
+      productName: 'form_product_name',
       itemId: 'form_item_id',
       resourceUrl: 'form_resource_url'
     })
@@ -106,7 +106,7 @@ describe('HelpItemEditorDialogComponent', () => {
     const result = component.ocxDialogButtonClicked({ button: 'primary' } as any)
     expect(result).toBeTrue()
     expect(component.dialogResult).toEqual({
-      appId: 'new_app_id',
+      productName: 'new_product_name',
       itemId: 'new_item_id',
       resourceUrl: 'form_resource_url'
     })
@@ -114,7 +114,7 @@ describe('HelpItemEditorDialogComponent', () => {
 
   it('should not allow to close dialog display SAVE_ERROR message on primary button click if form was not valid', () => {
     const helpItem = {
-      appId: 'new_app_id',
+      productName: 'new_product_name',
       itemId: 'new_item_id',
       resourceUrl: 'new_resource_url'
     }
@@ -131,7 +131,7 @@ describe('HelpItemEditorDialogComponent', () => {
 
   it('should not allow to close dialog display SAVE_ERROR message on primary button click if helpitem was not provided', () => {
     component.formGroup.controls['resourceUrl'].setValue('valid')
-    component.formGroup.controls['appId'].setValue('valid')
+    component.formGroup.controls['productName'].setValue('valid')
     component.formGroup.controls['helpItemId'].setValue('valid')
 
     const result = component.ocxDialogButtonClicked({ button: 'primary' } as any)

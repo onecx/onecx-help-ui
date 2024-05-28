@@ -64,7 +64,7 @@ export class OneCXShowHelpComponent implements ocxRemoteComponent {
   ICON: string = PrimeIcons.QUESTION_CIRCLE
 
   helpArticleId$: Observable<string>
-  applicationId$: Observable<string>
+  productName$: Observable<string>
   helpDataItem$: Observable<Help>
 
   permissions: string[] = []
@@ -87,20 +87,16 @@ export class OneCXShowHelpComponent implements ocxRemoteComponent {
         return router.routerState.snapshot.url.split('#')[0]
       })
     )
-    this.applicationId$ = combineLatest([
-      this.appStateService.currentPage$.asObservable(),
-      this.appStateService.currentMfe$.asObservable()
-    ]).pipe(
-      map(([page, mfe]) => {
-        if (page?.applicationId) return page.applicationId
-        if (mfe.appId) return mfe.appId
+    this.productName$ = combineLatest([this.appStateService.currentMfe$.asObservable()]).pipe(
+      map(([mfe]) => {
+        if (mfe.productName) return mfe.productName
         return ''
       })
     )
 
-    this.helpDataItem$ = combineLatest([this.applicationId$, this.helpArticleId$]).pipe(
-      mergeMap(([applicationId, helpArticleId]) => {
-        if (applicationId && helpArticleId) return this.loadHelpArticle(applicationId, helpArticleId)
+    this.helpDataItem$ = combineLatest([this.productName$, this.helpArticleId$]).pipe(
+      mergeMap(([productName, helpArticleId]) => {
+        if (productName && helpArticleId) return this.loadHelpArticle(productName, helpArticleId)
         return of({} as Help)
       }),
       catchError(() => {
@@ -118,15 +114,17 @@ export class OneCXShowHelpComponent implements ocxRemoteComponent {
     })
   }
 
-  private loadHelpArticle(appId: string, helpItemId: string): Observable<Help> {
-    return this.helpDataService.searchHelps({ helpSearchCriteria: { itemId: helpItemId, appId: appId } }).pipe(
-      map((helpPageResult) => {
-        if (helpPageResult.totalElements !== 1) {
-          return {} as Help
-        }
-        return helpPageResult.stream!.at(0)!
-      })
-    )
+  private loadHelpArticle(productName: string, helpItemId: string): Observable<Help> {
+    return this.helpDataService
+      .searchHelps({ helpSearchCriteria: { itemId: helpItemId, productName: productName } })
+      .pipe(
+        map((helpPageResult) => {
+          if (helpPageResult.totalElements !== 1) {
+            return {} as Help
+          }
+          return helpPageResult.stream!.at(0)!
+        })
+      )
   }
 
   public onEnterClick() {

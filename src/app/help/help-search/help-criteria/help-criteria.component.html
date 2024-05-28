@@ -11,16 +11,16 @@
     <div [formGroup]="helpCriteriaGroup" class="flex flex-wrap gap-4 row-gap-3 px-2">
       <span class="p-float-label">
         <p-autoComplete
-          id="help_search_criteria_appId"
+          id="help_search_criteria_productName"
           styleClass="w-18rem"
-          formControlName="appId"
-          [suggestions]="applicationsIdsFiltered"
-          (completeMethod)="filterApplications($event)"
+          formControlName="productName"
+          [suggestions]="productDisplayNamesFiltered"
+          (completeMethod)="filterProductNames($event)"
           [dropdown]="true"
           [forceSelection]="true"
           appendTo="body"
         ></p-autoComplete>
-        <label for="help_search_criteria_appId">{{ 'HELP_ITEM.APPLICATION_ID' | translate }}</label>
+        <label for="help_search_criteria_productName">{{ 'HELP_ITEM.PRODUCT_NAME' | translate }}</label>
       </span>
       <span class="p-float-label">
         <input id="help_search_criteria_itemId" pInputText type="text" formControlName="itemId" class="w-18rem" />
