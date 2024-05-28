@@ -75,13 +75,17 @@ describe('HelpItemEditorDialogComponent', () => {
       resourceUrl: 'new_resource_url'
     }
     component.helpItem = helpItem
+    component.productDisplayName = 'new product display name'
     component.ngOnChanges({
       helpItem: {} as any
+    })
+    component.ngOnChanges({
+      productDisplayName: 'new product display name' as any
     })
     fixture.detectChanges()
 
     expect(await helpItemEditorDialogHarness.getHelpItemIdValue()).toEqual('new_item_id')
-    expect(await helpItemEditorDialogHarness.getProductNameValue()).toEqual('new_product_name')
+    expect(await helpItemEditorDialogHarness.getProductNameValue()).toEqual('new product display name')
     expect(await helpItemEditorDialogHarness.getResourceUrlValue()).toEqual('new_resource_url')
     expect(component.dialogResult).toEqual(helpItem)
   })

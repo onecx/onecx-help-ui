@@ -34,7 +34,8 @@ describe('OneCXHelpItemEditorComponent', () => {
   const helpApiServiceSpy = jasmine.createSpyObj<HelpsInternalAPIService>('HelpsInternalAPIService', [
     'searchHelps',
     'createNewHelp',
-    'updateHelp'
+    'updateHelp',
+    'searchProductsByCriteria'
   ])
 
   const messageServiceSpy = jasmine.createSpyObj<PortalMessageService>('PortalMessageService', ['error', 'info'])
@@ -78,9 +79,12 @@ describe('OneCXHelpItemEditorComponent', () => {
     helpApiServiceSpy.searchHelps.calls.reset()
     helpApiServiceSpy.createNewHelp.calls.reset()
     helpApiServiceSpy.updateHelp.calls.reset()
+    helpApiServiceSpy.searchProductsByCriteria.calls.reset()
     portalDialogServiceSpy.openDialog.calls.reset()
     messageServiceSpy.error.calls.reset()
     messageServiceSpy.info.calls.reset()
+
+    helpApiServiceSpy.searchProductsByCriteria.and.returnValue(of({} as any))
   })
 
   it('should create', () => {
@@ -324,6 +328,17 @@ describe('OneCXHelpItemEditorComponent', () => {
         productName: 'mfe_product_name'
       }) as any
     )
+    helpApiServiceSpy.searchProductsByCriteria.calls.reset()
+    helpApiServiceSpy.searchProductsByCriteria.and.returnValue(
+      of({
+        stream: [
+          {
+            name: 'mfe_product_name',
+            displayName: 'mfe_display_product_name'
+          }
+        ]
+      } as any)
+    )
     helpApiServiceSpy.searchHelps.and.returnValue(
       of({
         totalElements: 0,
@@ -349,7 +364,8 @@ describe('OneCXHelpItemEditorComponent', () => {
           helpItem: {
             productName: 'mfe_product_name',
             itemId: 'article_id'
-          }
+          },
+          productDisplayName: 'mfe_display_product_name'
         }
       },
       {
@@ -454,6 +470,17 @@ describe('OneCXHelpItemEditorComponent', () => {
         productName: 'mfe_product_name'
       }) as any
     )
+    helpApiServiceSpy.searchProductsByCriteria.calls.reset()
+    helpApiServiceSpy.searchProductsByCriteria.and.returnValue(
+      of({
+        stream: [
+          {
+            name: 'mfe_product_name',
+            displayName: 'mfe_display_product_name'
+          }
+        ]
+      } as any)
+    )
     helpApiServiceSpy.searchHelps.and.returnValue(
       of({
         totalElements: 0,
@@ -479,7 +506,8 @@ describe('OneCXHelpItemEditorComponent', () => {
           helpItem: {
             productName: 'mfe_product_name',
             itemId: 'article_id'
-          }
+          },
+          productDisplayName: 'mfe_display_product_name'
         }
       },
       {
@@ -507,6 +535,21 @@ describe('OneCXHelpItemEditorComponent', () => {
         productName: 'mfe_product_name'
       }) as any
     )
+    helpApiServiceSpy.searchProductsByCriteria.calls.reset()
+    helpApiServiceSpy.searchProductsByCriteria.and.returnValue(
+      of({
+        stream: [
+          {
+            name: 'mfe_product_name',
+            displayName: 'mfe_display_product_name'
+          },
+          {
+            name: 'product_name_1',
+            displayName: 'product_name_1_display'
+          }
+        ]
+      } as any)
+    )
     // itemId and productName different only for testing purposes
     const helpItem = { id: 'id_1', itemId: 'item_1', productName: 'product_name_1' }
     helpApiServiceSpy.searchHelps.and.returnValue(
@@ -531,7 +574,8 @@ describe('OneCXHelpItemEditorComponent', () => {
       {
         type: HelpItemEditorDialogComponent,
         inputs: {
-          helpItem: helpItem
+          helpItem: helpItem,
+          productDisplayName: 'product_name_1_display'
         }
       },
       {

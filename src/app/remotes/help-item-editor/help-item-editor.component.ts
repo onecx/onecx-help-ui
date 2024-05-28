@@ -23,7 +23,7 @@ import {
 import { PrimeIcons } from 'primeng/api'
 import { RippleModule } from 'primeng/ripple'
 import { TooltipModule } from 'primeng/tooltip'
-import { Observable, ReplaySubject, catchError, combineLatest, first, map, mergeMap, of, withLatestFrom } from 'rxjs'
+import { Observable, ReplaySubject, catchError, combineLatest, first, map, mergeMap, of } from 'rxjs'
 import { Configuration, Help, HelpsInternalAPIService } from 'src/app/shared/generated'
 import { SharedModule } from 'src/app/shared/shared.module'
 import { environment } from 'src/environments/environment'
@@ -68,7 +68,7 @@ export class OneCXHelpItemEditorComponent implements ocxRemoteComponent {
 
   helpArticleId$: Observable<string>
   productName$: Observable<string>
-  productDisplayName$: Observable<string>
+  products$: Observable<Record<string, string>>
   helpDataItem$: Observable<Help>
 
   permissions: string[] = []
@@ -97,7 +97,7 @@ export class OneCXHelpItemEditorComponent implements ocxRemoteComponent {
         return ''
       })
     )
-    this.productDisplayName$ = this.helpDataService
+    this.products$ = this.helpDataService
       .searchProductsByCriteria({
         productsSearchCriteria: {
           pageNumber: 0,
@@ -105,10 +105,9 @@ export class OneCXHelpItemEditorComponent implements ocxRemoteComponent {
         }
       })
       .pipe(
-        withLatestFrom(this.productName$),
-        map(([productsPageResult, productName]) => {
-          const product = productsPageResult.stream?.find((product) => product.name === productName)
-          return product?.displayName ?? productName
+        map((productsPageResult) => {
+          productsPageResult.stream = productsPageResult.stream ?? []
+          return Object.fromEntries(productsPageResult.stream.map((product) => [product.name, product.displayName]))
         })
       )
 
@@ -194,17 +193,17 @@ export class OneCXHelpItemEditorComponent implements ocxRemoteComponent {
   }
 
   public editHelpPage(event: any) {
-    combineLatest([this.helpArticleId$, this.productName$, this.helpDataItem$, this.productDisplayName$])
+    combineLatest([this.helpArticleId$, this.productName$, this.helpDataItem$, this.products$])
       .pipe(
         first(),
-        mergeMap(([helpArticleId, productName, helpDataItem, productDisplayName]) => {
+        mergeMap(([helpArticleId, productName, helpDataItem, products]) => {
           let isNewItem = false
           if (helpArticleId && productName) {
             if (!helpDataItem!.itemId) {
               helpDataItem = { productName: productName, itemId: helpArticleId }
               isNewItem = true
             }
-            return this.openHelpEditorDialog(helpDataItem, productDisplayName).pipe(
+            return this.openHelpEditorDialog(helpDataItem, products[helpDataItem.productName ?? productName]).pipe(
               map((dialogState): [DialogState<Help>, boolean] => [dialogState, isNewItem])
             )
           } else {

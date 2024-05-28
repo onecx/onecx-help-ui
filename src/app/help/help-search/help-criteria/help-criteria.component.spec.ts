@@ -66,7 +66,7 @@ describe('HelpDetailComponent', () => {
     apiServiceSpy.getAllProductsWithHelpItems.and.returnValue(of(mockHelpProductNames))
     component.ngOnInit()
 
-    expect(component.productDisplayNames).toEqual(['', '1dn', '2dn'])
+    expect(component.productDisplayNames).toEqual(['1dn', '2dn'])
   })
 
   it('should update productNames OnChanges if productsChanged', () => {
@@ -85,7 +85,7 @@ describe('HelpDetailComponent', () => {
       productsChanged: new SimpleChange(false, true, false)
     })
 
-    expect(component.productDisplayNames).toEqual(['', '1dn', '2dn'])
+    expect(component.productDisplayNames).toEqual(['1dn', '2dn'])
   })
 
   it('should filter products', () => {
