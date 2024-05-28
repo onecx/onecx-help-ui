@@ -23,7 +23,7 @@ import {
 import { PrimeIcons } from 'primeng/api'
 import { RippleModule } from 'primeng/ripple'
 import { TooltipModule } from 'primeng/tooltip'
-import { Observable, ReplaySubject, catchError, combineLatest, first, map, mergeMap, of } from 'rxjs'
+import { Observable, ReplaySubject, catchError, combineLatest, first, map, mergeMap, of, withLatestFrom } from 'rxjs'
 import { Configuration, Help, HelpsInternalAPIService } from 'src/app/shared/generated'
 import { SharedModule } from 'src/app/shared/shared.module'
 import { environment } from 'src/environments/environment'
@@ -68,6 +68,7 @@ export class OneCXHelpItemEditorComponent implements ocxRemoteComponent {
 
   helpArticleId$: Observable<string>
   productName$: Observable<string>
+  productDisplayName$: Observable<string>
   helpDataItem$: Observable<Help>
 
   permissions: string[] = []
@@ -96,6 +97,20 @@ export class OneCXHelpItemEditorComponent implements ocxRemoteComponent {
         return ''
       })
     )
+    this.productDisplayName$ = this.helpDataService
+      .searchProductsByCriteria({
+        productsSearchCriteria: {
+          pageNumber: 0,
+          pageSize: 1000
+        }
+      })
+      .pipe(
+        withLatestFrom(this.productName$),
+        map(([productsPageResult, productName]) => {
+          const product = productsPageResult.stream?.find((product) => product.name === productName)
+          return product?.displayName ?? productName
+        })
+      )
 
     this.helpDataItem$ = combineLatest([this.productName$, this.helpArticleId$]).pipe(
       mergeMap(([productName, helpArticleId]) => {
@@ -130,13 +145,14 @@ export class OneCXHelpItemEditorComponent implements ocxRemoteComponent {
       )
   }
 
-  private openHelpEditorDialog(helpItem: Help): Observable<DialogState<Help>> {
+  private openHelpEditorDialog(helpItem: Help, productDisplayName: string): Observable<DialogState<Help>> {
     return this.portalDialogService.openDialog<Help>(
       'HELP_ITEM_EDITOR.HEADER',
       {
         type: HelpItemEditorDialogComponent,
         inputs: {
-          helpItem: helpItem
+          helpItem: helpItem,
+          productDisplayName: productDisplayName
         }
       },
       {
@@ -178,17 +194,17 @@ export class OneCXHelpItemEditorComponent implements ocxRemoteComponent {
   }
 
   public editHelpPage(event: any) {
-    combineLatest([this.helpArticleId$, this.productName$, this.helpDataItem$])
+    combineLatest([this.helpArticleId$, this.productName$, this.helpDataItem$, this.productDisplayName$])
       .pipe(
         first(),
-        mergeMap(([helpArticleId, productName, helpDataItem]) => {
+        mergeMap(([helpArticleId, productName, helpDataItem, productDisplayName]) => {
           let isNewItem = false
           if (helpArticleId && productName) {
             if (!helpDataItem!.itemId) {
               helpDataItem = { productName: productName, itemId: helpArticleId }
               isNewItem = true
             }
-            return this.openHelpEditorDialog(helpDataItem).pipe(
+            return this.openHelpEditorDialog(helpDataItem, productDisplayName).pipe(
               map((dialogState): [DialogState<Help>, boolean] => [dialogState, isNewItem])
             )
           } else {

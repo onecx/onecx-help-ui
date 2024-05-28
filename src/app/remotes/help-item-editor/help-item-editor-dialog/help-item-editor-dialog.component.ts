@@ -17,6 +17,8 @@ import { Help } from 'src/app/shared/generated'
 export class HelpItemEditorDialogComponent implements DialogResult<Help>, DialogButtonClicked, OnChanges {
   @Input()
   helpItem!: Help
+  @Input()
+  productDisplayName!: string
   dialogResult!: Help
   public formGroup!: FormGroup
 
@@ -34,9 +36,13 @@ export class HelpItemEditorDialogComponent implements DialogResult<Help>, Dialog
         ...this.helpItem
       }
       this.formGroup.patchValue({
-        productName: this.dialogResult.productName,
         helpItemId: this.dialogResult.itemId,
         resourceUrl: this.dialogResult.resourceUrl
+      })
+    }
+    if (changes['productDisplayName'] && this.productDisplayName) {
+      this.formGroup.patchValue({
+        productName: this.productDisplayName
       })
     }
   }
