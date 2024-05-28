@@ -515,4 +515,29 @@ describe('OneCXShowHelpComponent', () => {
       }
     })
   })
+
+  describe('url construction', () => {
+    beforeEach(() => {
+      fixture = TestBed.createComponent(OneCXShowHelpComponent)
+      component = fixture.componentInstance
+      fixture.detectChanges()
+    })
+    it('should not append origin for external url', () => {
+      const url = component.constructUrl('https://www.google.com/', 'http://localhost:4300', '/shell/')
+      console.log(url.toString())
+      expect(url).toEqual(new URL('https://www.google.com/'))
+    })
+
+    it('should append origin for relative url', () => {
+      const url = component.constructUrl('/admin/help', 'http://localhost:4300', '/')
+      console.log(url.toString())
+      expect(url).toEqual(new URL('http://localhost:4300/admin/help'))
+    })
+
+    it('should append origin and deploymentPath for relative url', () => {
+      const url = component.constructUrl('/admin/help', 'http://localhost:4300', '/shell/')
+      console.log(url.toString())
+      expect(url).toEqual(new URL('http://localhost:4300/shell/admin/help'))
+    })
+  })
 })
