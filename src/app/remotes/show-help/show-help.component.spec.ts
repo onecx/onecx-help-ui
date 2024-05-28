@@ -392,7 +392,7 @@ describe('OneCXShowHelpComponent', () => {
     spyOn(appStateService.currentMfe$, 'asObservable').and.returnValue(
       of({
         remoteBaseUrl: '',
-        appId: 'mfe_product_name'
+        productName: 'mfe_product_name'
       }) as any
     )
 
@@ -430,7 +430,7 @@ describe('OneCXShowHelpComponent', () => {
     spyOn(appStateService.currentMfe$, 'asObservable').and.returnValue(
       of({
         remoteBaseUrl: '',
-        appId: 'mfe_product_name'
+        productName: 'mfe_product_name'
       }) as any
     )
 

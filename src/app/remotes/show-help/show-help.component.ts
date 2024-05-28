@@ -87,11 +87,8 @@ export class OneCXShowHelpComponent implements ocxRemoteComponent {
         return router.routerState.snapshot.url.split('#')[0]
       })
     )
-    this.productName$ = combineLatest([
-      this.appStateService.currentPage$.asObservable(),
-      this.appStateService.currentMfe$.asObservable()
-    ]).pipe(
-      map(([page, mfe]) => {
+    this.productName$ = combineLatest([this.appStateService.currentMfe$.asObservable()]).pipe(
+      map(([mfe]) => {
         if (mfe.productName) return mfe.productName
         return ''
       })

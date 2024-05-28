@@ -90,19 +90,12 @@ export class OneCXHelpItemEditorComponent implements ocxRemoteComponent {
         return router.routerState.snapshot.url.split('#')[0]
       })
     )
-    this.productName$ = combineLatest([
-      this.appStateService.currentPage$.asObservable(),
-      this.appStateService.currentMfe$.asObservable()
-    ]).pipe(
-      map(([page, mfe]) => {
+    this.productName$ = combineLatest([this.appStateService.currentMfe$.asObservable()]).pipe(
+      map(([mfe]) => {
         if (mfe.productName) return mfe.productName
         return ''
       })
     )
-
-    // this.productNameToDisplay$ = this.productName$.pipe( //todo ast - displayName
-    //
-    // )
 
     this.helpDataItem$ = combineLatest([this.productName$, this.helpArticleId$]).pipe(
       mergeMap(([productName, helpArticleId]) => {
@@ -125,14 +118,16 @@ export class OneCXHelpItemEditorComponent implements ocxRemoteComponent {
   }
 
   private loadHelpArticle(productName: string, helpItemId: string): Observable<Help> {
-    return this.helpDataService.searchHelps({ helpSearchCriteria: { itemId: helpItemId, productName: productName } }).pipe(
-      map((helpPageResult) => {
-        if (helpPageResult.totalElements !== 1) {
-          return {} as Help
-        }
-        return helpPageResult.stream!.at(0)!
-      })
-    )
+    return this.helpDataService
+      .searchHelps({ helpSearchCriteria: { itemId: helpItemId, productName: productName } })
+      .pipe(
+        map((helpPageResult) => {
+          if (helpPageResult.totalElements !== 1) {
+            return {} as Help
+          }
+          return helpPageResult.stream!.at(0)!
+        })
+      )
   }
 
   private openHelpEditorDialog(helpItem: Help): Observable<DialogState<Help>> {
