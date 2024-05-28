@@ -87,13 +87,13 @@
     "SWITCH_TO_EDIT_MODE": "Bearbeiten"
   },
   "HELP_ITEM": {
-    "APPLICATION_ID": "Anwendungs ID",
+    "PRODUCT_NAME": "Produktname",
     "HELP_ITEM_ID": "Hilfeartikel ID",
     "CONTEXT": "Kontext",
     "BASE_URL": "Basis URL",
     "RESOURCE_URL": "Ressource URL",
     "TOOLTIPS": {
-      "APPLICATION_ID": "Anwendungs-Kontext des Hilfeartikels",
+      "PRODUCT_NAME": "Produktkontext des Hilfeartikels",
       "HELP_ITEM_ID": "Hilfeartikel ID im Kontext der Anwendung",
       "CONTEXT": "Kontext innerhalb der Seite",
       "BASE_URL": "Basis URL, die der Ressource URL vorangestellt wird",
@@ -105,7 +105,7 @@
     "SUBHEADER": "Suchen und Verwalten von Hilfeartikeln",
     "SEARCH_TOOLTIP": "Suchen nach Hilfeartikeln mit vorgegebenen Kriterien",
     "MSG_SEARCH_VALIDATION": "Eine Anwendungs ID ist für die Suche erforderlich",
-    "NO_APP_IDS_AVAILABLE": "Keine Anwendungen gefunden"
+    "NO_PRODUCTS_AVAILABLE": "Keine Produkte gefunden"
   },
   "HELP_DETAIL": {
     "HEADER": "Hilfeartikel Details",
@@ -144,7 +144,7 @@
   "HELP_ITEM_EDITOR": {
     "LABEL": "Hilfe für diese Seite bearbeiten",
     "HEADER": "Hilfeartikel für diese Seite bearbeiten",
-    "OPEN_HELP_PAGE_EDITOR_ERROR": "Der Hilfeartikel kann nicht bearbeitet werden. Hilfeartikel ID oder Anwendungs ID sind undefiniert oder null.",
+    "OPEN_HELP_PAGE_EDITOR_ERROR": "Der Hilfeartikel kann nicht bearbeitet werden. Hilfeartikel ID oder Produktname sind undefiniert oder null.",
     "SAVE": "Speichern",
     "CANCEL": "Abbrechen",
     "UPDATE_HELP_ARTICLE_ERROR": "Aktualisierung des Hilfeartikels fehlgeschlagen",
@@ -152,7 +152,7 @@
     "UPDATE_HELP_ARTICLE_INFO": "Definition des Hilfeartikels aktualisiert",
     "DIALOG": {
       "HELP_ITEM_ID": "Hilfeartikel ID",
-      "APPLICATION_ID": "Anwendungs ID",
+      "PRODUCT_NAME": "Produktname",
       "RESOURCE_URL": "Ressource URL"
     }
   }

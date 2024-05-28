@@ -12,7 +12,7 @@ paths:
     post:
       x-onecx:
         permissions:
-          helps:
+          help:
             - write
       tags:
         - helpsInternal
@@ -43,28 +43,62 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ProblemDetailResponse'
-  /helps/appIds:
+  /helps/productNames:
     get:
       x-onecx:
         permissions:
-          helps:
+          help:
             - read
       tags:
         - helpsInternal
-      summary: Get all application IDs to which help items are assigned
-      operationId: getAllAppsWithHelpItems
+      summary: Get all product names to which help items are assigned
+      operationId: getAllProductsWithHelpItems
       responses:
         '200':
           description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/HelpAppIds'
+                $ref: '#/components/schemas/HelpProductNames'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetailResponse'
+  /helps/products:
+    post:
+      x-onecx:
+        permissions:
+          product:
+            - read
+      tags:
+        - helpsInternal
+      summary: Get all application IDs to which help items are assigned
+      operationId: searchProductsByCriteria
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductsSearchCriteria'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductsPageResult'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetailResponse'
   /helps/{id}:
     get:
       x-onecx:
         permissions:
-          helps:
+          help:
             - read
       tags:
         - helpsInternal
@@ -88,7 +122,7 @@ paths:
     put:
       x-onecx:
         permissions:
-          helps:
+          help:
             - write
       tags:
         - helpsInternal
@@ -120,7 +154,7 @@ paths:
     delete:
       x-onecx:
         permissions:
-          helps:
+          help:
             - delete
       tags:
         - helpsInternal
@@ -139,7 +173,7 @@ paths:
     post:
       x-onecx:
         permissions:
-          helps:
+          help:
             - read
       tags:
         - helpsInternal
@@ -171,7 +205,7 @@ components:
           type: string
         resourceUrl:
           type: string
-        appId:
+        productName:
           type: string
         pageNumber:
           format: int32
@@ -229,7 +263,50 @@ components:
           type: string
         resourceUrl:
           type: string
-        appId:
+        productName:
+          type: string
+    ProductsPageResult:
+      type: object
+      properties:
+        totalElements:
+          format: int64
+          description: The total elements in the resource.
+          type: integer
+        number:
+          format: int32
+          type: integer
+        size:
+          format: int32
+          type: integer
+        totalPages:
+          format: int64
+          type: integer
+        stream:
+          type: array
+          items:
+            $ref: '#/components/schemas/Product'
+    ProductsSearchCriteria:
+      type: object
+      properties:
+        pageNumber:
+          format: int32
+          description: The number of page.
+          default: 0
+          type: integer
+        pageSize:
+          format: int32
+          description: The size of page
+          default: 10
+          type: integer
+    Product:
+      type: object
+      required:
+        - name
+        - displayName
+      properties:
+        name:
+          type: string
+        displayName:
           type: string
     OffsetDateTime:
       format: date-time
@@ -277,7 +354,7 @@ components:
           type: string
         resourceUrl:
           type: string
-        appId:
+        productName:
           type: string
     UpdateHelp:
       required:
@@ -299,12 +376,12 @@ components:
           type: string
         resourceUrl:
           type: string
-        appId:
+        productName:
           type: string
-    HelpAppIds:
+    HelpProductNames:
       type: object
       properties:
-        appIds:
+        ProductNames:
           type: array
           items:
             type: string

@@ -7,7 +7,7 @@ import { TranslateLoader, TranslateModule } from '@ngx-translate/core'
 import { of } from 'rxjs'
 
 import { AppStateService, createTranslateLoader, PortalMessageService } from '@onecx/portal-integration-angular'
-import { HelpSearchCriteria, HelpsInternalAPIService } from 'src/app/shared/generated'
+import { HelpSearchCriteria, HelpsInternalAPIService, Product } from 'src/app/shared/generated'
 import { HelpCriteriaComponent, HelpCriteriaForm } from './help-criteria.component'
 
 describe('HelpDetailComponent', () => {
@@ -17,7 +17,9 @@ describe('HelpDetailComponent', () => {
   const msgServiceSpy = jasmine.createSpyObj<PortalMessageService>('PortalMessageService', ['error', 'info'])
   const formGroupSpy = jasmine.createSpyObj<FormGroup<HelpCriteriaForm>>('HelpCriteriaGroup', ['reset'])
   const criteriaEmitterSpy = jasmine.createSpyObj<EventEmitter<HelpSearchCriteria>>('EventEmitter', ['emit'])
-  const apiServiceSpy = { getAllAppsWithHelpItems: jasmine.createSpy('getAllAppsWithHelpItem').and.returnValue(of([])) }
+  const apiServiceSpy = {
+    getAllProductsWithHelpItems: jasmine.createSpy('getAllProductsWithHelpItems').and.returnValue(of([]))
+  }
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
@@ -52,42 +54,48 @@ describe('HelpDetailComponent', () => {
     expect(component).toBeTruthy()
   })
 
-  it('should update appIds OnInit', () => {
-    component.appsChanged = true
-
-    const mockHelpAppIds = {
-      appIds: ['1', '2']
+  it('should update productNames OnInit', () => {
+    component.productsChanged = true
+    component.products = [
+      { name: '1', displayName: '1dn' },
+      { name: '2', displayName: '2dn' }
+    ] as Product[]
+    const mockHelpProductNames = {
+      ProductNames: ['1', '2']
     }
-    component.applicationsIds = []
-    apiServiceSpy.getAllAppsWithHelpItems.and.returnValue(of(mockHelpAppIds))
+    apiServiceSpy.getAllProductsWithHelpItems.and.returnValue(of(mockHelpProductNames))
     component.ngOnInit()
 
-    expect(component.applicationsIds).toEqual(['', '1', '2'])
+    expect(component.productDisplayNames).toEqual(['', '1dn', '2dn'])
   })
 
-  it('should update appIds OnChanges if appsChanged', () => {
-    component.appsChanged = true
-    const mockHelpAppIds = {
-      appIds: ['1', '2']
+  it('should update productNames OnChanges if productsChanged', () => {
+    component.productsChanged = true
+    component.products = [
+      { name: '1', displayName: '1dn' },
+      { name: '2', displayName: '2dn' }
+    ] as Product[]
+    const mockHelpProductNames = {
+      ProductNames: ['1', '2']
     }
-    component.applicationsIds = []
-    apiServiceSpy.getAllAppsWithHelpItems.and.returnValue(of(mockHelpAppIds))
+    component.productDisplayNames = []
+    apiServiceSpy.getAllProductsWithHelpItems.and.returnValue(of(mockHelpProductNames))
 
     component.ngOnChanges({
-      appsChanged: new SimpleChange(false, true, false)
+      productsChanged: new SimpleChange(false, true, false)
     })
 
-    expect(component.applicationsIds).toEqual(['', '1', '2'])
+    expect(component.productDisplayNames).toEqual(['', '1dn', '2dn'])
   })
 
-  it('should filter applications', () => {
+  it('should filter products', () => {
     const notFiltered: string[] = ['filteredItem', 'unfilteredItem']
-    component.applicationsIds = notFiltered
+    component.productDisplayNames = notFiltered
     const event = { query: 'filteredItem' }
 
-    component.filterApplications(event)
+    component.filterProductNames(event)
 
-    expect(component.applicationsIdsFiltered[0]).toEqual('filteredItem')
+    expect(component.productDisplayNamesFiltered[0]).toEqual('filteredItem')
   })
 
   it('should reset criteria', () => {
@@ -101,18 +109,24 @@ describe('HelpDetailComponent', () => {
   it('should submit criteria', () => {
     component.criteriaEmitter = criteriaEmitterSpy
     component.helpCriteriaGroup = new FormGroup<HelpCriteriaForm>({
-      appId: new FormControl('help-mgmt-ui'),
+      productName: new FormControl('Help Management UI'),
       itemId: new FormControl('PAGE_HELP_SEARCH')
     })
+    component.products = [
+      { name: '1', displayName: '1dn' },
+      { name: 'help-mgmt-ui', displayName: 'Help Management UI' }
+    ] as Product[]
 
     component.submitCriteria()
 
+    const expectedValue = component.helpCriteriaGroup.value
+    expectedValue.productName = 'help-mgmt-ui'
     expect(criteriaEmitterSpy.emit).toHaveBeenCalledWith(component.helpCriteriaGroup.value as HelpSearchCriteria)
   })
 
   it('should display error on invalid criteria', () => {
     component.helpCriteriaGroup = new FormGroup<HelpCriteriaForm>({
-      appId: new FormControl('', Validators.required),
+      productName: new FormControl('', Validators.required),
       itemId: new FormControl('', Validators.required)
     })
 
@@ -121,11 +135,11 @@ describe('HelpDetailComponent', () => {
     expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'HELP_SEARCH.MSG_SEARCH_VALIDATION' })
   })
 
-  it('should display info when no appIds available', () => {
-    apiServiceSpy.getAllAppsWithHelpItems.and.returnValue(of([]))
+  it('should display info when no productNames available', () => {
+    apiServiceSpy.getAllProductsWithHelpItems.and.returnValue(of([]))
 
-    component.loadAllApps()
+    component.loadAllProductsWithHelpItems()
 
-    expect(msgServiceSpy.info).toHaveBeenCalledWith({ summaryKey: 'HELP_SEARCH.NO_APP_IDS_AVAILABLE' })
+    expect(msgServiceSpy.info).toHaveBeenCalledWith({ summaryKey: 'HELP_SEARCH.NO_PRODUCTS_AVAILABLE' })
   })
 })

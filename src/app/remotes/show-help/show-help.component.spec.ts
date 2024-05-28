@@ -195,38 +195,14 @@ describe('OneCXShowHelpComponent', () => {
     })
   })
 
-  it('should contain applicationId from page', (done: DoneFn) => {
-    const appStateService = TestBed.inject(AppStateService)
-    spyOn(appStateService.currentPage$, 'asObservable').and.returnValue(
-      of({
-        applicationId: 'page_app_id'
-      }) as any
-    )
-    spyOn(appStateService.currentMfe$, 'asObservable').and.returnValue(
-      of({
-        remoteBaseUrl: '',
-        app_id: 'mfe_page_app_id'
-      }) as any
-    )
-
-    fixture = TestBed.createComponent(OneCXShowHelpComponent)
-    component = fixture.componentInstance
-    fixture.detectChanges()
-
-    component.applicationId$?.subscribe((id) => {
-      expect(id).toEqual('page_app_id')
-      done()
-    })
-  })
-
-  it('should contain applicationId from mfe', (done: DoneFn) => {
+  it('should contain productName from mfe', (done: DoneFn) => {
     const appStateService = TestBed.inject(AppStateService)
     spyOn(appStateService.currentPage$, 'asObservable').and.returnValue(of({}) as any)
 
     spyOn(appStateService.currentMfe$, 'asObservable').and.returnValue(
       of({
         remoteBaseUrl: '',
-        appId: 'mfe_app_id'
+        productName: 'mfe_product_name'
       }) as any
     )
 
@@ -234,8 +210,8 @@ describe('OneCXShowHelpComponent', () => {
     component = fixture.componentInstance
     fixture.detectChanges()
 
-    component.applicationId$?.subscribe((id) => {
-      expect(id).toEqual('mfe_app_id')
+    component.productName$?.subscribe((id) => {
+      expect(id).toEqual('mfe_product_name')
       done()
     })
   })
@@ -257,7 +233,7 @@ describe('OneCXShowHelpComponent', () => {
     spyOn(appStateService.currentMfe$, 'asObservable').and.returnValue(
       of({
         remoteBaseUrl: '',
-        appId: 'mfe_app_id'
+        productName: 'mfe_product_name'
       }) as any
     )
 
@@ -268,7 +244,7 @@ describe('OneCXShowHelpComponent', () => {
     component.helpDataItem$?.subscribe((item) => {
       expect(item).toEqual({ id: '1' } as Help)
       expect(helpApiServiceSpy.searchHelps).toHaveBeenCalledOnceWith({
-        helpSearchCriteria: { itemId: 'article_id', appId: 'mfe_app_id' }
+        helpSearchCriteria: { itemId: 'article_id', productName: 'mfe_product_name' }
       })
       done()
     })
@@ -309,7 +285,7 @@ describe('OneCXShowHelpComponent', () => {
     spyOn(appStateService.currentMfe$, 'asObservable').and.returnValue(
       of({
         remoteBaseUrl: '',
-        appId: 'mfe_app_id'
+        productName: 'mfe_product_name'
       }) as any
     )
 
@@ -320,7 +296,7 @@ describe('OneCXShowHelpComponent', () => {
     component.helpDataItem$?.subscribe((item) => {
       expect(item).toEqual({} as Help)
       expect(helpApiServiceSpy.searchHelps).toHaveBeenCalledOnceWith({
-        helpSearchCriteria: { itemId: 'article_id', appId: 'mfe_app_id' }
+        helpSearchCriteria: { itemId: 'article_id', productName: 'mfe_product_name' }
       })
       expect(console.log).toHaveBeenCalledWith('Failed to load help article')
       done()
@@ -345,7 +321,7 @@ describe('OneCXShowHelpComponent', () => {
     spyOn(appStateService.currentMfe$, 'asObservable').and.returnValue(
       of({
         remoteBaseUrl: '',
-        appId: 'mfe_app_id'
+        productName: 'mfe_product_name'
       }) as any
     )
 
@@ -380,7 +356,7 @@ describe('OneCXShowHelpComponent', () => {
     spyOn(appStateService.currentMfe$, 'asObservable').and.returnValue(
       of({
         remoteBaseUrl: '',
-        appId: 'mfe_app_id'
+        productName: 'mfe_product_name'
       }) as any
     )
 
@@ -416,7 +392,7 @@ describe('OneCXShowHelpComponent', () => {
     spyOn(appStateService.currentMfe$, 'asObservable').and.returnValue(
       of({
         remoteBaseUrl: '',
-        appId: 'mfe_app_id'
+        productName: 'mfe_product_name'
       }) as any
     )
 
@@ -454,7 +430,7 @@ describe('OneCXShowHelpComponent', () => {
     spyOn(appStateService.currentMfe$, 'asObservable').and.returnValue(
       of({
         remoteBaseUrl: '',
-        appId: 'mfe_app_id'
+        productName: 'mfe_product_name'
       }) as any
     )
 
@@ -491,7 +467,7 @@ describe('OneCXShowHelpComponent', () => {
     spyOn(appStateService.currentMfe$, 'asObservable').and.returnValue(
       of({
         remoteBaseUrl: '',
-        appId: 'mfe_app_id'
+        productName: 'mfe_product_name'
       }) as any
     )
 

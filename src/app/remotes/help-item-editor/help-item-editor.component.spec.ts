@@ -203,38 +203,14 @@ describe('OneCXHelpItemEditorComponent', () => {
     })
   })
 
-  it('should contain applicationId from page', (done: DoneFn) => {
-    const appStateService = TestBed.inject(AppStateService)
-    spyOn(appStateService.currentPage$, 'asObservable').and.returnValue(
-      of({
-        applicationId: 'page_app_id'
-      }) as any
-    )
-    spyOn(appStateService.currentMfe$, 'asObservable').and.returnValue(
-      of({
-        remoteBaseUrl: '',
-        app_id: 'mfe_page_app_id'
-      }) as any
-    )
-
-    fixture = TestBed.createComponent(OneCXHelpItemEditorComponent)
-    component = fixture.componentInstance
-    fixture.detectChanges()
-
-    component.applicationId$?.subscribe((id) => {
-      expect(id).toEqual('page_app_id')
-      done()
-    })
-  })
-
-  it('should contain applicationId from mfe', (done: DoneFn) => {
+  it('should contain productName from mfe', (done: DoneFn) => {
     const appStateService = TestBed.inject(AppStateService)
     spyOn(appStateService.currentPage$, 'asObservable').and.returnValue(of({}) as any)
 
     spyOn(appStateService.currentMfe$, 'asObservable').and.returnValue(
       of({
         remoteBaseUrl: '',
-        appId: 'mfe_app_id'
+        productName: 'mfe_product_name'
       }) as any
     )
 
@@ -242,8 +218,8 @@ describe('OneCXHelpItemEditorComponent', () => {
     component = fixture.componentInstance
     fixture.detectChanges()
 
-    component.applicationId$?.subscribe((id) => {
-      expect(id).toEqual('mfe_app_id')
+    component.productName$?.subscribe((id) => {
+      expect(id).toEqual('mfe_product_name')
       done()
     })
   })
@@ -265,7 +241,7 @@ describe('OneCXHelpItemEditorComponent', () => {
     spyOn(appStateService.currentMfe$, 'asObservable').and.returnValue(
       of({
         remoteBaseUrl: '',
-        appId: 'mfe_app_id'
+        productName: 'mfe_product_name'
       }) as any
     )
 
@@ -276,7 +252,7 @@ describe('OneCXHelpItemEditorComponent', () => {
     component.helpDataItem$?.subscribe((item) => {
       expect(item).toEqual({ id: '1' } as Help)
       expect(helpApiServiceSpy.searchHelps).toHaveBeenCalledOnceWith({
-        helpSearchCriteria: { itemId: 'article_id', appId: 'mfe_app_id' }
+        helpSearchCriteria: { itemId: 'article_id', productName: 'mfe_product_name' }
       })
       done()
     })
@@ -317,7 +293,7 @@ describe('OneCXHelpItemEditorComponent', () => {
     spyOn(appStateService.currentMfe$, 'asObservable').and.returnValue(
       of({
         remoteBaseUrl: '',
-        appId: 'mfe_app_id'
+        productName: 'mfe_product_name'
       }) as any
     )
 
@@ -328,7 +304,7 @@ describe('OneCXHelpItemEditorComponent', () => {
     component.helpDataItem$?.subscribe((item) => {
       expect(item).toEqual({} as Help)
       expect(helpApiServiceSpy.searchHelps).toHaveBeenCalledOnceWith({
-        helpSearchCriteria: { itemId: 'article_id', appId: 'mfe_app_id' }
+        helpSearchCriteria: { itemId: 'article_id', productName: 'mfe_product_name' }
       })
       expect(console.log).toHaveBeenCalledWith('Failed to load help article')
       done()
@@ -345,7 +321,7 @@ describe('OneCXHelpItemEditorComponent', () => {
     spyOn(appStateService.currentMfe$, 'asObservable').and.returnValue(
       of({
         remoteBaseUrl: '',
-        appId: 'mfe_app_id'
+        productName: 'mfe_product_name'
       }) as any
     )
     helpApiServiceSpy.searchHelps.and.returnValue(
@@ -371,7 +347,7 @@ describe('OneCXHelpItemEditorComponent', () => {
         type: HelpItemEditorDialogComponent,
         inputs: {
           helpItem: {
-            appId: 'mfe_app_id',
+            productName: 'mfe_product_name',
             itemId: 'article_id'
           }
         }
@@ -398,7 +374,7 @@ describe('OneCXHelpItemEditorComponent', () => {
     spyOn(appStateService.currentMfe$, 'asObservable').and.returnValue(
       of({
         remoteBaseUrl: '',
-        appId: 'mfe_app_id'
+        productName: 'mfe_product_name'
       }) as any
     )
     helpApiServiceSpy.searchHelps.and.returnValue(
@@ -475,7 +451,7 @@ describe('OneCXHelpItemEditorComponent', () => {
     spyOn(appStateService.currentMfe$, 'asObservable').and.returnValue(
       of({
         remoteBaseUrl: '',
-        appId: 'mfe_app_id'
+        productName: 'mfe_product_name'
       }) as any
     )
     helpApiServiceSpy.searchHelps.and.returnValue(
@@ -501,7 +477,7 @@ describe('OneCXHelpItemEditorComponent', () => {
         type: HelpItemEditorDialogComponent,
         inputs: {
           helpItem: {
-            appId: 'mfe_app_id',
+            productName: 'mfe_product_name',
             itemId: 'article_id'
           }
         }
@@ -528,11 +504,11 @@ describe('OneCXHelpItemEditorComponent', () => {
     spyOn(appStateService.currentMfe$, 'asObservable').and.returnValue(
       of({
         remoteBaseUrl: '',
-        appId: 'mfe_app_id'
+        productName: 'mfe_product_name'
       }) as any
     )
-    // itemId and appId different only for testing purposes
-    const helpItem = { id: 'id_1', itemId: 'item_1', appId: 'app_id_1' }
+    // itemId and productName different only for testing purposes
+    const helpItem = { id: 'id_1', itemId: 'item_1', productName: 'product_name_1' }
     helpApiServiceSpy.searchHelps.and.returnValue(
       of({
         totalElements: 1,
@@ -580,7 +556,7 @@ describe('OneCXHelpItemEditorComponent', () => {
     spyOn(appStateService.currentMfe$, 'asObservable').and.returnValue(
       of({
         remoteBaseUrl: '',
-        appId: 'mfe_app_id'
+        productName: 'mfe_product_name'
       }) as any
     )
     helpApiServiceSpy.searchHelps.and.returnValue(
@@ -620,7 +596,7 @@ describe('OneCXHelpItemEditorComponent', () => {
     spyOn(appStateService.currentMfe$, 'asObservable').and.returnValue(
       of({
         remoteBaseUrl: '',
-        appId: 'mfe_app_id'
+        productName: 'mfe_product_name'
       }) as any
     )
     helpApiServiceSpy.searchHelps.and.returnValue(
@@ -631,7 +607,7 @@ describe('OneCXHelpItemEditorComponent', () => {
     )
 
     const dialogResult = {
-      appId: 'result_app_id',
+      productName: 'result_product_name',
       itemId: 'result_item_id',
       resourceUrl: 'result_resource_url'
     }
@@ -669,10 +645,10 @@ describe('OneCXHelpItemEditorComponent', () => {
     spyOn(appStateService.currentMfe$, 'asObservable').and.returnValue(
       of({
         remoteBaseUrl: '',
-        appId: 'mfe_app_id'
+        productName: 'mfe_product_name'
       }) as any
     )
-    const helpItem = { id: 'id_1', itemId: 'item_1', appId: 'app_id_1', modificationCount: 1 }
+    const helpItem = { id: 'id_1', itemId: 'item_1', productName: 'product_name_1', modificationCount: 1 }
     helpApiServiceSpy.searchHelps.and.returnValue(
       of({
         totalElements: 1,
@@ -682,7 +658,7 @@ describe('OneCXHelpItemEditorComponent', () => {
 
     const dialogResult = {
       id: 'result_id',
-      appId: 'result_app_id',
+      productName: 'result_product_name',
       itemId: 'result_item_id',
       resourceUrl: 'result_resource_url',
       modificationCount: 1
@@ -709,7 +685,7 @@ describe('OneCXHelpItemEditorComponent', () => {
       id: 'result_id',
       updateHelp: {
         id: 'result_id',
-        appId: 'result_app_id',
+        productName: 'result_product_name',
         itemId: 'result_item_id',
         resourceUrl: 'result_resource_url',
         modificationCount: 1
@@ -728,10 +704,10 @@ describe('OneCXHelpItemEditorComponent', () => {
     spyOn(appStateService.currentMfe$, 'asObservable').and.returnValue(
       of({
         remoteBaseUrl: '',
-        appId: 'mfe_app_id'
+        productName: 'mfe_product_name'
       }) as any
     )
-    const helpItem = { id: 'id_1', itemId: 'item_1', appId: 'app_id_1', modificationCount: 1 }
+    const helpItem = { id: 'id_1', itemId: 'item_1', productName: 'product_name_1', modificationCount: 1 }
     helpApiServiceSpy.searchHelps.and.returnValue(
       of({
         totalElements: 1,
@@ -741,7 +717,7 @@ describe('OneCXHelpItemEditorComponent', () => {
 
     const dialogResult = {
       id: 'result_id',
-      appId: 'result_app_id',
+      productName: 'result_product_name',
       itemId: 'result_item_id',
       resourceUrl: 'result_resource_url',
       modificationCount: 1
@@ -772,13 +748,13 @@ describe('OneCXHelpItemEditorComponent', () => {
     expect(helpApiServiceSpy.searchHelps).toHaveBeenCalledWith({
       helpSearchCriteria: {
         itemId: 'article_id',
-        appId: 'mfe_app_id'
+        productName: 'mfe_product_name'
       }
     })
     expect(helpApiServiceSpy.searchHelps).toHaveBeenCalledWith({
       helpSearchCriteria: {
         itemId: 'result_item_id',
-        appId: 'result_app_id'
+        productName: 'result_product_name'
       }
     })
   })
@@ -793,7 +769,7 @@ describe('OneCXHelpItemEditorComponent', () => {
     spyOn(appStateService.currentMfe$, 'asObservable').and.returnValue(
       of({
         remoteBaseUrl: '',
-        appId: 'mfe_app_id'
+        productName: 'mfe_product_name'
       }) as any
     )
     helpApiServiceSpy.searchHelps.and.returnValue(
@@ -805,7 +781,7 @@ describe('OneCXHelpItemEditorComponent', () => {
 
     const dialogResult = {
       id: 'result_id',
-      appId: 'result_app_id',
+      productName: 'result_product_name',
       itemId: 'result_item_id',
       resourceUrl: 'result_resource_url',
       modificationCount: 1
@@ -820,7 +796,7 @@ describe('OneCXHelpItemEditorComponent', () => {
     helpApiServiceSpy.createNewHelp.and.returnValue(
       of({
         itemId: 'result_item_id',
-        appId: 'result_app_id'
+        productName: 'result_product_name'
       } as any)
     )
 
@@ -841,13 +817,13 @@ describe('OneCXHelpItemEditorComponent', () => {
     expect(helpApiServiceSpy.searchHelps).toHaveBeenCalledWith({
       helpSearchCriteria: {
         itemId: 'article_id',
-        appId: 'mfe_app_id'
+        productName: 'mfe_product_name'
       }
     })
     expect(helpApiServiceSpy.searchHelps).toHaveBeenCalledWith({
       helpSearchCriteria: {
         itemId: 'result_item_id',
-        appId: 'result_app_id'
+        productName: 'result_product_name'
       }
     })
   })
@@ -863,7 +839,7 @@ describe('OneCXHelpItemEditorComponent', () => {
     spyOn(appStateService.currentMfe$, 'asObservable').and.returnValue(
       of({
         remoteBaseUrl: '',
-        appId: 'mfe_app_id'
+        productName: 'mfe_product_name'
       }) as any
     )
     helpApiServiceSpy.searchHelps.and.returnValue(
@@ -875,7 +851,7 @@ describe('OneCXHelpItemEditorComponent', () => {
 
     const dialogResult = {
       id: 'result_id',
-      appId: 'result_app_id',
+      productName: 'result_product_name',
       itemId: 'result_item_id',
       resourceUrl: 'result_resource_url',
       modificationCount: 1
@@ -926,10 +902,10 @@ describe('OneCXHelpItemEditorComponent', () => {
     spyOn(appStateService.currentMfe$, 'asObservable').and.returnValue(
       of({
         remoteBaseUrl: '',
-        appId: 'mfe_app_id'
+        productName: 'mfe_product_name'
       }) as any
     )
-    const helpItem = { id: 'id_1', itemId: 'item_1', appId: 'app_id_1', modificationCount: 1 }
+    const helpItem = { id: 'id_1', itemId: 'item_1', productName: 'product_name_1', modificationCount: 1 }
     helpApiServiceSpy.searchHelps.and.returnValue(
       of({
         totalElements: 1,
@@ -939,7 +915,7 @@ describe('OneCXHelpItemEditorComponent', () => {
 
     const dialogResult = {
       id: 'result_id',
-      appId: 'result_app_id',
+      productName: 'result_product_name',
       itemId: 'result_item_id',
       resourceUrl: 'result_resource_url',
       modificationCount: 1

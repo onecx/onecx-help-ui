@@ -6,7 +6,7 @@ import { TranslateLoader, TranslateModule } from '@ngx-translate/core'
 import { of, throwError } from 'rxjs'
 
 import { AppStateService, createTranslateLoader, Column, PortalMessageService } from '@onecx/portal-integration-angular'
-import { HelpsInternalAPIService, Help, SearchHelpsRequestParams } from 'src/app/shared/generated'
+import { HelpsInternalAPIService, Help, SearchHelpsRequestParams, Product } from 'src/app/shared/generated'
 import { HelpSearchComponent } from './help-search.component'
 
 describe('HelpSearchComponent', () => {
@@ -17,14 +17,15 @@ describe('HelpSearchComponent', () => {
   const apiServiceSpy = {
     searchHelps: jasmine.createSpy('searchHelps').and.returnValue(of({})),
     addHelpItem: jasmine.createSpy('addHelpItem').and.returnValue(of({})),
-    deleteHelp: jasmine.createSpy('deleteHelp').and.returnValue(of({}))
+    deleteHelp: jasmine.createSpy('deleteHelp').and.returnValue(of({})),
+    searchProductsByCriteria: jasmine.createSpy('searchProductsByCriteria').and.returnValue(of({}))
   }
   const translateServiceSpy = jasmine.createSpyObj('TranslateService', ['get'])
 
   const newHelpItemArr: Help[] | undefined = [
     {
       id: 'id',
-      appId: 'help-mgmt-ui',
+      productName: 'help-mgmt-ui',
       itemId: 'PAGE_HELP_SEARCH'
     }
   ]
@@ -68,7 +69,7 @@ describe('HelpSearchComponent', () => {
 
   it('should create component and set columns', () => {
     expect(component).toBeTruthy()
-    expect(component.filteredColumns[0].field).toBe('appId')
+    expect(component.filteredColumns[0].field).toBe('productDisplayName')
     expect(component.filteredColumns[1].field).toBe('itemId')
     expect(component.filteredColumns[2].field).toBe('context')
     expect(component.filteredColumns[3].field).toBe('baseUrl')
@@ -79,8 +80,8 @@ describe('HelpSearchComponent', () => {
     translateServiceSpy.get.and.returnValue(of({ 'ACTIONS.CREATE.LABEL': 'Create' }))
     component.columns = [
       {
-        field: 'appId',
-        header: 'APPLICATION_ID',
+        field: 'productName',
+        header: 'PRODUCT_NAME',
         active: false
       },
       {
@@ -107,16 +108,21 @@ describe('HelpSearchComponent', () => {
       stream: [
         {
           itemId: 'id',
-          appId: 'help-mgmt-ui'
+          productName: 'help-mgmt-ui'
         }
       ]
     }
     apiServiceSpy.searchHelps.and.returnValue(of(helpPageResultMock))
-    component.results = []
+    component.products = [
+      { name: 'help-mgmt-ui', displayName: 'Help Mgmt UI' },
+      { name: '2', displayName: '2dn' }
+    ] as Product[]
+    component.resultsForDisplay = []
 
     component.search({})
 
-    expect(component.results[0]).toEqual({ appId: 'help-mgmt-ui', itemId: 'id' })
+    expect(component.resultsForDisplay[0].productDisplayName).toEqual('Help Mgmt UI')
+    expect(component.resultsForDisplay[0].itemId).toEqual('id')
   })
 
   it('should handle empty results on search', () => {
@@ -128,25 +134,26 @@ describe('HelpSearchComponent', () => {
       stream: []
     }
     apiServiceSpy.searchHelps.and.returnValue(of(helpPageResultMock))
-    component.results = []
+    apiServiceSpy.searchProductsByCriteria.and.returnValue(of(helpPageResultMock))
+    component.resultsForDisplay = []
 
     component.search({})
 
-    expect(component.results.length).toEqual(0)
-    expect(msgServiceSpy.info).toHaveBeenCalledOnceWith({ summaryKey: 'GENERAL.SEARCH.MSG_NO_RESULTS' })
+    expect(component.resultsForDisplay.length).toEqual(0)
+    expect(msgServiceSpy.info).toHaveBeenCalledWith({ summaryKey: 'HELP_SEARCH.NO_PRODUCTS_AVAILABLE' })
   })
 
   it('should reuse criteria if reuseCriteria is true', () => {
     apiServiceSpy.searchHelps.and.returnValue(of([]))
     component.criteria = {
       helpSearchCriteria: {
-        appId: 'help-mgmt-ui',
+        productName: 'help-mgmt-ui',
         itemId: 'id'
       }
     }
     const newCriteria = {
       helpSearchCriteria: {
-        appId: 'ap-mgmt',
+        productName: 'ap-mgmt',
         itemId: 'newId'
       }
     }
@@ -167,27 +174,28 @@ describe('HelpSearchComponent', () => {
   })
 
   it('should delete help item', () => {
-    apiServiceSpy.deleteHelp({ appId: newHelpItemArr[0].appId, itemId: newHelpItemArr[0].id })
-    component.results = newHelpItemArr
+    apiServiceSpy.deleteHelp({ productName: newHelpItemArr[0].productName, itemId: newHelpItemArr[0].id })
+    component.resultsForDisplay = newHelpItemArr
     component.helpItem = {
       id: newHelpItemArr[0].id,
-      appId: newHelpItemArr[0].appId,
+      productName: newHelpItemArr[0].productName,
       itemId: newHelpItemArr[0].itemId
     }
 
     component.onDeleteConfirmation()
 
     expect(apiServiceSpy.deleteHelp).toHaveBeenCalled()
-    expect(component.results.length).toBe(0)
+    expect(component.resultsForDisplay.length).toBe(0)
+    expect(component.resultsForDisplay.length).toBe(0)
     expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.DELETE.MESSAGE.HELP_ITEM_OK' })
   })
 
   it('should display error on deleteHelpItem failure', () => {
     apiServiceSpy.deleteHelp.and.returnValue(throwError(() => new Error()))
-    component.results = newHelpItemArr
+    component.resultsForDisplay = newHelpItemArr
     component.helpItem = {
       id: newHelpItemArr[0].id,
-      appId: newHelpItemArr[0].appId,
+      productName: newHelpItemArr[0].productName,
       itemId: newHelpItemArr[0].itemId
     }
 
@@ -201,7 +209,7 @@ describe('HelpSearchComponent', () => {
     component.onSearch()
 
     expect(component.changeMode).toEqual('NEW')
-    expect(component.appsChanged).toBeTrue()
+    expect(component.productsChanged).toBeTrue()
     expect(component.search).toHaveBeenCalled()
   })
 
@@ -209,7 +217,7 @@ describe('HelpSearchComponent', () => {
     component.onCreate()
 
     expect(component.changeMode).toEqual('NEW')
-    expect(component.appsChanged).toBeFalse()
+    expect(component.productsChanged).toBeFalse()
     expect(component.helpItem).toBe(undefined)
     expect(component.displayDetailDialog).toBeTrue()
   })
@@ -222,7 +230,7 @@ describe('HelpSearchComponent', () => {
 
     expect(ev.stopPropagation).toHaveBeenCalled()
     expect(component.changeMode).toEqual(mode)
-    expect(component.appsChanged).toBeFalse()
+    expect(component.productsChanged).toBeFalse()
     expect(component.helpItem).toBe(newHelpItemArr[0])
     expect(component.displayDetailDialog).toBeTrue()
   })
@@ -234,7 +242,7 @@ describe('HelpSearchComponent', () => {
 
     expect(ev.stopPropagation).toHaveBeenCalled()
     expect(component.changeMode).toEqual('NEW')
-    expect(component.appsChanged).toBeFalse()
+    expect(component.productsChanged).toBeFalse()
     expect(component.helpItem).toBe(newHelpItemArr[0])
     expect(component.displayDetailDialog).toBeTrue()
   })
@@ -245,98 +253,98 @@ describe('HelpSearchComponent', () => {
     component.onDelete(ev, newHelpItemArr[0])
 
     expect(ev.stopPropagation).toHaveBeenCalled()
-    expect(component.appsChanged).toBeFalse()
+    expect(component.productsChanged).toBeFalse()
     expect(component.helpItem).toBe(newHelpItemArr[0])
     expect(component.displayDeleteDialog).toBeTrue()
   })
 
-  it('should correctly sort appIds using sortHelpItemsByDefault 1', () => {
-    component.results = [
-      { appId: 'B', itemId: '2' },
-      { appId: 'A', itemId: '1' }
+  it('should correctly sort productNames using sortHelpItemsByDefault 1', () => {
+    component.resultsForDisplay = [
+      { productName: 'B', itemId: '2' },
+      { productName: 'A', itemId: '1' }
     ]
-    component.results.sort(component['sortHelpItemByDefault'])
+    component.resultsForDisplay.sort(component['sortHelpItemByDefault'])
 
-    expect(component.results).toEqual([
-      { appId: 'A', itemId: '1' },
-      { appId: 'B', itemId: '2' }
+    expect(component.resultsForDisplay).toEqual([
+      { productName: 'A', itemId: '1' },
+      { productName: 'B', itemId: '2' }
     ])
   })
 
-  it('should correctly sort appIds using sortHelpItemsByDefault 2', () => {
-    component.results = [
-      { appId: '', itemId: '1' },
-      { appId: 'A', itemId: '2' }
+  it('should correctly sort productNames using sortHelpItemsByDefault 2', () => {
+    component.resultsForDisplay = [
+      { productName: '', itemId: '1' },
+      { productName: 'A', itemId: '2' }
     ]
-    component.results.sort(component['sortHelpItemByDefault'])
+    component.resultsForDisplay.sort(component['sortHelpItemByDefault'])
 
-    expect(component.results).toEqual([
-      { appId: '', itemId: '1' },
-      { appId: 'A', itemId: '2' }
+    expect(component.resultsForDisplay).toEqual([
+      { productName: '', itemId: '1' },
+      { productName: 'A', itemId: '2' }
     ])
   })
 
-  it('should correctly sort appIds using sortHelpItemsByDefault 3', () => {
-    component.results = [
-      { appId: 'A', itemId: '2' },
-      { appId: '', itemId: '1' }
+  it('should correctly sort productNames using sortHelpItemsByDefault 3', () => {
+    component.resultsForDisplay = [
+      { productName: 'A', itemId: '2' },
+      { productName: '', itemId: '1' }
     ]
-    component.results.sort(component['sortHelpItemByDefault'])
+    component.resultsForDisplay.sort(component['sortHelpItemByDefault'])
 
-    expect(component.results).toEqual([
-      { appId: '', itemId: '1' },
-      { appId: 'A', itemId: '2' }
+    expect(component.resultsForDisplay).toEqual([
+      { productName: '', itemId: '1' },
+      { productName: 'A', itemId: '2' }
     ])
   })
 
-  it('should correctly sort appIds using sortHelpItemsByDefault 4', () => {
-    component.results = [
-      { appId: 'A', itemId: '' },
-      { appId: 'A', itemId: '2' },
-      { appId: 'A', itemId: '1' },
-      { appId: '', itemId: '1' },
-      { appId: '', itemId: '2' },
-      { appId: '', itemId: '' }
+  it('should correctly sort productNames using sortHelpItemsByDefault 4', () => {
+    component.resultsForDisplay = [
+      { productName: 'A', itemId: '' },
+      { productName: 'A', itemId: '2' },
+      { productName: 'A', itemId: '1' },
+      { productName: '', itemId: '1' },
+      { productName: '', itemId: '2' },
+      { productName: '', itemId: '' }
     ]
-    component.results.sort(component['sortHelpItemByDefault'])
+    component.resultsForDisplay.sort(component['sortHelpItemByDefault'])
 
-    expect(component.results).toEqual([
-      { appId: '', itemId: '' },
-      { appId: '', itemId: '1' },
-      { appId: '', itemId: '2' },
-      { appId: 'A', itemId: '' },
-      { appId: 'A', itemId: '1' },
-      { appId: 'A', itemId: '2' }
+    expect(component.resultsForDisplay).toEqual([
+      { productName: '', itemId: '' },
+      { productName: '', itemId: '1' },
+      { productName: '', itemId: '2' },
+      { productName: 'A', itemId: '' },
+      { productName: 'A', itemId: '1' },
+      { productName: 'A', itemId: '2' }
     ])
   })
 
   it('should correctly sort itemIds using sortHelpItemsByDefault', () => {
-    component.results = [
-      { appId: 'A', itemId: '2' },
-      { appId: 'A', itemId: '1' }
+    component.resultsForDisplay = [
+      { productName: 'A', itemId: '2' },
+      { productName: 'A', itemId: '1' }
     ]
-    component.results.sort(component['sortHelpItemByDefault'])
+    component.resultsForDisplay.sort(component['sortHelpItemByDefault'])
 
-    expect(component.results).toEqual([
-      { appId: 'A', itemId: '1' },
-      { appId: 'A', itemId: '2' }
+    expect(component.resultsForDisplay).toEqual([
+      { productName: 'A', itemId: '1' },
+      { productName: 'A', itemId: '2' }
     ])
   })
 
   it('should update filteredColumns onColumnsChange', () => {
     const columns: Column[] = [
       {
-        field: 'appId',
-        header: 'APPLICATION_ID'
+        field: 'productDisplayName',
+        header: 'PRODUCT_NAME'
       },
       {
         field: 'context',
         header: 'CONTEXT'
       }
     ]
-    const expectedColumn = { field: 'appId', header: 'APPLICATION_ID' }
+    const expectedColumn = { field: 'productDisplayName', header: 'PRODUCT_NAME' }
     component.filteredColumns = columns
-    component.onColumnsChange(['appId'])
+    component.onColumnsChange(['productDisplayName'])
 
     expect(component.filteredColumns).not.toContain(columns[1])
     expect(component.filteredColumns).toEqual([jasmine.objectContaining(expectedColumn)])
@@ -360,10 +368,10 @@ describe('HelpSearchComponent', () => {
     expect(component.onCreate).toHaveBeenCalled()
   })
 
-  it('should set appId and itemId as undefined if criteria strings empty', () => {
+  it('should set productName and itemId as undefined if criteria strings empty', () => {
     const criteria: SearchHelpsRequestParams = {
       helpSearchCriteria: {
-        appId: '',
+        productName: '',
         itemId: ''
       }
     }
@@ -371,7 +379,7 @@ describe('HelpSearchComponent', () => {
 
     component.search(criteria.helpSearchCriteria, reuseCriteria)
 
-    expect(component.criteria.helpSearchCriteria.appId).not.toBeDefined()
+    expect(component.criteria.helpSearchCriteria.productName).not.toBeDefined()
     expect(component.criteria.helpSearchCriteria.itemId).not.toBeDefined()
   })
 })

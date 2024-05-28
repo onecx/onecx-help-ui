@@ -51,7 +51,7 @@ describe('HelpFormComponent', () => {
   it('should patch formGroup OnChanges if helpItem exists', () => {
     const mockHelpItem = {
       itemId: 'id',
-      appId: 'id'
+      productName: 'name'
     }
     component.helpItem = mockHelpItem
     component.formGroup = formGroupSpy

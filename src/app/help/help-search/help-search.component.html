@@ -1,15 +1,17 @@
 <ocx-portal-page permission="HELP#SEARCH" helpArticleId="PAGE_HELP_SEARCH">
   <app-help-criteria
+    *ngIf="productsLoaded"
     [actions]="actions"
-    [appsChanged]="appsChanged"
+    [productsChanged]="productsChanged"
     (criteriaEmitter)="search($event)"
+    [products]="products"
   ></app-help-criteria>
   <ocx-page-content styleClass="px-3">
     <p-table
       #table
       id="help_search_table"
       responsiveLayout="scroll"
-      [value]="loadingResults ? [] : results"
+      [value]="loadingResults ? [] : resultsForDisplay"
       [columns]="filteredColumns"
       styleClass="p-datatable-striped"
       stateStorage="local"
@@ -34,7 +36,10 @@
       </ng-template>
 
       <ng-template pTemplate="paginatorleft" let-state>
-        <ocx-paging-info [resultsCount]="results ? results.length : -1" [state]="state"></ocx-paging-info>
+        <ocx-paging-info
+          [resultsCount]="resultsForDisplay ? resultsForDisplay.length : -1"
+          [state]="state"
+        ></ocx-paging-info>
       </ng-template>
 
       <ng-template pTemplate="emptymessage">
@@ -168,8 +173,10 @@
 </p-dialog>
 
 <app-help-detail
+  *ngIf="productsLoaded"
   [(displayDetailDialog)]="displayDetailDialog"
   [helpItem]="helpItem"
   [changeMode]="changeMode"
   (searchEmitter)="onSearch()"
+  [products]="products"
 ></app-help-detail>

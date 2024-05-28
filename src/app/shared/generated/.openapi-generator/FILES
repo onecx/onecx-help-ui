@@ -10,13 +10,16 @@ git_push.sh
 index.ts
 model/createHelp.ts
 model/help.ts
-model/helpAppIds.ts
 model/helpPageResult.ts
+model/helpProductNames.ts
 model/helpSearchCriteria.ts
 model/models.ts
 model/problemDetailInvalidParam.ts
 model/problemDetailParam.ts
 model/problemDetailResponse.ts
+model/product.ts
+model/productsPageResult.ts
+model/productsSearchCriteria.ts
 model/updateHelp.ts
 param.ts
 variables.ts
