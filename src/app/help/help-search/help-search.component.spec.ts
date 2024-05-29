@@ -81,7 +81,7 @@ describe('HelpSearchComponent', () => {
     component.columns = [
       {
         field: 'productName',
-        header: 'PRODUCT_NAME',
+        header: 'APPLICATION_NAME',
         active: false
       },
       {
@@ -335,14 +335,14 @@ describe('HelpSearchComponent', () => {
     const columns: Column[] = [
       {
         field: 'productDisplayName',
-        header: 'PRODUCT_NAME'
+        header: 'APPLICATION_NAME'
       },
       {
         field: 'context',
         header: 'CONTEXT'
       }
     ]
-    const expectedColumn = { field: 'productDisplayName', header: 'PRODUCT_NAME' }
+    const expectedColumn = { field: 'productDisplayName', header: 'APPLICATION_NAME' }
     component.filteredColumns = columns
     component.onColumnsChange(['productDisplayName'])
 
