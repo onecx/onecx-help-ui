@@ -199,11 +199,12 @@ export class OneCXHelpItemEditorComponent implements ocxRemoteComponent {
         mergeMap(([helpArticleId, productName, helpDataItem, products]) => {
           let isNewItem = false
           if (helpArticleId && productName) {
-            if (!helpDataItem!.itemId) {
-              helpDataItem = { productName: productName, itemId: helpArticleId }
+            if (!helpDataItem.itemId) {
+              helpDataItem.itemId = helpArticleId
               isNewItem = true
             }
-            return this.openHelpEditorDialog(helpDataItem, products[helpDataItem.productName ?? productName]).pipe(
+            helpDataItem.productName = helpDataItem.productName ?? productName
+            return this.openHelpEditorDialog(helpDataItem, products[helpDataItem.productName]).pipe(
               map((dialogState): [DialogState<Help>, boolean] => [dialogState, isNewItem])
             )
           } else {
