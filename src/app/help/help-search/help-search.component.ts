@@ -49,7 +49,7 @@ export class HelpSearchComponent implements OnInit {
   public columns: ExtendedColumn[] = [
     {
       field: 'productDisplayName',
-      header: 'PRODUCT_NAME',
+      header: 'APPLICATION_NAME',
       active: true,
       translationPrefix: 'HELP_ITEM',
       css: 'hidden sm:table-cell'

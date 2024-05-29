@@ -87,13 +87,13 @@
     "SWITCH_TO_EDIT_MODE": "Edit"
   },
   "HELP_ITEM": {
-    "PRODUCT_NAME": "Product Name",
+    "APPLICATION_NAME": "Application Name",
     "HELP_ITEM_ID": "Help Item ID",
     "CONTEXT": "Context",
     "BASE_URL": "Base URL",
     "RESOURCE_URL": "Resource URL",
     "TOOLTIPS": {
-      "PRODUCT_NAME": "Product context of the Help Item",
+      "APPLICATION_NAME": "Application context of the Help Item",
       "HELP_ITEM_ID": "Help Item ID within the context of the application",
       "CONTEXT": "Context within the page",
       "BASE_URL": "Base URL that precedes the resource URL",
@@ -105,7 +105,7 @@
     "SUBHEADER": "Searching and Managing of Help Items",
     "SEARCH_TOOLTIP": "Search for the Help Items with given criteria",
     "MSG_SEARCH_VALIDATION": "Application ID is required for search",
-    "NO_PRODUCTS_AVAILABLE": "Could not find any products"
+    "NO_APPLICATION_AVAILABLE": "Could not find any Application"
   },
   "HELP_DETAIL": {
     "HEADER": "Help Item Details",
@@ -144,7 +144,7 @@
   "HELP_ITEM_EDITOR": {
     "LABEL": "Edit Help for this page",
     "HEADER": "Edit help item for this page",
-    "OPEN_HELP_PAGE_EDITOR_ERROR": "Cannot edit the Help Item. HelpItemId or ProductName are undefined or null.",
+    "OPEN_HELP_PAGE_EDITOR_ERROR": "Cannot edit the Help Item. Help Item ID or Application Name missing.",
     "SAVE": "Save",
     "CANCEL": "Cancel",
     "UPDATE_HELP_ARTICLE_ERROR": "Help Item definition update failed",
@@ -152,7 +152,7 @@
     "UPDATE_HELP_ARTICLE_INFO": "Help Item definition updated",
     "DIALOG": {
       "HELP_ITEM_ID": "Help Item Id",
-      "PRODUCT_NAME": "Product Name",
+      "APPLICATION_NAME": "Application Name",
       "RESOURCE_URL": "URL"
     }
   }
