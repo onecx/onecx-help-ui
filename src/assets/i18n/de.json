@@ -144,7 +144,7 @@
   "HELP_ITEM_EDITOR": {
     "LABEL": "Hilfe für diese Seite bearbeiten",
     "HEADER": "Hilfeartikel für diese Seite bearbeiten",
-    "OPEN_HELP_PAGE_EDITOR_ERROR": "Der Hilfeartikel kann nicht bearbeitet werden. Hilfeartikel ID oder Applikationsname sind undefiniert oder null.",
+    "OPEN_HELP_PAGE_EDITOR_ERROR": "Der Hilfeartikel kann nicht bearbeitet werden. Hilfeartikel ID oder Applikationsname fehlen.",
     "SAVE": "Speichern",
     "CANCEL": "Abbrechen",
     "UPDATE_HELP_ARTICLE_ERROR": "Aktualisierung des Hilfeartikels fehlgeschlagen",
