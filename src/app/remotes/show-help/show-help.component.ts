@@ -137,9 +137,10 @@ export class OneCXShowHelpComponent implements ocxRemoteComponent {
         if (helpDataItem && helpDataItem.id) {
           if (helpDataItem.resourceUrl) {
             const currentLocation = getLocation()
-            const url = new URL(
+            const url = this.constructUrl(
               helpDataItem.resourceUrl,
-              Location.joinWithSlash(currentLocation.origin, currentLocation.deploymentPath)
+              currentLocation.origin,
+              currentLocation.deploymentPath
             )
             console.log(`navigate to help page: ${url.toString()}`)
             try {
@@ -165,5 +166,11 @@ export class OneCXShowHelpComponent implements ocxRemoteComponent {
       }
     })
     event.preventDefault()
+  }
+
+  public constructUrl(resourceUrl: string, basePath: string, deploymentPath: string): URL {
+    const isRelative = new URL(basePath).origin === new URL(resourceUrl, basePath).origin
+    if (isRelative) return new URL(Location.joinWithSlash(deploymentPath, resourceUrl), basePath)
+    return new URL(resourceUrl)
   }
 }
