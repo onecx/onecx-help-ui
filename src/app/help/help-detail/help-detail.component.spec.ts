@@ -136,7 +136,7 @@ describe('HelpDetailComponent', () => {
   it('should display unique constraint creation error', () => {
     const mockError = {
       error: {
-        key: 'PERSIST_ENTITY_FAILED'
+        errorCode: 'PERSIST_ENTITY_FAILED'
       }
     }
     apiServiceSpy.createNewHelp.and.returnValue(throwError(() => mockError))

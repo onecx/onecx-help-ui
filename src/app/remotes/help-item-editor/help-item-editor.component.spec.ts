@@ -228,6 +228,34 @@ describe('OneCXHelpItemEditorComponent', () => {
     })
   })
 
+  it('should map productName to productDisplayName', (done: DoneFn) => {
+    helpApiServiceSpy.searchProductsByCriteria.calls.reset()
+    helpApiServiceSpy.searchProductsByCriteria.and.returnValue(
+      of({
+        stream: [
+          {
+            name: 'prod-1',
+            displayName: 'Product 1'
+          },
+          {
+            name: 'my-prod',
+            displayName: 'My product'
+          }
+        ]
+      } as any)
+    )
+
+    fixture = TestBed.createComponent(OneCXHelpItemEditorComponent)
+    component = fixture.componentInstance
+    fixture.detectChanges()
+
+    component.products$?.subscribe((products) => {
+      expect(products['prod-1']).toBe('Product 1')
+      expect(products['my-prod']).toBe('My product')
+      done()
+    })
+  })
+
   it('should load help article when application and help item data are valid', (done: DoneFn) => {
     helpApiServiceSpy.searchHelps.and.returnValue(
       of({
