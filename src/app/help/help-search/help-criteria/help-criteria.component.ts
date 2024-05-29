@@ -79,7 +79,6 @@ export class HelpCriteriaComponent implements OnInit, OnChanges {
       if (this.productDisplayNames?.length === 0) {
         this.msgService.info({ summaryKey: 'HELP_SEARCH.NO_PRODUCTS_AVAILABLE' })
       }
-      this.productDisplayNames?.unshift('')
       this.productDisplayNames = this.productDisplayNames?.filter((productName) => productName !== null)
     })
   }

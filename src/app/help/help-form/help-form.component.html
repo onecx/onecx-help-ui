@@ -7,7 +7,8 @@
       <span class="p-float-label">
         <p-autoComplete
           id="help_detail_form_product_name_autocomplete"
-          styleClass="w-full pt-3 pb-2"
+          styleClass="w-full"
+          inputStyleClass="pt-3 pb-2"
           formControlName="product"
           field="displayName"
           ngDefaultControl
@@ -18,9 +19,9 @@
           [forceSelection]="true"
           appendTo="body"
         ></p-autoComplete>
-        <label class="ocx-required-label" for="help_detail_form_product_name_autocomplete">{{
-          'HELP_ITEM.PRODUCT_NAME' | translate
-        }}</label>
+        <label class="ocx-required-label" for="help_detail_form_product_name_autocomplete"
+          >{{ 'HELP_ITEM.PRODUCT_NAME' | translate }}
+        </label>
       </span>
     </div>
     <div [title]="'HELP_ITEM.TOOLTIPS.HELP_ITEM_ID' | translate">

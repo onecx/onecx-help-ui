@@ -135,7 +135,7 @@ export class HelpSearchComponent implements OnInit {
           if (data.stream !== undefined) {
             data.stream?.sort(this.sortHelpItemByDefault)
             this.resultsForDisplay = data.stream.map((result) => {
-              const resultForDisplay = { ...result } as any
+              const resultForDisplay = { ...result } as HelpForDisplay
               resultForDisplay['productName'] = result.productName
               const product = this.products.find((product) => product.name === result.productName)
               resultForDisplay['productDisplayName'] = product?.displayName

@@ -68,6 +68,7 @@ export class OneCXHelpItemEditorComponent implements ocxRemoteComponent {
 
   helpArticleId$: Observable<string>
   productName$: Observable<string>
+  products$: Observable<Record<string, string>>
   helpDataItem$: Observable<Help>
 
   permissions: string[] = []
@@ -96,6 +97,19 @@ export class OneCXHelpItemEditorComponent implements ocxRemoteComponent {
         return ''
       })
     )
+    this.products$ = this.helpDataService
+      .searchProductsByCriteria({
+        productsSearchCriteria: {
+          pageNumber: 0,
+          pageSize: 1000
+        }
+      })
+      .pipe(
+        map((productsPageResult) => {
+          productsPageResult.stream = productsPageResult.stream ?? []
+          return Object.fromEntries(productsPageResult.stream.map((product) => [product.name, product.displayName]))
+        })
+      )
 
     this.helpDataItem$ = combineLatest([this.productName$, this.helpArticleId$]).pipe(
       mergeMap(([productName, helpArticleId]) => {
@@ -130,13 +144,14 @@ export class OneCXHelpItemEditorComponent implements ocxRemoteComponent {
       )
   }
 
-  private openHelpEditorDialog(helpItem: Help): Observable<DialogState<Help>> {
+  private openHelpEditorDialog(helpItem: Help, productDisplayName: string): Observable<DialogState<Help>> {
     return this.portalDialogService.openDialog<Help>(
       'HELP_ITEM_EDITOR.HEADER',
       {
         type: HelpItemEditorDialogComponent,
         inputs: {
-          helpItem: helpItem
+          helpItem: helpItem,
+          productDisplayName: productDisplayName
         }
       },
       {
@@ -178,17 +193,18 @@ export class OneCXHelpItemEditorComponent implements ocxRemoteComponent {
   }
 
   public editHelpPage(event: any) {
-    combineLatest([this.helpArticleId$, this.productName$, this.helpDataItem$])
+    combineLatest([this.helpArticleId$, this.productName$, this.helpDataItem$, this.products$])
       .pipe(
         first(),
-        mergeMap(([helpArticleId, productName, helpDataItem]) => {
+        mergeMap(([helpArticleId, productName, helpDataItem, products]) => {
           let isNewItem = false
           if (helpArticleId && productName) {
-            if (!helpDataItem!.itemId) {
-              helpDataItem = { productName: productName, itemId: helpArticleId }
+            if (!helpDataItem.itemId) {
+              helpDataItem.itemId = helpArticleId
               isNewItem = true
             }
-            return this.openHelpEditorDialog(helpDataItem).pipe(
+            helpDataItem.productName = helpDataItem.productName ?? productName
+            return this.openHelpEditorDialog(helpDataItem, products[helpDataItem.productName]).pipe(
               map((dialogState): [DialogState<Help>, boolean] => [dialogState, isNewItem])
             )
           } else {
