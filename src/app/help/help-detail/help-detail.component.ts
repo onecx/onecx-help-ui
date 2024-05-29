@@ -61,8 +61,8 @@ export class HelpDetailComponent implements OnChanges {
             this.msgService.success({ summaryKey: 'HELPITEM_CREATION.CREATION_SUCCESS' })
             this.displayDetailDialog = false
           },
-          error: (err: { error: { key: string } }) => {
-            err.error.key && err.error.key === 'PERSIST_ENTITY_FAILED'
+          error: (err: { error: { errorCode: string } }) => {
+            err.error.errorCode && err.error.errorCode === 'PERSIST_ENTITY_FAILED'
               ? this.msgService.error({
                   summaryKey: 'HELPITEM_CREATION.CREATION_FAILED',
                   detailKey: 'HELPITEM_CREATION.UNIQUE_CONSTRAINT'
