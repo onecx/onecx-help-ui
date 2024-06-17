@@ -74,7 +74,7 @@ paths:
             - read
       tags:
         - helpsInternal
-      summary: Get all application IDs to which help items are assigned
+      summary: Get all products to which help items are assigned
       operationId: searchProductsByCriteria
       requestBody:
         content:
@@ -215,7 +215,8 @@ components:
         pageSize:
           format: int32
           description: The size of page
-          default: 10
+          default: 100
+          maximum: 1000
           type: integer
     HelpPageResult:
       type: object
@@ -296,7 +297,8 @@ components:
         pageSize:
           format: int32
           description: The size of page
-          default: 10
+          default: 100
+          maximum: 1000
           type: integer
     Product:
       type: object

@@ -97,19 +97,23 @@ export class OneCXHelpItemEditorComponent implements ocxRemoteComponent {
         return ''
       })
     )
-    this.products$ = this.helpDataService
-      .searchProductsByCriteria({
-        productsSearchCriteria: {
-          pageNumber: 0,
-          pageSize: 1000
-        }
+    this.products$ = this.baseUrl.asObservable().pipe(
+      mergeMap(() => {
+        return this.helpDataService
+          .searchProductsByCriteria({
+            productsSearchCriteria: {
+              pageNumber: 0,
+              pageSize: 1000
+            }
+          })
+          .pipe(
+            map((productsPageResult) => {
+              productsPageResult.stream = productsPageResult.stream ?? []
+              return Object.fromEntries(productsPageResult.stream.map((product) => [product.name, product.displayName]))
+            })
+          )
       })
-      .pipe(
-        map((productsPageResult) => {
-          productsPageResult.stream = productsPageResult.stream ?? []
-          return Object.fromEntries(productsPageResult.stream.map((product) => [product.name, product.displayName]))
-        })
-      )
+    )
 
     this.helpDataItem$ = combineLatest([this.productName$, this.helpArticleId$]).pipe(
       mergeMap(([productName, helpArticleId]) => {
