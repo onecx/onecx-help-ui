@@ -140,6 +140,6 @@ describe('HelpDetailComponent', () => {
 
     component.loadAllProductsWithHelpItems()
 
-    expect(msgServiceSpy.info).toHaveBeenCalledWith({ summaryKey: 'HELP_SEARCH.NO_PRODUCTS_AVAILABLE' })
+    expect(msgServiceSpy.info).toHaveBeenCalledWith({ summaryKey: 'HELP_SEARCH.NO_APPLICATION_AVAILABLE' })
   })
 })

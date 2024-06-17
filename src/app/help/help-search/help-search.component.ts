@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild } from '@angular/core'
 import { TranslateService } from '@ngx-translate/core'
-import { finalize, Observable } from 'rxjs'
+import { catchError, finalize, Observable, of } from 'rxjs'
 import { Table } from 'primeng/table'
 
 import { Action, Column, PortalMessageService } from '@onecx/portal-integration-angular'
@@ -11,7 +11,8 @@ import {
   HelpSearchCriteria,
   SearchProductsByCriteriaRequestParams,
   ProductsPageResult,
-  Product
+  Product,
+  HelpPageResult
 } from 'src/app/shared/generated'
 
 type ExtendedColumn = Column & { css?: string; limit?: boolean }
@@ -26,6 +27,7 @@ type HelpForDisplay = Help & { productDisplayName?: string; product?: { name?: s
 export class HelpSearchComponent implements OnInit {
   @ViewChild('table', { static: false }) table!: Table
 
+  public exceptionKey: string | undefined
   public changeMode: ChangeMode = 'NEW'
   public actions: Action[] = []
   public helpItem: Help | undefined
@@ -102,7 +104,7 @@ export class HelpSearchComponent implements OnInit {
   private processProducts(productsPageResult: ProductsPageResult) {
     this.products = productsPageResult.stream ?? []
     if (this.products?.length === 0) {
-      this.msgService.info({ summaryKey: 'HELP_SEARCH.NO_PRODUCTS_AVAILABLE' })
+      this.msgService.info({ summaryKey: 'HELP_SEARCH.NO_APPLICATION_AVAILABLE' })
     }
     this.products = this.products?.filter((product) => product !== null)
     this.productsLoaded = true
@@ -128,9 +130,16 @@ export class HelpSearchComponent implements OnInit {
     this.searchInProgress = true
     this.helpInternalAPIService
       .searchHelps(this.criteria)
-      .pipe(finalize(() => (this.searchInProgress = false)))
+      .pipe(
+        catchError((err) => {
+          this.exceptionKey = 'EXCEPTIONS.HTTP_STATUS_' + err.status + '.HELP_ITEM'
+          console.error('searchSlots():', err)
+          this.msgService.error({ summaryKey: 'GENERAL.SEARCH.MSG_SEARCH_FAILED' })
+          return of({ stream: [] } as HelpPageResult)
+        }),
+        finalize(() => (this.searchInProgress = false))
+      )
       .subscribe({
-        error: () => this.msgService.error({ summaryKey: 'GENERAL.SEARCH.MSG_SEARCH_FAILED' }),
         next: (data) => {
           if (data.stream !== undefined) {
             data.stream?.sort(this.sortHelpItemByDefault)
