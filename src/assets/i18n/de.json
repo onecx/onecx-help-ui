@@ -105,8 +105,7 @@
     "SUBHEADER": "Suchen und Verwalten von Hilfeartikeln",
     "SEARCH_TOOLTIP": "Suchen nach Hilfeartikeln mit vorgegebenen Kriterien",
     "MSG_SEARCH_VALIDATION": "Eine Anwendungs ID ist für die Suche erforderlich",
-    "NO_APPLICATION_AVAILABLE": "Keine Applikationen gefunden",
-    "NO_PRODUCTS_AVAILABLE": "Keine Produkte gefunden"
+    "NO_APPLICATION_AVAILABLE": "Keine Applikationen gefunden"
   },
   "HELP_DETAIL": {
     "HEADER": "Hilfeartikel Details",

@@ -104,7 +104,7 @@ export class HelpSearchComponent implements OnInit {
   private processProducts(productsPageResult: ProductsPageResult) {
     this.products = productsPageResult.stream ?? []
     if (this.products?.length === 0) {
-      this.msgService.info({ summaryKey: 'HELP_SEARCH.NO_PRODUCTS_AVAILABLE' })
+      this.msgService.info({ summaryKey: 'HELP_SEARCH.NO_APPLICATION_AVAILABLE' })
     }
     this.products = this.products?.filter((product) => product !== null)
     this.productsLoaded = true

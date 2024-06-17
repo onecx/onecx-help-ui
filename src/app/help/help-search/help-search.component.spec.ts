@@ -140,7 +140,7 @@ describe('HelpSearchComponent', () => {
     component.search({})
 
     expect(component.resultsForDisplay.length).toEqual(0)
-    expect(msgServiceSpy.info).toHaveBeenCalledWith({ summaryKey: 'HELP_SEARCH.NO_PRODUCTS_AVAILABLE' })
+    expect(msgServiceSpy.info).toHaveBeenCalledWith({ summaryKey: 'HELP_SEARCH.NO_APPLICATION_AVAILABLE' })
   })
 
   it('should reuse criteria if reuseCriteria is true', () => {
@@ -185,7 +185,7 @@ describe('HelpSearchComponent', () => {
 
       expect(component.exceptionKey).toBeDefined()
       expect(component.exceptionKey).toBe('EXCEPTIONS.HTTP_STATUS_401.HELP_ITEM')
-      expect(msgServiceSpy.info).toHaveBeenCalledWith({ summaryKey: 'HELP_SEARCH.NO_PRODUCTS_AVAILABLE' })
+      expect(msgServiceSpy.info).toHaveBeenCalledWith({ summaryKey: 'HELP_SEARCH.NO_APPLICATION_AVAILABLE' })
     })
 
     it('should handle 403 Exception result on search', () => {
@@ -207,7 +207,7 @@ describe('HelpSearchComponent', () => {
 
       expect(component.exceptionKey).toBeDefined()
       expect(component.exceptionKey).toBe('EXCEPTIONS.HTTP_STATUS_403.HELP_ITEM')
-      expect(msgServiceSpy.info).toHaveBeenCalledWith({ summaryKey: 'HELP_SEARCH.NO_PRODUCTS_AVAILABLE' })
+      expect(msgServiceSpy.info).toHaveBeenCalledWith({ summaryKey: 'HELP_SEARCH.NO_APPLICATION_AVAILABLE' })
     })
 
     it('should handle 404 Exception result on search', () => {
@@ -229,7 +229,7 @@ describe('HelpSearchComponent', () => {
 
       expect(component.exceptionKey).toBeDefined()
       expect(component.exceptionKey).toBe('EXCEPTIONS.HTTP_STATUS_404.HELP_ITEM')
-      expect(msgServiceSpy.info).toHaveBeenCalledWith({ summaryKey: 'HELP_SEARCH.NO_PRODUCTS_AVAILABLE' })
+      expect(msgServiceSpy.info).toHaveBeenCalledWith({ summaryKey: 'HELP_SEARCH.NO_APPLICATION_AVAILABLE' })
     })
   })
 

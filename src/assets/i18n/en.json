@@ -105,8 +105,7 @@
     "SUBHEADER": "Searching and Managing of Help Items",
     "SEARCH_TOOLTIP": "Search for the Help Items with given criteria",
     "MSG_SEARCH_VALIDATION": "Application ID is required for search",
-    "NO_APPLICATION_AVAILABLE": "Could not find any Application",
-    "NO_PRODUCTS_AVAILABLE": "Could not find any Product"
+    "NO_APPLICATION_AVAILABLE": "Could not find any Application"
   },
   "HELP_DETAIL": {
     "HEADER": "Help Item Details",
