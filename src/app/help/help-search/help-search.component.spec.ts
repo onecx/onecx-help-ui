@@ -1,6 +1,6 @@
 import { NO_ERRORS_SCHEMA } from '@angular/core'
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing'
-import { HttpClient } from '@angular/common/http'
+import { HttpClient, HttpErrorResponse, HttpEventType, HttpHeaders } from '@angular/common/http'
 import { HttpClientTestingModule } from '@angular/common/http/testing'
 import { TranslateLoader, TranslateModule } from '@ngx-translate/core'
 import { of, throwError } from 'rxjs'
@@ -163,6 +163,74 @@ describe('HelpSearchComponent', () => {
     component.search(component.criteria.helpSearchCriteria, reuseCriteria)
 
     expect(component.criteria).not.toBe(newCriteria)
+  })
+
+  describe('searchHelps Error', () => {
+    it('should handle 401 Exception result on search', () => {
+      const helpPageResultMock: HttpErrorResponse = {
+        status: 401,
+        statusText: 'Not Found',
+        name: 'HttpErrorResponse',
+        message: '',
+        error: undefined,
+        ok: false,
+        headers: new HttpHeaders(),
+        url: null,
+        type: HttpEventType.ResponseHeader
+      }
+      apiServiceSpy.searchHelps.and.returnValue(throwError(() => helpPageResultMock))
+      component.resultsForDisplay = []
+
+      component.search({})
+
+      expect(component.exceptionKey).toBeDefined()
+      expect(component.exceptionKey).toBe('EXCEPTIONS.HTTP_STATUS_401.HELP_ITEM')
+      expect(msgServiceSpy.info).toHaveBeenCalledWith({ summaryKey: 'HELP_SEARCH.NO_PRODUCTS_AVAILABLE' })
+    })
+
+    it('should handle 403 Exception result on search', () => {
+      const helpPageResultMock: HttpErrorResponse = {
+        status: 403,
+        statusText: 'Not Found',
+        name: 'HttpErrorResponse',
+        message: '',
+        error: undefined,
+        ok: false,
+        headers: new HttpHeaders(),
+        url: null,
+        type: HttpEventType.ResponseHeader
+      }
+      apiServiceSpy.searchHelps.and.returnValue(throwError(() => helpPageResultMock))
+      component.resultsForDisplay = []
+
+      component.search({})
+
+      expect(component.exceptionKey).toBeDefined()
+      expect(component.exceptionKey).toBe('EXCEPTIONS.HTTP_STATUS_403.HELP_ITEM')
+      expect(msgServiceSpy.info).toHaveBeenCalledWith({ summaryKey: 'HELP_SEARCH.NO_PRODUCTS_AVAILABLE' })
+    })
+
+    it('should handle 404 Exception result on search', () => {
+      const helpPageResultMock: HttpErrorResponse = {
+        status: 404,
+        statusText: 'Not Found',
+        name: 'HttpErrorResponse',
+        message: '',
+        error: undefined,
+        ok: false,
+        headers: new HttpHeaders(),
+        url: null,
+        type: HttpEventType.ResponseHeader
+      }
+      apiServiceSpy.searchHelps.and.returnValue(throwError(() => helpPageResultMock))
+      component.resultsForDisplay = []
+
+      component.search({})
+
+      expect(component.exceptionKey).toBeDefined()
+      expect(component.exceptionKey).toBe('EXCEPTIONS.HTTP_STATUS_404.HELP_ITEM')
+      expect(msgServiceSpy.info).toHaveBeenCalledWith({ summaryKey: 'HELP_SEARCH.NO_PRODUCTS_AVAILABLE' })
+    })
   })
 
   it('should handle API call error', () => {

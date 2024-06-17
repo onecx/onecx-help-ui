@@ -105,7 +105,8 @@
     "SUBHEADER": "Searching and Managing of Help Items",
     "SEARCH_TOOLTIP": "Search for the Help Items with given criteria",
     "MSG_SEARCH_VALIDATION": "Application ID is required for search",
-    "NO_APPLICATION_AVAILABLE": "Could not find any Application"
+    "NO_APPLICATION_AVAILABLE": "Could not find any Application",
+    "NO_PRODUCTS_AVAILABLE": "Could not find any Product"
   },
   "HELP_DETAIL": {
     "HEADER": "Help Item Details",
@@ -154,6 +155,23 @@
       "HELP_ITEM_ID": "Help Item Id",
       "APPLICATION_NAME": "Application Name",
       "RESOURCE_URL": "URL"
+    }
+  },
+  "EXCEPTIONS": {
+    "HTTP_STATUS_0": {
+      "HELP_ITEM": "Unknown problem retrieving Help data - please try again."
+    },
+    "HTTP_STATUS_401": {
+      "HELP_ITEM": "You are not authorized to see Help Items."
+    },
+    "HTTP_STATUS_403": {
+      "HELP_ITEM": "You have no permissions to see Help Items."
+    },
+    "HTTP_STATUS_404": {
+      "HELP_ITEM": "No Help Items could be found."
+    },
+    "HTTP_STATUS_500": {
+      "HELP_ITEM": "Unknown server problem retrieving Help data - please try again."
     }
   }
 }

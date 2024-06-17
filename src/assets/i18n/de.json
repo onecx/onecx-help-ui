@@ -105,7 +105,8 @@
     "SUBHEADER": "Suchen und Verwalten von Hilfeartikeln",
     "SEARCH_TOOLTIP": "Suchen nach Hilfeartikeln mit vorgegebenen Kriterien",
     "MSG_SEARCH_VALIDATION": "Eine Anwendungs ID ist für die Suche erforderlich",
-    "NO_APPLICATION_AVAILABLE": "Keine Applikationen gefunden"
+    "NO_APPLICATION_AVAILABLE": "Keine Applikationen gefunden",
+    "NO_PRODUCTS_AVAILABLE": "Keine Produkte gefunden"
   },
   "HELP_DETAIL": {
     "HEADER": "Hilfeartikel Details",
@@ -154,6 +155,23 @@
       "HELP_ITEM_ID": "Hilfeartikel ID",
       "APPLICATION_NAME": "Applikationsname",
       "RESOURCE_URL": "Ressource URL"
+    }
+  },
+  "EXCEPTIONS": {
+    "HTTP_STATUS_0": {
+      "HELPITEM": "Unbekanntes Problem beim Abrufen von Hilfeartikeln - Bitte versuchen sie es noch einmal."
+    },
+    "HTTP_STATUS_401": {
+      "HELPITEM": "Sie sind nicht autorisiert, um Hilfeartikel zu sehen."
+    },
+    "HTTP_STATUS_403": {
+      "HELPITEM": "Sie haben keine Rechte, um Hilfeartikel zu sehen."
+    },
+    "HTTP_STATUS_404": {
+      "HELPITEM": "Es konnten keine Hilfeartikel gefunden werden."
+    },
+    "HTTP_STATUS_500": {
+      "HELPITEM": "Unbekanntes Server-Problem beim Abrufen von Hilfe-Daten - Bitte versuchen sie es noch einmal."
     }
   }
 }

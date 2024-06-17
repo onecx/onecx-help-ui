@@ -7,7 +7,16 @@
     [products]="products"
   ></app-help-criteria>
   <ocx-page-content styleClass="px-3">
+    <div *ngIf="exceptionKey" id="helitem_search_criteria_error" class="card px-3 align-items-center">
+      <p-message
+        id="helitem_search_criteria_error_message"
+        severity="error"
+        styleClass="p-2"
+        [text]="exceptionKey! | translate"
+      ></p-message>
+    </div>
     <p-table
+      *ngIf="!exceptionKey"
       #table
       id="help_search_table"
       responsiveLayout="scroll"
