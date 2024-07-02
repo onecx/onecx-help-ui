@@ -148,8 +148,8 @@
     "SAVE": "Speichern",
     "CANCEL": "Abbrechen",
     "UPDATE_HELP_ARTICLE_ERROR": "Aktualisierung des Hilfeartikels fehlgeschlagen",
-    "SAVE_ERROR": "Das Formular ist nicht gültig. Der Hilfeartikel kann nicht aktualisiert werden.",
-    "UPDATE_HELP_ARTICLE_INFO": "Hilfeartikels aktualisiert",
+    "SAVE_ERROR": "Das Formular ist ungültig. Der Hilfeartikel kann nicht gespeichert werden.",
+    "UPDATE_HELP_ARTICLE_INFO": "Hilfeartikel gespeichert",
     "DIALOG": {
       "HELP_ITEM_ID": "Hilfeartikel ID",
       "APPLICATION_NAME": "Applikationsname",
