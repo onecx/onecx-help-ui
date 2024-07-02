@@ -1,4 +1,5 @@
-import { HttpClient } from '@angular/common/http'
+import { HttpClient, HttpClientModule } from '@angular/common/http'
+import { BrowserModule } from '@angular/platform-browser'
 import { APP_INITIALIZER, DoBootstrap, Injector, NgModule } from '@angular/core'
 import { createCustomElement } from '@angular/elements'
 import { Router, RouterModule, Routes } from '@angular/router'
@@ -14,6 +15,9 @@ import {
 import { addInitializeModuleGuard } from '@onecx/angular-integration-interface'
 import { initializeRouter, startsWith } from '@onecx/angular-webcomponents'
 import { AppEntrypointComponent } from './app-entrypoint.component'
+import { AngularAuthModule } from '@onecx/angular-auth'
+import { SharedModule } from './shared/shared.module'
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations'
 
 const routes: Routes = [
   {
@@ -24,6 +28,11 @@ const routes: Routes = [
 @NgModule({
   declarations: [AppEntrypointComponent],
   imports: [
+    AngularAuthModule,
+    BrowserModule,
+    HttpClientModule,
+    SharedModule,
+    BrowserAnimationsModule,
     PortalCoreModule.forMicroFrontend(),
     RouterModule.forRoot(addInitializeModuleGuard(routes)),
     TranslateModule.forRoot({
@@ -50,7 +59,7 @@ const routes: Routes = [
 })
 export class OneCXHelpModule implements DoBootstrap {
   constructor(private injector: Injector) {
-    console.info('OneCX Announcement Module constructor')
+    console.info('OneCX Help Module constructor')
   }
 
   ngDoBootstrap(): void {
