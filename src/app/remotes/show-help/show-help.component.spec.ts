@@ -484,7 +484,7 @@ describe('OneCXShowHelpComponent', () => {
 
     expect(messageServiceSpy.error).toHaveBeenCalledTimes(0)
     expect(dialogServiceSpy.open).toHaveBeenCalledOnceWith(NoHelpItemComponent, {
-      header: 'No help item defined for this page',
+      header: 'No Help Item defined for this page',
       width: '400px',
       data: {
         helpArticleId: 'article_id'

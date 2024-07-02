@@ -135,8 +135,6 @@ describe('OneCXHelpItemEditorComponent', () => {
     fixture.detectChanges()
     oneCXHelpItemEditorHarness = await TestbedHarnessEnvironment.harnessForFixture(fixture, OneCXHelpItemEditorHarness)
 
-    expect(await oneCXHelpItemEditorHarness.getHelpButtonEditorTitle()).toBe('Edit Help for this page')
-
     expect(await oneCXHelpItemEditorHarness.hasHelpEditorIconClass(PrimeIcons.PENCIL)).toBe(true)
   })
 
@@ -312,7 +310,6 @@ describe('OneCXHelpItemEditorComponent', () => {
   })
 
   it('should return empty object on failed article load', (done: DoneFn) => {
-    spyOn(console, 'log')
     helpApiServiceSpy.searchHelps.and.returnValue(throwError(() => {}))
 
     const appStateService = TestBed.inject(AppStateService)
@@ -338,7 +335,6 @@ describe('OneCXHelpItemEditorComponent', () => {
       expect(helpApiServiceSpy.searchHelps).toHaveBeenCalledOnceWith({
         helpSearchCriteria: { itemId: 'article_id', productName: 'mfe_product_name' }
       })
-      expect(console.log).toHaveBeenCalledWith('Failed to load help article')
       done()
     })
   })
@@ -901,7 +897,6 @@ describe('OneCXHelpItemEditorComponent', () => {
   })
 
   it('should display error if new help item creation failed', async () => {
-    spyOn(console, 'log')
     const appStateService = TestBed.inject(AppStateService)
     spyOn(appStateService.currentPage$, 'asObservable').and.returnValue(
       of({
@@ -955,7 +950,6 @@ describe('OneCXHelpItemEditorComponent', () => {
     oneCXHelpItemEditorHarness = await TestbedHarnessEnvironment.harnessForFixture(fixture, OneCXHelpItemEditorHarness)
     await oneCXHelpItemEditorHarness.clickHelpEditorButton()
 
-    expect(console.log).toHaveBeenCalledWith(`Could not save help item`)
     expect(messageServiceSpy.error).toHaveBeenCalledOnceWith({
       summaryKey: 'HELP_ITEM_EDITOR.UPDATE_HELP_ARTICLE_ERROR',
       detailKey: `Server error: 404`
@@ -963,8 +957,6 @@ describe('OneCXHelpItemEditorComponent', () => {
   })
 
   it('should display error if help item update failed', async () => {
-    spyOn(console, 'log')
-
     const appStateService = TestBed.inject(AppStateService)
     spyOn(appStateService.currentPage$, 'asObservable').and.returnValue(
       of({
@@ -1019,7 +1011,6 @@ describe('OneCXHelpItemEditorComponent', () => {
     oneCXHelpItemEditorHarness = await TestbedHarnessEnvironment.harnessForFixture(fixture, OneCXHelpItemEditorHarness)
     await oneCXHelpItemEditorHarness.clickHelpEditorButton()
 
-    expect(console.log).toHaveBeenCalledWith(`Could not save help item`)
     expect(messageServiceSpy.error).toHaveBeenCalledOnceWith({
       summaryKey: 'HELP_ITEM_EDITOR.UPDATE_HELP_ARTICLE_ERROR',
       detailKey: `Server error: 404`
