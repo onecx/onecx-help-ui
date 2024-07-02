@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http'
-import { NgModule } from '@angular/core'
-import { RouterModule, Routes } from '@angular/router'
+import { APP_INITIALIZER, DoBootstrap, Injector, NgModule } from '@angular/core'
+import { createCustomElement } from '@angular/elements'
+import { Router, RouterModule, Routes } from '@angular/router'
 import { MissingTranslationHandler, TranslateLoader, TranslateModule } from '@ngx-translate/core'
 
 import {
@@ -11,17 +12,20 @@ import {
   PortalMissingTranslationHandler
 } from '@onecx/portal-integration-angular'
 import { addInitializeModuleGuard } from '@onecx/angular-integration-interface'
+import { initializeRouter, startsWith } from '@onecx/angular-webcomponents'
+import { AppEntrypointComponent } from './app-entrypoint.component'
 
 const routes: Routes = [
   {
-    path: '',
+    matcher: startsWith(''),
     loadChildren: () => import('./help/help.module').then((m) => m.HelpModule)
   }
 ]
 @NgModule({
+  declarations: [AppEntrypointComponent],
   imports: [
     PortalCoreModule.forMicroFrontend(),
-    RouterModule.forChild(addInitializeModuleGuard(routes)),
+    RouterModule.forRoot(addInitializeModuleGuard(routes)),
     TranslateModule.forRoot({
       isolate: true,
       loader: {
@@ -33,11 +37,26 @@ const routes: Routes = [
     })
   ],
   exports: [],
-  providers: [ConfigurationService],
+  providers: [
+    ConfigurationService,
+    {
+      provide: APP_INITIALIZER,
+      useFactory: initializeRouter,
+      multi: true,
+      deps: [Router, AppStateService]
+    }
+  ],
   schemas: []
 })
-export class OneCXHelpModule {
-  constructor() {
-    console.info('OneCX Help Module constructor')
+export class OneCXHelpModule implements DoBootstrap {
+  constructor(private injector: Injector) {
+    console.info('OneCX Announcement Module constructor')
+  }
+
+  ngDoBootstrap(): void {
+    const appEntrypoint = createCustomElement(AppEntrypointComponent, {
+      injector: this.injector
+    })
+    customElements.define('ocx-help-component', appEntrypoint)
   }
 }

@@ -1,13 +1,8 @@
-import { enableProdMode } from '@angular/core'
-import { platformBrowserDynamic } from '@angular/platform-browser-dynamic'
+import { bootstrap } from '@angular-architects/module-federation-tools'
+import { environment } from 'src/environments/environment'
+import { OneCXHelpModule } from './app/onecx-help-remote.module'
 
-import { AppModule } from './app/app.module'
-import { environment } from './environments/environment'
-
-if (environment.production) {
-  enableProdMode()
-}
-
-platformBrowserDynamic()
-  .bootstrapModule(AppModule)
-  .catch((err) => console.error(err))
+bootstrap(OneCXHelpModule, {
+  production: environment.production,
+  appType: 'microfrontend'
+})

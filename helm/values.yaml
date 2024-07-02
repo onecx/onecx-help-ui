@@ -15,6 +15,9 @@ app:
           description: "OneCX Help UI"
           note: "OneCX Help UI auto import via MF operator"
           type: MODULE
+          technology: WEBCOMPONENTMODULE
+          remoteName: onecx-help
+          tagName: ocx-help-component
         show-help:
           exposedModule: "./OneCXShowHelpComponent"
           description: "Show help item"

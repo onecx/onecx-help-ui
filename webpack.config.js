@@ -5,12 +5,12 @@ const config = withModuleFederationPlugin({
   name: 'onecx-help-ui',
   filename: 'remoteEntry.js',
   exposes: {
-    './OneCXHelpModule': 'src/app/onecx-help-remote.module.ts',
+    './OneCXHelpModule': 'src/bootstrap.ts',
     './OneCXShowHelpComponent': 'src/app/remotes/show-help/show-help.component.ts',
     './OneCXHelpItemEditorComponent': 'src/app/remotes/help-item-editor/help-item-editor.component.ts'
   },
   shared: share({
-    '@angular/core': { singleton: true, requiredVersion: 'auto' },
+    '@angular/core': { requiredVersion: 'auto', includeSecondaries: true },
     '@angular/forms': {
       singleton: true,
       requiredVersion: 'auto',
@@ -30,17 +30,7 @@ const config = withModuleFederationPlugin({
       includeSecondaries: true
     },
     '@angular/router': { singleton: true, requiredVersion: 'auto', includeSecondaries: true },
-    rxjs: { requiredVersion: 'auto', includeSecondaries: true },
-    '@ngx-translate/core': { singleton: true, requiredVersion: 'auto' },
-    '@onecx/accelerator': { requiredVersion: 'auto', includeSecondaries: true },
-    '@onecx/angular-accelerator': { requiredVersion: 'auto', includeSecondaries: true },
-    '@onecx/angular-integration-interface': { requiredVersion: 'auto', includeSecondaries: true },
-    '@onecx/angular-remote-components': { requiredVersion: 'auto', includeSecondaries: true },
-    '@onecx/angular-testing': { requiredVersion: 'auto', includeSecondaries: true },
-    '@onecx/integration-interface': { requiredVersion: 'auto', includeSecondaries: true },
-    '@onecx/keycloak-auth': { requiredVersion: 'auto', includeSecondaries: true },
-    '@onecx/portal-integration-angular': { requiredVersion: 'auto', includeSecondaries: true },
-    primeng: { requiredVersion: 'auto', includeSecondaries: true }
+    rxjs: { requiredVersion: 'auto', includeSecondaries: true }
   }),
   sharedMappings: ['@onecx/portal-integration-angular']
 })
@@ -52,5 +42,17 @@ const plugins = config.plugins.filter((plugin) => !(plugin instanceof ModifyEntr
 
 module.exports = {
   ...config,
-  plugins
+  plugins,
+  output: {
+    uniqueName: 'onecx-help-ui',
+    publicPath: 'auto'
+  },
+  experiments: {
+    ...config.experiments,
+    topLevelAwait: true
+  },
+  optimization: {
+    runtimeChunk: false,
+    splitChunks: false
+  }
 }
