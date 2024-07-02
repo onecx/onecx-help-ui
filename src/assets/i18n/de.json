@@ -138,18 +138,18 @@
     "NO_HELP_ITEM": {
       "HEADER": "Kein Hilfeartikel ist für diese Seite definiert",
       "CONTENT": "Für diese Seite wurden keine Hilfeartikel gefunden. Bitten Sie Ihren Systemadministrator, sie hinzuzufügen.",
-      "ITEM_HINT": "Die Hilfe-Artikel-ID für diese Seite lautet:"
+      "ITEM_HINT": "Die Hilfeartikel ID für diese Seite lautet:"
     }
   },
   "HELP_ITEM_EDITOR": {
     "LABEL": "Hilfe für diese Seite bearbeiten",
-    "HEADER": "Hilfeartikel für diese Seite bearbeiten",
+    "HEADER": "Hilfeartikel bearbeiten",
     "OPEN_HELP_PAGE_EDITOR_ERROR": "Der Hilfeartikel kann nicht bearbeitet werden. Hilfeartikel ID oder Applikationsname fehlen.",
     "SAVE": "Speichern",
     "CANCEL": "Abbrechen",
     "UPDATE_HELP_ARTICLE_ERROR": "Aktualisierung des Hilfeartikels fehlgeschlagen",
     "SAVE_ERROR": "Das Formular ist nicht gültig. Der Hilfeartikel kann nicht aktualisiert werden.",
-    "UPDATE_HELP_ARTICLE_INFO": "Definition des Hilfeartikels aktualisiert",
+    "UPDATE_HELP_ARTICLE_INFO": "Hilfeartikels aktualisiert",
     "DIALOG": {
       "HELP_ITEM_ID": "Hilfeartikel ID",
       "APPLICATION_NAME": "Applikationsname",
@@ -170,7 +170,7 @@
       "HELPITEM": "Es konnten keine Hilfeartikel gefunden werden."
     },
     "HTTP_STATUS_500": {
-      "HELPITEM": "Unbekanntes Server-Problem beim Abrufen von Hilfe-Daten - Bitte versuchen sie es noch einmal."
+      "HELPITEM": "Unbekanntes Server-Problem beim Abrufen von Hilfeartikel-Daten - Bitte versuchen sie es noch einmal."
     }
   }
 }

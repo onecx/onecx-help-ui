@@ -235,7 +235,7 @@ export class OneCXHelpItemEditorComponent implements ocxRemoteComponent {
           }
         },
         error: (error) => {
-          console.log(`Could not save help item`)
+          console.error(`Could not save help item`)
           this.portalMessageService.error({
             summaryKey: 'HELP_ITEM_EDITOR.UPDATE_HELP_ARTICLE_ERROR',
             detailKey: `Server error: ${error.status}`
