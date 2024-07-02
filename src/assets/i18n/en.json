@@ -136,29 +136,29 @@
     "LABEL": "Show Help for this page",
     "HELP_PAGE_ERROR": "Help Item URL not valid",
     "NO_HELP_ITEM": {
-      "HEADER": "No help item defined for this page",
-      "CONTENT": "No help items were found for this page. Please ask your system administrator to add it.",
-      "ITEM_HINT": "The help Item ID for this page is:"
+      "HEADER": "No Help Item defined for this page",
+      "CONTENT": "No Help Items were found for this page. Please ask your system administrator to add it.",
+      "ITEM_HINT": "The Help Item ID for this page is:"
     }
   },
   "HELP_ITEM_EDITOR": {
-    "LABEL": "Edit Help for this page",
-    "HEADER": "Edit help item for this page",
+    "LABEL": "Edit Help Item for this page",
+    "HEADER": "Edit Help Item",
     "OPEN_HELP_PAGE_EDITOR_ERROR": "Cannot edit the Help Item. Help Item ID or Application Name missing.",
     "SAVE": "Save",
     "CANCEL": "Cancel",
-    "UPDATE_HELP_ARTICLE_ERROR": "Help Item definition update failed",
+    "UPDATE_HELP_ARTICLE_ERROR": "Help Item update failed",
     "SAVE_ERROR": "Form is not valid. Cannot update the Help Item.",
-    "UPDATE_HELP_ARTICLE_INFO": "Help Item definition updated",
+    "UPDATE_HELP_ARTICLE_INFO": "Help Item  updated",
     "DIALOG": {
-      "HELP_ITEM_ID": "Help Item Id",
+      "HELP_ITEM_ID": "Help Item ID",
       "APPLICATION_NAME": "Application Name",
       "RESOURCE_URL": "URL"
     }
   },
   "EXCEPTIONS": {
     "HTTP_STATUS_0": {
-      "HELP_ITEM": "Unknown problem retrieving Help data - please try again."
+      "HELP_ITEM": "Unknown problem retrieving Help Item data - please try again."
     },
     "HTTP_STATUS_401": {
       "HELP_ITEM": "You are not authorized to see Help Items."
@@ -170,7 +170,7 @@
       "HELP_ITEM": "No Help Items could be found."
     },
     "HTTP_STATUS_500": {
-      "HELP_ITEM": "Unknown server problem retrieving Help data - please try again."
+      "HELP_ITEM": "Unknown server problem retrieving Help Item data - please try again."
     }
   }
 }
