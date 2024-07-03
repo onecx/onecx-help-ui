@@ -22,10 +22,16 @@ app:
           exposedModule: "./OneCXShowHelpComponent"
           description: "Show help item"
           type: COMPONENT
+          technology: WEBCOMPONENTMODULE
+          remoteName: onecx-show-help
+          tagName: ocx-show-help-component
         help-item-editor:
           exposedModule: "./OneCXHelpItemEditorComponent"
           description: "Edit help item"
           type: COMPONENT
+          technology: WEBCOMPONENTMODULE
+          remoteName: onecx-help-editor
+          tagName: ocx-help-editor-component
     # Permission
     permission:
       enabled: true

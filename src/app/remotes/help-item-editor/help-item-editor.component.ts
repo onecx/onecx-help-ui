@@ -1,6 +1,6 @@
 import { CommonModule, Location } from '@angular/common'
 import { HttpClient, HttpClientModule } from '@angular/common/http'
-import { Component, Inject } from '@angular/core'
+import { Component, Inject, Input } from '@angular/core'
 import { Router } from '@angular/router'
 import { TranslateLoader, TranslateModule, TranslateService } from '@ngx-translate/core'
 import {
@@ -8,7 +8,8 @@ import {
   BASE_URL,
   RemoteComponentConfig,
   ocxRemoteComponent,
-  provideTranslateServiceForRoot
+  provideTranslateServiceForRoot,
+  ocxRemoteWebcomponent
 } from '@onecx/angular-remote-components'
 import {
   AppStateService,
@@ -63,7 +64,7 @@ import { HelpItemEditorDialogComponent } from './help-item-editor-dialog/help-it
     })
   ]
 })
-export class OneCXHelpItemEditorComponent implements ocxRemoteComponent {
+export class OneCXHelpItemEditorComponent implements ocxRemoteComponent, ocxRemoteWebcomponent {
   ICON: string = PrimeIcons.PENCIL
 
   helpArticleId$: Observable<string>
@@ -125,6 +126,10 @@ export class OneCXHelpItemEditorComponent implements ocxRemoteComponent {
         return of({} as Help)
       })
     )
+  }
+
+  @Input() set ocxRemoteComponentConfig(config: RemoteComponentConfig) {
+    this.ocxInitRemoteComponent(config)
   }
 
   ocxInitRemoteComponent(config: RemoteComponentConfig): void {

@@ -1,8 +1,5 @@
-import { bootstrap } from '@angular-architects/module-federation-tools'
 import { environment } from 'src/environments/environment'
 import { OneCXHelpModule } from './app/onecx-help-remote.module'
+import { bootstrapModule } from '@onecx/angular-webcomponents'
 
-bootstrap(OneCXHelpModule, {
-  production: environment.production,
-  appType: 'microfrontend'
-})
+bootstrapModule(OneCXHelpModule, 'microfrontend', environment.production)

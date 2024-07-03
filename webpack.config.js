@@ -6,8 +6,8 @@ const config = withModuleFederationPlugin({
   filename: 'remoteEntry.js',
   exposes: {
     './OneCXHelpModule': 'src/bootstrap.ts',
-    './OneCXShowHelpComponent': 'src/app/remotes/show-help/show-help.component.ts',
-    './OneCXHelpItemEditorComponent': 'src/app/remotes/help-item-editor/help-item-editor.component.ts'
+    './OneCXShowHelpComponent': 'src/app/remotes/show-help/show-help.component.bootstrap.ts',
+    './OneCXHelpItemEditorComponent': 'src/app/remotes/help-item-editor/help-item-editor.component.bootstrap.ts'
   },
   shared: share({
     '@angular/core': { requiredVersion: 'auto', includeSecondaries: true },
