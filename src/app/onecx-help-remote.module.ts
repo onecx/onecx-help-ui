@@ -9,6 +9,7 @@ import {
   AppStateService,
   ConfigurationService,
   createTranslateLoader,
+  PortalApiConfiguration,
   PortalCoreModule,
   PortalMissingTranslationHandler
 } from '@onecx/portal-integration-angular'
@@ -18,6 +19,12 @@ import { AppEntrypointComponent } from './app-entrypoint.component'
 import { AngularAuthModule } from '@onecx/angular-auth'
 import { SharedModule } from './shared/shared.module'
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations'
+import { environment } from 'src/environments/environment'
+import { Configuration } from './shared/generated'
+
+function apiConfigProvider(configService: ConfigurationService, appStateService: AppStateService) {
+  return new PortalApiConfiguration(Configuration, environment.apiPrefix, configService, appStateService)
+}
 
 const routes: Routes = [
   {
@@ -53,7 +60,8 @@ const routes: Routes = [
       useFactory: initializeRouter,
       multi: true,
       deps: [Router, AppStateService]
-    }
+    },
+    { provide: Configuration, useFactory: apiConfigProvider, deps: [ConfigurationService, AppStateService] }
   ],
   schemas: []
 })
