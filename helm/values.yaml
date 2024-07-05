@@ -15,21 +15,21 @@ app:
           description: "OneCX Help UI"
           note: "OneCX Help UI auto import via MF operator"
           type: MODULE
-          technology: WEBCOMPONENTMODULE
+          technology: WEB_COMPONENT_MODULE
           remoteName: onecx-help
           tagName: ocx-help-component
         show-help:
           exposedModule: "./OneCXShowHelpComponent"
           description: "Show help item"
           type: COMPONENT
-          technology: WEBCOMPONENTMODULE
+          technology: WEB_COMPONENT_MODULE
           remoteName: onecx-help
           tagName: ocx-show-help-component
         help-item-editor:
           exposedModule: "./OneCXHelpItemEditorComponent"
           description: "Edit help item"
           type: COMPONENT
-          technology: WEBCOMPONENTMODULE
+          technology: WEB_COMPONENT_MODULE
           remoteName: onecx-help
           tagName: ocx-help-item-editor-component
     # Permission
