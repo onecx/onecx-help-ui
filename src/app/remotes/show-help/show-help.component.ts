@@ -139,7 +139,7 @@ export class OneCXShowHelpComponent implements ocxRemoteComponent, ocxRemoteWebc
   public openHelpPage(event: any) {
     this.helpDataItem$?.pipe(withLatestFrom(this.helpArticleId$), first()).subscribe({
       next: ([helpDataItem, helpArticleId]) => {
-        if (helpDataItem && helpDataItem.id) {
+        if (helpDataItem?.id) {
           if (helpDataItem.resourceUrl) {
             const currentLocation = getLocation()
             const url = this.constructUrl(

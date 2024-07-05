@@ -57,7 +57,7 @@ describe('HelpItemEditorDialogComponent', () => {
   })
 
   it('should display correct labels', async () => {
-    expect(await helpItemEditorDialogHarness.getHelpItemIdLabelText()).toEqual('Help Item Id')
+    expect(await helpItemEditorDialogHarness.getHelpItemIdLabelText()).toEqual('Help Item ID')
     expect(await helpItemEditorDialogHarness.getProductNameLabelText()).toEqual('Application Name')
     expect(await helpItemEditorDialogHarness.getResourceUrlLabelText()).toEqual('URL')
   })

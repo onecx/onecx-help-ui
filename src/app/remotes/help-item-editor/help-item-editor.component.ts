@@ -122,7 +122,6 @@ export class OneCXHelpItemEditorComponent implements ocxRemoteComponent, ocxRemo
         return of({} as Help)
       }),
       catchError(() => {
-        console.log(`Failed to load help article`)
         return of({} as Help)
       })
     )
@@ -240,7 +239,6 @@ export class OneCXHelpItemEditorComponent implements ocxRemoteComponent, ocxRemo
           }
         },
         error: (error) => {
-          console.log(`Could not save help item`)
           this.portalMessageService.error({
             summaryKey: 'HELP_ITEM_EDITOR.UPDATE_HELP_ARTICLE_ERROR',
             detailKey: `Server error: ${error.status}`
