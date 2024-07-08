@@ -5,12 +5,12 @@ const config = withModuleFederationPlugin({
   name: 'onecx-help-ui',
   filename: 'remoteEntry.js',
   exposes: {
-    './OneCXHelpModule': 'src/app/onecx-help-remote.module.ts',
-    './OneCXShowHelpComponent': 'src/app/remotes/show-help/show-help.component.ts',
-    './OneCXHelpItemEditorComponent': 'src/app/remotes/help-item-editor/help-item-editor.component.ts'
+    './OneCXHelpModule': 'src/bootstrap.ts',
+    './OneCXShowHelpComponent': 'src/app/remotes/show-help/show-help.component.bootstrap.ts',
+    './OneCXHelpItemEditorComponent': 'src/app/remotes/help-item-editor/help-item-editor.component.bootstrap.ts'
   },
   shared: share({
-    '@angular/core': { singleton: true, requiredVersion: 'auto' },
+    '@angular/core': { requiredVersion: 'auto', includeSecondaries: true },
     '@angular/forms': {
       singleton: true,
       requiredVersion: 'auto',
@@ -52,5 +52,17 @@ const plugins = config.plugins.filter((plugin) => !(plugin instanceof ModifyEntr
 
 module.exports = {
   ...config,
-  plugins
+  plugins,
+  output: {
+    uniqueName: 'onecx-help-ui',
+    publicPath: 'auto'
+  },
+  experiments: {
+    ...config.experiments,
+    topLevelAwait: true
+  },
+  optimization: {
+    runtimeChunk: false,
+    splitChunks: false
+  }
 }

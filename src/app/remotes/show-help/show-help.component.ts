@@ -1,4 +1,4 @@
-import { Component, Inject } from '@angular/core'
+import { Component, Inject, Input } from '@angular/core'
 import { HttpClient, HttpClientModule } from '@angular/common/http'
 import { CommonModule, Location } from '@angular/common'
 import { TranslateLoader, TranslateModule, TranslateService } from '@ngx-translate/core'
@@ -12,7 +12,8 @@ import {
   RemoteComponentConfig,
   ocxRemoteComponent,
   BASE_URL,
-  provideTranslateServiceForRoot
+  provideTranslateServiceForRoot,
+  ocxRemoteWebcomponent
 } from '@onecx/angular-remote-components'
 import { UserService, AppStateService } from '@onecx/angular-integration-interface'
 import { createRemoteComponentTranslateLoader } from '@onecx/angular-accelerator'
@@ -59,7 +60,7 @@ import { getLocation } from '@onecx/accelerator'
     })
   ]
 })
-export class OneCXShowHelpComponent implements ocxRemoteComponent {
+export class OneCXShowHelpComponent implements ocxRemoteComponent, ocxRemoteWebcomponent {
   LABEL_KEY: string = 'SHOW_HELP.LABEL'
   ICON: string = PrimeIcons.QUESTION_CIRCLE
 
@@ -104,6 +105,10 @@ export class OneCXShowHelpComponent implements ocxRemoteComponent {
         return of({} as Help)
       })
     )
+  }
+
+  @Input() set ocxRemoteComponentConfig(config: RemoteComponentConfig) {
+    this.ocxInitRemoteComponent(config)
   }
 
   ocxInitRemoteComponent(config: RemoteComponentConfig): void {
