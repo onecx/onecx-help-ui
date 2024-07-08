@@ -17,7 +17,6 @@ import { addInitializeModuleGuard } from '@onecx/angular-integration-interface'
 import { initializeRouter, startsWith } from '@onecx/angular-webcomponents'
 import { AppEntrypointComponent } from './app-entrypoint.component'
 import { AngularAuthModule } from '@onecx/angular-auth'
-import { SharedModule } from './shared/shared.module'
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations'
 import { environment } from 'src/environments/environment'
 import { Configuration } from './shared/generated'
@@ -38,7 +37,6 @@ const routes: Routes = [
     AngularAuthModule,
     BrowserModule,
     HttpClientModule,
-    SharedModule,
     BrowserAnimationsModule,
     PortalCoreModule.forMicroFrontend(),
     RouterModule.forRoot(addInitializeModuleGuard(routes)),
