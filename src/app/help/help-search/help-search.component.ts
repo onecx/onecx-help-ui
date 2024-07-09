@@ -75,40 +75,32 @@ export class HelpSearchComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    this.filteredColumns = this.columns.filter((a) => {
+      return a.active === true
+    })
+    this.prepareDialogTranslations()
+    this.loadData()
+  }
+
+  private loadData() {
     const criteria: SearchProductsByCriteriaRequestParams = {
       productsSearchCriteria: { pageNumber: 0, pageSize: 1000 }
     }
     this.helpInternalAPIService
       .searchProductsByCriteria(criteria)
       .subscribe((productsPageResult: ProductsPageResult) => {
-        this.processProducts(productsPageResult)
+        this.products = productsPageResult.stream ?? []
+        if (this.products?.length === 0) {
+          this.msgService.info({ summaryKey: 'HELP_SEARCH.NO_APPLICATION_AVAILABLE' })
+        }
+        this.products = this.products?.filter((product) => product !== null)
+        this.products.sort(this.sortProductsByName)
+        this.productsLoaded = true
         this.search(this.criteria.helpSearchCriteria)
       })
-
-    this.filteredColumns = this.columns.filter((a) => {
-      return a.active === true
-    })
-
-    this.translate.get(['ACTIONS.CREATE.LABEL', 'ACTIONS.CREATE.HELP_ITEM.TOOLTIP']).subscribe((data) => {
-      this.actions.push({
-        label: data['ACTIONS.CREATE.LABEL'],
-        title: data['ACTIONS.CREATE.HELP_ITEM.TOOLTIP'],
-        actionCallback: () => this.onCreate(),
-        icon: 'pi pi-plus',
-        show: 'always',
-        permission: 'HELP#EDIT'
-      })
-    })
   }
 
-  private processProducts(productsPageResult: ProductsPageResult) {
-    this.products = productsPageResult.stream ?? []
-    if (this.products?.length === 0) {
-      this.msgService.info({ summaryKey: 'HELP_SEARCH.NO_APPLICATION_AVAILABLE' })
-    }
-    this.products = this.products?.filter((product) => product !== null)
-    this.productsLoaded = true
-  }
+  private processProducts(productsPageResult: ProductsPageResult) {}
 
   /****************************************************************************
    *  SEARCHING
@@ -177,6 +169,9 @@ export class HelpSearchComponent implements OnInit {
       ) || (a.itemId ? a.itemId.toUpperCase() : '').localeCompare(b.itemId ? b.itemId.toUpperCase() : '')
     )
   }
+  private sortProductsByName(a: Product, b: Product): number {
+    return a.displayName.toUpperCase().localeCompare(b.displayName.toUpperCase())
+  }
 
   public onColumnsChange(activeIds: string[]) {
     this.filteredColumns = activeIds.map((id) => this.columns.find((col) => col.field === id)) as Column[]
@@ -227,5 +222,18 @@ export class HelpSearchComponent implements OnInit {
         error: () => this.msgService.error({ summaryKey: 'ACTIONS.DELETE.MESSAGE.HELP_ITEM_NOK' })
       })
     }
+  }
+
+  private prepareDialogTranslations() {
+    this.translate.get(['ACTIONS.CREATE.LABEL', 'ACTIONS.CREATE.HELP_ITEM.TOOLTIP']).subscribe((data) => {
+      this.actions.push({
+        label: data['ACTIONS.CREATE.LABEL'],
+        title: data['ACTIONS.CREATE.HELP_ITEM.TOOLTIP'],
+        actionCallback: () => this.onCreate(),
+        icon: 'pi pi-plus',
+        show: 'always',
+        permission: 'HELP#EDIT'
+      })
+    })
   }
 }

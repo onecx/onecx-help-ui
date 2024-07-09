@@ -1,14 +1,48 @@
 <form [formGroup]="formGroup" class="flex flex-column row-gap-4 justify-content-center align-items-center">
   <span class="p-float-label w-full mt-2">
-    <input class="w-full" id="helpItemId" type="text" pInputText name="helpItemId" formControlName="helpItemId" />
-    <label for="helpItemId">{{ 'HELP_ITEM_EDITOR.DIALOG.HELP_ITEM_ID' | translate }}</label>
+    <input
+      class="w-full"
+      id="help-item-editor-field-helpitem-id"
+      type="text"
+      pInputText
+      formControlName="helpItemId"
+      [title]="'HELP_ITEM.TOOLTIPS.HELP_ITEM_ID' | translate"
+    />
+    <label for="help-item-editor-field-helpitem-id">{{ 'HELP_ITEM.HELP_ITEM_ID' | translate }}</label>
   </span>
   <span class="p-float-label w-full">
-    <input class="w-full" id="productName" type="text" pInputText name="productName" formControlName="productName" />
-    <label for="productName">{{ 'HELP_ITEM_EDITOR.DIALOG.APPLICATION_NAME' | translate }}</label>
+    <input
+      class="w-full"
+      id="help-item-editor-field-product-name"
+      type="text"
+      pInputText
+      formControlName="productName"
+      [title]="'HELP_ITEM.TOOLTIPS.APPLICATION_NAME' | translate"
+    />
+    <label for="help-item-editor-field-product-name"> {{ 'HELP_ITEM.APPLICATION_NAME' | translate }}</label>
   </span>
+
   <span class="p-float-label w-full">
-    <input class="w-full" id="resourceUrl" type="text" pInputText name="resourceUrl" formControlName="resourceUrl" />
-    <label for="resourceUrl">{{ 'HELP_ITEM_EDITOR.DIALOG.RESOURCE_URL' | translate }}</label>
+    <input
+      class="w-full"
+      id="help-item-editor-field-base-url"
+      type="text"
+      pInputText
+      formControlName="baseUrl"
+      [title]="'HELP_ITEM.TOOLTIPS.BASE_URL' | translate"
+    />
+    <label for="help-item-editor-field-base-url">{{ 'HELP_ITEM.BASE_URL' | translate }}</label>
+  </span>
+
+  <span class="p-float-label w-full">
+    <input
+      class="w-full"
+      id="help-item-editor-field-resource-url"
+      type="text"
+      pInputText
+      formControlName="resourceUrl"
+      [title]="'HELP_ITEM.TOOLTIPS.RESOURCE_URL' | translate"
+    />
+    <label for="help-item-editor-field-resource-url">{{ 'HELP_ITEM.RESOURCE_URL' | translate }}</label>
   </span>
 </form>

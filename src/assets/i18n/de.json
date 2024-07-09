@@ -91,13 +91,13 @@
     "HELP_ITEM_ID": "Hilfeartikel ID",
     "CONTEXT": "Kontext",
     "BASE_URL": "Basis URL",
-    "RESOURCE_URL": "Ressource URL",
+    "RESOURCE_URL": "Ressource Pfad",
     "TOOLTIPS": {
       "APPLICATION_NAME": "Applikationskontext des Hilfeartikels",
-      "HELP_ITEM_ID": "Hilfeartikel ID im Kontext der Anwendung",
-      "CONTEXT": "Kontext innerhalb der Seite",
-      "BASE_URL": "Basis URL, die der Ressource URL vorangestellt wird",
-      "RESOURCE_URL": "Teil der URL für den Hilfeartikel"
+      "HELP_ITEM_ID": "Eindeutige ID für einen Hilfeartikel der Applikation (innerhalb der jeweiligen Seite verwendet)",
+      "BASE_URL": "Basis der Hilfeartikel-URL - der Verweis auf die Hauptseite der Applikation",
+      "RESOURCE_URL": "Letzter Teil der Hilfeartikel-URL speziell für die Seite (Ressource)",
+      "CONTEXT": "Spezieller Abschnitt innerhalb der Seite"
     }
   },
   "HELP_SEARCH": {
@@ -153,7 +153,7 @@
     "DIALOG": {
       "HELP_ITEM_ID": "Hilfeartikel ID",
       "APPLICATION_NAME": "Applikationsname",
-      "RESOURCE_URL": "Ressource URL"
+      "RESOURCE_URL": "Ressource Path"
     }
   },
   "EXCEPTIONS": {

@@ -1,6 +1,5 @@
 <ocx-portal-page permission="HELP#SEARCH" helpArticleId="PAGE_HELP_SEARCH">
   <app-help-criteria
-    *ngIf="productsLoaded"
     [actions]="actions"
     [productsChanged]="productsChanged"
     (criteriaEmitter)="search($event)"
