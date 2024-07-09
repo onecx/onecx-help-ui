@@ -170,7 +170,11 @@ export class OneCXHelpItemEditorComponent implements ocxRemoteComponent, ocxRemo
         key: 'HELP_ITEM_EDITOR.CANCEL',
         icon: PrimeIcons.TIMES
       },
-      false
+      {
+        showXButton: true,
+        draggable: true,
+        resizable: true
+      }
     )
   }
 

@@ -94,10 +94,10 @@
     "RESOURCE_URL": "Resource URL",
     "TOOLTIPS": {
       "APPLICATION_NAME": "Application context of the Help Item",
-      "HELP_ITEM_ID": "Unique ID for a Help Item of the Application (to be used withing the specific page)",
-      "BASE_URL": "Base part of the Help Article URL - the path to the Application",
+      "HELP_ITEM_ID": "Unique ID for a Help Item of the Application. Must have been used within the respective page.",
+      "BASE_URL": "Base part of the Help Article URL - the base path to the documentation of the Application",
       "RESOURCE_URL": "Last part of the Help Article URL specific to the page (resource)",
-      "CONTEXT": "Specific context within the page"
+      "CONTEXT": "Specific context within the page (resource)"
     }
   },
   "HELP_SEARCH": {

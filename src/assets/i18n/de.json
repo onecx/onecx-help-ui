@@ -94,10 +94,10 @@
     "RESOURCE_URL": "Ressource Pfad",
     "TOOLTIPS": {
       "APPLICATION_NAME": "Applikationskontext des Hilfeartikels",
-      "HELP_ITEM_ID": "Eindeutige ID für einen Hilfeartikel der Applikation (innerhalb der jeweiligen Seite verwendet)",
-      "BASE_URL": "Basis der Hilfeartikel-URL - der Verweis auf die Hauptseite der Applikation",
+      "HELP_ITEM_ID": "Eindeutige ID für einen Hilfeartikel der Applikation. Muss innerhalb der jeweiligen Seite verwendet worden sein.",
+      "BASE_URL": "Basis der Hilfeartikel-URL - der Verweis auf die Hauptseite der dokumentation der Applikation",
       "RESOURCE_URL": "Letzter Teil der Hilfeartikel-URL speziell für die Seite (Ressource)",
-      "CONTEXT": "Spezieller Abschnitt innerhalb der Seite"
+      "CONTEXT": "Spezieller Abschnitt innerhalb der Seite (Ressource)"
     }
   },
   "HELP_SEARCH": {
