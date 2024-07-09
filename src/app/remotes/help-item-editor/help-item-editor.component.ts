@@ -65,8 +65,6 @@ import { HelpItemEditorDialogComponent } from './help-item-editor-dialog/help-it
   ]
 })
 export class OneCXHelpItemEditorComponent implements ocxRemoteComponent, ocxRemoteWebcomponent {
-  ICON: string = PrimeIcons.PENCIL
-
   helpArticleId$: Observable<string>
   productName$: Observable<string>
   products$: Observable<Record<string, string>>
@@ -173,7 +171,8 @@ export class OneCXHelpItemEditorComponent implements ocxRemoteComponent, ocxRemo
       {
         showXButton: true,
         draggable: true,
-        resizable: true
+        resizable: true,
+        width: '500px'
       }
     )
   }

@@ -1,12 +1,3 @@
-.help-item-editor-button:hover,
-.help-item-editor-button:focus {
-  background-color: var(--topbar-item-text-hover-bg-color);
-  color: var(--topbar-item-text-hover-color, var(--topbar-item-text-color));
-  transition: background-color var(--transition-duration);
-}
-.help-item-editor-button {
-  background: var(--topbar-bg-color);
-}
-#help-item-editor-button-icon {
-  color: var(--topbar-item-text-color);
-}
+@import '/src/_mixins.scss';
+
+@include layout-topbar-items;
