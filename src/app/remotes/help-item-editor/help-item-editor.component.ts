@@ -3,6 +3,11 @@ import { HttpClient, HttpClientModule } from '@angular/common/http'
 import { Component, Inject, Input } from '@angular/core'
 import { Router } from '@angular/router'
 import { TranslateLoader, TranslateModule, TranslateService } from '@ngx-translate/core'
+import { PrimeIcons } from 'primeng/api'
+import { RippleModule } from 'primeng/ripple'
+import { TooltipModule } from 'primeng/tooltip'
+import { Observable, ReplaySubject, catchError, combineLatest, first, map, mergeMap, of } from 'rxjs'
+
 import {
   AngularRemoteComponentsModule,
   BASE_URL,
@@ -21,13 +26,11 @@ import {
   createRemoteComponentTranslateLoader,
   providePortalDialogService
 } from '@onecx/portal-integration-angular'
-import { PrimeIcons } from 'primeng/api'
-import { RippleModule } from 'primeng/ripple'
-import { TooltipModule } from 'primeng/tooltip'
-import { Observable, ReplaySubject, catchError, combineLatest, first, map, mergeMap, of } from 'rxjs'
+
 import { Configuration, Help, HelpsInternalAPIService } from 'src/app/shared/generated'
 import { SharedModule } from 'src/app/shared/shared.module'
 import { environment } from 'src/environments/environment'
+
 import { HelpItemEditorDialogComponent } from './help-item-editor-dialog/help-item-editor-dialog.component'
 
 @Component({
