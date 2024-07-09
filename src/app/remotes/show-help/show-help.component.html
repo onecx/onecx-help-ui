@@ -1,14 +1,10 @@
-<div
-  class="layout-topbar-item flex relative h-full w-full align-items-center justify-content-center"
-  *ocxIfPermission="'HELP#VIEW'; permissions: permissions"
->
+<div class="layout-topbar-item" *ocxIfPermission="'HELP#VIEW'; permissions: permissions">
   <button
     id="show-help-button"
     class="layout-topbar-action rounded-circle show-help-menu-button"
     pRipple
     pButton
     (click)="openHelpPage($event)"
-    [title]="LABEL_KEY | translate"
     [pTooltip]="LABEL_KEY | translate"
     tooltipPosition="bottom"
     (keydown.enter.t)="onEnterClick()"
