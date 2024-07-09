@@ -3,7 +3,6 @@ import { HttpClient, HttpClientModule } from '@angular/common/http'
 import { CommonModule, Location } from '@angular/common'
 import { TranslateLoader, TranslateModule, TranslateService } from '@ngx-translate/core'
 import { Observable, ReplaySubject, catchError, combineLatest, first, map, mergeMap, of, withLatestFrom } from 'rxjs'
-import { PrimeIcons } from 'primeng/api'
 import { RippleModule } from 'primeng/ripple'
 import { TooltipModule } from 'primeng/tooltip'
 import { DialogService, DynamicDialogModule } from 'primeng/dynamicdialog'
@@ -61,9 +60,6 @@ import { getLocation } from '@onecx/accelerator'
   ]
 })
 export class OneCXShowHelpComponent implements ocxRemoteComponent, ocxRemoteWebcomponent {
-  LABEL_KEY: string = 'SHOW_HELP.LABEL'
-  ICON: string = PrimeIcons.QUESTION_CIRCLE
-
   helpArticleId$: Observable<string>
   productName$: Observable<string>
   helpDataItem$: Observable<Help>
