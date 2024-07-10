@@ -57,7 +57,6 @@ export class HelpSearchComponent implements OnInit {
       css: 'hidden sm:table-cell'
     },
     { field: 'itemId', header: 'HELP_ITEM_ID', active: true, translationPrefix: 'HELP_ITEM' },
-    { field: 'context', header: 'CONTEXT', active: true, translationPrefix: 'HELP_ITEM', css: 'hidden xl:table-cell' },
     { field: 'baseUrl', header: 'BASE_URL', active: true, translationPrefix: 'HELP_ITEM', css: 'hidden lg:table-cell' },
     {
       field: 'resourceUrl',
@@ -65,7 +64,8 @@ export class HelpSearchComponent implements OnInit {
       active: true,
       translationPrefix: 'HELP_ITEM',
       css: 'hidden xl:table-cell'
-    }
+    },
+    { field: 'context', header: 'CONTEXT', active: true, translationPrefix: 'HELP_ITEM', css: 'hidden xl:table-cell' }
   ]
 
   constructor(
