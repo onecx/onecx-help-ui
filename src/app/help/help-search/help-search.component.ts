@@ -49,6 +49,7 @@ export class HelpSearchComponent implements OnInit {
 
   public filteredColumns: Column[] = []
   public columns: ExtendedColumn[] = [
+    { field: 'itemId', header: 'HELP_ITEM_ID', active: true, translationPrefix: 'HELP_ITEM' },
     {
       field: 'productDisplayName',
       header: 'APPLICATION_NAME',
@@ -56,7 +57,6 @@ export class HelpSearchComponent implements OnInit {
       translationPrefix: 'HELP_ITEM',
       css: 'hidden sm:table-cell'
     },
-    { field: 'itemId', header: 'HELP_ITEM_ID', active: true, translationPrefix: 'HELP_ITEM' },
     { field: 'baseUrl', header: 'BASE_URL', active: true, translationPrefix: 'HELP_ITEM', css: 'hidden lg:table-cell' },
     {
       field: 'resourceUrl',

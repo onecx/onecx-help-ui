@@ -87,7 +87,7 @@
     "SWITCH_TO_EDIT_MODE": "Edit"
   },
   "HELP_ITEM": {
-    "APPLICATION_NAME": "Application Name",
+    "APPLICATION_NAME": "Application",
     "HELP_ITEM_ID": "Help Item ID",
     "CONTEXT": "Context",
     "BASE_URL": "Base URL",
@@ -152,7 +152,7 @@
     "UPDATE_HELP_ARTICLE_INFO": "Help Item  updated",
     "DIALOG": {
       "HELP_ITEM_ID": "Help Item ID",
-      "APPLICATION_NAME": "Application Name",
+      "APPLICATION_NAME": "Application",
       "RESOURCE_URL": "URL"
     }
   },
