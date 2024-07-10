@@ -1,4 +1,4 @@
 
 == onecx-help-ui
 
-include::onecx-help-ui-docs.adoc
+include::onecx-help-ui-docs.adoc[opts=optional]
