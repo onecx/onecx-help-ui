@@ -136,9 +136,9 @@
     "LABEL": "Hilfe für diese Seite anzeigen",
     "HELP_PAGE_ERROR": "Hilfeartikel URL nicht gültig",
     "NO_HELP_ITEM": {
-      "HEADER": "Kein Hilfeartikel ist für diese Seite definiert",
-      "CONTENT": "Für diese Seite wurden keine Hilfeartikel gefunden. Bitten Sie Ihren Systemadministrator, sie hinzuzufügen.",
-      "ITEM_HINT": "Die Hilfeartikel ID für diese Seite lautet:"
+      "HEADER": "Hilfeartikel fehlt",
+      "CONTENT": "Für diese Seite wurde kein Hilfeartikel definiert.",
+      "ITEM_HINT": "Die Hilfeartikel ID für die Seite ist:"
     }
   },
   "HELP_ITEM_EDITOR": {
