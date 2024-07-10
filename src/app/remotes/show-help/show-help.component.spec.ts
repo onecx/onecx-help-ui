@@ -9,7 +9,6 @@ import { BASE_URL, RemoteComponentConfig } from '@onecx/angular-remote-component
 import { TranslateTestingModule } from 'ngx-translate-testing'
 import { ReplaySubject, of, throwError } from 'rxjs'
 import { DialogService, DynamicDialogModule } from 'primeng/dynamicdialog'
-import { PrimeIcons } from 'primeng/api'
 import { TooltipModule } from 'primeng/tooltip'
 import { RippleModule } from 'primeng/ripple'
 import { Help, HelpsInternalAPIService } from 'src/app/shared/generated'
@@ -109,7 +108,6 @@ describe('OneCXShowHelpComponent', () => {
     oneCXShowHelpHarness = await TestbedHarnessEnvironment.harnessForFixture(fixture, OneCXShowHelpHarness)
 
     expect(await oneCXShowHelpHarness.getHelpButton()).toBeNull()
-    expect(await oneCXShowHelpHarness.getHelpIcon()).toBeNull()
   })
 
   it('should show button if permissions are met', async () => {
@@ -123,9 +121,7 @@ describe('OneCXShowHelpComponent', () => {
     fixture.detectChanges()
     oneCXShowHelpHarness = await TestbedHarnessEnvironment.harnessForFixture(fixture, OneCXShowHelpHarness)
 
-    expect(await oneCXShowHelpHarness.getHelpButtonTitle()).toBe('Show Help for this page')
-
-    expect(await oneCXShowHelpHarness.hasHelpIconClass(PrimeIcons.QUESTION_CIRCLE)).toBe(true)
+    expect(await oneCXShowHelpHarness.getHelpButtonId()).toBe('show-help-item-button')
   })
 
   it('should call openHelpPage on enter click', () => {
@@ -308,7 +304,7 @@ describe('OneCXShowHelpComponent', () => {
     helpApiServiceSpy.searchHelps.and.returnValue(
       of({
         totalElements: 1,
-        stream: [{ id: '1', resourceUrl: 'http://resource_url' }]
+        stream: [{ id: 'article_id', baseUrl: 'http://base_url', resourceUrl: '/search' }]
       } as any)
     )
     const appStateService = TestBed.inject(AppStateService)
@@ -335,7 +331,7 @@ describe('OneCXShowHelpComponent', () => {
 
     oneCXShowHelpHarness = await TestbedHarnessEnvironment.harnessForFixture(fixture, OneCXShowHelpHarness)
     await oneCXShowHelpHarness.clickHelpButton()
-    expect(window.open).toHaveBeenCalledOnceWith(new URL('http://resource_url'), '_blank')
+    expect(window.open).toHaveBeenCalledOnceWith(new URL('http://base_url/search'), '_blank')
   })
 
   it('should open new window with help article with relativeUrl', async () => {
@@ -450,7 +446,7 @@ describe('OneCXShowHelpComponent', () => {
     })
   })
 
-  it('should open dialog when help item associated with page is not created', async () => {
+  it('should open no help dialog when help item associated with page does not exist', async () => {
     helpApiServiceSpy.searchHelps.and.returnValue(
       of({
         totalElements: 0,
@@ -484,7 +480,7 @@ describe('OneCXShowHelpComponent', () => {
 
     expect(messageServiceSpy.error).toHaveBeenCalledTimes(0)
     expect(dialogServiceSpy.open).toHaveBeenCalledOnceWith(NoHelpItemComponent, {
-      header: 'No Help Item defined for this page',
+      header: 'Help Item missing',
       width: '400px',
       data: {
         helpArticleId: 'article_id'

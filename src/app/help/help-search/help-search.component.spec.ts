@@ -71,9 +71,9 @@ describe('HelpSearchComponent', () => {
     expect(component).toBeTruthy()
     expect(component.filteredColumns[0].field).toBe('productDisplayName')
     expect(component.filteredColumns[1].field).toBe('itemId')
-    expect(component.filteredColumns[2].field).toBe('context')
-    expect(component.filteredColumns[3].field).toBe('baseUrl')
-    expect(component.filteredColumns[4].field).toBe('resourceUrl')
+    expect(component.filteredColumns[2].field).toBe('baseUrl')
+    expect(component.filteredColumns[3].field).toBe('resourceUrl')
+    expect(component.filteredColumns[4].field).toBe('context')
   })
 
   it('should call search OnInit and populate filteredColumns/actions correctly', () => {

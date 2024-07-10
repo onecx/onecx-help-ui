@@ -1,12 +1,15 @@
 import { Component, Inject, Input } from '@angular/core'
-import { HttpClient, HttpClientModule } from '@angular/common/http'
 import { CommonModule, Location } from '@angular/common'
+import { HttpClient, HttpClientModule } from '@angular/common/http'
+import { Router } from '@angular/router'
 import { TranslateLoader, TranslateModule, TranslateService } from '@ngx-translate/core'
 import { Observable, ReplaySubject, catchError, combineLatest, first, map, mergeMap, of, withLatestFrom } from 'rxjs'
-import { PrimeIcons } from 'primeng/api'
+
 import { RippleModule } from 'primeng/ripple'
 import { TooltipModule } from 'primeng/tooltip'
 import { DialogService, DynamicDialogModule } from 'primeng/dynamicdialog'
+
+import { getLocation } from '@onecx/accelerator'
 import {
   AngularRemoteComponentsModule,
   RemoteComponentConfig,
@@ -18,12 +21,12 @@ import {
 import { UserService, AppStateService } from '@onecx/angular-integration-interface'
 import { createRemoteComponentTranslateLoader } from '@onecx/angular-accelerator'
 import { PortalMessageService, PortalCoreModule } from '@onecx/portal-integration-angular'
-import { NoHelpItemComponent } from './no-help-item/no-help-item.component'
+
 import { Configuration, Help, HelpsInternalAPIService } from 'src/app/shared/generated'
 import { environment } from 'src/environments/environment'
 import { SharedModule } from 'src/app/shared/shared.module'
-import { Router } from '@angular/router'
-import { getLocation } from '@onecx/accelerator'
+
+import { NoHelpItemComponent } from './no-help-item/no-help-item.component'
 
 @Component({
   selector: 'app-ocx-show-help',
@@ -61,9 +64,6 @@ import { getLocation } from '@onecx/accelerator'
   ]
 })
 export class OneCXShowHelpComponent implements ocxRemoteComponent, ocxRemoteWebcomponent {
-  LABEL_KEY: string = 'SHOW_HELP.LABEL'
-  ICON: string = PrimeIcons.QUESTION_CIRCLE
-
   helpArticleId$: Observable<string>
   productName$: Observable<string>
   helpDataItem$: Observable<Help>
@@ -140,10 +140,10 @@ export class OneCXShowHelpComponent implements ocxRemoteComponent, ocxRemoteWebc
     this.helpDataItem$?.pipe(withLatestFrom(this.helpArticleId$), first()).subscribe({
       next: ([helpDataItem, helpArticleId]) => {
         if (helpDataItem?.id) {
-          if (helpDataItem.resourceUrl) {
+          if (helpDataItem.baseUrl || helpDataItem.resourceUrl) {
             const currentLocation = getLocation()
             const url = this.constructUrl(
-              helpDataItem.resourceUrl,
+              Location.joinWithSlash(helpDataItem.baseUrl ?? '', helpDataItem.resourceUrl ?? ''),
               currentLocation.origin,
               currentLocation.deploymentPath
             )
@@ -173,9 +173,9 @@ export class OneCXShowHelpComponent implements ocxRemoteComponent, ocxRemoteWebc
     event.preventDefault()
   }
 
-  public constructUrl(resourceUrl: string, basePath: string, deploymentPath: string): URL {
-    const isRelative = new URL(basePath).origin === new URL(resourceUrl, basePath).origin
-    if (isRelative) return new URL(Location.joinWithSlash(deploymentPath, resourceUrl), basePath)
-    return new URL(resourceUrl)
+  public constructUrl(helpUrl: string, basePath: string, deploymentPath: string): URL {
+    const isRelative = new URL(basePath).origin === new URL(helpUrl, basePath).origin
+    if (isRelative) return new URL(Location.joinWithSlash(deploymentPath, helpUrl), basePath)
+    return new URL(helpUrl)
   }
 }

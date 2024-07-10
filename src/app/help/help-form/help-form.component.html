@@ -32,18 +32,6 @@
         >
       </span>
     </div>
-    <div [title]="'HELP_ITEM.TOOLTIPS.CONTEXT' | translate">
-      <span class="p-float-label">
-        <input
-          pInputText
-          type="text"
-          id="help_detail_form_context"
-          class="w-full pt-3 pb-2"
-          formControlName="context"
-        />
-        <label class="" for="help_detail_form_context">{{ 'HELP_ITEM.CONTEXT' | translate }}</label>
-      </span>
-    </div>
     <div [title]="'HELP_ITEM.TOOLTIPS.BASE_URL' | translate">
       <span class="p-float-label">
         <input
@@ -66,6 +54,18 @@
           formControlName="resourceUrl"
         />
         <label class="" for="help_detail_form_resource_url">{{ 'HELP_ITEM.RESOURCE_URL' | translate }}</label>
+      </span>
+    </div>
+    <div [title]="'HELP_ITEM.TOOLTIPS.CONTEXT' | translate">
+      <span class="p-float-label">
+        <input
+          pInputText
+          type="text"
+          id="help_detail_form_context"
+          class="w-full pt-3 pb-2"
+          formControlName="context"
+        />
+        <label class="" for="help_detail_form_context">{{ 'HELP_ITEM.CONTEXT' | translate }}</label>
       </span>
     </div>
   </div>
