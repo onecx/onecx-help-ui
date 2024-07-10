@@ -6,9 +6,9 @@ export class OneCXHelpItemEditorHarness extends ComponentHarness {
   getHelpEditorButton = this.locatorForOptional('#help-item-editor-button')
   getHelpEditorIcon = this.locatorForOptional('#help-item-editor-button-icon')
 
-  async getHelpButtonEditorTitle(): Promise<string | null | undefined> {
-    return await (await this.getHelpEditorButton())?.getAttribute('title')
-  }
+  // async getHelpButtonEditorTitle(): Promise<string | null | undefined> {
+  //   return await (await this.getHelpEditorButton())?.getAttribute('title')
+  // }
 
   async clickHelpEditorButton() {
     await (await this.getHelpEditorButton())?.click()
