@@ -30,7 +30,7 @@ import { HelpItemEditorDialogComponent } from './help-item-editor-dialog/help-it
 })
 class PortalDependencyModule {}
 
-xdescribe('OneCXHelpItemEditorComponent', () => {
+describe('OneCXHelpItemEditorComponent', () => {
   let component: OneCXHelpItemEditorComponent
   let fixture: ComponentFixture<OneCXHelpItemEditorComponent>
   let oneCXHelpItemEditorHarness: OneCXHelpItemEditorHarness
@@ -106,6 +106,20 @@ xdescribe('OneCXHelpItemEditorComponent', () => {
     fixture.detectChanges()
 
     expect(component).toBeTruthy()
+  })
+
+  it('should call ocxInitRemoteComponent with the correct config', () => {
+    const mockConfig: RemoteComponentConfig = {
+      appId: 'appId',
+      productName: 'prodName',
+      permissions: ['permission'],
+      baseUrl: 'base'
+    }
+    spyOn(component, 'ocxInitRemoteComponent')
+
+    component.ocxRemoteComponentConfig = mockConfig
+
+    expect(component.ocxInitRemoteComponent).toHaveBeenCalledWith(mockConfig)
   })
 
   it('should init remote component', (done: DoneFn) => {
@@ -351,7 +365,7 @@ xdescribe('OneCXHelpItemEditorComponent', () => {
     })
   })
 
-  it('should open help item editor dialog when article and application defined', async () => {
+  xit('should open help item editor dialog when article and application defined', async () => {
     const appStateService = TestBed.inject(AppStateService)
     spyOn(appStateService.currentPage$, 'asObservable').and.returnValue(
       of({
@@ -495,7 +509,7 @@ xdescribe('OneCXHelpItemEditorComponent', () => {
     expect(helpApiServiceSpy.updateHelp).toHaveBeenCalledTimes(0)
   })
 
-  it('should open help item editor dialog for new item', async () => {
+  xit('should open help item editor dialog for new item', async () => {
     const appStateService = TestBed.inject(AppStateService)
     spyOn(appStateService.currentPage$, 'asObservable').and.returnValue(
       of({
@@ -561,7 +575,7 @@ xdescribe('OneCXHelpItemEditorComponent', () => {
     )
   })
 
-  it('should open help item editor dialog for existing item', async () => {
+  xit('should open help item editor dialog for existing item', async () => {
     const appStateService = TestBed.inject(AppStateService)
     spyOn(appStateService.currentPage$, 'asObservable').and.returnValue(
       of({

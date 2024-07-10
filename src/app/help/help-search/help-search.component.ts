@@ -100,8 +100,6 @@ export class HelpSearchComponent implements OnInit {
       })
   }
 
-  private processProducts(productsPageResult: ProductsPageResult) {}
-
   /****************************************************************************
    *  SEARCHING
    *    - initial, without any criteria => to be checked again with stakeholder

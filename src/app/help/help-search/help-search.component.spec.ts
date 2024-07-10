@@ -65,6 +65,7 @@ describe('HelpSearchComponent', () => {
     apiServiceSpy.searchHelps.calls.reset()
     apiServiceSpy.addHelpItem.calls.reset()
     apiServiceSpy.deleteHelp.calls.reset()
+    apiServiceSpy.searchProductsByCriteria.calls.reset()
   })
 
   it('should create component and set columns', () => {
@@ -97,6 +98,31 @@ describe('HelpSearchComponent', () => {
     expect(component.search).toHaveBeenCalled()
     expect(component.filteredColumns[0].field).toEqual('context')
     expect(component.actions[0].label).toEqual('ACTIONS.CREATE.LABEL')
+  })
+
+  it('should process products onInit', () => {
+    const helpPageResultMock = {
+      totalElements: 0,
+      number: 0,
+      size: 0,
+      totalPages: 0,
+      stream: [
+        {
+          itemId: 'id',
+          productName: 'help-mgmt-ui'
+        }
+      ]
+    }
+    apiServiceSpy.searchProductsByCriteria.and.returnValue(of(helpPageResultMock))
+    component.products = [
+      { name: 'help-mgmt-ui', displayName: 'Help Mgmt UI' },
+      { name: '2', displayName: '2dn' }
+    ] as Product[]
+    spyOn(component, 'search')
+
+    component.ngOnInit()
+
+    expect(component.productsLoaded).toBeTrue()
   })
 
   it('should correctly assign results if API call returns some data', () => {
@@ -140,7 +166,7 @@ describe('HelpSearchComponent', () => {
     component.search({})
 
     expect(component.resultsForDisplay.length).toEqual(0)
-    expect(msgServiceSpy.info).toHaveBeenCalledWith({ summaryKey: 'HELP_SEARCH.NO_APPLICATION_AVAILABLE' })
+    expect(msgServiceSpy.info).toHaveBeenCalledWith({ summaryKey: 'GENERAL.SEARCH.MSG_NO_RESULTS' })
   })
 
   it('should reuse criteria if reuseCriteria is true', () => {
@@ -449,5 +475,11 @@ describe('HelpSearchComponent', () => {
 
     expect(component.criteria.helpSearchCriteria.productName).not.toBeDefined()
     expect(component.criteria.helpSearchCriteria.itemId).not.toBeDefined()
+  })
+
+  it('should sort products', () => {
+    const products = [{ displayName: 'A' }, { displayName: 'B' }] as Product[]
+
+    expect(component['sortProductsByName'](products[0], products[1])).toBeLessThan(0)
   })
 })
