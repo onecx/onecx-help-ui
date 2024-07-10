@@ -476,4 +476,10 @@ describe('HelpSearchComponent', () => {
     expect(component.criteria.helpSearchCriteria.productName).not.toBeDefined()
     expect(component.criteria.helpSearchCriteria.itemId).not.toBeDefined()
   })
+
+  it('should sort products', () => {
+    const products = [{ displayName: 'A' }, { displayName: 'B' }] as Product[]
+
+    expect(component['sortProductsByName'](products[0], products[1])).toBeLessThan(0)
+  })
 })

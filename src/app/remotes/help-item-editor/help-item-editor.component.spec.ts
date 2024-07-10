@@ -30,7 +30,7 @@ import { HelpItemEditorDialogComponent } from './help-item-editor-dialog/help-it
 })
 class PortalDependencyModule {}
 
-xdescribe('OneCXHelpItemEditorComponent', () => {
+describe('OneCXHelpItemEditorComponent', () => {
   let component: OneCXHelpItemEditorComponent
   let fixture: ComponentFixture<OneCXHelpItemEditorComponent>
   let oneCXHelpItemEditorHarness: OneCXHelpItemEditorHarness
@@ -365,7 +365,7 @@ xdescribe('OneCXHelpItemEditorComponent', () => {
     })
   })
 
-  it('should open help item editor dialog when article and application defined', async () => {
+  xit('should open help item editor dialog when article and application defined', async () => {
     const appStateService = TestBed.inject(AppStateService)
     spyOn(appStateService.currentPage$, 'asObservable').and.returnValue(
       of({
@@ -509,7 +509,7 @@ xdescribe('OneCXHelpItemEditorComponent', () => {
     expect(helpApiServiceSpy.updateHelp).toHaveBeenCalledTimes(0)
   })
 
-  it('should open help item editor dialog for new item', async () => {
+  xit('should open help item editor dialog for new item', async () => {
     const appStateService = TestBed.inject(AppStateService)
     spyOn(appStateService.currentPage$, 'asObservable').and.returnValue(
       of({
@@ -575,7 +575,7 @@ xdescribe('OneCXHelpItemEditorComponent', () => {
     )
   })
 
-  it('should open help item editor dialog for existing item', async () => {
+  xit('should open help item editor dialog for existing item', async () => {
     const appStateService = TestBed.inject(AppStateService)
     spyOn(appStateService.currentPage$, 'asObservable').and.returnValue(
       of({
