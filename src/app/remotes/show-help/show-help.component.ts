@@ -1,11 +1,15 @@
 import { Component, Inject, Input } from '@angular/core'
-import { HttpClient, HttpClientModule } from '@angular/common/http'
 import { CommonModule, Location } from '@angular/common'
+import { HttpClient, HttpClientModule } from '@angular/common/http'
+import { Router } from '@angular/router'
 import { TranslateLoader, TranslateModule, TranslateService } from '@ngx-translate/core'
 import { Observable, ReplaySubject, catchError, combineLatest, first, map, mergeMap, of, withLatestFrom } from 'rxjs'
+
 import { RippleModule } from 'primeng/ripple'
 import { TooltipModule } from 'primeng/tooltip'
 import { DialogService, DynamicDialogModule } from 'primeng/dynamicdialog'
+
+import { getLocation } from '@onecx/accelerator'
 import {
   AngularRemoteComponentsModule,
   RemoteComponentConfig,
@@ -17,12 +21,12 @@ import {
 import { UserService, AppStateService } from '@onecx/angular-integration-interface'
 import { createRemoteComponentTranslateLoader } from '@onecx/angular-accelerator'
 import { PortalMessageService, PortalCoreModule } from '@onecx/portal-integration-angular'
-import { NoHelpItemComponent } from './no-help-item/no-help-item.component'
+
 import { Configuration, Help, HelpsInternalAPIService } from 'src/app/shared/generated'
 import { environment } from 'src/environments/environment'
 import { SharedModule } from 'src/app/shared/shared.module'
-import { Router } from '@angular/router'
-import { getLocation } from '@onecx/accelerator'
+
+import { NoHelpItemComponent } from './no-help-item/no-help-item.component'
 
 @Component({
   selector: 'app-ocx-show-help',
