@@ -48,9 +48,7 @@ describe('NoHelpItemComponent', () => {
 
     noHelpItemHarness = await TestbedHarnessEnvironment.harnessForFixture(fixture, NoHelpItemHarness)
 
-    expect(await noHelpItemHarness.getContent()).toBe(
-      'No Help Items were found for this page. Please ask your system administrator to add it.'
-    )
+    expect(await noHelpItemHarness.getContent()).toBe('No Help Item has been defined for this page.')
     expect(await noHelpItemHarness.getHintTitle()).toBe('The Help Item ID for this page is:')
     expect(await noHelpItemHarness.getArticleId()).toBe('help-article-id')
   })
@@ -65,9 +63,7 @@ describe('NoHelpItemComponent', () => {
 
     noHelpItemHarness = await TestbedHarnessEnvironment.harnessForFixture(fixture, NoHelpItemHarness)
 
-    expect(await noHelpItemHarness.getContent()).toBe(
-      'No Help Items were found for this page. Please ask your system administrator to add it.'
-    )
+    expect(await noHelpItemHarness.getContent()).toBe('No Help Item has been defined for this page.')
     expect(await noHelpItemHarness.getHintTitle()).toBeUndefined()
     expect(await noHelpItemHarness.getArticleId()).toBeUndefined()
   })

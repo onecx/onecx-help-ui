@@ -87,17 +87,17 @@
     "SWITCH_TO_EDIT_MODE": "Edit"
   },
   "HELP_ITEM": {
-    "APPLICATION_NAME": "Application Name",
+    "APPLICATION_NAME": "Application",
     "HELP_ITEM_ID": "Help Item ID",
     "CONTEXT": "Context",
     "BASE_URL": "Base URL",
     "RESOURCE_URL": "Resource URL",
     "TOOLTIPS": {
       "APPLICATION_NAME": "Application context of the Help Item",
-      "HELP_ITEM_ID": "Help Item ID within the context of the application",
-      "CONTEXT": "Context within the page",
-      "BASE_URL": "Base URL that precedes the resource URL",
-      "RESOURCE_URL": "Resource URL"
+      "HELP_ITEM_ID": "Unique ID for a Help Item of the Application. Must have been used within the respective page.",
+      "BASE_URL": "Base part of the Help Article URL - the base path to the documentation of the Application",
+      "RESOURCE_URL": "Last part of the Help Article URL specific to the page (resource)",
+      "CONTEXT": "Specific context within the page (resource)"
     }
   },
   "HELP_SEARCH": {
@@ -136,8 +136,8 @@
     "LABEL": "Show Help for this page",
     "HELP_PAGE_ERROR": "Help Item URL not valid",
     "NO_HELP_ITEM": {
-      "HEADER": "No Help Item defined for this page",
-      "CONTENT": "No Help Items were found for this page. Please ask your system administrator to add it.",
+      "HEADER": "Help Item missing",
+      "CONTENT": "No Help Item has been defined for this page.",
       "ITEM_HINT": "The Help Item ID for this page is:"
     }
   },
@@ -152,7 +152,7 @@
     "UPDATE_HELP_ARTICLE_INFO": "Help Item  updated",
     "DIALOG": {
       "HELP_ITEM_ID": "Help Item ID",
-      "APPLICATION_NAME": "Application Name",
+      "APPLICATION_NAME": "Application",
       "RESOURCE_URL": "URL"
     }
   },

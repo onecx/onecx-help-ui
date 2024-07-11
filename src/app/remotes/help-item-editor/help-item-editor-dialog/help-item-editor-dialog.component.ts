@@ -9,6 +9,7 @@ import { Help } from 'src/app/shared/generated'
 @Component({
   selector: 'app-ocx-help-item-editor',
   standalone: true,
+  styleUrls: ['./help-item-editor-dialog.component.scss'],
   templateUrl: './help-item-editor-dialog.component.html',
   imports: [InputTextModule, ReactiveFormsModule, TranslateModule],
   providers: [PortalMessageService, FormBuilder]
@@ -21,9 +22,10 @@ export class HelpItemEditorDialogComponent implements DialogResult<Help>, Dialog
 
   constructor(private fb: FormBuilder, private portalMessageService: PortalMessageService) {
     this.formGroup = this.fb.group({
-      productName: new FormControl({ value: null, disabled: true }, [Validators.required]),
       helpItemId: new FormControl({ value: null, disabled: true }, [Validators.required]),
-      resourceUrl: new FormControl(null, Validators.required)
+      productName: new FormControl({ value: null, disabled: true }, [Validators.required]),
+      baseUrl: new FormControl(null, Validators.required),
+      resourceUrl: new FormControl(null)
     })
   }
 
@@ -34,6 +36,7 @@ export class HelpItemEditorDialogComponent implements DialogResult<Help>, Dialog
       }
       this.formGroup.patchValue({
         helpItemId: this.dialogResult.itemId,
+        baseUrl: this.dialogResult.baseUrl,
         resourceUrl: this.dialogResult.resourceUrl
       })
     }
@@ -50,7 +53,11 @@ export class HelpItemEditorDialogComponent implements DialogResult<Help>, Dialog
     }
 
     if (this.formGroup.valid && this.helpItem) {
-      this.dialogResult = { ...this.helpItem, resourceUrl: this.formGroup.value['resourceUrl'] }
+      this.dialogResult = {
+        ...this.helpItem,
+        baseUrl: this.formGroup.value['baseUrl'],
+        resourceUrl: this.formGroup.value['resourceUrl']
+      }
       return true
     } else {
       this.portalMessageService.error({
