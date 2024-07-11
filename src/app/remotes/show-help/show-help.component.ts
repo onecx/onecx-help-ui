@@ -19,7 +19,7 @@ import {
   ocxRemoteWebcomponent
 } from '@onecx/angular-remote-components'
 import { UserService, AppStateService } from '@onecx/angular-integration-interface'
-import { createRemoteComponentTranslateLoader } from '@onecx/angular-accelerator'
+import { REMOTE_COMPONENT_ID, createRemoteComponentTranslateLoader } from '@onecx/angular-accelerator'
 import { PortalMessageService, PortalCoreModule } from '@onecx/portal-integration-angular'
 
 import { Configuration, Help, HelpsInternalAPIService } from 'src/app/shared/generated'
@@ -53,12 +53,16 @@ import { NoHelpItemComponent } from './no-help-item/no-help-item.component'
       provide: BASE_URL,
       useValue: new ReplaySubject<string>(1)
     },
+    {
+      provide: REMOTE_COMPONENT_ID,
+      useValue: 'ocx-show-help-component'
+    },
     provideTranslateServiceForRoot({
       isolate: true,
       loader: {
         provide: TranslateLoader,
         useFactory: createRemoteComponentTranslateLoader,
-        deps: [HttpClient, BASE_URL]
+        deps: [HttpClient, BASE_URL, REMOTE_COMPONENT_ID]
       }
     })
   ]
