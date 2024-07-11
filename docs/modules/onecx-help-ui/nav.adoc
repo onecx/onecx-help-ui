@@ -1,1 +1,1 @@
-* xref:onecx-help-ui:index.adoc[User Interface]
+* xref:./pages/index.adoc[User Interface]
