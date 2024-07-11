@@ -17,6 +17,7 @@ import {
   PortalCoreModule,
   PortalDialogService,
   PortalMessageService,
+  REMOTE_COMPONENT_ID,
   UserService,
   createRemoteComponentTranslateLoader,
   providePortalDialogService
@@ -54,12 +55,16 @@ import { HelpItemEditorDialogComponent } from './help-item-editor-dialog/help-it
       provide: BASE_URL,
       useValue: new ReplaySubject<string>(1)
     },
+    {
+      provide: REMOTE_COMPONENT_ID,
+      useValue: 'ocx-help-item-editor-component'
+    },
     provideTranslateServiceForRoot({
       isolate: true,
       loader: {
         provide: TranslateLoader,
         useFactory: createRemoteComponentTranslateLoader,
-        deps: [HttpClient, BASE_URL]
+        deps: [HttpClient, BASE_URL, REMOTE_COMPONENT_ID]
       }
     })
   ]
