@@ -107,7 +107,7 @@ export class HelpSearchComponent implements OnInit {
    *    - re-searching (with current criteria) after changes in detail dialog
    */
   public search(criteria: HelpSearchCriteria, reuseCriteria: boolean = false): void {
-    let criteriaSearchParams: SearchHelpsRequestParams = {
+    const criteriaSearchParams: SearchHelpsRequestParams = {
       helpSearchCriteria: criteria
     }
     if (!reuseCriteria) {

@@ -22,7 +22,10 @@ export class HelpDetailComponent implements OnChanges {
   public itemId: string | undefined
   public productName: string | undefined
 
-  constructor(private helpApi: HelpsInternalAPIService, private msgService: PortalMessageService) {}
+  constructor(
+    private helpApi: HelpsInternalAPIService,
+    private msgService: PortalMessageService
+  ) {}
 
   ngOnChanges() {
     if (this.changeMode === 'EDIT') {

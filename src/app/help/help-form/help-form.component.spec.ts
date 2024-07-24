@@ -16,7 +16,7 @@ describe('HelpFormComponent', () => {
   let component: HelpFormComponent
   let fixture: ComponentFixture<HelpFormComponent>
 
-  let formGroupSpy = jasmine.createSpyObj<FormGroup>('FormGroup', ['patchValue', 'reset'])
+  const formGroupSpy = jasmine.createSpyObj<FormGroup>('FormGroup', ['patchValue', 'reset'])
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({

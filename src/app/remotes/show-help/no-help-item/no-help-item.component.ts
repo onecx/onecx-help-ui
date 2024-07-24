@@ -13,7 +13,10 @@ import { DynamicDialogConfig, DynamicDialogModule, DynamicDialogRef } from 'prim
 export class NoHelpItemComponent {
   public helpArticleId: string
 
-  constructor(public config: DynamicDialogConfig, public ref: DynamicDialogRef) {
+  constructor(
+    public config: DynamicDialogConfig,
+    public ref: DynamicDialogRef
+  ) {
     this.helpArticleId = config.data.helpArticleId
   }
 }

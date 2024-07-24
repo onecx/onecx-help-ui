@@ -25,7 +25,10 @@ export class HelpCriteriaComponent implements OnInit, OnChanges {
   public productDisplayNames: string[] = []
   public productDisplayNamesFiltered: string[] = []
 
-  constructor(private helpInternalAPIService: HelpsInternalAPIService, private msgService: PortalMessageService) {
+  constructor(
+    private helpInternalAPIService: HelpsInternalAPIService,
+    private msgService: PortalMessageService
+  ) {
     this.helpCriteriaGroup = new FormGroup<HelpCriteriaForm>({
       itemId: new FormControl<string | null>(null),
       productName: new FormControl<string | null>(null)
