@@ -13,8 +13,8 @@ import { TooltipModule } from 'primeng/tooltip'
 import { RippleModule } from 'primeng/ripple'
 
 import { BASE_URL, RemoteComponentConfig } from '@onecx/angular-remote-components'
-import { AppStateService, PortalMessageService } from '@onecx/angular-integration-interface'
-import { IfPermissionDirective } from '@onecx/angular-accelerator'
+import { AppStateService, PortalMessageService, UserService } from '@onecx/angular-integration-interface'
+import { HAS_PERMISSION_CHECKER, IfPermissionDirective } from '@onecx/angular-accelerator'
 import { PortalDialogService /*, PortalDialogConfig */ } from '@onecx/portal-integration-angular'
 
 import { Help, HelpsInternalAPIService } from 'src/app/shared/generated'
@@ -71,6 +71,10 @@ describe('OneCXHelpItemEditorComponent', () => {
         {
           provide: BASE_URL,
           useValue: baseUrlSubject
+        },
+        {
+          provide: HAS_PERMISSION_CHECKER,
+          useExisting: UserService
         }
       ]
     })

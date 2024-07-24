@@ -4,7 +4,7 @@ import { provideHttpClientTesting } from '@angular/common/http/testing'
 import { ComponentFixture, TestBed } from '@angular/core/testing'
 import { NgModule } from '@angular/core'
 import { Router } from '@angular/router'
-import { AppStateService, PortalMessageService } from '@onecx/angular-integration-interface'
+import { AppStateService, PortalMessageService, UserService } from '@onecx/angular-integration-interface'
 import { BASE_URL, RemoteComponentConfig } from '@onecx/angular-remote-components'
 import { TranslateTestingModule } from 'ngx-translate-testing'
 import { ReplaySubject, of, throwError } from 'rxjs'
@@ -15,7 +15,7 @@ import { Help, HelpsInternalAPIService } from 'src/app/shared/generated'
 import { OneCXShowHelpComponent } from './show-help.component'
 import { OneCXShowHelpHarness } from './show-help.harness'
 import { NoHelpItemComponent } from './no-help-item/no-help-item.component'
-import { IfPermissionDirective } from '@onecx/angular-accelerator'
+import { HAS_PERMISSION_CHECKER, IfPermissionDirective } from '@onecx/angular-accelerator'
 
 @NgModule({
   imports: [],
@@ -52,6 +52,10 @@ describe('OneCXShowHelpComponent', () => {
         {
           provide: BASE_URL,
           useValue: baseUrlSubject
+        },
+        {
+          provide: HAS_PERMISSION_CHECKER,
+          useExisting: UserService
         }
       ]
     })
