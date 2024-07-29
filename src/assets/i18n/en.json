@@ -39,6 +39,12 @@
         "HELP_ITEM_OK": "The Help Item was saved successfully",
         "HELP_ITEM_NOK": "An error has occurred. The Help Item was not saved."
       }
+    },
+    "TOOLTIPS": {
+      "EDIT": "Edit Help Item",
+      "DELETE": "Delete this Help Item",
+      "CREATE": "Create a new Help Item",
+      "COPY": "Create a new Help Item with the data"
     }
   },
   "GENERAL": {
@@ -78,7 +84,9 @@
       "CANCEL_WITHOUT_SAVE": "Cancel action without saving",
       "EDIT": "Edit data",
       "VIEW": "View data",
-      "SAVE": "Save changes"
+      "SAVE": "Save changes",
+      "SHOW_HELP": "Show Help for this page",
+      "HELP_ITEM_EDITOR": "Edit Help Item for this page"
     }
   },
   "BREADCRUMBS": {

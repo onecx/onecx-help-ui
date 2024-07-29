@@ -39,6 +39,12 @@
         "HELP_OK": "Der Hilfeartikel wurde erfolgreich gespeichert",
         "HELP_NOK": "Ein Fehler ist aufgetreten. Der Hilfeartikel wurde nicht gespeichert."
       }
+    },
+    "TOOLTIPS": {
+      "EDIT": "Hilfeartikel bearbeiten",
+      "DELETE": "Hilfeartikel löschen",
+      "CREATE": "Hilfeartikel erstellen",
+      "COPY": "Hilfeartikel kopieren"
     }
   },
   "GENERAL": {
@@ -78,7 +84,9 @@
       "CANCEL_WITHOUT_SAVE": "Die Aktion ohne Speichern abbrechen",
       "EDIT": "Daten bearbeiten",
       "VIEW": "Daten ansehen",
-      "SAVE": "Die Änderungen speichern"
+      "SAVE": "Die Änderungen speichern",
+      "SHOW_HELP": "Hilfe für diese Seite anzeigen",
+      "HELP_ITEM_EDITOR": "Hilfe für diese Seite bearbeiten"
     }
   },
   "BREADCRUMBS": {

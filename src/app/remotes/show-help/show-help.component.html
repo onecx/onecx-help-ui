@@ -5,11 +5,11 @@
     pRipple
     pButton
     (click)="openHelpPage($event)"
-    [pTooltip]="'SHOW_HELP.LABEL' | translate"
     tooltipPosition="bottom"
     (keydown.enter.t)="onEnterClick()"
-    aria-label="show help item button"
+    aria-label="'SHOW_HELP.LABEL' | translate"
+    [pTooltip]="'GENERAL.TOOLTIPS.SHOW_HELP' | translate"
   >
-    <i class="pi pi-question-circle fs-xlarge"></i>
+    <i class="pi pi-question-circle fs-xlarge" aria-hidden="true"></i>
   </button>
 </div>
