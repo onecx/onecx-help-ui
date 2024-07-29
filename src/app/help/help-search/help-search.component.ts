@@ -124,7 +124,7 @@ export class HelpSearchComponent implements OnInit {
         catchError((err) => {
           this.exceptionKey = 'EXCEPTIONS.HTTP_STATUS_' + err.status + '.HELP_ITEM'
           console.error('searchSlots():', err)
-          this.msgService.error({ summaryKey: 'GENERAL.SEARCH.MSG_SEARCH_FAILED' })
+          this.msgService.error({ summaryKey: 'ACTIONS.SEARCH.MSG_SEARCH_FAILED' })
           return of({ stream: [] } as HelpPageResult)
         }),
         finalize(() => (this.searchInProgress = false))
@@ -147,7 +147,7 @@ export class HelpSearchComponent implements OnInit {
           }
 
           if (data.stream?.length === 0) {
-            this.msgService.info({ summaryKey: 'GENERAL.SEARCH.MSG_NO_RESULTS' })
+            this.msgService.info({ summaryKey: 'ACTIONS.SEARCH.MSG_NO_RESULTS' })
           }
           this.productsChanged = false
         }

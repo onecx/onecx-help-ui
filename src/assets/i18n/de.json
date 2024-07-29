@@ -36,9 +36,19 @@
       "HELP_ITEM": "Hilfeartikel bearbeiten",
       "HELP_ITEM.TOOLTIP": "Den Hilfeartikel bearbeiten",
       "MESSAGE": {
-        "HELP_OK": "Der Hilfeartikel wurde erfolgreich gespeichert",
-        "HELP_NOK": "Ein Fehler ist aufgetreten. Der Hilfeartikel wurde nicht gespeichert."
+        "HELP_ITEM_OK": "Der Hilfeartikel wurde erfolgreich gespeichert",
+        "HELP_ITEM_NOK": "Ein Fehler ist aufgetreten. Der Hilfeartikel wurde nicht gespeichert."
       }
+    },
+    "SEARCH": {
+      "ACTION": "Aktionen",
+      "SEARCH": "Suchen",
+      "SEARCH.TOOLTIP": "Suche starten",
+      "RESET": "Zurücksetzen",
+      "RESET_TOOLTIP": "Suchkriterien löschen",
+      "NO_DATA": "Keine Ergebnisse",
+      "MSG_NO_RESULTS": "Die Suche ergab keine Ergebnisse",
+      "MSG_SEARCH_FAILED": "Die Suche ist fehlgeschlagen"
     }
   },
   "GENERAL": {
@@ -60,16 +70,6 @@
         "MODIFICATION_USER": "Name des Benutzers der letzten änderung"
       }
     },
-    "SEARCH": {
-      "ACTION": "Aktionen",
-      "SEARCH": "Suchen",
-      "SEARCH.TOOLTIP": "Suche starten",
-      "RESET": "Zurücksetzen",
-      "RESET_TOOLTIP": "Suchkriterien löschen",
-      "NO_DATA": "Keine Ergebnisse",
-      "MSG_NO_RESULTS": "Die Suche ergab keine Ergebnisse",
-      "MSG_SEARCH_FAILED": "Die Suche ist fehlgeschlagen"
-    },
     "TOOLTIPS": {
       "CLOSE": "Dialog verlassen",
       "CANCEL": "Die Aktion abbrechen",
@@ -77,6 +77,7 @@
       "CANCEL_AND_CLOSE": "Abbrechen und Dialog schließen",
       "CANCEL_WITHOUT_SAVE": "Die Aktion ohne Speichern abbrechen",
       "EDIT": "Daten bearbeiten",
+      "VIEW": "Daten ansehen",
       "SAVE": "Die Änderungen speichern"
     }
   },
@@ -120,20 +121,9 @@
     "UNIQUE_CONSTRAINT": "Hilfeartikel existiert bereits",
     "VALIDATION_ERROR": "Das Formular ist ungültig. Der Hilfeartikel kann so nicht gespeichert werden."
   },
-  "VALIDATION": {
-    "HINTS": {
-      "FORMAT_URL": "Format: "
-    },
-    "ERRORS": {
-      "INTERNAL_ERROR": "Interner Fehler",
-      "EMPTY_REQUIRED_FIELD": "Dieses Feld ist ein Pflichtfeld.",
-      "MAXIMUM_LENGTH": "Es sind nur {{chars}} Zeichen erlaubt.",
-      "MINIMUM_LENGTH": "Es sind mindestens {{chars}} Zeichen erforderlich.",
-      "PATTERN_ERROR": "Ihre Eingabe entspricht nicht dem benötigten Format."
-    }
-  },
   "SHOW_HELP": {
     "LABEL": "Hilfe für diese Seite anzeigen",
+    "TOOLTIP": "Hilfe für diese Seite anzeigen",
     "HELP_PAGE_ERROR": "Hilfeartikel URL nicht gültig",
     "NO_HELP_ITEM": {
       "HEADER": "Hilfeartikel fehlt",
@@ -143,6 +133,7 @@
   },
   "HELP_ITEM_EDITOR": {
     "LABEL": "Hilfe für diese Seite bearbeiten",
+    "TOOLTIP": "Hilfe für diese Seite bearbeiten",
     "HEADER": "Hilfeartikel bearbeiten",
     "OPEN_HELP_PAGE_EDITOR_ERROR": "Der Hilfeartikel kann nicht bearbeitet werden. Hilfeartikel ID oder Applikationsname fehlen.",
     "SAVE": "Speichern",
@@ -154,6 +145,18 @@
       "HELP_ITEM_ID": "Hilfeartikel ID",
       "APPLICATION_NAME": "Applikation",
       "RESOURCE_URL": "Ressource Path"
+    }
+  },
+  "VALIDATION": {
+    "HINTS": {
+      "FORMAT_URL": "Format: "
+    },
+    "ERRORS": {
+      "INTERNAL_ERROR": "Interner Fehler",
+      "EMPTY_REQUIRED_FIELD": "Dieses Feld ist ein Pflichtfeld.",
+      "MAXIMUM_LENGTH": "Es sind nur {{chars}} Zeichen erlaubt.",
+      "MINIMUM_LENGTH": "Es sind mindestens {{chars}} Zeichen erforderlich.",
+      "PATTERN_ERROR": "Ihre Eingabe entspricht nicht dem benötigten Format."
     }
   },
   "EXCEPTIONS": {
