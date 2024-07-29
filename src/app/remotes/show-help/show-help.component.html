@@ -8,7 +8,9 @@
     tooltipPosition="bottom"
     (keydown.enter.t)="onEnterClick()"
     aria-label="'SHOW_HELP.LABEL' | translate"
-    [pTooltip]="'GENERAL.TOOLTIPS.SHOW_HELP' | translate"
+    [pTooltip]="'SHOW_HELP.TOOLTIP' | translate"
+    tooltipPosition="top"
+    tooltipEvent="hover"
   >
     <i class="pi pi-question-circle fs-xlarge" aria-hidden="true"></i>
   </button>
