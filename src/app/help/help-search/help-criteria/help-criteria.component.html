@@ -19,7 +19,10 @@
           [dropdown]="true"
           [forceSelection]="true"
           appendTo="body"
-        ></p-autoComplete>
+          ariaLabelledBy="help_search_criteria_productName"
+        >
+          <button pbutton type="button" aria-label="'GENERAL.TOOLTIPS.VIEW' | translate"></button>
+        </p-autoComplete>
         <label for="help_search_criteria_productName">{{ 'HELP_ITEM.APPLICATION_NAME' | translate }}</label>
       </span>
       <span class="p-float-label">

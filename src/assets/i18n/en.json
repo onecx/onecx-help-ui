@@ -39,6 +39,16 @@
         "HELP_ITEM_OK": "The Help Item was saved successfully",
         "HELP_ITEM_NOK": "An error has occurred. The Help Item was not saved."
       }
+    },
+    "SEARCH": {
+      "ACTION": "Action",
+      "SEARCH": "Search",
+      "SEARCH.TOOLTIP": "Start Searching",
+      "RESET": "Reset",
+      "RESET_TOOLTIP": "Clear given criteria",
+      "NO_DATA": "No data",
+      "MSG_NO_RESULTS": "Search returned no results",
+      "MSG_SEARCH_FAILED": "Search failed"
     }
   },
   "GENERAL": {
@@ -60,16 +70,6 @@
         "MODIFICATION_USER": "Name of the user of the last change"
       }
     },
-    "SEARCH": {
-      "ACTION": "Action",
-      "SEARCH": "Search",
-      "SEARCH.TOOLTIP": "Start Searching",
-      "RESET": "Reset",
-      "RESET_TOOLTIP": "Clear given criteria",
-      "NO_DATA": "No data",
-      "MSG_NO_RESULTS": "Search returned no results",
-      "MSG_SEARCH_FAILED": "Search failed"
-    },
     "TOOLTIPS": {
       "CLOSE": "Leave dialog",
       "CANCEL": "Cancel action",
@@ -77,6 +77,7 @@
       "CANCEL_AND_CLOSE": "Cancel and close dialog",
       "CANCEL_WITHOUT_SAVE": "Cancel action without saving",
       "EDIT": "Edit data",
+      "VIEW": "View data",
       "SAVE": "Save changes"
     }
   },
@@ -120,20 +121,9 @@
     "UNIQUE_CONSTRAINT": "Help Item already exists",
     "VALIDATION_ERROR": "The Help Item form is invalid. The Help Item cannot be saved this way."
   },
-  "VALIDATION": {
-    "HINTS": {
-      "FORMAT_URL": "Format: "
-    },
-    "ERRORS": {
-      "INTERNAL_ERROR": "Internal error",
-      "EMPTY_REQUIRED_FIELD": "This field is required.",
-      "MAXIMUM_LENGTH": "Only {{chars}} characters are allowed.",
-      "MINIMUM_LENGTH": "At least {{chars}} characters are required.",
-      "PATTERN_ERROR": "Your input does not match the required pattern"
-    }
-  },
   "SHOW_HELP": {
     "LABEL": "Show Help for this page",
+    "TOOLTIP": "Show Help for this page",
     "HELP_PAGE_ERROR": "Help Item URL not valid",
     "NO_HELP_ITEM": {
       "HEADER": "Help Item missing",
@@ -143,6 +133,7 @@
   },
   "HELP_ITEM_EDITOR": {
     "LABEL": "Edit Help Item for this page",
+    "TOOLTIP": "Edit Help Item for this page",
     "HEADER": "Edit Help Item",
     "OPEN_HELP_PAGE_EDITOR_ERROR": "Cannot edit the Help Item. Help Item ID or Application Name missing.",
     "SAVE": "Save",
@@ -154,6 +145,18 @@
       "HELP_ITEM_ID": "Help Item ID",
       "APPLICATION_NAME": "Application",
       "RESOURCE_URL": "URL"
+    }
+  },
+  "VALIDATION": {
+    "HINTS": {
+      "FORMAT_URL": "Format: "
+    },
+    "ERRORS": {
+      "INTERNAL_ERROR": "Internal error",
+      "EMPTY_REQUIRED_FIELD": "This field is required.",
+      "MAXIMUM_LENGTH": "Only {{chars}} characters are allowed.",
+      "MINIMUM_LENGTH": "At least {{chars}} characters are required.",
+      "PATTERN_ERROR": "Your input does not match the required pattern"
     }
   },
   "EXCEPTIONS": {

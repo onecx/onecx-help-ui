@@ -166,7 +166,7 @@ describe('HelpSearchComponent', () => {
     component.search({})
 
     expect(component.resultsForDisplay.length).toEqual(0)
-    expect(msgServiceSpy.info).toHaveBeenCalledWith({ summaryKey: 'GENERAL.SEARCH.MSG_NO_RESULTS' })
+    expect(msgServiceSpy.info).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.SEARCH.MSG_NO_RESULTS' })
   })
 
   it('should reuse criteria if reuseCriteria is true', () => {
@@ -264,7 +264,7 @@ describe('HelpSearchComponent', () => {
 
     component.search({})
 
-    expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'GENERAL.SEARCH.MSG_SEARCH_FAILED' })
+    expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.SEARCH.MSG_SEARCH_FAILED' })
   })
 
   it('should delete help item', () => {

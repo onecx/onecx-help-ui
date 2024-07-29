@@ -5,10 +5,13 @@
     pRipple
     pButton
     (click)="editHelpPage($event)"
-    [pTooltip]="'HELP_ITEM_EDITOR.LABEL' | translate"
     tooltipPosition="bottom"
     (keydown.enter.t)="onEnterClick()"
+    aria-label="'HELP_ITEM_EDITOR.LABEL' | translate"
+    [pTooltip]="'HELP_ITEM_EDITOR.TOOLTIP' | translate"
+    tooltipPosition="top"
+    tooltipEvent="hover"
   >
-    <i id="help-item-editor-button-icon" class="pi pi-pencil fs-xlarge"></i>
+    <i id="help-item-editor-button-icon" class="pi pi-pencil fs-xlarge" aria-hidden="true"></i>
   </button>
 </div>
