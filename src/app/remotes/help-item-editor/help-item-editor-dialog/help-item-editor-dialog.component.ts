@@ -20,7 +20,10 @@ export class HelpItemEditorDialogComponent implements DialogResult<Help>, Dialog
   dialogResult!: Help
   public formGroup!: FormGroup
 
-  constructor(private fb: FormBuilder, private portalMessageService: PortalMessageService) {
+  constructor(
+    private fb: FormBuilder,
+    private portalMessageService: PortalMessageService
+  ) {
     this.formGroup = this.fb.group({
       helpItemId: new FormControl({ value: null, disabled: true }, [Validators.required]),
       productName: new FormControl({ value: null, disabled: true }, [Validators.required]),

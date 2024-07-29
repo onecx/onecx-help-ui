@@ -12,7 +12,7 @@ describe('HelpItemEditorDialogComponent', () => {
   let fixture: ComponentFixture<HelpItemEditorDialogComponent>
   let helpItemEditorDialogHarness: HelpItemEditorDialogHarness
 
-  let portalMessageServiceSpy = jasmine.createSpyObj<PortalMessageService>('PortalMessageService', ['error'])
+  const portalMessageServiceSpy = jasmine.createSpyObj<PortalMessageService>('PortalMessageService', ['error'])
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({

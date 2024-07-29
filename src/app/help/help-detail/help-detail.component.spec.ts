@@ -95,7 +95,7 @@ describe('HelpDetailComponent', () => {
   it('should create a help item onSave', () => {
     apiServiceSpy.createNewHelp.and.returnValue(of({}))
     component.changeMode = 'NEW'
-    let mockHelpForm = new MockHelpFormComponent()
+    const mockHelpForm = new MockHelpFormComponent()
     mockHelpForm.formGroup.setValue({
       product: 'product2',
       itemId: 'itemId2'
@@ -121,7 +121,7 @@ describe('HelpDetailComponent', () => {
     }
     apiServiceSpy.createNewHelp.and.returnValue(throwError(() => mockError))
     component.changeMode = 'NEW'
-    let mockHelpForm = new MockHelpFormComponent()
+    const mockHelpForm = new MockHelpFormComponent()
     mockHelpForm.formGroup.setValue({
       product: 'help-mgmt-ui',
       itemId: 'PAGE_HELP_SEARCH'
@@ -141,7 +141,7 @@ describe('HelpDetailComponent', () => {
     }
     apiServiceSpy.createNewHelp.and.returnValue(throwError(() => mockError))
     component.changeMode = 'NEW'
-    let mockHelpForm = new MockHelpFormComponent()
+    const mockHelpForm = new MockHelpFormComponent()
     mockHelpForm.formGroup.setValue({
       product: 'help-mgmt-ui',
       itemId: 'PAGE_HELP_SEARCH'
@@ -158,7 +158,7 @@ describe('HelpDetailComponent', () => {
 
   it('should display validation error on invalid creation', () => {
     component.changeMode = 'NEW'
-    let invalidMockHelpForm = new MockHelpFormComponent()
+    const invalidMockHelpForm = new MockHelpFormComponent()
     invalidMockHelpForm.formGroup = new FormGroup({
       product: new FormControl('', Validators.required),
       itemId: new FormControl('', Validators.required)
@@ -176,7 +176,7 @@ describe('HelpDetailComponent', () => {
     component.helpItem = { modificationCount: 0, ...dummyHelpItem } as Help
     component.productName = dummyHelpItem.product
     component.itemId = dummyHelpItem.itemId
-    let mockHelpForm = new MockHelpFormComponent()
+    const mockHelpForm = new MockHelpFormComponent()
     mockHelpForm.formGroup.patchValue({
       product: dummyHelpItem.product,
       itemId: dummyHelpItem.itemId
@@ -199,7 +199,7 @@ describe('HelpDetailComponent', () => {
   it('should display update error', () => {
     apiServiceSpy.updateHelp.and.returnValue(throwError(() => new Error()))
     component.changeMode = 'EDIT'
-    let mockHelpForm = new MockHelpFormComponent()
+    const mockHelpForm = new MockHelpFormComponent()
     mockHelpForm.formGroup.setValue({
       product: 'help-mgmt-ui',
       itemId: 'PAGE_HELP_SEARCH'
@@ -215,7 +215,7 @@ describe('HelpDetailComponent', () => {
 
   it('should display validation error on invalid update', () => {
     component.changeMode = 'EDIT'
-    let invalidMockHelpForm = new MockHelpFormComponent()
+    const invalidMockHelpForm = new MockHelpFormComponent()
     invalidMockHelpForm.formGroup = new FormGroup({
       product: new FormControl('', Validators.required),
       itemId: new FormControl('', Validators.required)
