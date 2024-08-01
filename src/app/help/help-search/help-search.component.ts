@@ -52,6 +52,8 @@ export class HelpSearchComponent implements OnInit {
   importHelpItem: Help | null = null
   public importError = false
   public validationErrorCause: string
+  public selectedProducts: Product[] | undefined
+  public selectedProductNames: string[] | undefined
 
   public filteredColumns: Column[] = []
   public columns: ExtendedColumn[] = [
@@ -282,6 +284,31 @@ export class HelpSearchComponent implements OnInit {
    */
   public onExport(): void {
     this.displayExportDialog = true
+  }
+  public onExportConfirmation(): void {
+    if (this.selectedProducts && this.selectedProducts.length > 0) {
+      this.selectedProductNames = []
+      this.selectedProducts.map((products) => {
+        for (const name in products) {
+          this.selectedProductNames?.push(name)
+        }
+      })
+      this.helpInternalAPIService
+        .exportHelps({ exportHelpsRequest: { productNames: this.selectedProductNames } })
+        .subscribe({
+          next: () => {
+            this.msgService.success({ summaryKey: 'ACTIONS.EXPORT.MESSAGE.HELP_ITEM.EXPORT_OK' })
+          },
+          error: (err) => {
+            this.msgService.error({ summaryKey: 'ACTIONS.EXPORT.MESSAGE.HELP_ITEM.EXPORT_NOK' })
+            console.error(err)
+          }
+        })
+    }
+  }
+  public onCloseExportDialog(): void {
+    this.displayExportDialog = false
+    this.selectedProducts = []
   }
 
   private prepareDialogTranslations() {

@@ -251,6 +251,45 @@
   [dismissableMask]="true"
   [style]="{ 'max-width': '500px' }"
 >
+  <div class="flex flex-column row-gap-2">
+    <div>{{ 'HELP_ITEM.APPLICATION_LIST' | translate }}</div>
+    <p-listbox
+      [options]="products"
+      [(ngModel)]="selectedProducts"
+      optionLabel="name"
+      [filter]="true"
+      [checkbox]="true"
+      [multiple]="true"
+      [metaKeySelection]="false"
+      [showToggleAll]="false"
+      [emptyMessage]="'ACTIONS.SEARCH.NO_DATA' | translate"
+      [listStyle]="{ 'max-height': '300px' }"
+    />
+  </div>
+  <ng-template pTemplate="footer">
+    <div class="flex flex-wrap column-gap-2 row-gap-1 justify-content-end">
+      <button
+        pButton
+        type="button"
+        id="role_select_button_cancel"
+        class="m-0"
+        icon="pi pi-times"
+        iconPos="left"
+        [label]="'ACTIONS.EXPORT.CANCEL' | translate"
+        (click)="onCloseExportDialog()"
+      ></button>
+      <button
+        pButton
+        type="button"
+        id="role_select_button_save"
+        class="m-0"
+        icon="pi pi-check"
+        iconPos="left"
+        [label]="'ACTIONS.EXPORT.LABEL' | translate"
+        (click)="onExportConfirmation()"
+      ></button>
+    </div>
+  </ng-template>
 </p-dialog>
 
 <app-help-detail

@@ -27,17 +27,18 @@
       "HELP_ITEM.TOOLTIP": "Einen Hilfeartikel importieren",
       "MESSAGE": {
         "HELP_ITEM_ALREADY_EXIST": "Ein Hilfeartikel mit dieser ID existert schon",
-        "HELP_ITEM.CREATE_OK": "Der Hilfeartikel wurde erfolgreich importiert",
-        "HELP_ITEM.CREATE_NOK": "Ein Fehler ist aufgetreten. Der Hilfeartikel wurde nicht importiert."
+        "HELP_ITEM.IMPORT_OK": "Der Hilfeartikel wurde erfolgreich importiert",
+        "HELP_ITEM.IMPORT_NOK": "Ein Fehler ist aufgetreten. Der Hilfeartikel wurde nicht importiert."
       }
     },
     "EXPORT": {
       "LABEL": "Export",
       "HELP_ITEM": "Hilfeartikel exportieren",
       "HELP_ITEM.TOOLTIP": "Einen neuen Hilfeartikel exportieren",
+      "CANCEL": "Abbrechen",
       "MESSAGE": {
-        "HELP_ITEM.CREATE_OK": "Der Hilfeartikel wurde erfolgreich exportiert",
-        "HELP_ITEM.CREATE_NOK": "Ein Fehler ist aufgetreten. Der Hilfeartikel wurde nicht exportiert."
+        "HELP_ITEM.EXPORT_OK": "Der Hilfeartikel wurde erfolgreich exportiert",
+        "HELP_ITEM.EXPORT_NOK": "Ein Fehler ist aufgetreten. Der Hilfeartikel wurde nicht exportiert."
       }
     },
     "DELETE": {
@@ -108,6 +109,7 @@
   },
   "HELP_ITEM": {
     "APPLICATION_NAME": "Applikation",
+    "APPLICATION_LIST": "Liste der verfügbaren Applikationen",
     "HELP_ITEM_ID": "Hilfeartikel ID",
     "CONTEXT": "Kontext",
     "BASE_URL": "Basis URL",
