@@ -2,6 +2,7 @@ import { Component, OnInit, ViewChild } from '@angular/core'
 import { TranslateService } from '@ngx-translate/core'
 import { catchError, finalize, of } from 'rxjs'
 import { Table } from 'primeng/table'
+import FileSaver from 'file-saver'
 
 import { Action, Column, PortalMessageService } from '@onecx/portal-integration-angular'
 import {
@@ -238,18 +239,6 @@ export class HelpSearchComponent implements OnInit {
   public onImport(): void {
     this.displayImportDialog = true
   }
-  public onImportConfirmation(): void {
-    this.helpInternalAPIService.importHelps({ body: [this.helpItem] }).subscribe({
-      next: () => {
-        this.displayImportDialog = false
-        this.resultsForDisplay = this.resultsForDisplay?.filter((a) => a.id !== this.helpItem?.id)
-        this.productsChanged = true
-        this.msgService.success({ summaryKey: 'ACTIONS.IMPORT.MESSAGE.HELP_ITEM_OK' })
-      },
-      error: () => this.msgService.error({ summaryKey: 'ACTIONS.IMPORT.MESSAGE.HELP_ITEM_NOK' })
-    })
-    this.loadData()
-  }
   public onSelect(event: FileSelectEvent): void {
     event.files[0].text().then((text) => {
       this.importError = false
@@ -265,8 +254,8 @@ export class HelpSearchComponent implements OnInit {
         } catch (err) {
           console.error('Import Error', err)
           this.importError = true
-          this.validationErrorCause =
-            data['WORKSPACE_IMPORT.VALIDATION_RESULT'] + data['WORKSPACE_IMPORT.VALIDATION_JSON_ERROR']
+          // this.validationErrorCause =
+          //   data['WORKSPACE_IMPORT.VALIDATION_RESULT'] + data['WORKSPACE_IMPORT.VALIDATION_JSON_ERROR']
         }
       })
     })
@@ -274,6 +263,17 @@ export class HelpSearchComponent implements OnInit {
   public onClear(): void {
     this.importError = false
     this.validationErrorCause = ''
+  }
+  public onImportConfirmation(): void {
+    this.helpInternalAPIService.importHelps({ body: [this.helpItem] }).subscribe({
+      next: () => {
+        this.displayImportDialog = false
+        this.productsChanged = true
+        this.msgService.success({ summaryKey: 'ACTIONS.IMPORT.MESSAGE.HELP_ITEM_OK' })
+      },
+      error: () => this.msgService.error({ summaryKey: 'ACTIONS.IMPORT.MESSAGE.HELP_ITEM_NOK' })
+    })
+    this.loadData()
   }
   public isFileValid(): boolean {
     return !this.importError
@@ -287,17 +287,16 @@ export class HelpSearchComponent implements OnInit {
   }
   public onExportConfirmation(): void {
     if (this.selectedProducts && this.selectedProducts.length > 0) {
+      this.selectedProductNames = this.selectedProducts.map((product) => product.name)
       this.selectedProductNames = []
-      this.selectedProducts.map((products) => {
-        for (const name in products) {
-          this.selectedProductNames?.push(name)
-        }
-      })
       this.helpInternalAPIService
         .exportHelps({ exportHelpsRequest: { productNames: this.selectedProductNames } })
         .subscribe({
-          next: () => {
+          next: (item) => {
+            const helpsJson = JSON.stringify(item, null, 2)
+            FileSaver.saveAs(new Blob([helpsJson], { type: 'text/json' }), `helpItems.json`)
             this.msgService.success({ summaryKey: 'ACTIONS.EXPORT.MESSAGE.HELP_ITEM.EXPORT_OK' })
+            this.displayExportDialog = false
           },
           error: (err) => {
             this.msgService.error({ summaryKey: 'ACTIONS.EXPORT.MESSAGE.HELP_ITEM.EXPORT_NOK' })

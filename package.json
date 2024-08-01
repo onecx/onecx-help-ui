@@ -64,6 +64,7 @@
     "@onecx/portal-integration-angular": "^5.2.0",
     "@onecx/portal-layout-styles": "^5.2.0",
     "@webcomponents/webcomponentsjs": "^2.8.0",
+    "file-saver": "^2.0.5",
     "keycloak-angular": "^16.0.1",
     "ngx-color": "^9.0.0",
     "primeflex": "^3.3.1",
