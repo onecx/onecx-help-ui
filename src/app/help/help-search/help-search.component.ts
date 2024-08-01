@@ -53,7 +53,7 @@ export class HelpSearchComponent implements OnInit {
   importHelpItem: Help | null = null
   public importError = false
   public validationErrorCause: string
-  public selectedProducts: Product[] | undefined
+  public selectedResults: HelpForDisplay[] | undefined
   public selectedProductNames: string[] | undefined
 
   public filteredColumns: Column[] = []
@@ -247,7 +247,6 @@ export class HelpSearchComponent implements OnInit {
       this.translate.get(['WORKSPACE_IMPORT.VALIDATION_RESULT']).subscribe((data) => {
         try {
           const importHelp = JSON.parse(text)
-          console.log('IMPORT', importHelp)
           // if (this.isWorkspaceImportValid(importHelp, data)) {
           this.importHelpItem = importHelp
           // }
@@ -288,8 +287,8 @@ export class HelpSearchComponent implements OnInit {
     this.displayExportDialog = true
   }
   public onExportConfirmation(): void {
-    if (this.selectedProducts && this.selectedProducts.length > 0) {
-      this.selectedProductNames = this.selectedProducts.map((product) => product.name)
+    if (this.selectedResults && this.selectedResults.length > 0) {
+      this.selectedProductNames = this.selectedResults.map((item) => item.productName!)
       this.helpInternalAPIService
         .exportHelps({ exportHelpsRequest: { productNames: this.selectedProductNames } })
         .subscribe({
@@ -298,6 +297,8 @@ export class HelpSearchComponent implements OnInit {
             FileSaver.saveAs(new Blob([helpsJson], { type: 'text/json' }), `helpItems.json`)
             this.msgService.success({ summaryKey: 'ACTIONS.EXPORT.MESSAGE.HELP_ITEM.EXPORT_OK' })
             this.displayExportDialog = false
+            this.selectedResults = []
+            this.selectedProductNames = []
           },
           error: (err) => {
             this.msgService.error({ summaryKey: 'ACTIONS.EXPORT.MESSAGE.HELP_ITEM.EXPORT_NOK' })
@@ -308,7 +309,8 @@ export class HelpSearchComponent implements OnInit {
   }
   public onCloseExportDialog(): void {
     this.displayExportDialog = false
-    this.selectedProducts = []
+    this.selectedResults = []
+    this.selectedProductNames = []
   }
 
   private prepareDialogTranslations() {
