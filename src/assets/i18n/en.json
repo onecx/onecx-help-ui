@@ -1,5 +1,6 @@
 {
   "ACTIONS": {
+    "CANCEL": "Cancel",
     "CONFIRMATION": {
       "NO": "No",
       "YES": "Yes",
@@ -23,6 +24,8 @@
     },
     "IMPORT": {
       "LABEL": "Import",
+      "CHOOSE": "Choose file",
+      "UPLOAD": "Upload file",
       "HELP_ITEM": "Import Help Item",
       "HELP_ITEM.TOOLTIP": "Import a new Help Item",
       "MESSAGE": {
@@ -35,7 +38,6 @@
       "LABEL": "Export",
       "HELP_ITEM": "Export Help Item",
       "HELP_ITEM.TOOLTIP": "Export a new Help Item",
-      "CANCEL": "Cancel",
       "MESSAGE": {
         "HELP_ITEM.EXPORT_OK": "The Help Item was exported successfully",
         "HELP_ITEM.EXPORT_NOK": "An error has occurred. The Help Item was not exported."

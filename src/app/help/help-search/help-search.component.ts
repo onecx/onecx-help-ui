@@ -265,15 +265,17 @@ export class HelpSearchComponent implements OnInit {
     this.validationErrorCause = ''
   }
   public onImportConfirmation(): void {
-    this.helpInternalAPIService.importHelps({ body: [this.helpItem] }).subscribe({
-      next: () => {
-        this.displayImportDialog = false
-        this.productsChanged = true
-        this.msgService.success({ summaryKey: 'ACTIONS.IMPORT.MESSAGE.HELP_ITEM_OK' })
-      },
-      error: () => this.msgService.error({ summaryKey: 'ACTIONS.IMPORT.MESSAGE.HELP_ITEM_NOK' })
-    })
-    this.loadData()
+    if (this.importHelpItem) {
+      this.helpInternalAPIService.importHelps({ body: this.importHelpItem }).subscribe({
+        next: () => {
+          this.displayImportDialog = false
+          this.productsChanged = true
+          this.msgService.success({ summaryKey: 'ACTIONS.IMPORT.MESSAGE.HELP_ITEM_OK' })
+        },
+        error: () => this.msgService.error({ summaryKey: 'ACTIONS.IMPORT.MESSAGE.HELP_ITEM_NOK' })
+      })
+      this.loadData()
+    }
   }
   public isFileValid(): boolean {
     return !this.importError
@@ -288,7 +290,6 @@ export class HelpSearchComponent implements OnInit {
   public onExportConfirmation(): void {
     if (this.selectedProducts && this.selectedProducts.length > 0) {
       this.selectedProductNames = this.selectedProducts.map((product) => product.name)
-      this.selectedProductNames = []
       this.helpInternalAPIService
         .exportHelps({ exportHelpsRequest: { productNames: this.selectedProductNames } })
         .subscribe({

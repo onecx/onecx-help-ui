@@ -1,5 +1,6 @@
 {
   "ACTIONS": {
+    "CANCEL": "Abbrechen",
     "CONFIRMATION": {
       "NO": "Nein",
       "YES": "Ja",
@@ -21,26 +22,6 @@
         "HELP_ITEM.CREATE_NOK": "Ein Fehler ist aufgetreten. Der Hilfeartikel wurde nicht erstellt."
       }
     },
-    "IMPORT": {
-      "LABEL": "Import",
-      "HELP_ITEM": "Hilfeartikel importieren",
-      "HELP_ITEM.TOOLTIP": "Einen Hilfeartikel importieren",
-      "MESSAGE": {
-        "HELP_ITEM_ALREADY_EXIST": "Ein Hilfeartikel mit dieser ID existert schon",
-        "HELP_ITEM.IMPORT_OK": "Der Hilfeartikel wurde erfolgreich importiert",
-        "HELP_ITEM.IMPORT_NOK": "Ein Fehler ist aufgetreten. Der Hilfeartikel wurde nicht importiert."
-      }
-    },
-    "EXPORT": {
-      "LABEL": "Export",
-      "HELP_ITEM": "Hilfeartikel exportieren",
-      "HELP_ITEM.TOOLTIP": "Einen neuen Hilfeartikel exportieren",
-      "CANCEL": "Abbrechen",
-      "MESSAGE": {
-        "HELP_ITEM.EXPORT_OK": "Der Hilfeartikel wurde erfolgreich exportiert",
-        "HELP_ITEM.EXPORT_NOK": "Ein Fehler ist aufgetreten. Der Hilfeartikel wurde nicht exportiert."
-      }
-    },
     "DELETE": {
       "LABEL": "Löschen",
       "HELP_ITEM": "Hilfeartikel löschen",
@@ -58,6 +39,27 @@
       "MESSAGE": {
         "HELP_ITEM_OK": "Der Hilfeartikel wurde erfolgreich gespeichert",
         "HELP_ITEM_NOK": "Ein Fehler ist aufgetreten. Der Hilfeartikel wurde nicht gespeichert."
+      }
+    },
+    "EXPORT": {
+      "LABEL": "Export",
+      "HELP_ITEM": "Hilfeartikel exportieren",
+      "HELP_ITEM.TOOLTIP": "Einen neuen Hilfeartikel exportieren",
+      "MESSAGE": {
+        "HELP_ITEM.EXPORT_OK": "Der Hilfeartikel wurde erfolgreich exportiert",
+        "HELP_ITEM.EXPORT_NOK": "Ein Fehler ist aufgetreten. Der Hilfeartikel wurde nicht exportiert."
+      }
+    },
+    "IMPORT": {
+      "LABEL": "Import",
+      "CHOOSE": "Datei auswählen",
+      "UPLOAD": "Datei hochladen",
+      "HELP_ITEM": "Hilfeartikel importieren",
+      "HELP_ITEM.TOOLTIP": "Einen Hilfeartikel importieren",
+      "MESSAGE": {
+        "HELP_ITEM_ALREADY_EXIST": "Ein Hilfeartikel mit dieser ID existert schon",
+        "HELP_ITEM.IMPORT_OK": "Der Hilfeartikel wurde erfolgreich importiert",
+        "HELP_ITEM.IMPORT_NOK": "Ein Fehler ist aufgetreten. Der Hilfeartikel wurde nicht importiert."
       }
     },
     "SEARCH": {

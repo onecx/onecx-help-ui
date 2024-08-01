@@ -204,15 +204,6 @@
   [dismissableMask]="true"
   [style]="{ 'max-width': '500px' }"
 >
-  <div class="flex column-gap-3 row-gap-1 justify-content-start align-items-center">
-    <div class="pi pi-question-circle text-3xl danger-action-text"></div>
-    <div>
-      <div>{{('ACTIONS.IMPORT.MESSAGE_TEXT' | translate).replace('{{ITEM}}', helpItem?.itemId)}}</div>
-      <div class="mt-2">{{ 'ACTIONS.IMPORT.MESSAGE_INFO' | translate }}</div>
-    </div>
-  </div>
-
-  <div class="mt-2 px-1"></div>
   <ng-template pTemplate="footer">
     <div class="flex flex-wrap column-gap-2 row-gap-1 justify-content-end">
       <p-fileUpload
@@ -228,9 +219,9 @@
         (onRemove)="onClear()"
         (onSelect)="onSelect($event)"
         [showUploadButton]="isFileValid()"
-        [uploadLabel]="'ACTIONS.UPLOAD' | translate"
+        [chooseLabel]="'ACTIONS.IMPORT.CHOOSE' | translate"
+        [uploadLabel]="'ACTIONS.IMPORT.UPLOAD' | translate"
         [cancelLabel]="'ACTIONS.CANCEL' | translate"
-        [chooseLabel]="'ACTIONS.CHOOSE' | translate"
       />
       <p-message
         *ngIf="importError"
@@ -275,7 +266,7 @@
         class="m-0"
         icon="pi pi-times"
         iconPos="left"
-        [label]="'ACTIONS.EXPORT.CANCEL' | translate"
+        [label]="'ACTIONS.CANCEL' | translate"
         (click)="onCloseExportDialog()"
       ></button>
       <button
