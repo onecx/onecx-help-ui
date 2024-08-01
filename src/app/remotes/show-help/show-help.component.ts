@@ -136,6 +136,7 @@ export class OneCXShowHelpComponent implements ocxRemoteComponent, ocxRemoteWebc
     return this.openHelpPage({})
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   public openHelpPage(event: any) {
     this.helpDataItem$?.pipe(withLatestFrom(this.helpArticleId$), first()).subscribe({
       next: ([helpDataItem, helpArticleId]) => {
