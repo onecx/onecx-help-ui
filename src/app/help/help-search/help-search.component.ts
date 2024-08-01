@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild } from '@angular/core'
 import { TranslateService } from '@ngx-translate/core'
-import { catchError, finalize, Observable, of } from 'rxjs'
+import { catchError, finalize, of } from 'rxjs'
 import { Table } from 'primeng/table'
 
 import { Action, Column, PortalMessageService } from '@onecx/portal-integration-angular'
@@ -42,10 +42,10 @@ export class HelpSearchComponent implements OnInit {
   public loadingResults = false
   public displayDeleteDialog = false
   public displayDetailDialog = false
+  public displayImportDialog = false
   public productsChanged = false
   public rowsPerPage = 10
   public rowsPerPageOptions = [10, 20, 50]
-  public items$!: Observable<any>
 
   public filteredColumns: Column[] = []
   public columns: ExtendedColumn[] = [
@@ -221,17 +221,59 @@ export class HelpSearchComponent implements OnInit {
       })
     }
   }
+  public onImport(): void {
+    this.displayImportDialog = true
+  }
+  public onImportConfirmation(): void {
+    this.helpInternalAPIService.importHelps({ body: [] }).subscribe({
+      next: () => {
+        this.displayImportDialog = false
+        this.resultsForDisplay = this.resultsForDisplay?.filter((a) => a.id !== this.helpItem?.id)
+        this.productsChanged = true
+        this.msgService.success({ summaryKey: 'ACTIONS.IMPORT.MESSAGE.HELP_ITEM_OK' })
+      },
+      error: () => this.msgService.error({ summaryKey: 'ACTIONS.IMPORT.MESSAGE.HELP_ITEM_NOK' })
+    })
+    this.loadData()
+  }
 
   private prepareDialogTranslations() {
-    this.translate.get(['ACTIONS.CREATE.LABEL', 'ACTIONS.CREATE.HELP_ITEM.TOOLTIP']).subscribe((data) => {
-      this.actions.push({
-        label: data['ACTIONS.CREATE.LABEL'],
-        title: data['ACTIONS.CREATE.HELP_ITEM.TOOLTIP'],
-        actionCallback: () => this.onCreate(),
-        icon: 'pi pi-plus',
-        show: 'always',
-        permission: 'HELP#EDIT'
+    this.translate
+      .get([
+        'ACTIONS.CREATE.LABEL',
+        'ACTIONS.CREATE.HELP_ITEM.TOOLTIP',
+        'ACTIONS.IMPORT.LABEL',
+        'ACTIONS.IMPORT.HELP_ITEM.TOOLTIP',
+        'ACTIONS.EXPORT.LABEL',
+        'ACTIONS.EXPORT.HELP_ITEM.TOOLTIP'
+      ])
+      .subscribe((data) => {
+        this.actions.push(
+          {
+            label: data['ACTIONS.CREATE.LABEL'],
+            title: data['ACTIONS.CREATE.HELP_ITEM.TOOLTIP'],
+            actionCallback: () => this.onCreate(),
+            icon: 'pi pi-plus',
+            show: 'always',
+            permission: 'HELP#EDIT'
+          },
+          {
+            label: data['ACTIONS.IMPORT.LABEL'],
+            title: data['ACTIONS.IMPORT.HELP_ITEM.TOOLTIP'],
+            actionCallback: () => this.onImport(),
+            icon: 'pi pi-upload',
+            show: 'always',
+            permission: 'HELP#EDIT'
+          },
+          {
+            label: data['ACTIONS.EXPORT.LABEL'],
+            title: data['ACTIONS.EXPORT.HELP_ITEM.TOOLTIP'],
+            actionCallback: () => this.onCreate(),
+            icon: 'pi pi-download',
+            show: 'always',
+            permission: 'HELP#EDIT'
+          }
+        )
       })
-    })
   }
 }

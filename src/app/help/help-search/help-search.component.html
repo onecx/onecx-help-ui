@@ -196,6 +196,50 @@
   </ng-template>
 </p-dialog>
 
+<p-dialog
+  [(visible)]="displayImportDialog"
+  [header]="'ACTIONS.IMPORT.HELP_ITEM' | translate"
+  [modal]="true"
+  [resizable]="false"
+  [dismissableMask]="true"
+  [style]="{ 'max-width': '500px' }"
+>
+  <div class="flex column-gap-3 row-gap-1 justify-content-start align-items-center">
+    <div class="pi pi-question-circle text-3xl danger-action-text"></div>
+    <div>
+      <div>{{('ACTIONS.IMPORT.MESSAGE_TEXT' | translate).replace('{{ITEM}}', helpItem?.itemId)}}</div>
+      <div class="mt-2">{{ 'ACTIONS.IMPORT.MESSAGE_INFO' | translate }}</div>
+    </div>
+  </div>
+  <ng-template pTemplate="footer">
+    <div class="flex flex-wrap column-gap-2 row-gap-1 justify-content-end">
+      <button
+        pButton
+        autofocus
+        type="button"
+        class="m-0"
+        icon="pi pi-times"
+        iconPos="left"
+        [id]="'help_import_button_no'"
+        [label]="'ACTIONS.CONFIRMATION.NO' | translate"
+        [title]="'ACTIONS.CONFIRMATION.NO.TOOLTIP' | translate"
+        (click)="displayImportDialog = false"
+      ></button>
+      <button
+        pButton
+        type="button"
+        class="m-0"
+        icon="pi pi-check"
+        iconPos="left"
+        [id]="'help_import_button_yes'"
+        [label]="'ACTIONS.CONFIRMATION.YES' | translate"
+        [title]="'ACTIONS.CONFIRMATION.YES.TOOLTIP' | translate"
+        (click)="onImportConfirmation()"
+      ></button>
+    </div>
+  </ng-template>
+</p-dialog>
+
 <app-help-detail
   *ngIf="productsLoaded"
   [(displayDetailDialog)]="displayDetailDialog"

@@ -13,12 +13,31 @@
     },
     "CREATE": {
       "LABEL": "Create",
-      "HELP_ITEM": "Create Theme",
+      "HELP_ITEM": "Create Help Item",
       "HELP_ITEM.TOOLTIP": "Create a new Help Item",
       "MESSAGE": {
         "HELP_ITEM_ALREADY_EXIST": "A Help Item with that ID already exists",
         "HELP_ITEM.CREATE_OK": "The Help Item was created successfully",
         "HELP_ITEM.CREATE_NOK": "An error has occurred. The Help Item was not created."
+      }
+    },
+    "IMPORT": {
+      "LABEL": "Import",
+      "HELP_ITEM": "Import Help Item",
+      "HELP_ITEM.TOOLTIP": "Import a new Help Item",
+      "MESSAGE": {
+        "HELP_ITEM_ALREADY_EXIST": "A Help Item with that ID already exists",
+        "HELP_ITEM.CREATE_OK": "The Help Item was imported successfully",
+        "HELP_ITEM.CREATE_NOK": "An error has occurred. The Help Item was not imported."
+      }
+    },
+    "EXPORT": {
+      "LABEL": "Export",
+      "HELP_ITEM": "Export Help Item",
+      "HELP_ITEM.TOOLTIP": "Export a new Help Item",
+      "MESSAGE": {
+        "HELP_ITEM.CREATE_OK": "The Help Item was exported successfully",
+        "HELP_ITEM.CREATE_NOK": "An error has occurred. The Help Item was not exported."
       }
     },
     "DELETE": {

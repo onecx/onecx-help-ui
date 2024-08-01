@@ -21,6 +21,25 @@
         "HELP_ITEM.CREATE_NOK": "Ein Fehler ist aufgetreten. Der Hilfeartikel wurde nicht erstellt."
       }
     },
+    "IMPORT": {
+      "LABEL": "Import",
+      "HELP_ITEM": "Hilfeartikel importieren",
+      "HELP_ITEM.TOOLTIP": "Einen Hilfeartikel importieren",
+      "MESSAGE": {
+        "HELP_ITEM_ALREADY_EXIST": "Ein Hilfeartikel mit dieser ID existert schon",
+        "HELP_ITEM.CREATE_OK": "Der Hilfeartikel wurde erfolgreich importiert",
+        "HELP_ITEM.CREATE_NOK": "Ein Fehler ist aufgetreten. Der Hilfeartikel wurde nicht importiert."
+      }
+    },
+    "EXPORT": {
+      "LABEL": "Export",
+      "HELP_ITEM": "Hilfeartikel exportieren",
+      "HELP_ITEM.TOOLTIP": "Einen neuen Hilfeartikel exportieren",
+      "MESSAGE": {
+        "HELP_ITEM.CREATE_OK": "Der Hilfeartikel wurde erfolgreich exportiert",
+        "HELP_ITEM.CREATE_NOK": "Ein Fehler ist aufgetreten. Der Hilfeartikel wurde nicht exportiert."
+      }
+    },
     "DELETE": {
       "LABEL": "Löschen",
       "HELP_ITEM": "Hilfeartikel löschen",

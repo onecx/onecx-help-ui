@@ -192,8 +192,98 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/HelpPageResult'
+  /helps/{productName}/{helpItemId}:
+    get:
+      x-onecx:
+        permissions:
+          help:
+            - read
+      tags:
+        - helpsInternal
+      description: search help item by product name and item id
+      operationId: getHelpByProductNameItemId
+      parameters:
+        - name: productName
+          in: path
+          required: true
+          description: product name
+          schema:
+            type: string
+        - name: helpItemId
+          in: path
+          required: true
+          description: help item ID
+          schema:
+            type: string
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Help'
+        404:
+          description: Help not found
+  /helps/export:
+    x-onecx:
+      permissions:
+        help:
+          - read
+    post:
+      tags:
+        - helpsInternal
+      description: Export helps
+      operationId: exportHelps
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ExportHelpsRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+        '404':
+          description: No helps founds
+  /helps/import:
+    x-onecx:
+      permissions:
+        help:
+          - write
+    post:
+      tags:
+        - helpsInternal
+      description: Import helps
+      operationId: importHelps
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Import result
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetailResponse'
 components:
   schemas:
+    ExportHelpsRequest:
+      type: object
+      properties:
+        productNames:
+          type: array
+          uniqueItems: true
+          items:
+            type: string
     HelpSearchCriteria:
       type: object
       properties:
@@ -243,6 +333,8 @@ components:
         - itemId
       type: object
       properties:
+        operator:
+          type: boolean
         modificationCount:
           format: int32
           type: integer
