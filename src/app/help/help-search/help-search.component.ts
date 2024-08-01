@@ -14,6 +14,7 @@ import {
   Product,
   HelpPageResult
 } from 'src/app/shared/generated'
+import { FileSelectEvent } from 'primeng/fileupload'
 
 type ExtendedColumn = Column & { css?: string; limit?: boolean }
 type ChangeMode = 'VIEW' | 'NEW' | 'EDIT'
@@ -43,9 +44,14 @@ export class HelpSearchComponent implements OnInit {
   public displayDeleteDialog = false
   public displayDetailDialog = false
   public displayImportDialog = false
+  public displayExportDialog = false
   public productsChanged = false
   public rowsPerPage = 10
   public rowsPerPageOptions = [10, 20, 50]
+
+  importHelpItem: Help | null = null
+  public importError = false
+  public validationErrorCause: string
 
   public filteredColumns: Column[] = []
   public columns: ExtendedColumn[] = [
@@ -72,7 +78,9 @@ export class HelpSearchComponent implements OnInit {
     private helpInternalAPIService: HelpsInternalAPIService,
     private translate: TranslateService,
     private msgService: PortalMessageService
-  ) {}
+  ) {
+    this.validationErrorCause = ''
+  }
 
   ngOnInit(): void {
     this.filteredColumns = this.columns.filter((a) => {
@@ -221,11 +229,15 @@ export class HelpSearchComponent implements OnInit {
       })
     }
   }
+
+  /****************************************************************************
+   *  IMPORT
+   */
   public onImport(): void {
     this.displayImportDialog = true
   }
   public onImportConfirmation(): void {
-    this.helpInternalAPIService.importHelps({ body: [] }).subscribe({
+    this.helpInternalAPIService.importHelps({ body: [this.helpItem] }).subscribe({
       next: () => {
         this.displayImportDialog = false
         this.resultsForDisplay = this.resultsForDisplay?.filter((a) => a.id !== this.helpItem?.id)
@@ -235,6 +247,41 @@ export class HelpSearchComponent implements OnInit {
       error: () => this.msgService.error({ summaryKey: 'ACTIONS.IMPORT.MESSAGE.HELP_ITEM_NOK' })
     })
     this.loadData()
+  }
+  public onSelect(event: FileSelectEvent): void {
+    event.files[0].text().then((text) => {
+      this.importError = false
+      this.validationErrorCause = ''
+
+      this.translate.get(['WORKSPACE_IMPORT.VALIDATION_RESULT']).subscribe((data) => {
+        try {
+          const importHelp = JSON.parse(text)
+          console.log('IMPORT', importHelp)
+          // if (this.isWorkspaceImportValid(importHelp, data)) {
+          this.importHelpItem = importHelp
+          // }
+        } catch (err) {
+          console.error('Import Error', err)
+          this.importError = true
+          this.validationErrorCause =
+            data['WORKSPACE_IMPORT.VALIDATION_RESULT'] + data['WORKSPACE_IMPORT.VALIDATION_JSON_ERROR']
+        }
+      })
+    })
+  }
+  public onClear(): void {
+    this.importError = false
+    this.validationErrorCause = ''
+  }
+  public isFileValid(): boolean {
+    return !this.importError
+  }
+
+  /****************************************************************************
+   *  EXPORT
+   */
+  public onExport(): void {
+    this.displayExportDialog = true
   }
 
   private prepareDialogTranslations() {
@@ -268,7 +315,7 @@ export class HelpSearchComponent implements OnInit {
           {
             label: data['ACTIONS.EXPORT.LABEL'],
             title: data['ACTIONS.EXPORT.HELP_ITEM.TOOLTIP'],
-            actionCallback: () => this.onCreate(),
+            actionCallback: () => this.onExport(),
             icon: 'pi pi-download',
             show: 'always',
             permission: 'HELP#EDIT'
