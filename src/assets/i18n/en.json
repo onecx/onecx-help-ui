@@ -32,7 +32,8 @@
         "HELP_ITEM_ALREADY_EXIST": "A Help Item with that ID already exists",
         "HELP_ITEM.IMPORT_OK": "The Help Item was imported successfully",
         "HELP_ITEM.IMPORT_NOK": "An error has occurred. The Help Item was not imported."
-      }
+      },
+      "VALIDATION_RESULT": "The file has been checked."
     },
     "EXPORT": {
       "LABEL": "Export",

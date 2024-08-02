@@ -19,7 +19,7 @@ import { FileSelectEvent } from 'primeng/fileupload'
 
 type ExtendedColumn = Column & { css?: string; limit?: boolean }
 type ChangeMode = 'VIEW' | 'NEW' | 'EDIT'
-type HelpForDisplay = Help & { productDisplayName?: string; product?: { name?: string; displayName?: string } }
+export type HelpForDisplay = Help & { productDisplayName?: string; product?: { name?: string; displayName?: string } }
 
 @Component({
   selector: 'app-help-search',
@@ -134,7 +134,7 @@ export class HelpSearchComponent implements OnInit {
       .pipe(
         catchError((err) => {
           this.exceptionKey = 'EXCEPTIONS.HTTP_STATUS_' + err.status + '.HELP_ITEM'
-          console.error('searchSlots():', err)
+          console.error('searchHelps():', err)
           this.msgService.error({ summaryKey: 'ACTIONS.SEARCH.MSG_SEARCH_FAILED' })
           return of({ stream: [] } as HelpPageResult)
         }),
@@ -244,7 +244,7 @@ export class HelpSearchComponent implements OnInit {
       this.importError = false
       this.validationErrorCause = ''
 
-      this.translate.get(['WORKSPACE_IMPORT.VALIDATION_RESULT']).subscribe((data) => {
+      this.translate.get(['IMPORT.VALIDATION_RESULT']).subscribe((data) => {
         try {
           const importHelp = JSON.parse(text)
           // if (this.isWorkspaceImportValid(importHelp, data)) {
@@ -254,7 +254,7 @@ export class HelpSearchComponent implements OnInit {
           console.error('Import Error', err)
           this.importError = true
           // this.validationErrorCause =
-          //   data['WORKSPACE_IMPORT.VALIDATION_RESULT'] + data['WORKSPACE_IMPORT.VALIDATION_JSON_ERROR']
+          //   data['IMPORT.VALIDATION_RESULT'] + data['IMPORT.VALIDATION_JSON_ERROR']
         }
       })
     })

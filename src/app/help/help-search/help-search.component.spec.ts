@@ -7,9 +7,15 @@ import { of, throwError } from 'rxjs'
 
 import { AppStateService, createTranslateLoader, Column, PortalMessageService } from '@onecx/portal-integration-angular'
 import { HelpsInternalAPIService, Help, SearchHelpsRequestParams, Product } from 'src/app/shared/generated'
-import { HelpSearchComponent } from './help-search.component'
+import { HelpForDisplay, HelpSearchComponent } from './help-search.component'
+import { FileSelectEvent } from 'primeng/fileupload'
 
-describe('HelpSearchComponent', () => {
+const helpItem: Help = {
+  itemId: 'id',
+  productName: 'onecx-help'
+}
+
+fdescribe('HelpSearchComponent', () => {
   let component: HelpSearchComponent
   let fixture: ComponentFixture<HelpSearchComponent>
 
@@ -18,6 +24,8 @@ describe('HelpSearchComponent', () => {
     searchHelps: jasmine.createSpy('searchHelps').and.returnValue(of({})),
     addHelpItem: jasmine.createSpy('addHelpItem').and.returnValue(of({})),
     deleteHelp: jasmine.createSpy('deleteHelp').and.returnValue(of({})),
+    importHelps: jasmine.createSpy('importHelps').and.returnValue(of({})),
+    exportHelps: jasmine.createSpy('exportHelps').and.returnValue(of({})),
     searchProductsByCriteria: jasmine.createSpy('searchProductsByCriteria').and.returnValue(of({}))
   }
   const translateServiceSpy = jasmine.createSpyObj('TranslateService', ['get'])
@@ -65,10 +73,12 @@ describe('HelpSearchComponent', () => {
     apiServiceSpy.searchHelps.calls.reset()
     apiServiceSpy.addHelpItem.calls.reset()
     apiServiceSpy.deleteHelp.calls.reset()
+    apiServiceSpy.importHelps.calls.reset()
+    apiServiceSpy.exportHelps.calls.reset()
     apiServiceSpy.searchProductsByCriteria.calls.reset()
   })
 
-  it('should create component and set columns', () => {
+  it('should create component and set columns for displaying results', () => {
     expect(component).toBeTruthy()
     expect(component.filteredColumns[0].field).toBe('productDisplayName')
     expect(component.filteredColumns[1].field).toBe('itemId')
@@ -77,227 +87,250 @@ describe('HelpSearchComponent', () => {
     expect(component.filteredColumns[4].field).toBe('context')
   })
 
-  it('should call search OnInit and populate filteredColumns/actions correctly', () => {
-    translateServiceSpy.get.and.returnValue(of({ 'ACTIONS.CREATE.LABEL': 'Create' }))
-    component.columns = [
-      {
-        field: 'productName',
-        header: 'APPLICATION_NAME',
-        active: false
-      },
-      {
-        field: 'context',
-        header: 'CONTEXT',
-        active: true
-      }
-    ]
-    spyOn(component, 'search')
-
-    component.ngOnInit()
-
-    expect(component.search).toHaveBeenCalled()
-    expect(component.filteredColumns[0].field).toEqual('context')
-    expect(component.actions[0].label).toEqual('ACTIONS.CREATE.LABEL')
-  })
-
-  it('should process products onInit', () => {
-    const helpPageResultMock = {
-      totalElements: 0,
-      number: 0,
-      size: 0,
-      totalPages: 0,
-      stream: [
+  describe('ngOnInit', () => {
+    it('should call search OnInit and populate filteredColumns/actions correctly', () => {
+      translateServiceSpy.get.and.returnValue(of({ 'ACTIONS.CREATE.LABEL': 'Create' }))
+      component.columns = [
         {
-          itemId: 'id',
-          productName: 'help-mgmt-ui'
+          field: 'productName',
+          header: 'APPLICATION_NAME',
+          active: false
+        },
+        {
+          field: 'context',
+          header: 'CONTEXT',
+          active: true
         }
       ]
-    }
-    apiServiceSpy.searchProductsByCriteria.and.returnValue(of(helpPageResultMock))
-    component.products = [
-      { name: 'help-mgmt-ui', displayName: 'Help Mgmt UI' },
-      { name: '2', displayName: '2dn' }
-    ] as Product[]
-    spyOn(component, 'search')
+      spyOn(component, 'search')
 
-    component.ngOnInit()
+      component.ngOnInit()
 
-    expect(component.productsLoaded).toBeTrue()
+      expect(component.search).toHaveBeenCalled()
+      expect(component.filteredColumns[0].field).toEqual('context')
+      expect(component.actions[0].label).toEqual('ACTIONS.CREATE.LABEL')
+    })
+
+    it('should process products onInit', () => {
+      const helpPageResultMock = {
+        totalElements: 0,
+        number: 0,
+        size: 0,
+        totalPages: 0,
+        stream: [
+          {
+            itemId: 'id',
+            productName: 'help-mgmt-ui'
+          }
+        ]
+      }
+      apiServiceSpy.searchProductsByCriteria.and.returnValue(of(helpPageResultMock))
+      component.products = [
+        { name: 'help-mgmt-ui', displayName: 'Help Mgmt UI' },
+        { name: '2', displayName: '2dn' }
+      ] as Product[]
+      spyOn(component, 'search')
+
+      component.ngOnInit()
+
+      expect(component.productsLoaded).toBeTrue()
+    })
   })
 
-  it('should correctly assign results if API call returns some data', () => {
-    const helpPageResultMock = {
-      totalElements: 0,
-      number: 0,
-      size: 0,
-      totalPages: 0,
-      stream: [
-        {
-          itemId: 'id',
-          productName: 'help-mgmt-ui'
+  describe('search', () => {
+    it('should correctly assign results if API call returns some data', () => {
+      const helpPageResultMock = {
+        totalElements: 0,
+        number: 0,
+        size: 0,
+        totalPages: 0,
+        stream: [
+          {
+            itemId: 'id',
+            productName: 'help-mgmt-ui'
+          }
+        ]
+      }
+      apiServiceSpy.searchHelps.and.returnValue(of(helpPageResultMock))
+      component.products = [
+        { name: 'help-mgmt-ui', displayName: 'Help Mgmt UI' },
+        { name: '2', displayName: '2dn' }
+      ] as Product[]
+      component.resultsForDisplay = []
+
+      component.search({})
+
+      expect(component.resultsForDisplay[0].productDisplayName).toEqual('Help Mgmt UI')
+      expect(component.resultsForDisplay[0].itemId).toEqual('id')
+    })
+
+    it('should handle empty results on search', () => {
+      const helpPageResultMock = {
+        totalElements: 0,
+        number: 0,
+        size: 0,
+        totalPages: 0,
+        stream: []
+      }
+      apiServiceSpy.searchHelps.and.returnValue(of(helpPageResultMock))
+      apiServiceSpy.searchProductsByCriteria.and.returnValue(of(helpPageResultMock))
+      component.resultsForDisplay = []
+
+      component.search({})
+
+      expect(component.resultsForDisplay.length).toEqual(0)
+      expect(msgServiceSpy.info).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.SEARCH.MSG_NO_RESULTS' })
+    })
+
+    it('should reuse criteria if reuseCriteria is true', () => {
+      apiServiceSpy.searchHelps.and.returnValue(of([]))
+      component.criteria = {
+        helpSearchCriteria: {
+          productName: 'help-mgmt-ui',
+          itemId: 'id'
         }
-      ]
-    }
-    apiServiceSpy.searchHelps.and.returnValue(of(helpPageResultMock))
-    component.products = [
-      { name: 'help-mgmt-ui', displayName: 'Help Mgmt UI' },
-      { name: '2', displayName: '2dn' }
-    ] as Product[]
-    component.resultsForDisplay = []
-
-    component.search({})
-
-    expect(component.resultsForDisplay[0].productDisplayName).toEqual('Help Mgmt UI')
-    expect(component.resultsForDisplay[0].itemId).toEqual('id')
-  })
-
-  it('should handle empty results on search', () => {
-    const helpPageResultMock = {
-      totalElements: 0,
-      number: 0,
-      size: 0,
-      totalPages: 0,
-      stream: []
-    }
-    apiServiceSpy.searchHelps.and.returnValue(of(helpPageResultMock))
-    apiServiceSpy.searchProductsByCriteria.and.returnValue(of(helpPageResultMock))
-    component.resultsForDisplay = []
-
-    component.search({})
-
-    expect(component.resultsForDisplay.length).toEqual(0)
-    expect(msgServiceSpy.info).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.SEARCH.MSG_NO_RESULTS' })
-  })
-
-  it('should reuse criteria if reuseCriteria is true', () => {
-    apiServiceSpy.searchHelps.and.returnValue(of([]))
-    component.criteria = {
-      helpSearchCriteria: {
-        productName: 'help-mgmt-ui',
-        itemId: 'id'
       }
-    }
-    const newCriteria = {
-      helpSearchCriteria: {
-        productName: 'ap-mgmt',
-        itemId: 'newId'
+      const newCriteria = {
+        helpSearchCriteria: {
+          productName: 'ap-mgmt',
+          itemId: 'newId'
+        }
       }
-    }
+      const reuseCriteria = true
 
-    const reuseCriteria = true
+      component.search(component.criteria.helpSearchCriteria, reuseCriteria)
 
-    component.search(component.criteria.helpSearchCriteria, reuseCriteria)
-
-    expect(component.criteria).not.toBe(newCriteria)
-  })
-
-  describe('searchHelps Error', () => {
-    it('should handle 401 Exception result on search', () => {
-      const helpPageResultMock: HttpErrorResponse = {
-        status: 401,
-        statusText: 'Not Found',
-        name: 'HttpErrorResponse',
-        message: '',
-        error: undefined,
-        ok: false,
-        headers: new HttpHeaders(),
-        url: null,
-        type: HttpEventType.ResponseHeader
-      }
-      apiServiceSpy.searchHelps.and.returnValue(throwError(() => helpPageResultMock))
-      component.resultsForDisplay = []
-
-      component.search({})
-
-      expect(component.exceptionKey).toBeDefined()
-      expect(component.exceptionKey).toBe('EXCEPTIONS.HTTP_STATUS_401.HELP_ITEM')
-      expect(msgServiceSpy.info).toHaveBeenCalledWith({ summaryKey: 'HELP_SEARCH.NO_APPLICATION_AVAILABLE' })
+      expect(component.criteria).not.toBe(newCriteria)
     })
 
-    it('should handle 403 Exception result on search', () => {
-      const helpPageResultMock: HttpErrorResponse = {
-        status: 403,
-        statusText: 'Not Found',
-        name: 'HttpErrorResponse',
-        message: '',
-        error: undefined,
-        ok: false,
-        headers: new HttpHeaders(),
-        url: null,
-        type: HttpEventType.ResponseHeader
-      }
-      apiServiceSpy.searchHelps.and.returnValue(throwError(() => helpPageResultMock))
-      component.resultsForDisplay = []
+    describe('searchHelps Error', () => {
+      it('should handle 401 Exception result on search', () => {
+        const helpPageResultMock: HttpErrorResponse = {
+          status: 401,
+          statusText: 'Not Found',
+          name: 'HttpErrorResponse',
+          message: '',
+          error: undefined,
+          ok: false,
+          headers: new HttpHeaders(),
+          url: null,
+          type: HttpEventType.ResponseHeader
+        }
+        apiServiceSpy.searchHelps.and.returnValue(throwError(() => helpPageResultMock))
+        component.resultsForDisplay = []
 
-      component.search({})
+        component.search({})
 
-      expect(component.exceptionKey).toBeDefined()
-      expect(component.exceptionKey).toBe('EXCEPTIONS.HTTP_STATUS_403.HELP_ITEM')
-      expect(msgServiceSpy.info).toHaveBeenCalledWith({ summaryKey: 'HELP_SEARCH.NO_APPLICATION_AVAILABLE' })
+        expect(component.exceptionKey).toBeDefined()
+        expect(component.exceptionKey).toBe('EXCEPTIONS.HTTP_STATUS_401.HELP_ITEM')
+        expect(msgServiceSpy.info).toHaveBeenCalledWith({ summaryKey: 'HELP_SEARCH.NO_APPLICATION_AVAILABLE' })
+      })
+
+      it('should handle 403 Exception result on search', () => {
+        const helpPageResultMock: HttpErrorResponse = {
+          status: 403,
+          statusText: 'Not Found',
+          name: 'HttpErrorResponse',
+          message: '',
+          error: undefined,
+          ok: false,
+          headers: new HttpHeaders(),
+          url: null,
+          type: HttpEventType.ResponseHeader
+        }
+        apiServiceSpy.searchHelps.and.returnValue(throwError(() => helpPageResultMock))
+        component.resultsForDisplay = []
+
+        component.search({})
+
+        expect(component.exceptionKey).toBeDefined()
+        expect(component.exceptionKey).toBe('EXCEPTIONS.HTTP_STATUS_403.HELP_ITEM')
+        expect(msgServiceSpy.info).toHaveBeenCalledWith({ summaryKey: 'HELP_SEARCH.NO_APPLICATION_AVAILABLE' })
+      })
+
+      it('should handle 404 Exception result on search', () => {
+        const helpPageResultMock: HttpErrorResponse = {
+          status: 404,
+          statusText: 'Not Found',
+          name: 'HttpErrorResponse',
+          message: '',
+          error: undefined,
+          ok: false,
+          headers: new HttpHeaders(),
+          url: null,
+          type: HttpEventType.ResponseHeader
+        }
+        apiServiceSpy.searchHelps.and.returnValue(throwError(() => helpPageResultMock))
+        component.resultsForDisplay = []
+
+        component.search({})
+
+        expect(component.exceptionKey).toBeDefined()
+        expect(component.exceptionKey).toBe('EXCEPTIONS.HTTP_STATUS_404.HELP_ITEM')
+        expect(msgServiceSpy.info).toHaveBeenCalledWith({ summaryKey: 'HELP_SEARCH.NO_APPLICATION_AVAILABLE' })
+      })
+
+      it('should handle API call error', () => {
+        apiServiceSpy.searchHelps.and.returnValue(throwError(() => new Error()))
+
+        component.search({})
+
+        expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.SEARCH.MSG_SEARCH_FAILED' })
+      })
     })
 
-    it('should handle 404 Exception result on search', () => {
-      const helpPageResultMock: HttpErrorResponse = {
-        status: 404,
-        statusText: 'Not Found',
-        name: 'HttpErrorResponse',
-        message: '',
-        error: undefined,
-        ok: false,
-        headers: new HttpHeaders(),
-        url: null,
-        type: HttpEventType.ResponseHeader
+    it('should set productName and itemId as undefined if criteria strings empty', () => {
+      const criteria: SearchHelpsRequestParams = {
+        helpSearchCriteria: {
+          productName: '',
+          itemId: ''
+        }
       }
-      apiServiceSpy.searchHelps.and.returnValue(throwError(() => helpPageResultMock))
-      component.resultsForDisplay = []
+      const reuseCriteria = false
 
-      component.search({})
+      component.search(criteria.helpSearchCriteria, reuseCriteria)
 
-      expect(component.exceptionKey).toBeDefined()
-      expect(component.exceptionKey).toBe('EXCEPTIONS.HTTP_STATUS_404.HELP_ITEM')
-      expect(msgServiceSpy.info).toHaveBeenCalledWith({ summaryKey: 'HELP_SEARCH.NO_APPLICATION_AVAILABLE' })
+      expect(component.criteria.helpSearchCriteria.productName).not.toBeDefined()
+      expect(component.criteria.helpSearchCriteria.itemId).not.toBeDefined()
     })
   })
 
-  it('should handle API call error', () => {
-    apiServiceSpy.searchHelps.and.returnValue(throwError(() => new Error()))
+  describe('onDeleteConfirmation', () => {
+    it('should delete help item', () => {
+      apiServiceSpy.deleteHelp({ productName: newHelpItemArr[0].productName, itemId: newHelpItemArr[0].id })
+      component.resultsForDisplay = newHelpItemArr
+      component.helpItem = {
+        id: newHelpItemArr[0].id,
+        productName: newHelpItemArr[0].productName,
+        itemId: newHelpItemArr[0].itemId
+      }
 
-    component.search({})
+      component.onDeleteConfirmation()
 
-    expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.SEARCH.MSG_SEARCH_FAILED' })
+      expect(apiServiceSpy.deleteHelp).toHaveBeenCalled()
+      expect(component.resultsForDisplay.length).toBe(0)
+      expect(component.resultsForDisplay.length).toBe(0)
+      expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.DELETE.MESSAGE.HELP_ITEM_OK' })
+    })
+
+    it('should display error on deleteHelpItem failure', () => {
+      apiServiceSpy.deleteHelp.and.returnValue(throwError(() => new Error()))
+      component.resultsForDisplay = newHelpItemArr
+      component.helpItem = {
+        id: newHelpItemArr[0].id,
+        productName: newHelpItemArr[0].productName,
+        itemId: newHelpItemArr[0].itemId
+      }
+
+      component.onDeleteConfirmation()
+
+      expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.DELETE.MESSAGE.HELP_ITEM_NOK' })
+    })
   })
 
-  it('should delete help item', () => {
-    apiServiceSpy.deleteHelp({ productName: newHelpItemArr[0].productName, itemId: newHelpItemArr[0].id })
-    component.resultsForDisplay = newHelpItemArr
-    component.helpItem = {
-      id: newHelpItemArr[0].id,
-      productName: newHelpItemArr[0].productName,
-      itemId: newHelpItemArr[0].itemId
-    }
-
-    component.onDeleteConfirmation()
-
-    expect(apiServiceSpy.deleteHelp).toHaveBeenCalled()
-    expect(component.resultsForDisplay.length).toBe(0)
-    expect(component.resultsForDisplay.length).toBe(0)
-    expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.DELETE.MESSAGE.HELP_ITEM_OK' })
-  })
-
-  it('should display error on deleteHelpItem failure', () => {
-    apiServiceSpy.deleteHelp.and.returnValue(throwError(() => new Error()))
-    component.resultsForDisplay = newHelpItemArr
-    component.helpItem = {
-      id: newHelpItemArr[0].id,
-      productName: newHelpItemArr[0].productName,
-      itemId: newHelpItemArr[0].itemId
-    }
-
-    component.onDeleteConfirmation()
-
-    expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.DELETE.MESSAGE.HELP_ITEM_NOK' })
-  })
-
+  /*
+   * UI ACTIONS
+   */
   it('should set correct values onSearch', () => {
     spyOn(component, 'search')
     component.onSearch()
@@ -352,79 +385,6 @@ describe('HelpSearchComponent', () => {
     expect(component.displayDeleteDialog).toBeTrue()
   })
 
-  it('should correctly sort productNames using sortHelpItemsByDefault 1', () => {
-    component.resultsForDisplay = [
-      { productName: 'B', itemId: '2' },
-      { productName: 'A', itemId: '1' }
-    ]
-    component.resultsForDisplay.sort(component['sortHelpItemByDefault'])
-
-    expect(component.resultsForDisplay).toEqual([
-      { productName: 'A', itemId: '1' },
-      { productName: 'B', itemId: '2' }
-    ])
-  })
-
-  it('should correctly sort productNames using sortHelpItemsByDefault 2', () => {
-    component.resultsForDisplay = [
-      { productName: '', itemId: '1' },
-      { productName: 'A', itemId: '2' }
-    ]
-    component.resultsForDisplay.sort(component['sortHelpItemByDefault'])
-
-    expect(component.resultsForDisplay).toEqual([
-      { productName: '', itemId: '1' },
-      { productName: 'A', itemId: '2' }
-    ])
-  })
-
-  it('should correctly sort productNames using sortHelpItemsByDefault 3', () => {
-    component.resultsForDisplay = [
-      { productName: 'A', itemId: '2' },
-      { productName: '', itemId: '1' }
-    ]
-    component.resultsForDisplay.sort(component['sortHelpItemByDefault'])
-
-    expect(component.resultsForDisplay).toEqual([
-      { productName: '', itemId: '1' },
-      { productName: 'A', itemId: '2' }
-    ])
-  })
-
-  it('should correctly sort productNames using sortHelpItemsByDefault 4', () => {
-    component.resultsForDisplay = [
-      { productName: 'A', itemId: '' },
-      { productName: 'A', itemId: '2' },
-      { productName: 'A', itemId: '1' },
-      { productName: '', itemId: '1' },
-      { productName: '', itemId: '2' },
-      { productName: '', itemId: '' }
-    ]
-    component.resultsForDisplay.sort(component['sortHelpItemByDefault'])
-
-    expect(component.resultsForDisplay).toEqual([
-      { productName: '', itemId: '' },
-      { productName: '', itemId: '1' },
-      { productName: '', itemId: '2' },
-      { productName: 'A', itemId: '' },
-      { productName: 'A', itemId: '1' },
-      { productName: 'A', itemId: '2' }
-    ])
-  })
-
-  it('should correctly sort itemIds using sortHelpItemsByDefault', () => {
-    component.resultsForDisplay = [
-      { productName: 'A', itemId: '2' },
-      { productName: 'A', itemId: '1' }
-    ]
-    component.resultsForDisplay.sort(component['sortHelpItemByDefault'])
-
-    expect(component.resultsForDisplay).toEqual([
-      { productName: 'A', itemId: '1' },
-      { productName: 'A', itemId: '2' }
-    ])
-  })
-
   it('should update filteredColumns onColumnsChange', () => {
     const columns: Column[] = [
       {
@@ -452,7 +412,6 @@ describe('HelpSearchComponent', () => {
   })
 
   it('should call onCreate when actionCallback is executed', () => {
-    translateServiceSpy.get.and.returnValue(of({ 'ACTIONS.CREATE.LABEL': 'Create' }))
     spyOn(component, 'onCreate')
     component.ngOnInit()
 
@@ -462,19 +421,250 @@ describe('HelpSearchComponent', () => {
     expect(component.onCreate).toHaveBeenCalled()
   })
 
-  it('should set productName and itemId as undefined if criteria strings empty', () => {
-    const criteria: SearchHelpsRequestParams = {
-      helpSearchCriteria: {
-        productName: '',
-        itemId: ''
+  it('should call onImport when actionCallback is executed', () => {
+    spyOn(component, 'onImport')
+    component.ngOnInit()
+
+    const action = component.actions[1]
+    action.actionCallback()
+
+    expect(component.onImport).toHaveBeenCalled()
+  })
+
+  it('should call onExport when actionCallback is executed', () => {
+    spyOn(component, 'onExport')
+    component.ngOnInit()
+
+    const action = component.actions[2]
+    action.actionCallback()
+
+    expect(component.onExport).toHaveBeenCalled()
+  })
+
+  /*
+   * IMPORT
+   */
+  it('should display import dialog when import button is clicked', () => {
+    component.displayImportDialog = false
+
+    component.onImport()
+
+    expect(component.displayImportDialog).toBeTrue()
+  })
+
+  describe('onSelect', () => {
+    let file: File
+    let event: any = {}
+
+    beforeEach(() => {
+      translateServiceSpy.get.and.returnValue(of({}))
+      file = new File(['file content'], 'test.txt', { type: 'text/plain' })
+      const fileList: FileList = {
+        0: file,
+        length: 1,
+        item: (index: number) => file
       }
-    }
-    const reuseCriteria = false
+      event = { files: fileList }
+    })
 
-    component.search(criteria.helpSearchCriteria, reuseCriteria)
+    it('should select a file to upload', (done) => {
+      spyOn(file, 'text').and.returnValue(Promise.resolve('{ "itemId": "id", "productName": "onecx-help" }'))
 
-    expect(component.criteria.helpSearchCriteria.productName).not.toBeDefined()
-    expect(component.criteria.helpSearchCriteria.itemId).not.toBeDefined()
+      component.onSelect(event as any as FileSelectEvent)
+
+      setTimeout(() => {
+        expect(file.text).toHaveBeenCalled()
+        expect(component.importHelpItem).toEqual(helpItem)
+        done()
+      })
+    })
+
+    it('should handle JSON parse error', (done) => {
+      spyOn(file, 'text').and.returnValue(Promise.resolve('Invalid Json'))
+      spyOn(console, 'error')
+
+      component.onSelect(event)
+
+      setTimeout(() => {
+        expect(console.error).toHaveBeenCalled()
+        expect(component.importError).toBeTrue()
+        expect(component.validationErrorCause).toBe('')
+        done()
+      })
+    })
+  })
+
+  it('should reset errors when clear button is clicked', () => {
+    component.importError = true
+    component.validationErrorCause = 'Some error'
+
+    component.onClear()
+
+    expect(component.importError).toBeFalse()
+    expect(component.validationErrorCause).toBe('')
+  })
+
+  describe('onImportConfirmation', () => {
+    it('should import help items', (done) => {
+      apiServiceSpy.importHelps.and.returnValue(of({}))
+      component.importHelpItem = helpItem
+
+      component.onImportConfirmation()
+
+      setTimeout(() => {
+        expect(component.displayImportDialog).toBeFalse()
+        // expect(component.productsChanged).toBeTrue()
+        expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.IMPORT.MESSAGE.HELP_ITEM_OK' })
+        done()
+      })
+    })
+
+    it('should call importHelps and handle error', (done) => {
+      apiServiceSpy.importHelps.and.returnValue(throwError(() => 'Error'))
+      component.importHelpItem = helpItem
+
+      component.onImportConfirmation()
+
+      setTimeout(() => {
+        expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.IMPORT.MESSAGE.HELP_ITEM_NOK' })
+        done()
+      }, 0)
+    })
+
+    it('should not call importHelps if importHelpItem is not defined', () => {
+      component.importHelpItem = null
+
+      component.onImportConfirmation()
+
+      expect(apiServiceSpy.importHelps).not.toHaveBeenCalled()
+    })
+  })
+
+  it('should validate a file', () => {
+    component.importError = false
+
+    expect(component.isFileValid()).toBeTrue()
+  })
+
+  /*
+   * EXPORT
+   */
+  it('should display export dialog', () => {
+    component.onExport()
+
+    expect(component.displayExportDialog).toBeTrue()
+  })
+
+  describe('onExportConfirmation', () => {
+    it('should export help items', () => {
+      apiServiceSpy.exportHelps.and.returnValue(of(helpItem))
+      const selectedResults = [{ productName: 'Product1' }, { productName: 'Product2' }]
+      component.selectedResults = selectedResults as HelpForDisplay[]
+
+      component.onExportConfirmation()
+
+      expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.EXPORT.MESSAGE.HELP_ITEM.EXPORT_OK' })
+    })
+
+    it('should display error msg when export fails', () => {
+      apiServiceSpy.exportHelps.and.returnValue(throwError(() => 'Error'))
+      const selectedResults = [{ productName: 'Product1' }, { productName: 'Product2' }]
+      component.selectedResults = selectedResults as HelpForDisplay[]
+
+      component.onExportConfirmation()
+
+      expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.EXPORT.MESSAGE.HELP_ITEM.EXPORT_NOK' })
+    })
+  })
+
+  it('should reset displayExportDialog, selectedResults, and selectedProductNames', () => {
+    component.displayExportDialog = true
+    component.selectedResults = [{ productName: 'Product1' }] as HelpForDisplay[]
+    component.selectedProductNames = ['Product1']
+
+    component.onCloseExportDialog()
+
+    expect(component.displayExportDialog).toBeFalse()
+    expect(component.selectedResults).toEqual([])
+    expect(component.selectedProductNames).toEqual([])
+  })
+
+  /*
+   * SORTING
+   */
+  describe('sortHelpItemsByDefault', () => {
+    it('should correctly sort productNames using sortHelpItemsByDefault 1', () => {
+      component.resultsForDisplay = [
+        { productName: 'B', itemId: '2' },
+        { productName: 'A', itemId: '1' }
+      ]
+      component.resultsForDisplay.sort(component['sortHelpItemByDefault'])
+
+      expect(component.resultsForDisplay).toEqual([
+        { productName: 'A', itemId: '1' },
+        { productName: 'B', itemId: '2' }
+      ])
+    })
+
+    it('should correctly sort productNames using sortHelpItemsByDefault 2', () => {
+      component.resultsForDisplay = [
+        { productName: '', itemId: '1' },
+        { productName: 'A', itemId: '2' }
+      ]
+      component.resultsForDisplay.sort(component['sortHelpItemByDefault'])
+
+      expect(component.resultsForDisplay).toEqual([
+        { productName: '', itemId: '1' },
+        { productName: 'A', itemId: '2' }
+      ])
+    })
+
+    it('should correctly sort productNames using sortHelpItemsByDefault 3', () => {
+      component.resultsForDisplay = [
+        { productName: 'A', itemId: '2' },
+        { productName: '', itemId: '1' }
+      ]
+      component.resultsForDisplay.sort(component['sortHelpItemByDefault'])
+
+      expect(component.resultsForDisplay).toEqual([
+        { productName: '', itemId: '1' },
+        { productName: 'A', itemId: '2' }
+      ])
+    })
+
+    it('should correctly sort productNames using sortHelpItemsByDefault 4', () => {
+      component.resultsForDisplay = [
+        { productName: 'A', itemId: '' },
+        { productName: 'A', itemId: '2' },
+        { productName: 'A', itemId: '1' },
+        { productName: '', itemId: '1' },
+        { productName: '', itemId: '2' },
+        { productName: '', itemId: '' }
+      ]
+      component.resultsForDisplay.sort(component['sortHelpItemByDefault'])
+
+      expect(component.resultsForDisplay).toEqual([
+        { productName: '', itemId: '' },
+        { productName: '', itemId: '1' },
+        { productName: '', itemId: '2' },
+        { productName: 'A', itemId: '' },
+        { productName: 'A', itemId: '1' },
+        { productName: 'A', itemId: '2' }
+      ])
+    })
+
+    it('should correctly sort itemIds using sortHelpItemsByDefault', () => {
+      component.resultsForDisplay = [
+        { productName: 'A', itemId: '2' },
+        { productName: 'A', itemId: '1' }
+      ]
+      component.resultsForDisplay.sort(component['sortHelpItemByDefault'])
+
+      expect(component.resultsForDisplay).toEqual([
+        { productName: 'A', itemId: '1' },
+        { productName: 'A', itemId: '2' }
+      ])
+    })
   })
 
   it('should sort products', () => {

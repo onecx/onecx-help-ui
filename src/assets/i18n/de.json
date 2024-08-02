@@ -60,7 +60,8 @@
         "HELP_ITEM_ALREADY_EXIST": "Ein Hilfeartikel mit dieser ID existert schon",
         "HELP_ITEM.IMPORT_OK": "Der Hilfeartikel wurde erfolgreich importiert",
         "HELP_ITEM.IMPORT_NOK": "Ein Fehler ist aufgetreten. Der Hilfeartikel wurde nicht importiert."
-      }
+      },
+      "VALIDATION_RESULT": "Die Datei wurde geprüft."
     },
     "SEARCH": {
       "ACTION": "Aktionen",
