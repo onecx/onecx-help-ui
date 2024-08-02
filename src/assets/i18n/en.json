@@ -13,12 +13,33 @@
     },
     "CREATE": {
       "LABEL": "Create",
-      "HELP_ITEM": "Create Theme",
+      "HELP_ITEM": "Create Help Item",
       "HELP_ITEM.TOOLTIP": "Create a new Help Item",
       "MESSAGE": {
         "HELP_ITEM_ALREADY_EXIST": "A Help Item with that ID already exists",
         "HELP_ITEM.CREATE_OK": "The Help Item was created successfully",
         "HELP_ITEM.CREATE_NOK": "An error has occurred. The Help Item was not created."
+      }
+    },
+    "IMPORT": {
+      "LABEL": "Import",
+      "CHOOSE": "Choose file",
+      "UPLOAD": "Upload file",
+      "HELP_ITEM": "Import Help Items",
+      "HELP_ITEM.TOOLTIP": "Import a set of Help Items",
+      "MESSAGE": {
+        "HELP_ITEM.IMPORT_OK": "Help Items were imported successfully",
+        "HELP_ITEM.IMPORT_NOK": "An error has occurred. Help Items were not imported."
+      },
+      "VALIDATION_RESULT": "The file has been checked."
+    },
+    "EXPORT": {
+      "LABEL": "Export",
+      "HELP_ITEM": "Export Help Items",
+      "HELP_ITEM.TOOLTIP": "Export a set of Help Items",
+      "MESSAGE": {
+        "HELP_ITEM.EXPORT_OK": "Help Items were exported successfully",
+        "HELP_ITEM.EXPORT_NOK": "An error has occurred. Help Items were not exported."
       }
     },
     "DELETE": {
@@ -89,6 +110,7 @@
   },
   "HELP_ITEM": {
     "APPLICATION_NAME": "Application",
+    "APPLICATION_LIST": "List of available applications",
     "HELP_ITEM_ID": "Help Item ID",
     "CONTEXT": "Context",
     "BASE_URL": "Base URL",

@@ -206,6 +206,7 @@ export class OneCXHelpItemEditorComponent implements ocxRemoteComponent, ocxRemo
     return this.editHelpPage({})
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   public editHelpPage(event: any) {
     combineLatest([this.helpArticleId$, this.productName$, this.helpDataItem$, this.products$])
       .pipe(

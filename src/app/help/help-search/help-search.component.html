@@ -196,6 +196,107 @@
   </ng-template>
 </p-dialog>
 
+<p-dialog
+  [(visible)]="displayImportDialog"
+  [header]="'ACTIONS.IMPORT.HELP_ITEM' | translate"
+  [modal]="true"
+  [resizable]="false"
+  [dismissableMask]="true"
+  [style]="{ 'max-width': '500px' }"
+>
+  <div class="flex flex-wrap column-gap-2 row-gap-1 justify-content-end">
+    <p-fileUpload
+      #fileUploader
+      id="help_import_file_upload"
+      mode="advanced"
+      name="file"
+      accept=".json"
+      [maxFileSize]="1000000"
+      [customUpload]="true"
+      (uploadHandler)="onImportConfirmation()"
+      (onClear)="onClear()"
+      (onRemove)="onClear()"
+      (onSelect)="onSelect($event)"
+      [showUploadButton]="isFileValid()"
+      [chooseLabel]="'ACTIONS.IMPORT.CHOOSE' | translate"
+      [uploadLabel]="'ACTIONS.IMPORT.UPLOAD' | translate"
+      [cancelLabel]="'GENERAL.CANCEL' | translate"
+    />
+  </div>
+  <ng-template pTemplate="footer">
+    <div class="flex flex-wrap column-gap-2 row-gap-1 justify-content-end">
+      <button
+        pButton
+        type="button"
+        id="help_import_button_cancel"
+        class="m-0"
+        icon="pi pi-times"
+        iconPos="left"
+        [label]="'GENERAL.CANCEL' | translate"
+        (click)="onCloseImportDialog()"
+        [pTooltip]="'GENERAL.CANCEL' | translate"
+        tooltipPosition="top"
+        tooltipEvent="hover"
+      ></button>
+    </div>
+  </ng-template>
+</p-dialog>
+
+<p-dialog
+  [(visible)]="displayExportDialog"
+  [header]="'ACTIONS.EXPORT.HELP_ITEM' | translate"
+  [modal]="true"
+  [resizable]="false"
+  [dismissableMask]="true"
+  [style]="{ 'max-width': '500px' }"
+>
+  <div class="flex flex-column row-gap-2">
+    <div>{{ 'HELP_ITEM.APPLICATION_LIST' | translate }}</div>
+    <p-listbox
+      [options]="resultsForDisplay"
+      [(ngModel)]="selectedResults"
+      optionLabel="productDisplayName"
+      [filter]="true"
+      [checkbox]="true"
+      [multiple]="true"
+      [metaKeySelection]="false"
+      [showToggleAll]="false"
+      [emptyMessage]="'ACTIONS.SEARCH.NO_DATA' | translate"
+      [listStyle]="{ 'max-height': '300px' }"
+    />
+  </div>
+  <ng-template pTemplate="footer">
+    <div class="flex flex-wrap column-gap-2 row-gap-1 justify-content-end">
+      <button
+        pButton
+        type="button"
+        id="help_export_button_cancel"
+        class="m-0"
+        icon="pi pi-times"
+        iconPos="left"
+        [label]="'GENERAL.CANCEL' | translate"
+        (click)="onCloseExportDialog()"
+        [pTooltip]="'GENERAL.CANCEL' | translate"
+        tooltipPosition="top"
+        tooltipEvent="hover"
+      ></button>
+      <button
+        pButton
+        type="button"
+        id="help_export_button_save"
+        class="m-0"
+        icon="pi pi-check"
+        iconPos="left"
+        [label]="'GENERAL.SAVE' | translate"
+        (click)="onExportConfirmation()"
+        [pTooltip]="'GENERAL.SAVE' | translate"
+        tooltipPosition="top"
+        tooltipEvent="hover"
+      ></button>
+    </div>
+  </ng-template>
+</p-dialog>
+
 <app-help-detail
   *ngIf="productsLoaded"
   [(displayDetailDialog)]="displayDetailDialog"

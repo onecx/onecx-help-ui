@@ -1,4 +1,5 @@
 export * from './createHelp';
+export * from './exportHelpsRequest';
 export * from './help';
 export * from './helpPageResult';
 export * from './helpProductNames';

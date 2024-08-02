@@ -1,7 +1,8 @@
 import { Component, OnInit, ViewChild } from '@angular/core'
 import { TranslateService } from '@ngx-translate/core'
-import { catchError, finalize, Observable, of } from 'rxjs'
+import { catchError, finalize, of } from 'rxjs'
 import { Table } from 'primeng/table'
+import FileSaver from 'file-saver'
 
 import { Action, Column, PortalMessageService } from '@onecx/portal-integration-angular'
 import {
@@ -14,10 +15,11 @@ import {
   Product,
   HelpPageResult
 } from 'src/app/shared/generated'
+import { FileSelectEvent } from 'primeng/fileupload'
 
 type ExtendedColumn = Column & { css?: string; limit?: boolean }
 type ChangeMode = 'VIEW' | 'NEW' | 'EDIT'
-type HelpForDisplay = Help & { productDisplayName?: string; product?: { name?: string; displayName?: string } }
+export type HelpForDisplay = Help & { productDisplayName?: string; product?: { name?: string; displayName?: string } }
 
 @Component({
   selector: 'app-help-search',
@@ -42,10 +44,17 @@ export class HelpSearchComponent implements OnInit {
   public loadingResults = false
   public displayDeleteDialog = false
   public displayDetailDialog = false
+  public displayImportDialog = false
+  public displayExportDialog = false
   public productsChanged = false
   public rowsPerPage = 10
   public rowsPerPageOptions = [10, 20, 50]
-  public items$!: Observable<any>
+
+  importHelpItem: Help | null = null
+  public importError = false
+  public validationErrorCause: string
+  public selectedResults: HelpForDisplay[] | undefined
+  public selectedProductNames: string[] | undefined
 
   public filteredColumns: Column[] = []
   public columns: ExtendedColumn[] = [
@@ -72,7 +81,9 @@ export class HelpSearchComponent implements OnInit {
     private helpInternalAPIService: HelpsInternalAPIService,
     private translate: TranslateService,
     private msgService: PortalMessageService
-  ) {}
+  ) {
+    this.validationErrorCause = ''
+  }
 
   ngOnInit(): void {
     this.filteredColumns = this.columns.filter((a) => {
@@ -123,7 +134,7 @@ export class HelpSearchComponent implements OnInit {
       .pipe(
         catchError((err) => {
           this.exceptionKey = 'EXCEPTIONS.HTTP_STATUS_' + err.status + '.HELP_ITEM'
-          console.error('searchSlots():', err)
+          console.error('searchHelps():', err)
           this.msgService.error({ summaryKey: 'ACTIONS.SEARCH.MSG_SEARCH_FAILED' })
           return of({ stream: [] } as HelpPageResult)
         }),
@@ -222,16 +233,137 @@ export class HelpSearchComponent implements OnInit {
     }
   }
 
-  private prepareDialogTranslations() {
-    this.translate.get(['ACTIONS.CREATE.LABEL', 'ACTIONS.CREATE.HELP_ITEM.TOOLTIP']).subscribe((data) => {
-      this.actions.push({
-        label: data['ACTIONS.CREATE.LABEL'],
-        title: data['ACTIONS.CREATE.HELP_ITEM.TOOLTIP'],
-        actionCallback: () => this.onCreate(),
-        icon: 'pi pi-plus',
-        show: 'always',
-        permission: 'HELP#EDIT'
+  /****************************************************************************
+   *  IMPORT
+   */
+  public onImport(): void {
+    this.displayImportDialog = true
+  }
+  public onSelect(event: FileSelectEvent): void {
+    event.files[0].text().then((text) => {
+      this.importError = false
+      this.validationErrorCause = ''
+
+      this.translate.get(['IMPORT.VALIDATION_RESULT']).subscribe((data) => {
+        try {
+          const importHelp = JSON.parse(text)
+          this.importHelpItem = importHelp
+        } catch (err) {
+          console.error('Import Error', err)
+          this.importError = true
+        }
       })
     })
+  }
+  public onImportConfirmation(): void {
+    if (this.importHelpItem) {
+      this.helpInternalAPIService.importHelps({ body: this.importHelpItem }).subscribe({
+        next: () => {
+          this.displayImportDialog = false
+          this.productsChanged = true
+          this.msgService.success({ summaryKey: 'ACTIONS.IMPORT.MESSAGE.HELP_ITEM.IMPORT_OK' })
+        },
+        error: () => this.msgService.error({ summaryKey: 'ACTIONS.IMPORT.MESSAGE.HELP_ITEM.IMPORT_NOK' })
+      })
+      this.loadData()
+    }
+  }
+  public isFileValid(): boolean {
+    return !this.importError
+  }
+  public onCloseImportDialog(): void {
+    this.displayImportDialog = false
+  }
+  public onClear(): void {
+    this.importError = false
+    this.validationErrorCause = ''
+  }
+
+  /****************************************************************************
+   *  EXPORT
+   */
+  public onExport(): void {
+    this.displayExportDialog = true
+  }
+  public onExportConfirmation(): void {
+    if (this.selectedResults && this.selectedResults.length > 0) {
+      this.selectedProductNames = this.selectedResults.map((item) => item.productName!)
+      this.helpInternalAPIService
+        .exportHelps({ exportHelpsRequest: { productNames: this.selectedProductNames } })
+        .subscribe({
+          next: (item) => {
+            const helpsJson = JSON.stringify(item, null, 2)
+            FileSaver.saveAs(
+              new Blob([helpsJson], { type: 'text/json' }),
+              'onecx-help-items_' + this.getCurrentDateTime() + '.json'
+            )
+            this.msgService.success({ summaryKey: 'ACTIONS.EXPORT.MESSAGE.HELP_ITEM.EXPORT_OK' })
+            this.displayExportDialog = false
+            this.selectedResults = []
+            this.selectedProductNames = []
+          },
+          error: (err) => {
+            this.msgService.error({ summaryKey: 'ACTIONS.EXPORT.MESSAGE.HELP_ITEM.EXPORT_NOK' })
+            console.error(err)
+          }
+        })
+    }
+  }
+  public onCloseExportDialog(): void {
+    this.displayExportDialog = false
+    this.selectedResults = []
+    this.selectedProductNames = []
+  }
+
+  private prepareDialogTranslations() {
+    this.translate
+      .get([
+        'ACTIONS.CREATE.LABEL',
+        'ACTIONS.CREATE.HELP_ITEM.TOOLTIP',
+        'ACTIONS.IMPORT.LABEL',
+        'ACTIONS.IMPORT.HELP_ITEM.TOOLTIP',
+        'ACTIONS.EXPORT.LABEL',
+        'ACTIONS.EXPORT.HELP_ITEM.TOOLTIP'
+      ])
+      .subscribe((data) => {
+        this.actions.push(
+          {
+            label: data['ACTIONS.CREATE.LABEL'],
+            title: data['ACTIONS.CREATE.HELP_ITEM.TOOLTIP'],
+            actionCallback: () => this.onCreate(),
+            icon: 'pi pi-plus',
+            show: 'always',
+            permission: 'HELP#EDIT'
+          },
+          {
+            label: data['ACTIONS.EXPORT.LABEL'],
+            title: data['ACTIONS.EXPORT.HELP_ITEM.TOOLTIP'],
+            actionCallback: () => this.onExport(),
+            icon: 'pi pi-download',
+            show: 'always',
+            permission: 'HELP#EDIT'
+          },
+          {
+            label: data['ACTIONS.IMPORT.LABEL'],
+            title: data['ACTIONS.IMPORT.HELP_ITEM.TOOLTIP'],
+            actionCallback: () => this.onImport(),
+            icon: 'pi pi-upload',
+            show: 'always',
+            permission: 'HELP#EDIT'
+          }
+        )
+      })
+  }
+
+  private getCurrentDateTime(): string {
+    const now = new Date()
+    const year = now.getFullYear()
+    const month = String(now.getMonth() + 1).padStart(2, '0')
+    const day = String(now.getDate()).padStart(2, '0')
+    const hours = String(now.getHours()).padStart(2, '0')
+    const minutes = String(now.getMinutes()).padStart(2, '0')
+    const seconds = String(now.getSeconds()).padStart(2, '0')
+
+    return `${year}-${month}-${day}_${hours}${minutes}${seconds}`
   }
 }

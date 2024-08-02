@@ -9,6 +9,7 @@ encoder.ts
 git_push.sh
 index.ts
 model/createHelp.ts
+model/exportHelpsRequest.ts
 model/help.ts
 model/helpPageResult.ts
 model/helpProductNames.ts

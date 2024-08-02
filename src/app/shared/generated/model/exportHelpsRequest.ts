@@ -11,18 +11,7 @@
  */
 
 
-export interface Help { 
-    operator?: boolean;
-    modificationCount?: number;
-    creationDate?: string;
-    creationUser?: string;
-    modificationDate?: string;
-    modificationUser?: string;
-    id?: string;
-    itemId: string;
-    context?: string;
-    baseUrl?: string;
-    resourceUrl?: string;
-    productName?: string;
+export interface ExportHelpsRequest { 
+    productNames?: Array<string>;
 }
 
