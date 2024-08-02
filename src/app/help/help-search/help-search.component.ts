@@ -247,21 +247,13 @@ export class HelpSearchComponent implements OnInit {
       this.translate.get(['IMPORT.VALIDATION_RESULT']).subscribe((data) => {
         try {
           const importHelp = JSON.parse(text)
-          // if (this.isWorkspaceImportValid(importHelp, data)) {
           this.importHelpItem = importHelp
-          // }
         } catch (err) {
           console.error('Import Error', err)
           this.importError = true
-          // this.validationErrorCause =
-          //   data['IMPORT.VALIDATION_RESULT'] + data['IMPORT.VALIDATION_JSON_ERROR']
         }
       })
     })
-  }
-  public onClear(): void {
-    this.importError = false
-    this.validationErrorCause = ''
   }
   public onImportConfirmation(): void {
     if (this.importHelpItem) {
@@ -269,15 +261,22 @@ export class HelpSearchComponent implements OnInit {
         next: () => {
           this.displayImportDialog = false
           this.productsChanged = true
-          this.msgService.success({ summaryKey: 'ACTIONS.IMPORT.MESSAGE.HELP_ITEM_OK' })
+          this.msgService.success({ summaryKey: 'ACTIONS.IMPORT.MESSAGE.HELP_ITEM.IMPORT_OK' })
         },
-        error: () => this.msgService.error({ summaryKey: 'ACTIONS.IMPORT.MESSAGE.HELP_ITEM_NOK' })
+        error: () => this.msgService.error({ summaryKey: 'ACTIONS.IMPORT.MESSAGE.HELP_ITEM.IMPORT_NOK' })
       })
       this.loadData()
     }
   }
   public isFileValid(): boolean {
     return !this.importError
+  }
+  public onCloseImportDialog(): void {
+    this.displayImportDialog = false
+  }
+  public onClear(): void {
+    this.importError = false
+    this.validationErrorCause = ''
   }
 
   /****************************************************************************
@@ -294,7 +293,10 @@ export class HelpSearchComponent implements OnInit {
         .subscribe({
           next: (item) => {
             const helpsJson = JSON.stringify(item, null, 2)
-            FileSaver.saveAs(new Blob([helpsJson], { type: 'text/json' }), `helpItems.json`)
+            FileSaver.saveAs(
+              new Blob([helpsJson], { type: 'text/json' }),
+              'onecx-help-items_' + this.getCurrentDateTime() + '.json'
+            )
             this.msgService.success({ summaryKey: 'ACTIONS.EXPORT.MESSAGE.HELP_ITEM.EXPORT_OK' })
             this.displayExportDialog = false
             this.selectedResults = []
@@ -334,22 +336,34 @@ export class HelpSearchComponent implements OnInit {
             permission: 'HELP#EDIT'
           },
           {
-            label: data['ACTIONS.IMPORT.LABEL'],
-            title: data['ACTIONS.IMPORT.HELP_ITEM.TOOLTIP'],
-            actionCallback: () => this.onImport(),
-            icon: 'pi pi-upload',
-            show: 'always',
-            permission: 'HELP#EDIT'
-          },
-          {
             label: data['ACTIONS.EXPORT.LABEL'],
             title: data['ACTIONS.EXPORT.HELP_ITEM.TOOLTIP'],
             actionCallback: () => this.onExport(),
             icon: 'pi pi-download',
             show: 'always',
             permission: 'HELP#EDIT'
+          },
+          {
+            label: data['ACTIONS.IMPORT.LABEL'],
+            title: data['ACTIONS.IMPORT.HELP_ITEM.TOOLTIP'],
+            actionCallback: () => this.onImport(),
+            icon: 'pi pi-upload',
+            show: 'always',
+            permission: 'HELP#EDIT'
           }
         )
       })
+  }
+
+  private getCurrentDateTime(): string {
+    const now = new Date()
+    const year = now.getFullYear()
+    const month = String(now.getMonth() + 1).padStart(2, '0')
+    const day = String(now.getDate()).padStart(2, '0')
+    const hours = String(now.getHours()).padStart(2, '0')
+    const minutes = String(now.getMinutes()).padStart(2, '0')
+    const seconds = String(now.getSeconds()).padStart(2, '0')
+
+    return `${year}-${month}-${day}_${hours}${minutes}${seconds}`
   }
 }

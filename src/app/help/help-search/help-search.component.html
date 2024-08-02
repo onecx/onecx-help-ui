@@ -204,32 +204,40 @@
   [dismissableMask]="true"
   [style]="{ 'max-width': '500px' }"
 >
+  <div class="flex flex-wrap column-gap-2 row-gap-1 justify-content-end">
+    <p-fileUpload
+      #fileUploader
+      id="help_import_file_upload"
+      mode="advanced"
+      name="file"
+      accept=".json"
+      [maxFileSize]="1000000"
+      [customUpload]="true"
+      (uploadHandler)="onImportConfirmation()"
+      (onClear)="onClear()"
+      (onRemove)="onClear()"
+      (onSelect)="onSelect($event)"
+      [showUploadButton]="isFileValid()"
+      [chooseLabel]="'ACTIONS.IMPORT.CHOOSE' | translate"
+      [uploadLabel]="'ACTIONS.IMPORT.UPLOAD' | translate"
+      [cancelLabel]="'GENERAL.CANCEL' | translate"
+    />
+  </div>
   <ng-template pTemplate="footer">
     <div class="flex flex-wrap column-gap-2 row-gap-1 justify-content-end">
-      <p-fileUpload
-        #fileUploader
-        id="workspace_import_file_upload"
-        mode="advanced"
-        name="file"
-        accept=".json"
-        [maxFileSize]="1000000"
-        [customUpload]="true"
-        (uploadHandler)="onImportConfirmation()"
-        (onClear)="onClear()"
-        (onRemove)="onClear()"
-        (onSelect)="onSelect($event)"
-        [showUploadButton]="isFileValid()"
-        [chooseLabel]="'ACTIONS.IMPORT.CHOOSE' | translate"
-        [uploadLabel]="'ACTIONS.IMPORT.UPLOAD' | translate"
-        [cancelLabel]="'ACTIONS.CANCEL' | translate"
-      />
-      <p-message
-        *ngIf="importError"
-        styleClass="mt-2"
-        id="workspace_import_file_upload_error"
-        severity="error"
-        [text]="validationErrorCause"
-      ></p-message>
+      <button
+        pButton
+        type="button"
+        id="help_import_button_cancel"
+        class="m-0"
+        icon="pi pi-times"
+        iconPos="left"
+        [label]="'GENERAL.CANCEL' | translate"
+        (click)="onCloseImportDialog()"
+        [pTooltip]="'GENERAL.CANCEL' | translate"
+        tooltipPosition="top"
+        tooltipEvent="hover"
+      ></button>
     </div>
   </ng-template>
 </p-dialog>
@@ -262,22 +270,28 @@
       <button
         pButton
         type="button"
-        id="role_select_button_cancel"
+        id="help_export_button_cancel"
         class="m-0"
         icon="pi pi-times"
         iconPos="left"
-        [label]="'ACTIONS.CANCEL' | translate"
+        [label]="'GENERAL.CANCEL' | translate"
         (click)="onCloseExportDialog()"
+        [pTooltip]="'GENERAL.CANCEL' | translate"
+        tooltipPosition="top"
+        tooltipEvent="hover"
       ></button>
       <button
         pButton
         type="button"
-        id="role_select_button_save"
+        id="help_export_button_save"
         class="m-0"
         icon="pi pi-check"
         iconPos="left"
-        [label]="'ACTIONS.EXPORT.LABEL' | translate"
+        [label]="'GENERAL.SAVE' | translate"
         (click)="onExportConfirmation()"
+        [pTooltip]="'GENERAL.SAVE' | translate"
+        tooltipPosition="top"
+        tooltipEvent="hover"
       ></button>
     </div>
   </ng-template>

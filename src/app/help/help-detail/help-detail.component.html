@@ -26,6 +26,9 @@
         [label]="'GENERAL.CANCEL' | translate"
         (onClick)="onDialogHide()"
         icon="pi pi-times"
+        [pTooltip]="'GENERAL.CANCEL' | translate"
+        tooltipPosition="top"
+        tooltipEvent="hover"
       ></p-button>
       <p-button
         id="help_detail_button_save"
@@ -33,6 +36,9 @@
         (onClick)="onSave()"
         icon="pi pi-save"
         [disabled]="!helpFormComponent.formGroup.valid"
+        [pTooltip]="'GENERAL.SAVE' | translate"
+        tooltipPosition="top"
+        tooltipEvent="hover"
       ></p-button>
     </div>
   </ng-template>

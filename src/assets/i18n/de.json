@@ -44,10 +44,10 @@
     "EXPORT": {
       "LABEL": "Export",
       "HELP_ITEM": "Hilfeartikel exportieren",
-      "HELP_ITEM.TOOLTIP": "Einen neuen Hilfeartikel exportieren",
+      "HELP_ITEM.TOOLTIP": "Eine Gruppe von Hilfeartikeln exportieren",
       "MESSAGE": {
-        "HELP_ITEM.EXPORT_OK": "Der Hilfeartikel wurde erfolgreich exportiert",
-        "HELP_ITEM.EXPORT_NOK": "Ein Fehler ist aufgetreten. Der Hilfeartikel wurde nicht exportiert."
+        "HELP_ITEM.EXPORT_OK": "Die Hilfeartikel wurde erfolgreich exportiert",
+        "HELP_ITEM.EXPORT_NOK": "Ein Fehler ist aufgetreten. Die Hilfeartikel wurden nicht exportiert."
       }
     },
     "IMPORT": {
@@ -55,11 +55,10 @@
       "CHOOSE": "Datei auswählen",
       "UPLOAD": "Datei hochladen",
       "HELP_ITEM": "Hilfeartikel importieren",
-      "HELP_ITEM.TOOLTIP": "Einen Hilfeartikel importieren",
+      "HELP_ITEM.TOOLTIP": "Eine Gruppe von Hilfeartikeln importieren",
       "MESSAGE": {
-        "HELP_ITEM_ALREADY_EXIST": "Ein Hilfeartikel mit dieser ID existert schon",
-        "HELP_ITEM.IMPORT_OK": "Der Hilfeartikel wurde erfolgreich importiert",
-        "HELP_ITEM.IMPORT_NOK": "Ein Fehler ist aufgetreten. Der Hilfeartikel wurde nicht importiert."
+        "HELP_ITEM.IMPORT_OK": "Die Hilfeartikel wurde erfolgreich importiert",
+        "HELP_ITEM.IMPORT_NOK": "Ein Fehler ist aufgetreten. Die Hilfeartikel wurden nicht importiert."
       },
       "VALIDATION_RESULT": "Die Datei wurde geprüft."
     },

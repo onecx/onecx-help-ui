@@ -425,7 +425,7 @@ describe('HelpSearchComponent', () => {
     spyOn(component, 'onImport')
     component.ngOnInit()
 
-    const action = component.actions[1]
+    const action = component.actions[2]
     action.actionCallback()
 
     expect(component.onImport).toHaveBeenCalled()
@@ -435,7 +435,7 @@ describe('HelpSearchComponent', () => {
     spyOn(component, 'onExport')
     component.ngOnInit()
 
-    const action = component.actions[2]
+    const action = component.actions[1]
     action.actionCallback()
 
     expect(component.onExport).toHaveBeenCalled()
@@ -513,8 +513,7 @@ describe('HelpSearchComponent', () => {
 
       setTimeout(() => {
         expect(component.displayImportDialog).toBeFalse()
-        // expect(component.productsChanged).toBeTrue()
-        expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.IMPORT.MESSAGE.HELP_ITEM_OK' })
+        expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.IMPORT.MESSAGE.HELP_ITEM.IMPORT_OK' })
         done()
       })
     })
@@ -526,7 +525,7 @@ describe('HelpSearchComponent', () => {
       component.onImportConfirmation()
 
       setTimeout(() => {
-        expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.IMPORT.MESSAGE.HELP_ITEM_NOK' })
+        expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.IMPORT.MESSAGE.HELP_ITEM.IMPORT_NOK' })
         done()
       }, 0)
     })
@@ -544,6 +543,14 @@ describe('HelpSearchComponent', () => {
     component.importError = false
 
     expect(component.isFileValid()).toBeTrue()
+  })
+
+  it('should close displayImportDialog', () => {
+    component.displayImportDialog = true
+
+    component.onCloseImportDialog()
+
+    expect(component.displayImportDialog).toBeFalse()
   })
 
   /*

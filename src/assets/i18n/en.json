@@ -1,6 +1,5 @@
 {
   "ACTIONS": {
-    "CANCEL": "Cancel",
     "CONFIRMATION": {
       "NO": "No",
       "YES": "Yes",
@@ -26,22 +25,21 @@
       "LABEL": "Import",
       "CHOOSE": "Choose file",
       "UPLOAD": "Upload file",
-      "HELP_ITEM": "Import Help Item",
-      "HELP_ITEM.TOOLTIP": "Import a new Help Item",
+      "HELP_ITEM": "Import Help Items",
+      "HELP_ITEM.TOOLTIP": "Import a set of Help Items",
       "MESSAGE": {
-        "HELP_ITEM_ALREADY_EXIST": "A Help Item with that ID already exists",
-        "HELP_ITEM.IMPORT_OK": "The Help Item was imported successfully",
-        "HELP_ITEM.IMPORT_NOK": "An error has occurred. The Help Item was not imported."
+        "HELP_ITEM.IMPORT_OK": "Help Items were imported successfully",
+        "HELP_ITEM.IMPORT_NOK": "An error has occurred. Help Items were not imported."
       },
       "VALIDATION_RESULT": "The file has been checked."
     },
     "EXPORT": {
       "LABEL": "Export",
-      "HELP_ITEM": "Export Help Item",
-      "HELP_ITEM.TOOLTIP": "Export a new Help Item",
+      "HELP_ITEM": "Export Help Items",
+      "HELP_ITEM.TOOLTIP": "Export a set of Help Items",
       "MESSAGE": {
-        "HELP_ITEM.EXPORT_OK": "The Help Item was exported successfully",
-        "HELP_ITEM.EXPORT_NOK": "An error has occurred. The Help Item was not exported."
+        "HELP_ITEM.EXPORT_OK": "Help Items were exported successfully",
+        "HELP_ITEM.EXPORT_NOK": "An error has occurred. Help Items were not exported."
       }
     },
     "DELETE": {
