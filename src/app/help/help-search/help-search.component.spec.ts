@@ -7,7 +7,7 @@ import { of, throwError } from 'rxjs'
 
 import { AppStateService, createTranslateLoader, Column, PortalMessageService } from '@onecx/portal-integration-angular'
 import { HelpsInternalAPIService, Help, SearchHelpsRequestParams, Product } from 'src/app/shared/generated'
-import { HelpForDisplay, HelpSearchComponent } from './help-search.component'
+import { HelpSearchComponent } from './help-search.component'
 import { FileSelectEvent } from 'primeng/fileupload'
 
 const helpItem: Help = {
@@ -557,6 +557,11 @@ describe('HelpSearchComponent', () => {
    * EXPORT
    */
   it('should display export dialog', () => {
+    component.resultsForDisplay = [
+      { productName: 'B', itemId: '2' },
+      { productName: 'A', itemId: '1' }
+    ]
+
     component.onExport()
 
     expect(component.displayExportDialog).toBeTrue()
@@ -565,8 +570,9 @@ describe('HelpSearchComponent', () => {
   describe('onExportConfirmation', () => {
     it('should export help items', () => {
       apiServiceSpy.exportHelps.and.returnValue(of(helpItem))
-      const selectedResults = [{ productName: 'Product1' }, { productName: 'Product2' }]
-      component.selectedResults = selectedResults as HelpForDisplay[]
+      const selectedNames = ['Product1', 'Product2']
+      component.selectedProductNames = selectedNames
+      component.products = [{ name: 'help-mgmt-ui', displayName: 'Product1' }, { name: '2' }] as Product[]
 
       component.onExportConfirmation()
 
@@ -575,8 +581,8 @@ describe('HelpSearchComponent', () => {
 
     it('should display error msg when export fails', () => {
       apiServiceSpy.exportHelps.and.returnValue(throwError(() => 'Error'))
-      const selectedResults = [{ productName: 'Product1' }, { productName: 'Product2' }]
-      component.selectedResults = selectedResults as HelpForDisplay[]
+      const selectedNames = ['Product1', 'Product2']
+      component.selectedProductNames = selectedNames
 
       component.onExportConfirmation()
 
@@ -586,13 +592,11 @@ describe('HelpSearchComponent', () => {
 
   it('should reset displayExportDialog, selectedResults, and selectedProductNames', () => {
     component.displayExportDialog = true
-    component.selectedResults = [{ productName: 'Product1' }] as HelpForDisplay[]
     component.selectedProductNames = ['Product1']
 
     component.onCloseExportDialog()
 
     expect(component.displayExportDialog).toBeFalse()
-    expect(component.selectedResults).toEqual([])
     expect(component.selectedProductNames).toEqual([])
   })
 

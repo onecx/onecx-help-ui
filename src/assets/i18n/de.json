@@ -45,6 +45,7 @@
       "LABEL": "Export",
       "HELP_ITEM": "Hilfeartikel exportieren",
       "HELP_ITEM.TOOLTIP": "Eine Gruppe von Hilfeartikeln exportieren",
+      "ITEMS_SELECTED.TOOLTIP": "Die ausgewählten Hilfeartikel exportieren",
       "MESSAGE": {
         "HELP_ITEM.EXPORT_OK": "Die Hilfeartikel wurde erfolgreich exportiert",
         "HELP_ITEM.EXPORT_NOK": "Ein Fehler ist aufgetreten. Die Hilfeartikel wurden nicht exportiert."

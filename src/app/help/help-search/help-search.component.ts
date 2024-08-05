@@ -34,6 +34,7 @@ export class HelpSearchComponent implements OnInit {
   public actions: Action[] = []
   public helpItem: Help | undefined
   public resultsForDisplay: HelpForDisplay[] = []
+  public assignedProductNames: string[] = []
   public products: Product[] = []
   public productsLoaded: boolean = false
   public criteria: SearchHelpsRequestParams = {
@@ -53,8 +54,7 @@ export class HelpSearchComponent implements OnInit {
   importHelpItem: Help | null = null
   public importError = false
   public validationErrorCause: string
-  public selectedResults: HelpForDisplay[] | undefined
-  public selectedProductNames: string[] | undefined
+  public selectedProductNames: string[] = []
 
   public filteredColumns: Column[] = []
   public columns: ExtendedColumn[] = [
@@ -284,34 +284,31 @@ export class HelpSearchComponent implements OnInit {
    */
   public onExport(): void {
     this.displayExportDialog = true
+    this.assignedProductNames = Array.from(new Set(this.resultsForDisplay.map((item) => item.productDisplayName!)))
   }
   public onExportConfirmation(): void {
-    if (this.selectedResults && this.selectedResults.length > 0) {
-      this.selectedProductNames = this.selectedResults.map((item) => item.productName!)
-      this.helpInternalAPIService
-        .exportHelps({ exportHelpsRequest: { productNames: this.selectedProductNames } })
-        .subscribe({
-          next: (item) => {
-            const helpsJson = JSON.stringify(item, null, 2)
-            FileSaver.saveAs(
-              new Blob([helpsJson], { type: 'text/json' }),
-              'onecx-help-items_' + this.getCurrentDateTime() + '.json'
-            )
-            this.msgService.success({ summaryKey: 'ACTIONS.EXPORT.MESSAGE.HELP_ITEM.EXPORT_OK' })
-            this.displayExportDialog = false
-            this.selectedResults = []
-            this.selectedProductNames = []
-          },
-          error: (err) => {
-            this.msgService.error({ summaryKey: 'ACTIONS.EXPORT.MESSAGE.HELP_ITEM.EXPORT_NOK' })
-            console.error(err)
-          }
-        })
+    if (this.selectedProductNames.length > 0) {
+      const names = this.selectedProductNames.map((item) => this.getProductNameFromDisplayName(item))
+      this.helpInternalAPIService.exportHelps({ exportHelpsRequest: { productNames: names } }).subscribe({
+        next: (item) => {
+          const helpsJson = JSON.stringify(item, null, 2)
+          FileSaver.saveAs(
+            new Blob([helpsJson], { type: 'text/json' }),
+            'onecx-help-items_' + this.getCurrentDateTime() + '.json'
+          )
+          this.msgService.success({ summaryKey: 'ACTIONS.EXPORT.MESSAGE.HELP_ITEM.EXPORT_OK' })
+          this.displayExportDialog = false
+          this.selectedProductNames = []
+        },
+        error: (err) => {
+          this.msgService.error({ summaryKey: 'ACTIONS.EXPORT.MESSAGE.HELP_ITEM.EXPORT_NOK' })
+          console.error(err)
+        }
+      })
     }
   }
   public onCloseExportDialog(): void {
     this.displayExportDialog = false
-    this.selectedResults = []
     this.selectedProductNames = []
   }
 
@@ -365,5 +362,11 @@ export class HelpSearchComponent implements OnInit {
     const seconds = String(now.getSeconds()).padStart(2, '0')
 
     return `${year}-${month}-${day}_${hours}${minutes}${seconds}`
+  }
+
+  private getProductNameFromDisplayName(displayName: string): string {
+    const product = this.products.find((item) => item.displayName === displayName)
+    if (product) return product.name
+    else return displayName
   }
 }
