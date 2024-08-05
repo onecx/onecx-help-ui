@@ -15,7 +15,7 @@ const helpItem: Help = {
   productName: 'onecx-help'
 }
 
-fdescribe('HelpSearchComponent', () => {
+describe('HelpSearchComponent', () => {
   let component: HelpSearchComponent
   let fixture: ComponentFixture<HelpSearchComponent>
 

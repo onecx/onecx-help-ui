@@ -54,7 +54,7 @@ export class HelpSearchComponent implements OnInit {
   importHelpItem: Help | null = null
   public importError = false
   public validationErrorCause: string
-  public selectedProductNames: string[] | undefined
+  public selectedProductNames: string[] = []
 
   public filteredColumns: Column[] = []
   public columns: ExtendedColumn[] = [
@@ -287,7 +287,7 @@ export class HelpSearchComponent implements OnInit {
     this.assignedProductNames = Array.from(new Set(this.resultsForDisplay.map((item) => item.productDisplayName!)))
   }
   public onExportConfirmation(): void {
-    if (this.selectedProductNames && this.selectedProductNames.length > 0) {
+    if (this.selectedProductNames.length > 0) {
       const names = this.selectedProductNames.map((item) => this.getProductNameFromDisplayName(item))
       this.helpInternalAPIService.exportHelps({ exportHelpsRequest: { productNames: names } }).subscribe({
         next: (item) => {

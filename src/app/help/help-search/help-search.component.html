@@ -275,7 +275,7 @@
         iconPos="left"
         [label]="'GENERAL.CANCEL' | translate"
         (click)="onCloseExportDialog()"
-        [pTooltip]="'GENERAL.CANCEL' | translate"
+        [pTooltip]="'GENERAL.TOOLTIPS.CANCEL' | translate"
         tooltipPosition="top"
         tooltipEvent="hover"
       ></button>
@@ -286,9 +286,10 @@
         class="m-0"
         icon="pi pi-check"
         iconPos="left"
-        [label]="'GENERAL.SAVE' | translate"
+        [disabled]="selectedProductNames.length === 0"
+        [label]="'ACTIONS.EXPORT.LABEL' | translate"
         (click)="onExportConfirmation()"
-        [pTooltip]="'GENERAL.SAVE' | translate"
+        [pTooltip]="'ACTIONS.EXPORT.ITEMS_SELECTED.TOOLTIP' | translate"
         tooltipPosition="top"
         tooltipEvent="hover"
       ></button>

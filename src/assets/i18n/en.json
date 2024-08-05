@@ -37,6 +37,7 @@
       "LABEL": "Export",
       "HELP_ITEM": "Export Help Items",
       "HELP_ITEM.TOOLTIP": "Export a set of Help Items",
+      "ITEMS_SELECTED.TOOLTIP": "Export selected Help Items",
       "MESSAGE": {
         "HELP_ITEM.EXPORT_OK": "Help Items were exported successfully",
         "HELP_ITEM.EXPORT_NOK": "An error has occurred. Help Items were not exported."
