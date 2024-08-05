@@ -253,14 +253,13 @@
   <div class="flex flex-column row-gap-2">
     <div>{{ 'HELP_ITEM.APPLICATION_LIST' | translate }}</div>
     <p-listbox
-      [options]="resultsForDisplay"
-      [(ngModel)]="selectedResults"
-      optionLabel="productDisplayName"
+      [options]="assignedProductNames"
+      [(ngModel)]="selectedProductNames"
       [filter]="true"
       [checkbox]="true"
       [multiple]="true"
       [metaKeySelection]="false"
-      [showToggleAll]="false"
+      [showToggleAll]="true"
       [emptyMessage]="'ACTIONS.SEARCH.NO_DATA' | translate"
       [listStyle]="{ 'max-height': '300px' }"
     />
