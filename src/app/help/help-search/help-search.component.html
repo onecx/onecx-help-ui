@@ -60,7 +60,9 @@
           <th
             id="help_search_table_header_action"
             class="text-center white-space-nowrap"
-            title="{{ 'ACTIONS.SEARCH.ACTION' | translate }}"
+            [pTooltip]="'ACTIONS.SEARCH.ACTION' | translate"
+            tooltipPosition="top"
+            tooltipEvent="hover"
           >
             {{ 'ACTIONS.SEARCH.ACTION' | translate }}
           </th>
@@ -69,7 +71,9 @@
             [id]="'help_search_table_header_' + col.field"
             [class]="col.css"
             [pSortableColumn]="col.field"
-            title="  {{ 'HELP_ITEM.TOOLTIPS.' + col.header | translate }}"
+            [pTooltip]="'HELP_ITEM.TOOLTIPS.' + col.header | translate"
+            tooltipPosition="top"
+            tooltipEvent="hover"
           >
             {{ 'HELP_ITEM.' + col.header | translate }}
             <p-sortIcon [field]="col.field"></p-sortIcon>
@@ -87,7 +91,6 @@
                 *ocxIfPermission="'HELP#VIEW'"
                 [id]="'help_search_table_row_' + row + '_view_action'"
                 (click)="onDetail($event, rowData, 'VIEW')"
-                [title]="'GENERAL.VIEW' | translate"
                 class="p-button-rounded font-medium p-button-text p-button p-component p-button-icon-only"
                 aria-label="'GENERAL.VIEW' | translate"
                 [pTooltip]="'ACTIONS.VIEW.HELP_ITEM.TOOLTIP' | translate"
@@ -103,7 +106,6 @@
               *ocxIfPermission="'HELP#EDIT'"
               [id]="'help_search_table_row_' + row + '_edit_action'"
               (click)="onDetail($event, rowData, 'EDIT')"
-              [title]="'ACTIONS.EDIT.HELP_ITEM.TOOLTIP' | translate"
               class="p-button-rounded font-medium p-button-text p-button p-component p-button-icon-only"
               aria-label="'ACTIONS.EDIT.LABEL' | translate"
               [pTooltip]="'ACTIONS.EDIT.HELP_ITEM.TOOLTIP' | translate"
@@ -118,7 +120,6 @@
               *ocxIfPermission="'HELP#EDIT'"
               [id]="'help_search_table_row_' + row + '_copy_action'"
               (click)="onCopy($event, rowData)"
-              [title]="'ACTIONS.COPY.HELP_ITEM.TOOLTIP' | translate"
               class="p-button-rounded font-medium p-button-text p-button p-component p-button-icon-only"
               aria-label="'ACTIONS.COPY.LABEL' | translate"
               [pTooltip]="'ACTIONS.COPY.HELP_ITEM.TOOLTIP' | translate"
@@ -133,7 +134,6 @@
               *ocxIfPermission="'HELP#DELETE'"
               [id]="'help_search_table_row_' + row + '_delete_action'"
               (click)="onDelete($event, rowData)"
-              [title]="'ACTIONS.DELETE.HELP_ITEM.TOOLTIP' | translate"
               class="p-button-rounded font-medium p-button-text p-button p-component p-button-icon-only"
               aria-label="'ACTIONS.DELETE.HELP_ITEM' | translate"
               [pTooltip]="'ACTIONS.DELETE.HELP_ITEM.TOOLTIP' | translate"
@@ -178,8 +178,10 @@
         iconPos="left"
         [id]="'help_delete_button_no'"
         [label]="'ACTIONS.CONFIRMATION.NO' | translate"
-        [title]="'ACTIONS.CONFIRMATION.NO.TOOLTIP' | translate"
         (click)="displayDeleteDialog = false"
+        [pTooltip]="'ACTIONS.CONFIRMATION.NO.TOOLTIP' | translate"
+        tooltipPosition="top"
+        tooltipEvent="hover"
       ></button>
       <button
         pButton
@@ -189,8 +191,10 @@
         iconPos="left"
         [id]="'help_delete_button_yes'"
         [label]="'ACTIONS.CONFIRMATION.YES' | translate"
-        [title]="'ACTIONS.CONFIRMATION.YES.TOOLTIP' | translate"
         (click)="onDeleteConfirmation()"
+        [pTooltip]="'ACTIONS.CONFIRMATION.YES.TOOLTIP' | translate"
+        tooltipPosition="top"
+        tooltipEvent="hover"
       ></button>
     </div>
   </ng-template>
@@ -273,7 +277,6 @@
         class="m-0"
         icon="pi pi-times"
         iconPos="left"
-        [label]="'GENERAL.CANCEL' | translate"
         (click)="onCloseExportDialog()"
         [pTooltip]="'GENERAL.TOOLTIPS.CANCEL' | translate"
         tooltipPosition="top"

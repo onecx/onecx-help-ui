@@ -3,6 +3,7 @@ import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } 
 import { TranslateModule } from '@ngx-translate/core'
 import { DialogButtonClicked, DialogResult, DialogState, PortalMessageService } from '@onecx/portal-integration-angular'
 import { InputTextModule } from 'primeng/inputtext'
+import { TooltipModule } from 'primeng/tooltip'
 import { Observable } from 'rxjs'
 import { Help } from 'src/app/shared/generated'
 
@@ -11,7 +12,7 @@ import { Help } from 'src/app/shared/generated'
   standalone: true,
   styleUrls: ['./help-item-editor-dialog.component.scss'],
   templateUrl: './help-item-editor-dialog.component.html',
-  imports: [InputTextModule, ReactiveFormsModule, TranslateModule],
+  imports: [InputTextModule, ReactiveFormsModule, TranslateModule, TooltipModule],
   providers: [PortalMessageService, FormBuilder]
 })
 export class HelpItemEditorDialogComponent implements DialogResult<Help>, DialogButtonClicked, OnChanges {

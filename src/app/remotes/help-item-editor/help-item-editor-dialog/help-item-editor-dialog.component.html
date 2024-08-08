@@ -7,7 +7,9 @@
       pInputText
       name="helpItemId"
       formControlName="helpItemId"
-      [title]="'HELP_ITEM.TOOLTIPS.HELP_ITEM_ID' | translate"
+      [pTooltip]="'HELP_ITEM.TOOLTIPS.HELP_ITEM_ID' | translate"
+      tooltipPosition="top"
+      tooltipEvent="hover"
     />
     <label class="ocx-required-label" for="help-item-editor-field-helpitem-id">
       {{ 'HELP_ITEM.HELP_ITEM_ID' | translate }}</label
@@ -22,7 +24,9 @@
       pInputText
       name="productName"
       formControlName="productName"
-      [title]="'HELP_ITEM.TOOLTIPS.APPLICATION_NAME' | translate"
+      [pTooltip]="'HELP_ITEM.TOOLTIPS.APPLICATION_NAME' | translate"
+      tooltipPosition="top"
+      tooltipEvent="hover"
     />
     <label class="ocx-required-label" for="help-item-editor-field-product-name">
       {{ 'HELP_ITEM.APPLICATION_NAME' | translate }}</label
@@ -37,7 +41,9 @@
       pInputText
       name="baseUrl"
       formControlName="baseUrl"
-      [title]="'HELP_ITEM.TOOLTIPS.BASE_URL' | translate"
+      [pTooltip]="'HELP_ITEM.TOOLTIPS.BASE_URL' | translate"
+      tooltipPosition="top"
+      tooltipEvent="hover"
     />
     <label class="ocx-required-label" for="help-item-editor-field-base-url">
       {{ 'HELP_ITEM.BASE_URL' | translate }}</label
@@ -52,7 +58,9 @@
       pInputText
       name="resourceUrl"
       formControlName="resourceUrl"
-      [title]="'HELP_ITEM.TOOLTIPS.RESOURCE_URL' | translate"
+      [pTooltip]="'HELP_ITEM.TOOLTIPS.RESOURCE_URL' | translate"
+      tooltipPosition="top"
+      tooltipEvent="hover"
     />
     <label for="help-item-editor-field-resource-url">{{ 'HELP_ITEM.RESOURCE_URL' | translate }}</label>
   </span>

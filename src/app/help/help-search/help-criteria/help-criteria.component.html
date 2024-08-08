@@ -20,13 +20,25 @@
           [forceSelection]="true"
           appendTo="body"
           ariaLabelledBy="help_search_criteria_productName"
+          [pTooltip]="'HELP_ITEM.TOOLTIPS.APPLICATION_NAME' | translate"
+          tooltipPosition="top"
+          tooltipEvent="hover"
         >
           <button pbutton type="button" aria-label="'GENERAL.TOOLTIPS.VIEW' | translate"></button>
         </p-autoComplete>
         <label for="help_search_criteria_productName">{{ 'HELP_ITEM.APPLICATION_NAME' | translate }}</label>
       </span>
       <span class="p-float-label">
-        <input id="help_search_criteria_itemId" pInputText type="text" formControlName="itemId" class="w-18rem" />
+        <input
+          id="help_search_criteria_itemId"
+          pInputText
+          type="text"
+          formControlName="itemId"
+          class="w-18rem"
+          [pTooltip]="'HELP_ITEM.TOOLTIPS.HELP_ITEM_ID' | translate"
+          tooltipPosition="top"
+          tooltipEvent="hover"
+        />
         <label for="help_search_criteria_itemId">{{ 'HELP_ITEM.HELP_ITEM_ID' | translate }}</label>
       </span>
     </div>
