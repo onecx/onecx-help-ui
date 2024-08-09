@@ -3,6 +3,7 @@ import { FormControl, FormGroup } from '@angular/forms'
 
 import { Action, PortalMessageService } from '@onecx/portal-integration-angular'
 import { HelpSearchCriteria, HelpsInternalAPIService, Product } from 'src/app/shared/generated'
+import { sortByLocale } from 'src/app/shared/utils'
 
 export interface HelpCriteriaForm {
   itemId: FormControl<string | null>
@@ -83,7 +84,7 @@ export class HelpCriteriaComponent implements OnInit, OnChanges {
         this.msgService.info({ summaryKey: 'HELP_SEARCH.NO_APPLICATION_AVAILABLE' })
       }
       this.productDisplayNames = this.productDisplayNames?.filter((productName) => productName !== null)
-      this.productDisplayNames.sort()
+      this.productDisplayNames.sort(sortByLocale)
     })
   }
 }
