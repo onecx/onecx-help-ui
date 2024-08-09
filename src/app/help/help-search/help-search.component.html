@@ -82,7 +82,7 @@
       </ng-template>
       <ng-template pTemplate="body" let-row="rowIndex" let-rowData let-columns="columns">
         <tr [id]="'help_search_table_row_' + row">
-          <td class="flex flex-row px-2 align-items-center white-space-nowrap">
+          <td class="px-2 py-1 sm:py-2 flex flex-row justify-content-center align-items-center white-space-nowrap">
             <ng-container *ocxIfNotPermission="'HELP#EDIT'">
               <button
                 pbutton
