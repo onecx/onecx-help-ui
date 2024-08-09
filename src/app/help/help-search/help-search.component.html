@@ -1,6 +1,6 @@
 <ocx-portal-page permission="HELP#SEARCH" helpArticleId="PAGE_HELP_SEARCH">
   <app-help-criteria
-    [actions]="actions"
+    [actions]="(actions$ | async) ?? []"
     [productsChanged]="productsChanged"
     (criteriaEmitter)="search($event)"
     [products]="products"
