@@ -77,13 +77,12 @@
           >
             {{ 'HELP_ITEM.' + col.header | translate }}
             <p-sortIcon [field]="col.field"></p-sortIcon>
-            <p-columnFilter type="text" [field]="col.field" display="menu"></p-columnFilter>
           </th>
         </tr>
       </ng-template>
       <ng-template pTemplate="body" let-row="rowIndex" let-rowData let-columns="columns">
         <tr [id]="'help_search_table_row_' + row">
-          <td class="flex flex-row px-2 align-items-center white-space-nowrap">
+          <td class="px-2 py-1 sm:py-2 flex flex-row justify-content-center align-items-center white-space-nowrap">
             <ng-container *ocxIfNotPermission="'HELP#EDIT'">
               <button
                 pbutton
@@ -92,8 +91,8 @@
                 [id]="'help_search_table_row_' + row + '_view_action'"
                 (click)="onDetail($event, rowData, 'VIEW')"
                 class="p-button-rounded font-medium p-button-text p-button p-component p-button-icon-only"
-                aria-label="'GENERAL.VIEW' | translate"
-                [pTooltip]="'ACTIONS.VIEW.HELP_ITEM.TOOLTIP' | translate"
+                aria-label="'ACTIONS.VIEW' | translate"
+                [pTooltip]="'ACTIONS.VIEW' | translate"
                 tooltipPosition="top"
                 tooltipEvent="hover"
               >
@@ -206,7 +205,6 @@
   [modal]="true"
   [resizable]="false"
   [dismissableMask]="true"
-  [style]="{ 'max-width': '500px' }"
 >
   <div class="flex flex-wrap column-gap-2 row-gap-1 justify-content-end">
     <p-fileUpload
@@ -224,7 +222,7 @@
       [showUploadButton]="isFileValid()"
       [chooseLabel]="'ACTIONS.IMPORT.CHOOSE' | translate"
       [uploadLabel]="'ACTIONS.IMPORT.UPLOAD' | translate"
-      [cancelLabel]="'GENERAL.CANCEL' | translate"
+      [cancelLabel]="'ACTIONS.CANCEL' | translate"
     />
   </div>
   <ng-template pTemplate="footer">
@@ -236,9 +234,9 @@
         class="m-0"
         icon="pi pi-times"
         iconPos="left"
-        [label]="'GENERAL.CANCEL' | translate"
         (click)="onCloseImportDialog()"
-        [pTooltip]="'GENERAL.CANCEL' | translate"
+        [label]="'ACTIONS.CANCEL' | translate"
+        [pTooltip]="'ACTIONS.TOOLTIPS.CANCEL' | translate"
         tooltipPosition="top"
         tooltipEvent="hover"
       ></button>
@@ -250,7 +248,7 @@
   [(visible)]="displayExportDialog"
   [header]="'ACTIONS.EXPORT.HELP_ITEM' | translate"
   [modal]="true"
-  [resizable]="false"
+  [resizable]="true"
   [dismissableMask]="true"
   [style]="{ 'max-width': '500px' }"
 >
@@ -278,7 +276,8 @@
         icon="pi pi-times"
         iconPos="left"
         (click)="onCloseExportDialog()"
-        [pTooltip]="'GENERAL.TOOLTIPS.CANCEL' | translate"
+        [label]="'ACTIONS.CANCEL' | translate"
+        [pTooltip]="'ACTIONS.TOOLTIPS.CANCEL' | translate"
         tooltipPosition="top"
         tooltipEvent="hover"
       ></button>
@@ -287,7 +286,7 @@
         type="button"
         id="help_export_button_save"
         class="m-0"
-        icon="pi pi-check"
+        icon="pi pi-download"
         iconPos="left"
         [disabled]="selectedProductNames.length === 0"
         [label]="'ACTIONS.EXPORT.LABEL' | translate"

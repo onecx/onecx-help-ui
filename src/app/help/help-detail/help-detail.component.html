@@ -23,20 +23,20 @@
     <div class="flex flex-wrap justify-content-end gap-2 mb-1">
       <p-button
         id="help_detail_button_close"
-        [label]="'GENERAL.CANCEL' | translate"
         (onClick)="onDialogHide()"
         icon="pi pi-times"
-        [pTooltip]="'GENERAL.CANCEL' | translate"
+        [label]="'ACTIONS.CANCEL' | translate"
+        [pTooltip]="'ACTIONS.TOOLTIPS.CANCEL' | translate"
         tooltipPosition="top"
         tooltipEvent="hover"
       ></p-button>
       <p-button
         id="help_detail_button_save"
-        [label]="'GENERAL.SAVE' | translate"
         (onClick)="onSave()"
         icon="pi pi-save"
         [disabled]="!helpFormComponent.formGroup.valid"
-        [pTooltip]="'GENERAL.SAVE' | translate"
+        [label]="'ACTIONS.SAVE' | translate"
+        [pTooltip]="'ACTIONS.TOOLTIPS.SAVE' | translate"
         tooltipPosition="top"
         tooltipEvent="hover"
       ></p-button>
