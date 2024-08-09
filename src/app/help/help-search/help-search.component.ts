@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild } from '@angular/core'
 import { TranslateService } from '@ngx-translate/core'
-import { catchError, finalize, of } from 'rxjs'
+import { catchError, finalize, map, Observable, of } from 'rxjs'
 import { Table } from 'primeng/table'
 import FileSaver from 'file-saver'
 
@@ -31,7 +31,7 @@ export class HelpSearchComponent implements OnInit {
 
   public exceptionKey: string | undefined
   public changeMode: ChangeMode = 'NEW'
-  public actions: Action[] = []
+  public actions$: Observable<Action[]> | undefined
   public helpItem: Help | undefined
   public resultsForDisplay: HelpForDisplay[] = []
   public assignedProductNames: string[] = []
@@ -313,7 +313,7 @@ export class HelpSearchComponent implements OnInit {
   }
 
   private prepareDialogTranslations() {
-    this.translate
+    this.actions$ = this.translate
       .get([
         'ACTIONS.CREATE.LABEL',
         'ACTIONS.CREATE.HELP_ITEM.TOOLTIP',
@@ -322,34 +322,36 @@ export class HelpSearchComponent implements OnInit {
         'ACTIONS.EXPORT.LABEL',
         'ACTIONS.EXPORT.HELP_ITEM.TOOLTIP'
       ])
-      .subscribe((data) => {
-        this.actions.push(
-          {
-            label: data['ACTIONS.CREATE.LABEL'],
-            title: data['ACTIONS.CREATE.HELP_ITEM.TOOLTIP'],
-            actionCallback: () => this.onCreate(),
-            icon: 'pi pi-plus',
-            show: 'always',
-            permission: 'HELP#EDIT'
-          },
-          {
-            label: data['ACTIONS.EXPORT.LABEL'],
-            title: data['ACTIONS.EXPORT.HELP_ITEM.TOOLTIP'],
-            actionCallback: () => this.onExport(),
-            icon: 'pi pi-download',
-            show: 'always',
-            permission: 'HELP#EDIT'
-          },
-          {
-            label: data['ACTIONS.IMPORT.LABEL'],
-            title: data['ACTIONS.IMPORT.HELP_ITEM.TOOLTIP'],
-            actionCallback: () => this.onImport(),
-            icon: 'pi pi-upload',
-            show: 'always',
-            permission: 'HELP#EDIT'
-          }
-        )
-      })
+      .pipe(
+        map((data) => {
+          return [
+            {
+              label: data['ACTIONS.CREATE.LABEL'],
+              title: data['ACTIONS.CREATE.HELP_ITEM.TOOLTIP'],
+              actionCallback: () => this.onCreate(),
+              icon: 'pi pi-plus',
+              show: 'always',
+              permission: 'HELP#EDIT'
+            },
+            {
+              label: data['ACTIONS.EXPORT.LABEL'],
+              title: data['ACTIONS.EXPORT.HELP_ITEM.TOOLTIP'],
+              actionCallback: () => this.onExport(),
+              icon: 'pi pi-download',
+              show: 'always',
+              permission: 'HELP#EDIT'
+            },
+            {
+              label: data['ACTIONS.IMPORT.LABEL'],
+              title: data['ACTIONS.IMPORT.HELP_ITEM.TOOLTIP'],
+              actionCallback: () => this.onImport(),
+              icon: 'pi pi-upload',
+              show: 'always',
+              permission: 'HELP#EDIT'
+            }
+          ]
+        })
+      )
   }
 
   private getCurrentDateTime(): string {

@@ -83,6 +83,7 @@ export class HelpCriteriaComponent implements OnInit, OnChanges {
         this.msgService.info({ summaryKey: 'HELP_SEARCH.NO_APPLICATION_AVAILABLE' })
       }
       this.productDisplayNames = this.productDisplayNames?.filter((productName) => productName !== null)
+      this.productDisplayNames.sort()
     })
   }
 }

@@ -1,10 +1,9 @@
-<ocx-search-criteria
-  [disableAdvancedToggle]="true"
-  [disableAdvancedToggle]="true"
+<ocx-search-header
   [header]="'HELP_SEARCH.HEADER' | translate"
   [subheader]="'HELP_SEARCH.SUBHEADER' | translate"
-  (search)="submitCriteria()"
-  (reset)="resetCriteria()"
+  (searched)="submitCriteria()"
+  (resetted)="resetCriteria()"
+  [manualBreadcrumbs]="false"
   [actions]="actions"
 >
   <div simpleCriteria>
@@ -43,4 +42,4 @@
       </span>
     </div>
   </div>
-</ocx-search-criteria>
+</ocx-search-header>
