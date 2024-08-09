@@ -1,6 +1,4 @@
-import { SelectItem } from 'primeng/api'
-
-import { limitText, dropDownGetLabelByValue, sortByLocale } from './utils'
+import { limitText, sortByLocale } from './utils'
 
 describe('util functions', () => {
   describe('sortByLocale', () => {
@@ -58,19 +56,6 @@ describe('util functions', () => {
     it('should handle zero length text', () => {
       const result = limitText(null, 4)
       expect(result).toEqual('')
-    })
-  })
-
-  describe('dropDownGetLabelByValue', () => {
-    it('should return the label corresponding to the value', () => {
-      const items: SelectItem[] = [
-        { label: 'label2', value: 2 },
-        { label: 'label1', value: 1 }
-      ]
-
-      const result = dropDownGetLabelByValue(items, '1')
-
-      expect(result).toEqual('label1')
     })
   })
 })
