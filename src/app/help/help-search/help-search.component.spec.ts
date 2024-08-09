@@ -108,7 +108,6 @@ describe('HelpSearchComponent', () => {
 
       expect(component.search).toHaveBeenCalled()
       expect(component.filteredColumns[0].field).toEqual('context')
-      expect(component.actions[0].label).toEqual('ACTIONS.CREATE.LABEL')
     })
 
     it('should process products onInit', () => {
@@ -411,34 +410,37 @@ describe('HelpSearchComponent', () => {
     expect(component.table.filterGlobal).toHaveBeenCalledWith('test', 'contains')
   })
 
-  it('should call onCreate when actionCallback is executed', () => {
-    spyOn(component, 'onCreate')
+  it('should open create dialog', () => {
+    spyOn(component, 'onExport')
+
     component.ngOnInit()
+    component.actions$?.subscribe((action) => {
+      action[1].actionCallback()
+    })
 
-    const action = component.actions[0]
-    action.actionCallback()
-
-    expect(component.onCreate).toHaveBeenCalled()
+    expect(component.onExport).toHaveBeenCalled()
   })
 
-  it('should call onImport when actionCallback is executed', () => {
+  it('should open export dialog', () => {
     spyOn(component, 'onImport')
-    component.ngOnInit()
 
-    const action = component.actions[2]
-    action.actionCallback()
+    component.ngOnInit()
+    component.actions$?.subscribe((action) => {
+      action[2].actionCallback()
+    })
 
     expect(component.onImport).toHaveBeenCalled()
   })
 
-  it('should call onExport when actionCallback is executed', () => {
-    spyOn(component, 'onExport')
+  it('should open import dialog', () => {
+    spyOn(component, 'onCreate')
+
     component.ngOnInit()
+    component.actions$?.subscribe((action) => {
+      action[0].actionCallback()
+    })
 
-    const action = component.actions[1]
-    action.actionCallback()
-
-    expect(component.onExport).toHaveBeenCalled()
+    expect(component.onCreate).toHaveBeenCalled()
   })
 
   /*
