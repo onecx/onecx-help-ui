@@ -31,6 +31,11 @@ describe('util functions', () => {
       expect(sortByLocale('apple1', 'apple2')).toBeLessThan(0)
       expect(sortByLocale('apple2', 'apple1')).toBeGreaterThan(0)
     })
+
+    it('should not sort if one argument is not a string', () => {
+      expect(sortByLocale('apple1', 1)).toBe(0)
+      expect(sortByLocale(2, 'apple1')).toBe(0)
+    })
   })
 
   describe('limitText', () => {
