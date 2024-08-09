@@ -5,6 +5,7 @@
 @include listbox-zebra-rows;
 @include correct-search-criteria;
 @include correct-autocomplete;
+@include correct-file-upload;
 @include displaying-text-responsive;
 
 :host ::ng-deep {

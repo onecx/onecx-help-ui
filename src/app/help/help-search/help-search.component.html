@@ -205,7 +205,6 @@
   [modal]="true"
   [resizable]="false"
   [dismissableMask]="true"
-  [style]="{ 'max-width': '500px' }"
 >
   <div class="flex flex-wrap column-gap-2 row-gap-1 justify-content-end">
     <p-fileUpload
@@ -287,7 +286,7 @@
         type="button"
         id="help_export_button_save"
         class="m-0"
-        icon="pi pi-check"
+        icon="pi pi-download"
         iconPos="left"
         [disabled]="selectedProductNames.length === 0"
         [label]="'ACTIONS.EXPORT.LABEL' | translate"
