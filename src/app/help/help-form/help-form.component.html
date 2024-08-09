@@ -3,7 +3,7 @@
     <span>{{ 'HELPITEM_CREATION.HEADER' | translate }}</span>
   </ng-template>
   <div class="flex flex-wrap flex-column gap-4 justify-content-between mt-2">
-    <div [title]="'HELP_ITEM.TOOLTIPS.APPLICATION_NAME' | translate">
+    <div [pTooltip]="'HELP_ITEM.TOOLTIPS.APPLICATION_NAME' | translate" tooltipPosition="top" tooltipEvent="hover">
       <span class="p-float-label">
         <p-autoComplete
           id="help_detail_form_product_name_autocomplete"
@@ -24,7 +24,7 @@
         </label>
       </span>
     </div>
-    <div [title]="'HELP_ITEM.TOOLTIPS.HELP_ITEM_ID' | translate">
+    <div [pTooltip]="'HELP_ITEM.TOOLTIPS.HELP_ITEM_ID' | translate" tooltipPosition="top" tooltipEvent="hover">
       <span class="p-float-label" controlErrorAnchor>
         <input pInputText type="text" id="help_detail_form_item_id" class="w-full pt-3 pb-2" formControlName="itemId" />
         <label class="ocx-required-label" for="help_detail_form_item_id">
@@ -32,7 +32,7 @@
         >
       </span>
     </div>
-    <div [title]="'HELP_ITEM.TOOLTIPS.BASE_URL' | translate">
+    <div [pTooltip]="'HELP_ITEM.TOOLTIPS.BASE_URL' | translate" tooltipPosition="top" tooltipEvent="hover">
       <span class="p-float-label">
         <input
           pInputText
@@ -44,7 +44,7 @@
         <label class="" for="help_detail_form_base_url">{{ 'HELP_ITEM.BASE_URL' | translate }}</label>
       </span>
     </div>
-    <div [title]="'HELP_ITEM.TOOLTIPS.RESOURCE_URL' | translate">
+    <div [pTooltip]="'HELP_ITEM.TOOLTIPS.RESOURCE_URL' | translate" tooltipPosition="top" tooltipEvent="hover">
       <span class="p-float-label">
         <input
           pInputText
@@ -56,7 +56,7 @@
         <label class="" for="help_detail_form_resource_url">{{ 'HELP_ITEM.RESOURCE_URL' | translate }}</label>
       </span>
     </div>
-    <div [title]="'HELP_ITEM.TOOLTIPS.CONTEXT' | translate">
+    <div [pTooltip]="'HELP_ITEM.TOOLTIPS.CONTEXT' | translate" tooltipPosition="top" tooltipEvent="hover">
       <span class="p-float-label">
         <input
           pInputText
