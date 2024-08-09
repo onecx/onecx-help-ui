@@ -77,9 +77,9 @@ export class OneCXHelpItemEditorComponent implements ocxRemoteComponent, ocxRemo
 
   constructor(
     @Inject(BASE_URL) private baseUrl: ReplaySubject<string>,
+    private router: Router,
     private appStateService: AppStateService,
     private userService: UserService,
-    private router: Router,
     private helpDataService: HelpsInternalAPIService,
     private portalMessageService: PortalMessageService,
     private portalDialogService: PortalDialogService,
@@ -164,11 +164,11 @@ export class OneCXHelpItemEditorComponent implements ocxRemoteComponent, ocxRemo
         }
       },
       {
-        key: 'HELP_ITEM_EDITOR.SAVE',
+        key: 'ACTIONS.SAVE',
         icon: PrimeIcons.CHECK
       },
       {
-        key: 'HELP_ITEM_EDITOR.CANCEL',
+        key: 'ACTIONS.CANCEL',
         icon: PrimeIcons.TIMES
       },
       {

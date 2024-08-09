@@ -7,11 +7,11 @@
   [actions]="actions"
 >
   <div simpleCriteria>
-    <div [formGroup]="helpCriteriaGroup" class="flex flex-wrap gap-4 row-gap-3 px-2">
+    <div [formGroup]="helpCriteriaGroup" class="flex flex-wrap column-gap-4 row-gap-3 px-2">
       <span class="p-float-label">
         <p-autoComplete
           id="help_search_criteria_productName"
-          styleClass="w-18rem"
+          styleClass="w-18rem text-responsive"
           formControlName="productName"
           [suggestions]="productDisplayNamesFiltered"
           (completeMethod)="filterProductNames($event)"
@@ -19,11 +19,11 @@
           [forceSelection]="true"
           appendTo="body"
           ariaLabelledBy="help_search_criteria_productName"
-          [pTooltip]="'HELP_ITEM.TOOLTIPS.APPLICATION_NAME' | translate"
+          [pTooltip]="'HELP_ITEM.APPLICATION_LIST' | translate"
           tooltipPosition="top"
           tooltipEvent="hover"
         >
-          <button pbutton type="button" aria-label="'GENERAL.TOOLTIPS.VIEW' | translate"></button>
+          <button pbutton type="button" aria-label="'ACTIONS.VIEW' | translate"></button>
         </p-autoComplete>
         <label for="help_search_criteria_productName">{{ 'HELP_ITEM.APPLICATION_NAME' | translate }}</label>
       </span>
@@ -33,7 +33,7 @@
           pInputText
           type="text"
           formControlName="itemId"
-          class="w-18rem"
+          class="w-18rem text-responsive"
           [pTooltip]="'HELP_ITEM.TOOLTIPS.HELP_ITEM_ID' | translate"
           tooltipPosition="top"
           tooltipEvent="hover"

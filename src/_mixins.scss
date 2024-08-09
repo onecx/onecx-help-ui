@@ -74,14 +74,28 @@
   }
 }
 
-@mixin dataview-zebra-rows {
+@mixin correct-search-criteria {
   :host ::ng-deep {
-    .p-dataview-content .p-grid > div {
-      min-height: 60px;
-      &.listview-row {
-        &:nth-child(odd) {
-          background-color: #f8f9fa;
-        }
+    .search-criteria-container > div {
+      display: flex;
+      flex-wrap: wrap;
+      align-content: center;
+      row-gap: 1rem;
+      column-gap: 3rem;
+      .search-criteria-buttons {
+        flex-wrap: wrap;
+        align-content: center;
+        margin-top: unset;
+      }
+    }
+  }
+}
+
+@mixin dataview-list-zebra-rows {
+  :host ::ng-deep {
+    .p-dataview-list .p-dataview-content .p-grid > div {
+      &:nth-child(odd) {
+        background-color: #f8f9fa;
       }
     }
   }
@@ -124,6 +138,34 @@
   }
 }
 
+@mixin correct-autocomplete {
+  :host ::ng-deep {
+    .p-autocomplete-panel .p-autocomplete-items .p-autocomplete-item {
+      padding-top: 0.4rem;
+      padding-bottom: 0.4rem;
+      &:nth-child(odd) {
+        background-color: #f8f9fa;
+      }
+    }
+    .p-autocomplete-clear-icon {
+      /* fix for bug in PrimeNG */
+      right: 3.5rem;
+    }
+    .p-autocomplete .p-autocomplete-loader {
+      /* fix for bug in PrimeNG */
+      display: none;
+    }
+    .p-autocomplete-input.p-inputtext.p-autocomplete-dd-input {
+      border-bottom-right-radius: unset;
+      border-top-right-radius: unset;
+    }
+    .p-autocomplete-dropdown.p-button-icon-only.p-button {
+      border-bottom-left-radius: unset;
+      border-top-left-radius: unset;
+    }
+  }
+}
+
 @mixin layout-topbar-items {
   :host ::ng-deep {
     .layout-topbar-item {
@@ -147,6 +189,42 @@
       &:nth-child(odd) {
         background-color: #f8f9fa;
       }
+    }
+  }
+}
+
+@mixin correct-file-upload {
+  :host ::ng-deep {
+    .p-fileupload {
+      .p-fileupload-buttonbar,
+      .p-fileupload-content {
+        background-color: var(--surface-100) !important;
+      }
+      .p-fileupload-content {
+        padding: 0.5rem;
+        .p-fileupload-row {
+          display: flex;
+          flex-wrap: wrap;
+          justify-content: space-between;
+          gap: 0;
+          > div {
+            width: unset;
+            &.p-fileupload-filename {
+              max-width: 25rem;
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+@mixin displaying-text-responsive {
+  :host ::ng-deep {
+    .text-responsive {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
   }
 }
