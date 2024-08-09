@@ -77,7 +77,6 @@
           >
             {{ 'HELP_ITEM.' + col.header | translate }}
             <p-sortIcon [field]="col.field"></p-sortIcon>
-            <p-columnFilter type="text" [field]="col.field" display="menu"></p-columnFilter>
           </th>
         </tr>
       </ng-template>
@@ -92,8 +91,8 @@
                 [id]="'help_search_table_row_' + row + '_view_action'"
                 (click)="onDetail($event, rowData, 'VIEW')"
                 class="p-button-rounded font-medium p-button-text p-button p-component p-button-icon-only"
-                aria-label="'GENERAL.VIEW' | translate"
-                [pTooltip]="'ACTIONS.VIEW.HELP_ITEM.TOOLTIP' | translate"
+                aria-label="'ACTIONS.VIEW' | translate"
+                [pTooltip]="'ACTIONS.VIEW' | translate"
                 tooltipPosition="top"
                 tooltipEvent="hover"
               >
@@ -224,7 +223,7 @@
       [showUploadButton]="isFileValid()"
       [chooseLabel]="'ACTIONS.IMPORT.CHOOSE' | translate"
       [uploadLabel]="'ACTIONS.IMPORT.UPLOAD' | translate"
-      [cancelLabel]="'GENERAL.CANCEL' | translate"
+      [cancelLabel]="'ACTIONS.CANCEL' | translate"
     />
   </div>
   <ng-template pTemplate="footer">
@@ -236,9 +235,9 @@
         class="m-0"
         icon="pi pi-times"
         iconPos="left"
-        [label]="'GENERAL.CANCEL' | translate"
         (click)="onCloseImportDialog()"
-        [pTooltip]="'GENERAL.CANCEL' | translate"
+        [label]="'ACTIONS.CANCEL' | translate"
+        [pTooltip]="'ACTIONS.TOOLTIPS.CANCEL' | translate"
         tooltipPosition="top"
         tooltipEvent="hover"
       ></button>
@@ -250,7 +249,7 @@
   [(visible)]="displayExportDialog"
   [header]="'ACTIONS.EXPORT.HELP_ITEM' | translate"
   [modal]="true"
-  [resizable]="false"
+  [resizable]="true"
   [dismissableMask]="true"
   [style]="{ 'max-width': '500px' }"
 >
@@ -278,7 +277,8 @@
         icon="pi pi-times"
         iconPos="left"
         (click)="onCloseExportDialog()"
-        [pTooltip]="'GENERAL.TOOLTIPS.CANCEL' | translate"
+        [label]="'ACTIONS.CANCEL' | translate"
+        [pTooltip]="'ACTIONS.TOOLTIPS.CANCEL' | translate"
         tooltipPosition="top"
         tooltipEvent="hover"
       ></button>

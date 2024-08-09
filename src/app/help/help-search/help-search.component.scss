@@ -3,6 +3,9 @@
 @include danger-action;
 @include table-inline-buttons;
 @include listbox-zebra-rows;
+@include correct-search-criteria;
+@include correct-autocomplete;
+@include displaying-text-responsive;
 
 :host ::ng-deep {
   .p-datatable .p-sortable-column .p-sortable-column-icon {

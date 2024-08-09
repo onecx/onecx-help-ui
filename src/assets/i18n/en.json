@@ -21,28 +21,6 @@
         "HELP_ITEM.CREATE_NOK": "An error has occurred. The Help Item was not created."
       }
     },
-    "IMPORT": {
-      "LABEL": "Import",
-      "CHOOSE": "Choose file",
-      "UPLOAD": "Upload file",
-      "HELP_ITEM": "Import Help Items",
-      "HELP_ITEM.TOOLTIP": "Import a set of Help Items",
-      "MESSAGE": {
-        "HELP_ITEM.IMPORT_OK": "Help Items were imported successfully",
-        "HELP_ITEM.IMPORT_NOK": "An error has occurred. Help Items were not imported."
-      },
-      "VALIDATION_RESULT": "The file has been checked."
-    },
-    "EXPORT": {
-      "LABEL": "Export",
-      "HELP_ITEM": "Export Help Items",
-      "HELP_ITEM.TOOLTIP": "Export a set of Help Items",
-      "ITEMS_SELECTED.TOOLTIP": "Export selected Help Items",
-      "MESSAGE": {
-        "HELP_ITEM.EXPORT_OK": "Help Items were exported successfully",
-        "HELP_ITEM.EXPORT_NOK": "An error has occurred. Help Items were not exported."
-      }
-    },
     "DELETE": {
       "LABEL": "Delete",
       "HELP_ITEM": "Delete this Help Item",
@@ -62,6 +40,28 @@
         "HELP_ITEM_NOK": "An error has occurred. The Help Item was not saved."
       }
     },
+    "EXPORT": {
+      "LABEL": "Export",
+      "HELP_ITEM": "Export Help Items",
+      "HELP_ITEM.TOOLTIP": "Export of Help Items",
+      "ITEMS_SELECTED.TOOLTIP": "Export selected Help Items",
+      "MESSAGE": {
+        "HELP_ITEM.EXPORT_OK": "Help Items were exported successfully",
+        "HELP_ITEM.EXPORT_NOK": "An error has occurred. Help Items were not exported."
+      }
+    },
+    "IMPORT": {
+      "LABEL": "Import",
+      "CHOOSE": "Choose file",
+      "UPLOAD": "Upload file",
+      "HELP_ITEM": "Import Help Items",
+      "HELP_ITEM.TOOLTIP": "Import of Help Items",
+      "MESSAGE": {
+        "HELP_ITEM.IMPORT_OK": "Help Items were imported successfully",
+        "HELP_ITEM.IMPORT_NOK": "An error has occurred. Help Items were not imported."
+      },
+      "VALIDATION_RESULT": "The file has been checked."
+    },
     "SEARCH": {
       "ACTION": "Action",
       "SEARCH": "Search",
@@ -71,37 +71,42 @@
       "NO_DATA": "No data",
       "MSG_NO_RESULTS": "Search returned no results",
       "MSG_SEARCH_FAILED": "Search failed"
+    },
+    "CANCEL": "Cancel",
+    "CHOOSE": "Choose",
+    "CONFIRM": "Confirm",
+    "LOADING": "...is loading",
+    "RELOAD": "Reload",
+    "SAVE": "Save",
+    "SAVE_AS": "Save as ...",
+    "UPLOAD": "Upload",
+    "VIEW": "Show Details",
+    "TOOLTIPS": {
+      "CANCEL": "Cancel action",
+      "CANCEL_AND_CLOSE": "Cancel and close dialog",
+      "CANCEL_WITHOUT_SAVE": "Cancel action without saving",
+      "SAVE": "Save changes",
+      "SAVE_AS": "Save as new {{TYPE}}"
+    }
+  },
+  "INTERNAL": {
+    "CREATION_DATE": "Created on",
+    "CREATION_USER": "Created by",
+    "MODIFICATION_DATE": "Changed on",
+    "MODIFICATION_USER": "Changed by",
+    "OPERATOR": "Created by automation",
+    "OPERATOR_MESSAGE": "This Help Item was created by automation. All changes will be lost on the next deployment.",
+    "TOOLTIPS": {
+      "CREATION_DATE": "Timestamp of the creation",
+      "CREATION_USER": "ID of the user of the creation",
+      "MODIFICATION_DATE": "Timestamp of the last change",
+      "MODIFICATION_USER": "ID of the user of the last change",
+      "OPERATOR": "If set, the Help Item cannot be deleted and all changes will be lost during the next deployment."
     }
   },
   "GENERAL": {
-    "CLOSE": "Close",
-    "CANCEL": "Cancel",
-    "SAVE": "Save",
-    "VIEW": "View",
     "WORKSPACE": "Workspace",
-    "APP": "App",
-    "DETAIL": {
-      "CREATION_DATE": "Created on",
-      "CREATION_USER": "Created by",
-      "MODIFICATION_DATE": "Changed on",
-      "MODIFICATION_USER": "Changed by",
-      "TOOLTIPS": {
-        "CREATION_DATE": "Timestamp of the creation",
-        "CREATION_USER": "Name of the user of the creation",
-        "MODIFICATION_DATE": "Timestamp of the last change",
-        "MODIFICATION_USER": "Name of the user of the last change"
-      }
-    },
-    "TOOLTIPS": {
-      "CLOSE": "Leave dialog",
-      "CANCEL": "Cancel action",
-      "CANCEL_EDIT": "Cancel edit mode",
-      "CANCEL_AND_CLOSE": "Cancel and close dialog",
-      "CANCEL_WITHOUT_SAVE": "Cancel action without saving",
-      "EDIT": "Edit data",
-      "VIEW": "View data",
-      "SAVE": "Save changes"
-    }
+    "APP": "App"
   },
   "BREADCRUMBS": {
     "CREATE": "New",
@@ -111,16 +116,16 @@
   },
   "HELP_ITEM": {
     "APPLICATION_NAME": "Application",
-    "APPLICATION_LIST": "List of available applications",
+    "APPLICATION_LIST": "Applications with Help Items",
     "HELP_ITEM_ID": "Help Item ID",
     "CONTEXT": "Context",
     "BASE_URL": "Base URL",
     "RESOURCE_URL": "Resource URL",
     "TOOLTIPS": {
-      "APPLICATION_NAME": "Application context of the Help Item",
+      "APPLICATION_NAME": "Application with Help Item",
       "HELP_ITEM_ID": "Unique ID for a Help Item of the Application. Must have been used within the respective page.",
-      "BASE_URL": "Base part of the Help Article URL - the base path to the documentation of the Application",
-      "RESOURCE_URL": "Last part of the Help Article URL specific to the page (resource)",
+      "BASE_URL": "Base part of the Help Item URL - the base path to the documentation of the Application",
+      "RESOURCE_URL": "Last part of the Help Item URL specific to the page (resource)",
       "CONTEXT": "Specific context within the page (resource)"
     }
   },
@@ -163,11 +168,11 @@
     "CANCEL": "Cancel",
     "UPDATE_HELP_ARTICLE_ERROR": "Help Item update failed",
     "SAVE_ERROR": "Form is not valid. Cannot update the Help Item.",
-    "UPDATE_HELP_ARTICLE_INFO": "Help Item  updated",
+    "UPDATE_HELP_ARTICLE_INFO": "Help Item updated",
     "DIALOG": {
       "HELP_ITEM_ID": "Help Item ID",
       "APPLICATION_NAME": "Application",
-      "RESOURCE_URL": "URL"
+      "RESOURCE_URL": "Resource Path"
     }
   },
   "VALIDATION": {

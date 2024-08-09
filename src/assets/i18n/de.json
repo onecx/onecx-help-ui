@@ -1,6 +1,5 @@
 {
   "ACTIONS": {
-    "CANCEL": "Abbrechen",
     "CONFIRMATION": {
       "NO": "Nein",
       "YES": "Ja",
@@ -44,7 +43,7 @@
     "EXPORT": {
       "LABEL": "Export",
       "HELP_ITEM": "Hilfeartikel exportieren",
-      "HELP_ITEM.TOOLTIP": "Eine Gruppe von Hilfeartikeln exportieren",
+      "HELP_ITEM.TOOLTIP": "Hilfeartikel exportieren",
       "ITEMS_SELECTED.TOOLTIP": "Die ausgewählten Hilfeartikel exportieren",
       "MESSAGE": {
         "HELP_ITEM.EXPORT_OK": "Die Hilfeartikel wurde erfolgreich exportiert",
@@ -56,7 +55,7 @@
       "CHOOSE": "Datei auswählen",
       "UPLOAD": "Datei hochladen",
       "HELP_ITEM": "Hilfeartikel importieren",
-      "HELP_ITEM.TOOLTIP": "Eine Gruppe von Hilfeartikeln importieren",
+      "HELP_ITEM.TOOLTIP": "Hilfeartikel importieren",
       "MESSAGE": {
         "HELP_ITEM.IMPORT_OK": "Die Hilfeartikel wurde erfolgreich importiert",
         "HELP_ITEM.IMPORT_NOK": "Ein Fehler ist aufgetreten. Die Hilfeartikel wurden nicht importiert."
@@ -72,37 +71,42 @@
       "NO_DATA": "Keine Ergebnisse",
       "MSG_NO_RESULTS": "Die Suche ergab keine Ergebnisse",
       "MSG_SEARCH_FAILED": "Die Suche ist fehlgeschlagen"
+    },
+    "CANCEL": "Abbrechen",
+    "CHOOSE": "Auswählen",
+    "CONFIRM": "Bestätigen",
+    "LOADING": "...wird geladen",
+    "RELOAD": "Neuladen",
+    "SAVE": "Speichern",
+    "SAVE_AS": "Speichern als ...",
+    "UPLOAD": "Hochladen",
+    "VIEW": "Details anzeigen",
+    "TOOLTIPS": {
+      "CANCEL": "Die Aktion abbrechen",
+      "CANCEL_AND_CLOSE": "Abbrechen und Dialog schließen",
+      "CANCEL_WITHOUT_SAVE": "Die Aktion ohne Speichern abbrechen",
+      "SAVE": "Die Änderungen speichern",
+      "SAVE_AS": "Speichern als neues {{TYPE}}"
+    }
+  },
+  "INTERNAL": {
+    "CREATION_DATE": "Erstellt am",
+    "CREATION_USER": "Erstellt von",
+    "MODIFICATION_DATE": "Geändert am",
+    "MODIFICATION_USER": "Geändert von",
+    "OPERATOR": "Automatisiert erstellt",
+    "OPERATOR_MESSAGE": "Dieser Hilfeartikel wurde automatisiert erstellt. Alle Änderungen gehen beim nächsten Deployment verloren.",
+    "TOOLTIPS": {
+      "CREATION_DATE": "Zeitpunkt der Erstellung",
+      "CREATION_USER": "ID des Benutzers der Erstellung",
+      "MODIFICATION_DATE": "Zeitpunkt der letzten Änderung",
+      "MODIFICATION_USER": "ID des Benutzers der letzten Änderung",
+      "OPERATOR": "Wenn gesetzt, dann kann der Hilfeartikel nicht gelöscht werden und alle Änderungen gehen beim beim nächsten Deployment verloren."
     }
   },
   "GENERAL": {
-    "CLOSE": "Schließen",
-    "CANCEL": "Abbrechen",
-    "SAVE": "Speichern",
-    "VIEW": "Ansehen",
     "WORKSPACE": "Workspace",
-    "APP": "App",
-    "DETAIL": {
-      "CREATION_DATE": "Erstellt am",
-      "CREATION_USER": "Erstellt von",
-      "MODIFICATION_DATE": "Geändert am",
-      "MODIFICATION_USER": "Geändert von",
-      "TOOLTIPS": {
-        "CREATION_DATE": "Zeitpunkt der Erstellung",
-        "CREATION_USER": "Name des Benutzers der Erstellung",
-        "MODIFICATION_DATE": "Zeitpunkt der letzten Änderung",
-        "MODIFICATION_USER": "Name des Benutzers der letzten änderung"
-      }
-    },
-    "TOOLTIPS": {
-      "CLOSE": "Dialog verlassen",
-      "CANCEL": "Die Aktion abbrechen",
-      "CANCEL_EDIT": "Den Änderungsmodus verlassen",
-      "CANCEL_AND_CLOSE": "Abbrechen und Dialog schließen",
-      "CANCEL_WITHOUT_SAVE": "Die Aktion ohne Speichern abbrechen",
-      "EDIT": "Daten bearbeiten",
-      "VIEW": "Daten ansehen",
-      "SAVE": "Die Änderungen speichern"
-    }
+    "APP": "App"
   },
   "BREADCRUMBS": {
     "CREATE": "Neu",
@@ -112,13 +116,13 @@
   },
   "HELP_ITEM": {
     "APPLICATION_NAME": "Applikation",
-    "APPLICATION_LIST": "Liste der verfügbaren Applikationen",
+    "APPLICATION_LIST": "Applikationen mit Hilfeartikel",
     "HELP_ITEM_ID": "Hilfeartikel ID",
     "CONTEXT": "Kontext",
     "BASE_URL": "Basis URL",
     "RESOURCE_URL": "Ressource Pfad",
     "TOOLTIPS": {
-      "APPLICATION_NAME": "Applikationskontext des Hilfeartikels",
+      "APPLICATION_NAME": "Applikation mit Hilfeartikel",
       "HELP_ITEM_ID": "Eindeutige ID für einen Hilfeartikel der Applikation. Muss innerhalb der jeweiligen Seite verwendet worden sein.",
       "BASE_URL": "Basis der Hilfeartikel-URL - der Verweis auf die Hauptseite der Dokumentation der Applikation",
       "RESOURCE_URL": "Letzter Teil der Hilfeartikel-URL speziell für die Seite (Ressource)",
