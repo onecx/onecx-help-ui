@@ -104,16 +104,6 @@
       "OPERATOR": "Wenn gesetzt, dann kann der Hilfeartikel nicht gelöscht werden und alle Änderungen gehen beim beim nächsten Deployment verloren."
     }
   },
-  "GENERAL": {
-    "WORKSPACE": "Workspace",
-    "APP": "App"
-  },
-  "BREADCRUMBS": {
-    "CREATE": "Neu",
-    "DETAILS": "Details",
-    "RELOAD": "Neu Laden",
-    "SWITCH_TO_EDIT_MODE": "Bearbeiten"
-  },
   "HELP_ITEM": {
     "APPLICATION_NAME": "Applikation",
     "APPLICATION_LIST": "Applikationen mit Hilfeartikel",
@@ -164,8 +154,6 @@
     "TOOLTIP": "Hilfe für diese Seite bearbeiten",
     "HEADER": "Hilfeartikel bearbeiten",
     "OPEN_HELP_PAGE_EDITOR_ERROR": "Der Hilfeartikel kann nicht bearbeitet werden. Hilfeartikel ID oder Applikationsname fehlen.",
-    "SAVE": "Speichern",
-    "CANCEL": "Abbrechen",
     "UPDATE_HELP_ARTICLE_ERROR": "Aktualisierung des Hilfeartikels fehlgeschlagen",
     "SAVE_ERROR": "Das Formular ist ungültig. Der Hilfeartikel kann nicht gespeichert werden.",
     "UPDATE_HELP_ARTICLE_INFO": "Hilfeartikel gespeichert",

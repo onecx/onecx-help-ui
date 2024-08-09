@@ -104,16 +104,6 @@
       "OPERATOR": "If set, the Help Item cannot be deleted and all changes will be lost during the next deployment."
     }
   },
-  "GENERAL": {
-    "WORKSPACE": "Workspace",
-    "APP": "App"
-  },
-  "BREADCRUMBS": {
-    "CREATE": "New",
-    "DETAILS": "Details",
-    "RELOAD": "Reload",
-    "SWITCH_TO_EDIT_MODE": "Edit"
-  },
   "HELP_ITEM": {
     "APPLICATION_NAME": "Application",
     "APPLICATION_LIST": "Applications with Help Items",
@@ -164,8 +154,6 @@
     "TOOLTIP": "Edit Help Item for this page",
     "HEADER": "Edit Help Item",
     "OPEN_HELP_PAGE_EDITOR_ERROR": "Cannot edit the Help Item. Help Item ID or Application Name missing.",
-    "SAVE": "Save",
-    "CANCEL": "Cancel",
     "UPDATE_HELP_ARTICLE_ERROR": "Help Item update failed",
     "SAVE_ERROR": "Form is not valid. Cannot update the Help Item.",
     "UPDATE_HELP_ARTICLE_INFO": "Help Item updated",
