@@ -167,34 +167,25 @@
     </div>
   </div>
   <ng-template pTemplate="footer">
-    <div class="flex flex-wrap column-gap-2 row-gap-1 justify-content-end">
-      <button
-        pButton
-        autofocus
-        type="button"
-        class="m-0"
+    <div class="flex flex-wrap justify-content-end column-gap-2 row-gap-1">
+      <p-button
+        id="help_delete_button_no"
         icon="pi pi-times"
-        iconPos="left"
-        [id]="'help_delete_button_no'"
-        [label]="'ACTIONS.CONFIRMATION.NO' | translate"
         (click)="displayDeleteDialog = false"
+        [label]="'ACTIONS.CONFIRMATION.NO' | translate"
         [pTooltip]="'ACTIONS.CONFIRMATION.NO.TOOLTIP' | translate"
         tooltipPosition="top"
         tooltipEvent="hover"
-      ></button>
-      <button
-        pButton
-        type="button"
-        class="m-0"
+      ></p-button>
+      <p-button
+        id="help_delete_button_yes"
         icon="pi pi-check"
-        iconPos="left"
-        [id]="'help_delete_button_yes'"
-        [label]="'ACTIONS.CONFIRMATION.YES' | translate"
         (click)="onDeleteConfirmation()"
+        [label]="'ACTIONS.CONFIRMATION.YES' | translate"
         [pTooltip]="'ACTIONS.CONFIRMATION.YES.TOOLTIP' | translate"
         tooltipPosition="top"
         tooltipEvent="hover"
-      ></button>
+      ></p-button>
     </div>
   </ng-template>
 </p-dialog>
@@ -226,20 +217,16 @@
     />
   </div>
   <ng-template pTemplate="footer">
-    <div class="flex flex-wrap column-gap-2 row-gap-1 justify-content-end">
-      <button
-        pButton
-        type="button"
+    <div class="flex flex-wrap justify-content-end column-gap-2 row-gap-1">
+      <p-button
         id="help_import_button_cancel"
-        class="m-0"
         icon="pi pi-times"
-        iconPos="left"
         (click)="onCloseImportDialog()"
         [label]="'ACTIONS.CANCEL' | translate"
         [pTooltip]="'ACTIONS.TOOLTIPS.CANCEL' | translate"
         tooltipPosition="top"
         tooltipEvent="hover"
-      ></button>
+      ></p-button>
     </div>
   </ng-template>
 </p-dialog>
@@ -267,34 +254,26 @@
     />
   </div>
   <ng-template pTemplate="footer">
-    <div class="flex flex-wrap column-gap-2 row-gap-1 justify-content-end">
-      <button
-        pButton
-        type="button"
+    <div class="flex flex-wrap justify-content-end column-gap-2 row-gap-1">
+      <p-button
         id="help_export_button_cancel"
-        class="m-0"
         icon="pi pi-times"
-        iconPos="left"
         (click)="onCloseExportDialog()"
         [label]="'ACTIONS.CANCEL' | translate"
         [pTooltip]="'ACTIONS.TOOLTIPS.CANCEL' | translate"
         tooltipPosition="top"
         tooltipEvent="hover"
-      ></button>
-      <button
-        pButton
-        type="button"
-        id="help_export_button_save"
-        class="m-0"
+      ></p-button>
+      <p-button
+        id="help_export_button_export"
         icon="pi pi-download"
-        iconPos="left"
+        (click)="onExportConfirmation()"
         [disabled]="selectedProductNames.length === 0"
         [label]="'ACTIONS.EXPORT.LABEL' | translate"
-        (click)="onExportConfirmation()"
         [pTooltip]="'ACTIONS.EXPORT.ITEMS_SELECTED.TOOLTIP' | translate"
         tooltipPosition="top"
         tooltipEvent="hover"
-      ></button>
+      ></p-button>
     </div>
   </ng-template>
 </p-dialog>

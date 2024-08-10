@@ -3,70 +3,81 @@
     <span>{{ 'HELPITEM_CREATION.HEADER' | translate }}</span>
   </ng-template>
   <div class="flex flex-wrap flex-column gap-4 justify-content-between mt-2">
-    <div [pTooltip]="'HELP_ITEM.TOOLTIPS.APPLICATION_NAME' | translate" tooltipPosition="top" tooltipEvent="hover">
-      <span class="p-float-label">
-        <p-autoComplete
-          id="help_detail_form_product_name_autocomplete"
-          styleClass="w-full"
-          inputStyleClass="pt-3 pb-2"
-          formControlName="product"
-          field="displayName"
-          ngDefaultControl
-          [readonly]="changeMode === 'EDIT'"
-          [suggestions]="productsFiltered"
-          (completeMethod)="filterProducts($event)"
-          [dropdown]="true"
-          [forceSelection]="true"
-          appendTo="body"
-        ></p-autoComplete>
-        <label class="ocx-required-label" for="help_detail_form_product_name_autocomplete"
-          >{{ 'HELP_ITEM.APPLICATION_NAME' | translate }}
-        </label>
-      </span>
-    </div>
-    <div [pTooltip]="'HELP_ITEM.TOOLTIPS.HELP_ITEM_ID' | translate" tooltipPosition="top" tooltipEvent="hover">
-      <span class="p-float-label" controlErrorAnchor>
-        <input pInputText type="text" id="help_detail_form_item_id" class="w-full pt-3 pb-2" formControlName="itemId" />
-        <label class="ocx-required-label" for="help_detail_form_item_id">
-          {{ 'HELP_ITEM.HELP_ITEM_ID' | translate }}</label
-        >
-      </span>
-    </div>
-    <div [pTooltip]="'HELP_ITEM.TOOLTIPS.BASE_URL' | translate" tooltipPosition="top" tooltipEvent="hover">
-      <span class="p-float-label">
-        <input
-          pInputText
-          type="text"
-          id="help_detail_form_base_url"
-          class="w-full pt-3 pb-2"
-          formControlName="baseUrl"
-        />
-        <label class="" for="help_detail_form_base_url">{{ 'HELP_ITEM.BASE_URL' | translate }}</label>
-      </span>
-    </div>
-    <div [pTooltip]="'HELP_ITEM.TOOLTIPS.RESOURCE_URL' | translate" tooltipPosition="top" tooltipEvent="hover">
-      <span class="p-float-label">
-        <input
-          pInputText
-          type="text"
-          id="help_detail_form_resource_url"
-          class="w-full pt-3 pb-2"
-          formControlName="resourceUrl"
-        />
-        <label class="" for="help_detail_form_resource_url">{{ 'HELP_ITEM.RESOURCE_URL' | translate }}</label>
-      </span>
-    </div>
-    <div [pTooltip]="'HELP_ITEM.TOOLTIPS.CONTEXT' | translate" tooltipPosition="top" tooltipEvent="hover">
-      <span class="p-float-label">
-        <input
-          pInputText
-          type="text"
-          id="help_detail_form_context"
-          class="w-full pt-3 pb-2"
-          formControlName="context"
-        />
-        <label class="" for="help_detail_form_context">{{ 'HELP_ITEM.CONTEXT' | translate }}</label>
-      </span>
-    </div>
+    <span class="p-float-label">
+      <p-autoComplete
+        id="help_detail_form_product_name_autocomplete"
+        styleClass="w-full"
+        inputStyleClass="pt-3 pb-2 text-responsive"
+        formControlName="product"
+        field="displayName"
+        ngDefaultControl
+        appendTo="body"
+        [dropdown]="true"
+        [forceSelection]="true"
+        [readonly]="changeMode === 'EDIT'"
+        [suggestions]="productsFiltered"
+        (completeMethod)="filterProducts($event)"
+        [pTooltip]="'HELP_ITEM.TOOLTIPS.APPLICATION_NAME' | translate"
+        tooltipPosition="top"
+        tooltipEvent="hover"
+      ></p-autoComplete>
+      <label class="ocx-required-label" for="help_detail_form_product_name_autocomplete"
+        >{{ 'HELP_ITEM.APPLICATION_NAME' | translate }}
+      </label>
+    </span>
+    <span class="p-float-label" controlErrorAnchor>
+      <input
+        pInputText
+        type="text"
+        id="help_detail_form_item_id"
+        class="w-full pt-3 pb-2 text-responsive"
+        formControlName="itemId"
+        [pTooltip]="'HELP_ITEM.TOOLTIPS.HELP_ITEM_ID' | translate"
+        tooltipPosition="top"
+        tooltipEvent="hover"
+      />
+      <label class="ocx-required-label" for="help_detail_form_item_id">
+        {{ 'HELP_ITEM.HELP_ITEM_ID' | translate }}</label
+      >
+    </span>
+    <span class="p-float-label">
+      <input
+        pInputText
+        type="text"
+        id="help_detail_form_base_url"
+        class="w-full pt-3 pb-2 text-responsive"
+        formControlName="baseUrl"
+        [pTooltip]="'HELP_ITEM.TOOLTIPS.BASE_URL' | translate"
+        tooltipPosition="top"
+        tooltipEvent="hover"
+      />
+      <label class="" for="help_detail_form_base_url">{{ 'HELP_ITEM.BASE_URL' | translate }}</label>
+    </span>
+    <span class="p-float-label">
+      <input
+        pInputText
+        type="text"
+        id="help_detail_form_resource_url"
+        class="w-full pt-3 pb-2 text-responsive"
+        formControlName="resourceUrl"
+        [pTooltip]="'HELP_ITEM.TOOLTIPS.RESOURCE_URL' | translate"
+        tooltipPosition="top"
+        tooltipEvent="hover"
+      />
+      <label class="" for="help_detail_form_resource_url">{{ 'HELP_ITEM.RESOURCE_URL' | translate }}</label>
+    </span>
+    <span class="p-float-label">
+      <input
+        pInputText
+        type="text"
+        id="help_detail_form_context"
+        class="w-full pt-3 pb-2 text-responsive"
+        formControlName="context"
+        [pTooltip]="'HELP_ITEM.TOOLTIPS.CONTEXT' | translate"
+        tooltipPosition="top"
+        tooltipEvent="hover"
+      />
+      <label class="" for="help_detail_form_context">{{ 'HELP_ITEM.CONTEXT' | translate }}</label>
+    </span>
   </div>
 </form>

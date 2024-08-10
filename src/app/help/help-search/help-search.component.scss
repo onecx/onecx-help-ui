@@ -1,6 +1,7 @@
 @import '/src/_mixins.scss';
 
 @include danger-action;
+@include footer-buttons;
 @include table-inline-buttons;
 @include listbox-zebra-rows;
 @include correct-search-criteria;
