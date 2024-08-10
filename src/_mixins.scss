@@ -138,6 +138,14 @@
   }
 }
 
+@mixin footer-buttons {
+  :host ::ng-deep {
+    .p-dialog .p-dialog-footer button {
+      margin: 0;
+    }
+  }
+}
+
 @mixin correct-autocomplete {
   :host ::ng-deep {
     .p-autocomplete-panel .p-autocomplete-items .p-autocomplete-item {
