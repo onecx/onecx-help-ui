@@ -6,7 +6,8 @@ import { HelpFormComponent } from '../help-form/help-form.component'
 
 @Component({
   selector: 'app-help-detail',
-  templateUrl: './help-detail.component.html'
+  templateUrl: './help-detail.component.html',
+  styleUrls: ['./help-detail.component.scss']
 })
 export class HelpDetailComponent implements OnChanges {
   @Input() public helpItem: Help | undefined

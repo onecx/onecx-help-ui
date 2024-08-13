@@ -1,0 +1,5 @@
+@import '/src/_mixins.scss';
+
+@include correct-search-criteria;
+@include correct-autocomplete;
+@include displaying-text-responsive;
