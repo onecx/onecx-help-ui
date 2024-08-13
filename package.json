@@ -4,7 +4,7 @@
   "version": "0.0.0",
   "license": "Apache-2.0",
   "contributors": [
-    "OneCX Development Team <onecx-development-team@onecx.org>"
+    "OneCX Development Team <onecx_dev@1000kit.org>"
   ],
   "config": {
     "openapiYaml": "src/assets/api/openapi-bff.yaml",
@@ -17,7 +17,7 @@
     "lint": "ng lint --cache=true",
     "format": "ng lint --fix",
     "eslint": "eslint --quiet --ext .js,.ts src",
-    "browsers": "npx browserslist",
+    "browser": "npx browserslist",
     "prepare": "husky",
     "start": "ng serve --configuration=development --proxy-config=proxy.conf.js",
     "test": "ng test",
@@ -89,11 +89,11 @@
     "@commitlint/cli": "^19.3.0",
     "@commitlint/config-conventional": "^19.2.2",
     "@openapitools/openapi-generator-cli": "^2.13.4",
-    "@schematics/angular": "18.1.2",
+    "@schematics/angular": "18.1.4",
     "@svgr/webpack": "^8.1.0",
     "@swc-node/register": "^1.10.9",
     "@types/jasmine": "~5.1.4",
-    "@types/node": "~22.1.0",
+    "@types/node": "~22.2.0",
     "@typescript-eslint/eslint-plugin": "^7.18.0",
     "@typescript-eslint/parser": "^7.18.0",
     "css-loader": "^7.1.2",
@@ -113,9 +113,9 @@
     "ng-packagr": "18.1.0",
     "ngx-build-plus": "^18.0.0",
     "ngx-translate-testing": "^7.0.0",
-    "postcss": "8.4.40",
+    "postcss": "8.4.41",
     "postcss-import": "~16.1.0",
-    "postcss-preset-env": "~9.6.0",
+    "postcss-preset-env": "~10.0.0",
     "postcss-url": "~10.1.3",
     "prettier": "^3.3.3",
     "sonar-scanner": "^3.1.0",

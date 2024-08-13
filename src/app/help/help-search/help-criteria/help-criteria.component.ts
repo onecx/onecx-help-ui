@@ -12,7 +12,8 @@ export interface HelpCriteriaForm {
 
 @Component({
   selector: 'app-help-criteria',
-  templateUrl: './help-criteria.component.html'
+  templateUrl: './help-criteria.component.html',
+  styleUrls: ['./help-criteria.component.scss']
 })
 export class HelpCriteriaComponent implements OnInit, OnChanges {
   @Input() public actions: Action[] = []

@@ -1,4 +1,4 @@
 @import '/src/_mixins.scss';
 
 @include correct-modal-dialog;
-@include make-disabled-form-readable-input;
+@include readable-disabled-form-controls;
