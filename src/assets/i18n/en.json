@@ -23,8 +23,8 @@
     },
     "DELETE": {
       "LABEL": "Delete",
-      "HELP_ITEM": "Delete this Help Item",
-      "HELP_ITEM.TOOLTIP": "Delete Help Item",
+      "HELP_ITEM": "Delete Help Item",
+      "HELP_ITEM.TOOLTIP": "Delete this Help Item",
       "MESSAGE_TEXT": "Do you want to delete \"{{ITEM}}\"?",
       "MESSAGE_INFO": "This action cannot be undone!",
       "MESSAGE": {
