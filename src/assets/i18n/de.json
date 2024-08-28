@@ -28,7 +28,7 @@
       "MESSAGE_TEXT": "Möchten Sie \"{{ITEM}}\" löschen?",
       "MESSAGE_INFO": "Diese Aktion kann nicht rückgängig gemacht werden!",
       "MESSAGE": {
-        "OPERATOR_TEXT": "Dieser Hilfeartikel wurde automatisiert erstellt. Wenn die Applikation diesen Artikel weiterhin anbietet, wird sie beim nächsten Deployment wiederhergestellt.",
+        "OPERATOR_TEXT": "Dieser Hilfeartikel wurde automatisiert erstellt. Wenn die Applikation diesen Artikel weiterhin anbietet, wird er beim nächsten Deployment wiederhergestellt.",
         "HELP_ITEM_OK": "Der Hilfeartikel wurde erfolgreich gelöscht",
         "HELP_ITEM_NOK": "Ein Fehler ist aufgetreten. Der Hilfeartikel wurde nicht gelöscht."
       }
