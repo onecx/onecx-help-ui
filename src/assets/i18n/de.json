@@ -28,6 +28,7 @@
       "MESSAGE_TEXT": "Möchten Sie \"{{ITEM}}\" löschen?",
       "MESSAGE_INFO": "Diese Aktion kann nicht rückgängig gemacht werden!",
       "MESSAGE": {
+        "OPERATOR_TEXT": "Dieser Hilfeartikel wurde automatisiert erstellt. Wenn die Applikation diesen Artikel weiterhin anbietet, wird er beim nächsten Deployment wiederhergestellt.",
         "HELP_ITEM_OK": "Der Hilfeartikel wurde erfolgreich gelöscht",
         "HELP_ITEM_NOK": "Ein Fehler ist aufgetreten. Der Hilfeartikel wurde nicht gelöscht."
       }
@@ -111,12 +112,14 @@
     "CONTEXT": "Kontext",
     "BASE_URL": "Basis URL",
     "RESOURCE_URL": "Ressource Pfad",
+    "OPERATOR": "Automatisiert erstellt",
     "TOOLTIPS": {
       "APPLICATION_NAME": "Applikation mit Hilfeartikel",
       "HELP_ITEM_ID": "Eindeutige ID für einen Hilfeartikel der Applikation. Muss innerhalb der jeweiligen Seite verwendet worden sein.",
       "BASE_URL": "Basis der Hilfeartikel-URL - der Verweis auf die Hauptseite der Dokumentation der Applikation",
       "RESOURCE_URL": "Letzter Teil der Hilfeartikel-URL speziell für die Seite (Ressource)",
-      "CONTEXT": "Spezieller Abschnitt innerhalb der Seite (Ressource)"
+      "CONTEXT": "Spezieller Abschnitt innerhalb der Seite (Ressource)",
+      "OPERATOR": "Wenn gesetzt, dann wurde dieser Hilfeartikel automatisiert erzeugt. Alle Änderungen gehen beim nächsten Deployment verloren."
     }
   },
   "HELP_SEARCH": {
