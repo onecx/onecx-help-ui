@@ -1,8 +1,8 @@
-import { Component, Input, OnChanges, SimpleChanges } from '@angular/core'
+import { Component, Input, OnChanges } from '@angular/core'
 import { FormControl, FormGroup, Validators } from '@angular/forms'
 
 import { Column } from '@onecx/portal-integration-angular'
-import { CreateHelp, Product } from 'src/app/shared/generated'
+import { Help, Product } from 'src/app/shared/generated'
 
 export interface HelpDetailForm {
   product: FormControl<Product | null>
@@ -10,6 +10,7 @@ export interface HelpDetailForm {
   context: FormControl<string | null>
   baseUrl: FormControl<string | null>
   resourceUrl: FormControl<string | null>
+  operator: FormControl<boolean | null>
 }
 
 @Component({
@@ -17,7 +18,7 @@ export interface HelpDetailForm {
   templateUrl: './help-form.component.html'
 })
 export class HelpFormComponent implements OnChanges {
-  @Input() helpItem: CreateHelp | undefined
+  @Input() helpItem: Help | undefined
   @Input() changeMode = 'NEW'
   @Input() products: Product[] = []
 
@@ -37,16 +38,18 @@ export class HelpFormComponent implements OnChanges {
       itemId: new FormControl(null, [Validators.required, Validators.minLength(2), Validators.maxLength(255)]),
       context: new FormControl(null, [Validators.maxLength(255)]),
       baseUrl: new FormControl(null, [Validators.maxLength(255)]),
-      resourceUrl: new FormControl(null, [Validators.maxLength(255)])
+      resourceUrl: new FormControl(null, [Validators.maxLength(255)]),
+      operator: new FormControl(false)
     })
   }
 
-  ngOnChanges(changes: SimpleChanges): void {
-    if (this.helpItem)
+  ngOnChanges(): void {
+    if (this.helpItem) {
       this.formGroup.patchValue({
         ...this.helpItem
       })
-    else this.formGroup.reset()
+      this.formGroup.controls['operator'].disable()
+    } else this.formGroup.reset()
   }
 
   public filterProducts(event: { query: string }) {

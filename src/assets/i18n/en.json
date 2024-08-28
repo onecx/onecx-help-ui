@@ -28,6 +28,7 @@
       "MESSAGE_TEXT": "Do you want to delete \"{{ITEM}}\"?",
       "MESSAGE_INFO": "This action cannot be undone!",
       "MESSAGE": {
+        "OPERATOR_TEXT": "This Help Item was created by automation. If the application continues to offer this Help Item, it will be restored during the next deployment.",
         "HELP_ITEM_OK": "The Help Item was deleted successfully",
         "HELP_ITEM_NOK": "An error has occurred. The Help Item was not deleted."
       }
@@ -111,12 +112,14 @@
     "CONTEXT": "Context",
     "BASE_URL": "Base URL",
     "RESOURCE_URL": "Resource URL",
+    "OPERATOR": "Created by automation",
     "TOOLTIPS": {
       "APPLICATION_NAME": "Application with Help Item",
       "HELP_ITEM_ID": "Unique ID for a Help Item of the Application. Must have been used within the respective page.",
       "BASE_URL": "Base part of the Help Item URL - the base path to the documentation of the Application",
       "RESOURCE_URL": "Last part of the Help Item URL specific to the page (resource)",
-      "CONTEXT": "Specific context within the page (resource)"
+      "CONTEXT": "Specific context within the page (resource)",
+      "OPERATOR": "If set then this Help Item was created by automation. All changes will be lost on the next deployment."
     }
   },
   "HELP_SEARCH": {

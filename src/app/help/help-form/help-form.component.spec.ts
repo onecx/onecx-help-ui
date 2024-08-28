@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing'
-import { CUSTOM_ELEMENTS_SCHEMA, SimpleChange } from '@angular/core'
-import { ReactiveFormsModule, FormGroup } from '@angular/forms'
+import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core'
+import { ReactiveFormsModule, FormGroup, FormControl } from '@angular/forms'
 import { HttpClient } from '@angular/common/http'
 import { HttpClientTestingModule } from '@angular/common/http/testing'
 import { TranslateModule, TranslateLoader } from '@ngx-translate/core'
@@ -11,6 +11,15 @@ import { MessageService } from 'primeng/api'
 
 import { Product } from 'src/app/shared/generated'
 import { HelpFormComponent } from './help-form.component'
+
+const mockForm = new FormGroup({
+  product: new FormControl(null),
+  itemId: new FormControl(null),
+  context: new FormControl(null),
+  baseUrl: new FormControl(null),
+  resourceUrl: new FormControl(null),
+  operator: new FormControl(false)
+})
 
 describe('HelpFormComponent', () => {
   let component: HelpFormComponent
@@ -52,25 +61,22 @@ describe('HelpFormComponent', () => {
   it('should patch formGroup OnChanges if helpItem exists', () => {
     const mockHelpItem = {
       itemId: 'id',
-      productName: 'name'
+      productName: 'name',
+      operator: false
     }
     component.helpItem = mockHelpItem
-    component.formGroup = formGroupSpy
+    component.formGroup = mockForm
 
-    component.ngOnChanges({
-      helpItem: new SimpleChange(null, mockHelpItem, false)
-    })
+    component.ngOnChanges()
 
-    expect(formGroupSpy.patchValue).toHaveBeenCalledWith(mockHelpItem)
+    expect(component.formGroup.controls['itemId'].value).toBe(mockHelpItem.itemId)
   })
 
   it('should reset formGroup OnChanges if helpItem does not exist', () => {
     component.helpItem = undefined
     component.formGroup = formGroupSpy
 
-    component.ngOnChanges({
-      helpItem: new SimpleChange(null, null, false)
-    })
+    component.ngOnChanges()
 
     expect(component.formGroup.reset).toHaveBeenCalled()
   })

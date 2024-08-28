@@ -1,4 +1,4 @@
-import { NO_ERRORS_SCHEMA, Component, SimpleChanges } from '@angular/core'
+import { NO_ERRORS_SCHEMA, Component } from '@angular/core'
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing'
 import { HttpClient } from '@angular/common/http'
 import { HttpClientTestingModule } from '@angular/common/http/testing'
@@ -49,7 +49,7 @@ describe('HelpDetailComponent', () => {
       console.log('Filtering products with query:', event.query)
     }
     // eslint-disable-next-line @angular-eslint/use-lifecycle-interface
-    ngOnChanges(changes: SimpleChanges): void {
+    ngOnChanges(): void {
       console.log('On changes')
     }
   }

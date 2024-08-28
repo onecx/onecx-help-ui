@@ -165,6 +165,7 @@
       <div id="hm_help_delete_message_text" class="font-bold">
         {{('ACTIONS.DELETE.MESSAGE_TEXT' | translate).replace('{{ITEM}}', helpItem?.itemId)}}
       </div>
+      <div *ngIf="helpItem?.operator" class="mt-3">{{ 'ACTIONS.DELETE.MESSAGE.OPERATOR_TEXT' | translate }}</div>
       <div class="mt-2">{{ 'ACTIONS.DELETE.MESSAGE_INFO' | translate }}</div>
     </div>
   </div>
