@@ -7,7 +7,7 @@
     (click)="openHelpPage($event)"
     tooltipPosition="bottom"
     (keydown.enter.t)="onEnterClick()"
-    aria-label="'SHOW_HELP.LABEL' | translate"
+    [attr.aria-label]="'SHOW_HELP.LABEL' | translate"
     [pTooltip]="'SHOW_HELP.TOOLTIP' | translate"
     tooltipPosition="top"
     tooltipEvent="hover"
