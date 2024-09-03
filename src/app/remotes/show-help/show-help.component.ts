@@ -67,6 +67,7 @@ export class OneCXShowHelpComponent implements ocxRemoteComponent, ocxRemoteWebc
   helpArticleId$: Observable<string>
   productName$: Observable<string>
   helpDataItem$: Observable<Help> | undefined
+  productUrlUsed = false
 
   permissions: string[] = []
 
@@ -94,23 +95,12 @@ export class OneCXShowHelpComponent implements ocxRemoteComponent, ocxRemoteWebc
         return ''
       })
     )
-
     this.loadHelpDataItem()
-    // this.helpDataItem$ = combineLatest([this.productName$, this.helpArticleId$]).pipe(
-    //   mergeMap(([productName, helpArticleId]) => {
-    //     if (productName && helpArticleId) return this.loadHelpArticle(productName, helpArticleId)
-    //     return of({} as Help)
-    //   }),
-    //   catchError(() => {
-    //     console.error(`Failed to load help article`)
-    //     return of({} as Help)
-    //   })
-    // )
   }
+
   private loadHelpDataItem() {
     this.helpDataItem$ = combineLatest([this.productName$, this.helpArticleId$]).pipe(
       mergeMap(([productName, helpArticleId]) => {
-        console.log('LOAD HELP DATA:', helpArticleId)
         if (productName && helpArticleId) return this.loadHelpArticle(productName, helpArticleId)
         return of({} as Help)
       }),
@@ -141,10 +131,9 @@ export class OneCXShowHelpComponent implements ocxRemoteComponent, ocxRemoteWebc
           if (helpPageResult.totalElements !== 1) {
             return {} as Help
           }
-          console.log('HELP!', helpPageResult.stream![0].baseUrl)
           if (helpPageResult.stream![0].itemId !== 'PRODUCT_BASE_URL' && !helpPageResult.stream![0].baseUrl) {
-            console.log('HELP2!')
             this.helpArticleId$ = of('PRODUCT_BASE_URL')
+            this.productUrlUsed = true
             this.loadHelpDataItem()
             this.openHelpPage({})
           }
@@ -179,21 +168,21 @@ export class OneCXShowHelpComponent implements ocxRemoteComponent, ocxRemoteWebc
               })
             }
           }
-          //   } else {
-          //     console.log('NO HELP ITEM')
-          //     this.translateService.get('SHOW_HELP.NO_HELP_ITEM.HEADER').subscribe((dialogTitle) => {
-          //       this.dialogService.open(NoHelpItemComponent, {
-          //         header: dialogTitle,
-          //         width: '400px',
-          //         data: {
-          //           helpArticleId: helpArticleId
-          //         }
-          //       })
-          //     })
+        } else if (!this.productUrlUsed) {
+          this.translateService.get('SHOW_HELP.NO_HELP_ITEM.HEADER').subscribe((dialogTitle) => {
+            this.dialogService.open(NoHelpItemComponent, {
+              header: dialogTitle,
+              width: '400px',
+              data: {
+                helpArticleId: helpArticleId
+              }
+            })
+          })
         }
       }
     })
     event.preventDefault()
+    this.productUrlUsed = false
   }
 
   public constructUrl(helpUrl: string, basePath: string, deploymentPath: string): URL {
