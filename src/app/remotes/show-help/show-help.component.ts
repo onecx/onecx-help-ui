@@ -66,7 +66,8 @@ import { NoHelpItemComponent } from './no-help-item/no-help-item.component'
 export class OneCXShowHelpComponent implements ocxRemoteComponent, ocxRemoteWebcomponent {
   helpArticleId$: Observable<string>
   productName$: Observable<string>
-  helpDataItem$: Observable<Help>
+  helpDataItem$: Observable<Help> | undefined
+  productUrlUsed = false
 
   permissions: string[] = []
 
@@ -94,14 +95,17 @@ export class OneCXShowHelpComponent implements ocxRemoteComponent, ocxRemoteWebc
         return ''
       })
     )
+    this.loadHelpDataItem()
+  }
 
+  private loadHelpDataItem() {
     this.helpDataItem$ = combineLatest([this.productName$, this.helpArticleId$]).pipe(
       mergeMap(([productName, helpArticleId]) => {
         if (productName && helpArticleId) return this.loadHelpArticle(productName, helpArticleId)
         return of({} as Help)
       }),
       catchError(() => {
-        console.log(`Failed to load help article`)
+        console.error(`Failed to load help article`)
         return of({} as Help)
       })
     )
@@ -126,6 +130,12 @@ export class OneCXShowHelpComponent implements ocxRemoteComponent, ocxRemoteWebc
         map((helpPageResult) => {
           if (helpPageResult.totalElements !== 1) {
             return {} as Help
+          }
+          if (helpPageResult.stream![0].itemId !== 'PRODUCT_BASE_URL' && !helpPageResult.stream![0].baseUrl) {
+            this.helpArticleId$ = of('PRODUCT_BASE_URL')
+            this.productUrlUsed = true
+            this.loadHelpDataItem()
+            this.openHelpPage({})
           }
           return helpPageResult.stream!.at(0)!
         })
@@ -158,7 +168,7 @@ export class OneCXShowHelpComponent implements ocxRemoteComponent, ocxRemoteWebc
               })
             }
           }
-        } else {
+        } else if (!this.productUrlUsed) {
           this.translateService.get('SHOW_HELP.NO_HELP_ITEM.HEADER').subscribe((dialogTitle) => {
             this.dialogService.open(NoHelpItemComponent, {
               header: dialogTitle,
@@ -172,6 +182,7 @@ export class OneCXShowHelpComponent implements ocxRemoteComponent, ocxRemoteWebc
       }
     })
     event.preventDefault()
+    this.productUrlUsed = false
   }
 
   public constructUrl(helpUrl: string, basePath: string, deploymentPath: string): URL {
