@@ -5,9 +5,9 @@ const config = withModuleFederationPlugin({
   name: 'onecx-help-ui',
   filename: 'remoteEntry.js',
   exposes: {
-    './OneCXHelpModule': 'src/bootstrap.ts',
-    './OneCXShowHelpComponent': 'src/app/remotes/show-help/show-help.component.bootstrap.ts',
-    './OneCXHelpItemEditorComponent': 'src/app/remotes/help-item-editor/help-item-editor.component.bootstrap.ts'
+    './OneCXHelpModule': 'src/main.ts',
+    './OneCXShowHelpComponent': 'src/app/remotes/show-help/show-help.component.main.ts',
+    './OneCXHelpItemEditorComponent': 'src/app/remotes/help-item-editor/help-item-editor.component.main.ts'
   },
   shared: share({
     '@angular/core': { requiredVersion: 'auto', includeSecondaries: true },
