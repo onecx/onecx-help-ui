@@ -12,8 +12,8 @@
     "src/polyfills.ts",
     "src/app/onecx-help-remote.module.ts",
     "src/app/remotes/show-help/show-help.component.ts",
-    "src/app/remotes/help-item-editor/help-item-editor.component.ts"
+    "src/app/remotes/help-item-editor/help-item-editor.component.main.ts"
   ],
-  "include": ["src/**/*.ts", "src/**/*.d.ts"],
+  "include": ["src/**/*.ts"],
   "exclude": ["src/test.ts", "src/**/*.spec.ts"]
 }
