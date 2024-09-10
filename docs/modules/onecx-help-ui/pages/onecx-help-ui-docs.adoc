@@ -2,24 +2,24 @@
 image:https://github.com/onecx-apps/onecx-help-ui/actions/workflows/build.yml/badge.svg[OneCX Help UI]
 
 
-=== What is Help Management
+=== What is Help Management?
 OneCX Help Management refers to the systematic process of capturing,
 organizing, storing, and retrieving help items.
 
 
 === Overview
 OneCX Help is a comprehensive solution for managing
-help items for OneCX products in a user-friendly and efficient manner.
+Help items for OneCX products in a user-friendly and efficient manner.
 In this document we are only referring to the OneCX Help User Interface (UI) of
 OneCX Help Management.
 
-The user interface (UI) for this help management component is designed 
+The UI for this Help management component is designed 
 to provide an intuitive and user-friendly experience for managing
-help items in the cloud-native environment built with Quarkus.
+Help items in the cloud-native environment built with Quarkus.
 
 
 === Getting Started
-To start developing the OneCX Help User Interface, you need to
+To start developing the OneCX Help UI, you need to
 set up your local development environment. It’s recommended that you use
 WSL as the runtime for your application, as shown in the figure below.
 If you are using a different runtime, please check that you meet the
@@ -50,7 +50,7 @@ git clone https://github.com/onecx/help-dev.git
 The repository `onecx-help` contains the source code of
 the OneCX Help product. 
 The repository `onecx-help-ui` contains the source code of
-the OneCX Help user interface as part of the product. 
+the OneCX Help UI as part of the product. 
 
 ==== Update local DNS resolution
 Assuming you are using WSL, updating the local host file for local 
