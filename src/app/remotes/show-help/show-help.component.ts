@@ -67,7 +67,6 @@ export class OneCXShowHelpComponent implements ocxRemoteComponent, ocxRemoteWebc
   helpArticleId$: Observable<string>
   productName$: Observable<string>
   helpDataItem$: Observable<Help> | undefined
-  productUrlUsed = false
 
   permissions: string[] = []
 
@@ -98,6 +97,18 @@ export class OneCXShowHelpComponent implements ocxRemoteComponent, ocxRemoteWebc
     this.loadHelpDataItem()
   }
 
+  @Input() set ocxRemoteComponentConfig(config: RemoteComponentConfig) {
+    this.ocxInitRemoteComponent(config)
+  }
+
+  ocxInitRemoteComponent(config: RemoteComponentConfig): void {
+    this.baseUrl.next(config.baseUrl)
+    this.permissions = config.permissions
+    this.helpDataService.configuration = new Configuration({
+      basePath: Location.joinWithSlash(config.baseUrl, environment.apiPrefix)
+    })
+  }
+
   private loadHelpDataItem() {
     this.helpDataItem$ = combineLatest([this.productName$, this.helpArticleId$]).pipe(
       mergeMap(([productName, helpArticleId]) => {
@@ -111,35 +122,15 @@ export class OneCXShowHelpComponent implements ocxRemoteComponent, ocxRemoteWebc
     )
   }
 
-  @Input() set ocxRemoteComponentConfig(config: RemoteComponentConfig) {
-    this.ocxInitRemoteComponent(config)
-  }
-
-  ocxInitRemoteComponent(config: RemoteComponentConfig): void {
-    this.baseUrl.next(config.baseUrl)
-    this.permissions = config.permissions
-    this.helpDataService.configuration = new Configuration({
-      basePath: Location.joinWithSlash(config.baseUrl, environment.apiPrefix)
-    })
-  }
-
   private loadHelpArticle(productName: string, helpItemId: string): Observable<Help> {
-    return this.helpDataService
-      .searchHelps({ helpSearchCriteria: { itemId: helpItemId, productName: productName } })
-      .pipe(
-        map((helpPageResult) => {
-          if (helpPageResult.totalElements !== 1) {
-            return {} as Help
-          }
-          if (helpPageResult.stream![0].itemId !== 'PRODUCT_BASE_URL' && !helpPageResult.stream![0].baseUrl) {
-            this.helpArticleId$ = of('PRODUCT_BASE_URL')
-            this.productUrlUsed = true
-            this.loadHelpDataItem()
-            this.openHelpPage({})
-          }
-          return helpPageResult.stream!.at(0)!
-        })
-      )
+    return this.helpDataService.getHelpByProductNameItemId({ helpItemId: helpItemId, productName: productName }).pipe(
+      map((helpItem) => {
+        if (!helpItem) {
+          return {} as Help
+        }
+        return helpItem
+      })
+    )
   }
 
   public onEnterClick() {
@@ -168,7 +159,7 @@ export class OneCXShowHelpComponent implements ocxRemoteComponent, ocxRemoteWebc
               })
             }
           }
-        } else if (!this.productUrlUsed) {
+        } else {
           this.translateService.get('SHOW_HELP.NO_HELP_ITEM.HEADER').subscribe((dialogTitle) => {
             this.dialogService.open(NoHelpItemComponent, {
               header: dialogTitle,
@@ -182,7 +173,6 @@ export class OneCXShowHelpComponent implements ocxRemoteComponent, ocxRemoteWebc
       }
     })
     event.preventDefault()
-    this.productUrlUsed = false
   }
 
   public constructUrl(helpUrl: string, basePath: string, deploymentPath: string): URL {

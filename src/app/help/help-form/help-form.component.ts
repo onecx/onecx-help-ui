@@ -37,7 +37,7 @@ export class HelpFormComponent implements OnChanges {
       product: new FormControl(null, [Validators.required]),
       itemId: new FormControl(null, [Validators.required, Validators.minLength(2), Validators.maxLength(255)]),
       context: new FormControl(null, [Validators.maxLength(255)]),
-      baseUrl: new FormControl(null, [Validators.maxLength(255)]),
+      baseUrl: new FormControl(null, [Validators.required, Validators.maxLength(255)]),
       resourceUrl: new FormControl(null, [Validators.maxLength(255)]),
       operator: new FormControl(false)
     })
