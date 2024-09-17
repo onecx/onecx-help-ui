@@ -62,6 +62,7 @@ describe('HelpFormComponent', () => {
     const mockHelpItem = {
       itemId: 'id',
       productName: 'name',
+      baseUrl: 'base',
       operator: false
     }
     component.helpItem = mockHelpItem
