@@ -112,23 +112,16 @@ export class OneCXShowHelpComponent implements ocxRemoteComponent, ocxRemoteWebc
   private loadHelpDataItem() {
     this.helpDataItem$ = combineLatest([this.productName$, this.helpArticleId$]).pipe(
       mergeMap(([productName, helpArticleId]) => {
-        if (productName && helpArticleId) return this.loadHelpArticle(productName, helpArticleId)
-        return of({} as Help)
+        if (productName && helpArticleId) {
+          return this.helpDataService.getHelpByProductNameItemId({
+            helpItemId: helpArticleId,
+            productName: productName
+          })
+        } else return of({} as Help)
       }),
       catchError(() => {
         console.error(`Failed to load help article`)
         return of({} as Help)
-      })
-    )
-  }
-
-  private loadHelpArticle(productName: string, helpItemId: string): Observable<Help> {
-    return this.helpDataService.getHelpByProductNameItemId({ helpItemId: helpItemId, productName: productName }).pipe(
-      map((helpItem) => {
-        if (!helpItem) {
-          return {} as Help
-        }
-        return helpItem
       })
     )
   }
