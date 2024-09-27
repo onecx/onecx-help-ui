@@ -146,7 +146,7 @@ export class OneCXShowHelpComponent implements ocxRemoteComponent, ocxRemoteWebc
             try {
               window.open(url, '_blank')?.focus()
             } catch (e) {
-              console.log(`Could not construct help page url ${url.toString()}`, e)
+              console.error(`Could not construct help page url ${url.toString()}`, e)
               this.portalMessageService.error({
                 summaryKey: 'SHOW_HELP.HELP_PAGE_ERROR'
               })
