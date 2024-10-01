@@ -96,9 +96,9 @@ export class HelpSearchComponent implements OnInit {
   ]
 
   constructor(
-    private helpInternalAPIService: HelpsInternalAPIService,
-    private translate: TranslateService,
-    private msgService: PortalMessageService
+    private readonly helpInternalAPIService: HelpsInternalAPIService,
+    private readonly translate: TranslateService,
+    private readonly msgService: PortalMessageService
   ) {
     this.validationErrorCause = ''
   }

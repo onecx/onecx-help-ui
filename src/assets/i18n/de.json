@@ -90,6 +90,9 @@
       "SAVE_AS": "Speichern als neues {{TYPE}}"
     }
   },
+  "GENERAL": {
+    "OF": "von"
+  },
   "INTERNAL": {
     "CREATION_DATE": "Erstellt am",
     "CREATION_USER": "Erstellt von",

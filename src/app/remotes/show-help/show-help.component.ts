@@ -71,14 +71,14 @@ export class OneCXShowHelpComponent implements ocxRemoteComponent, ocxRemoteWebc
   permissions: string[] = []
 
   constructor(
-    @Inject(BASE_URL) private baseUrl: ReplaySubject<string>,
-    private appStateService: AppStateService,
-    private userService: UserService,
-    private router: Router,
-    private helpDataService: HelpsInternalAPIService,
-    private dialogService: DialogService,
-    private portalMessageService: PortalMessageService,
-    private translateService: TranslateService
+    @Inject(BASE_URL) private readonly baseUrl: ReplaySubject<string>,
+    private readonly appStateService: AppStateService,
+    private readonly userService: UserService,
+    private readonly router: Router,
+    private readonly helpDataService: HelpsInternalAPIService,
+    private readonly dialogService: DialogService,
+    private readonly portalMessageService: PortalMessageService,
+    private readonly translateService: TranslateService
   ) {
     this.userService.lang$.subscribe((lang) => this.translateService.use(lang))
     this.helpArticleId$ = this.appStateService.currentPage$.asObservable().pipe(

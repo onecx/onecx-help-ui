@@ -23,8 +23,8 @@ export class HelpDetailComponent implements OnChanges {
   public productName: string | undefined
 
   constructor(
-    private helpApi: HelpsInternalAPIService,
-    private msgService: PortalMessageService
+    private readonly helpApi: HelpsInternalAPIService,
+    private readonly msgService: PortalMessageService
   ) {}
 
   ngOnChanges() {
