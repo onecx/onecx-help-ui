@@ -76,14 +76,14 @@ export class OneCXHelpItemEditorComponent implements ocxRemoteComponent, ocxRemo
   permissions: string[] = []
 
   constructor(
-    @Inject(BASE_URL) private baseUrl: ReplaySubject<string>,
-    private router: Router,
-    private appStateService: AppStateService,
-    private userService: UserService,
-    private helpDataService: HelpsInternalAPIService,
-    private portalMessageService: PortalMessageService,
-    private portalDialogService: PortalDialogService,
-    private translateService: TranslateService
+    @Inject(BASE_URL) private readonly baseUrl: ReplaySubject<string>,
+    private readonly router: Router,
+    private readonly appStateService: AppStateService,
+    private readonly userService: UserService,
+    private readonly helpDataService: HelpsInternalAPIService,
+    private readonly portalMessageService: PortalMessageService,
+    private readonly portalDialogService: PortalDialogService,
+    private readonly translateService: TranslateService
   ) {
     this.userService.lang$.subscribe((lang) => this.translateService.use(lang))
     this.helpArticleId$ = this.appStateService.currentPage$.asObservable().pipe(

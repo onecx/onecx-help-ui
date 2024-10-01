@@ -14,8 +14,8 @@ export class NoHelpItemComponent {
   public helpArticleId: string
 
   constructor(
-    public config: DynamicDialogConfig,
-    public ref: DynamicDialogRef
+    public readonly config: DynamicDialogConfig,
+    public readonly ref: DynamicDialogRef
   ) {
     this.helpArticleId = config.data.helpArticleId
   }
