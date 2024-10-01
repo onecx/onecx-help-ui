@@ -71,7 +71,8 @@
       "RESET_TOOLTIP": "Clear given criteria",
       "NO_DATA": "No data",
       "MSG_NO_RESULTS": "Search returned no results",
-      "MSG_SEARCH_FAILED": "Search failed"
+      "MSG_SEARCH_FAILED": "Search failed",
+      "OF": "of"
     },
     "CANCEL": "Cancel",
     "CHOOSE": "Choose",
@@ -89,9 +90,6 @@
       "SAVE": "Save changes",
       "SAVE_AS": "Save as new {{TYPE}}"
     }
-  },
-  "GENERAL": {
-    "OF": "of"
   },
   "INTERNAL": {
     "CREATION_DATE": "Created on",

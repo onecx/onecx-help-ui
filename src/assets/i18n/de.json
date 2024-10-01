@@ -71,7 +71,8 @@
       "RESET_TOOLTIP": "Suchkriterien löschen",
       "NO_DATA": "Keine Ergebnisse",
       "MSG_NO_RESULTS": "Die Suche ergab keine Ergebnisse",
-      "MSG_SEARCH_FAILED": "Die Suche ist fehlgeschlagen"
+      "MSG_SEARCH_FAILED": "Die Suche ist fehlgeschlagen",
+      "OF": "von"
     },
     "CANCEL": "Abbrechen",
     "CHOOSE": "Auswählen",
@@ -89,9 +90,6 @@
       "SAVE": "Die Änderungen speichern",
       "SAVE_AS": "Speichern als neues {{TYPE}}"
     }
-  },
-  "GENERAL": {
-    "OF": "von"
   },
   "INTERNAL": {
     "CREATION_DATE": "Erstellt am",
