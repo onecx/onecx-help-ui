@@ -408,8 +408,7 @@ export class HelpSearchComponent implements OnInit {
   public prepareUrl(help: Help): string {
     let ctx = ''
     if (help.context) {
-      if (help.context.indexOf('#') !== 0) ctx = '#'
-      ctx = ctx + help.context
+      ctx = (help.context.startsWith('#') ? '' : '#') + help.context
     }
     if (help.baseUrl && help.resourceUrl) {
       return Location.joinWithSlash(help.baseUrl ?? '', help.resourceUrl) + ctx

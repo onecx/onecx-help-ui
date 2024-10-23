@@ -685,7 +685,18 @@ describe('HelpSearchComponent', () => {
   })
 
   describe('prepare URL', () => {
-    it('should prepare url: base', () => {
+    it('should prepare empty url: ', () => {
+      const help: Help = {
+        id: 'id',
+        productName: 'ocx-help-ui',
+        itemId: 'PAGE_HELP_SEARCH'
+      }
+      const url = component.prepareUrl(help)
+
+      expect(url).toEqual('')
+    })
+
+    it('should prepare the url on: base', () => {
       const help: Help = {
         id: 'id',
         productName: 'ocx-help-ui',
@@ -697,7 +708,7 @@ describe('HelpSearchComponent', () => {
       expect(url).toEqual(help.baseUrl!)
     })
 
-    it('should prepare url: base + context', () => {
+    it('should prepare the url on: base + context', () => {
       const help: Help = {
         id: 'id',
         productName: 'ocx-help-ui',
@@ -710,7 +721,7 @@ describe('HelpSearchComponent', () => {
       expect(url).toEqual(help.baseUrl! + '#' + help.context)
     })
 
-    it('should prepare url: base + resource', () => {
+    it('should prepare the url on: base + resource', () => {
       const help: Help = {
         id: 'id',
         productName: 'ocx-help-ui',
@@ -723,7 +734,7 @@ describe('HelpSearchComponent', () => {
       expect(url).toEqual(help.baseUrl! + help.resourceUrl)
     })
 
-    it('should prepare url: base + resource + context', () => {
+    it('should prepare the url on: base + resource + context', () => {
       const help: Help = {
         id: 'id',
         productName: 'ocx-help-ui',
