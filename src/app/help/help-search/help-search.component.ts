@@ -183,6 +183,7 @@ export class HelpSearchComponent implements OnInit {
                 }
                 return resultForDisplay
               })
+              this.prepareDialogTranslations()
             }
           }
           this.productsChanged = false
@@ -366,7 +367,7 @@ export class HelpSearchComponent implements OnInit {
               show: 'always',
               permission: 'HELP#EDIT',
               conditional: true,
-              showCondition: this.assignedProductNames.length > 0
+              showCondition: this.resultsForDisplay.length > 0
             },
             {
               label: data['ACTIONS.IMPORT.LABEL'],

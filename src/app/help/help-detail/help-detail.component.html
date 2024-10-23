@@ -2,12 +2,12 @@
   [header]="'ACTIONS.' + this.changeMode + '.HELP_ITEM' | translate"
   [(visible)]="displayDetailDialog"
   (onHide)="onDialogHide()"
+  [modal]="true"
+  [showHeader]="true"
+  [closable]="true"
   [draggable]="true"
   [resizable]="true"
-  [closable]="true"
-  [modal]="true"
   [style]="{ width: '500px' }"
-  [showHeader]="true"
   [breakpoints]="{
     '992px': '50vw',
     '700px': '70vw',

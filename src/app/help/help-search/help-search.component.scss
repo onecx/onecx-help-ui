@@ -4,21 +4,29 @@
 @include table-inline-buttons;
 @include table-responsive-columns;
 @include dialog-footer-buttons;
+@include dialog-non-full-size-modal;
 @include correct-file-upload;
 @include displaying-text-responsive;
 @include listbox-layout;
 
 :host ::ng-deep {
-  .p-datatable .p-sortable-column .p-sortable-column-icon {
-    margin-left: unset;
-  }
-  .p-datatable .p-datatable-thead > tr > th {
-    white-space: nowrap;
-  }
-  .p-datatable .p-datatable-tbody > tr > td {
-    min-width: 10rem;
-    &:first-of-type {
-      min-width: unset;
+  .p-datatable {
+    .p-sortable-column .p-sortable-column-icon {
+      margin-left: unset;
+    }
+    .p-datatable-thead > tr > th {
+      white-space: nowrap;
+      border-bottom-width: 2px;
+    }
+    .p-datatable-thead > tr > th,
+    .p-datatable-tbody > tr > td {
+      padding: 0.5rem;
+    }
+    .p-datatable-tbody > tr > td {
+      min-width: 10rem;
+      &:first-of-type {
+        min-width: unset;
+      }
     }
   }
 }
