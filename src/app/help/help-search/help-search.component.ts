@@ -411,7 +411,7 @@ export class HelpSearchComponent implements OnInit {
       ctx = (help.context.startsWith('#') ? '' : '#') + help.context
     }
     if (help.baseUrl && help.resourceUrl) {
-      return Location.joinWithSlash(help.baseUrl ?? '', help.resourceUrl) + ctx
+      return Location.joinWithSlash(help.baseUrl, help.resourceUrl) + ctx
     } else return (help.baseUrl ?? '') + ctx
   }
 }
