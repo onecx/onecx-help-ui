@@ -11,7 +11,7 @@ import { HelpFormComponent } from '../help-form/help-form.component'
 })
 export class HelpDetailComponent implements OnChanges {
   @Input() public helpItem: Help | undefined
-  @Input() public changeMode = 'NEW'
+  @Input() public changeMode = 'CREATE'
   @Input() public displayDetailDialog = false
   @Input() public products: Product[] = []
   @Output() public displayDetailDialogChange = new EventEmitter<boolean>()
@@ -28,12 +28,10 @@ export class HelpDetailComponent implements OnChanges {
   ) {}
 
   ngOnChanges() {
-    if (this.changeMode === 'EDIT') {
+    this.itemId = undefined
+    if (this.helpItem) {
       this.itemId = this.helpItem?.id
       this.productName = this.helpItem?.productName
-    }
-    if (this.changeMode === 'NEW') {
-      this.itemId = undefined
     }
   }
 
@@ -49,7 +47,7 @@ export class HelpDetailComponent implements OnChanges {
     helpObject.productName = helpObject.product.name
     delete helpObject.product
 
-    this.changeMode === 'NEW' ? this.createHelpItem(helpObject) : this.updateHelpItem(helpObject)
+    this.changeMode === 'CREATE' ? this.createHelpItem(helpObject) : this.updateHelpItem(helpObject)
   }
 
   private createHelpItem(helpObject: CreateHelp) {

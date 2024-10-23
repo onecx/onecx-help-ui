@@ -34,6 +34,7 @@
       }
     },
     "EDIT": {
+      "LABEL": "Bearbeiten",
       "HELP_ITEM": "Hilfeartikel bearbeiten",
       "HELP_ITEM.TOOLTIP": "Den Hilfeartikel bearbeiten",
       "MESSAGE": {
@@ -63,8 +64,20 @@
       },
       "VALIDATION_RESULT": "Die Datei wurde geprüft."
     },
+    "NAVIGATION": {
+      "CLOSE": "Schließen",
+      "CLOSE.TOOLTIP": "Dialog schließen",
+      "CLOSE_WITHOUT_SAVE": "Dialog ohne Speichern schließen",
+      "BACK": "Zurück",
+      "NEXT": "Weiter",
+      "NEXT.TOOLTIP": "Nächste Seite",
+      "BACK.TOOLTIP": "Vorherige Seite",
+      "GOTO": "Zu ... wechseln",
+      "OPEN_IN_NEW_TAB": "In neuem TAB öffnen"
+    },
     "SEARCH": {
       "ACTION": "Aktionen",
+      "ACTION.TOOLTIP": "Aktionen für Datenzeile",
       "SEARCH": "Suchen",
       "SEARCH.TOOLTIP": "Suche starten",
       "RESET": "Zurücksetzen",
@@ -74,6 +87,10 @@
       "MSG_SEARCH_FAILED": "Die Suche ist fehlgeschlagen",
       "OF": "von"
     },
+    "VIEW": {
+      "HELP_ITEM": "Hilfeartikel Details",
+      "LABEL": "Details anzeigen"
+    },
     "CANCEL": "Abbrechen",
     "CHOOSE": "Auswählen",
     "CONFIRM": "Bestätigen",
@@ -82,7 +99,6 @@
     "SAVE": "Speichern",
     "SAVE_AS": "Speichern als ...",
     "UPLOAD": "Hochladen",
-    "VIEW": "Details anzeigen",
     "TOOLTIPS": {
       "CANCEL": "Die Aktion abbrechen",
       "CANCEL_AND_CLOSE": "Abbrechen und Dialog schließen",
@@ -111,12 +127,14 @@
     "APPLICATION_LIST": "Applikationen mit Hilfeartikel",
     "HELP_ITEM_ID": "Hilfeartikel ID",
     "CONTEXT": "Kontext",
+    "URL": "URL",
     "BASE_URL": "Basis URL",
     "RESOURCE_URL": "Ressource Pfad",
     "OPERATOR": "Automatisiert erstellt",
     "TOOLTIPS": {
       "APPLICATION_NAME": "Applikation mit Hilfeartikel",
       "HELP_ITEM_ID": "Eindeutige ID für einen Hilfeartikel der Applikation. Muss innerhalb der jeweiligen Seite verwendet worden sein.",
+      "URL": "Die endgültige URL, die beim Aufruf benutzt wird und sich aus den Teilen Basis, Ressource und Kontext zusammensetzt.",
       "BASE_URL": "Basis der Hilfeartikel-URL - der Verweis auf die Hauptseite der Dokumentation der Applikation",
       "RESOURCE_URL": "Letzter Teil der Hilfeartikel-URL speziell für die Seite (Ressource)",
       "CONTEXT": "Spezieller Abschnitt innerhalb der Seite (Ressource)",
@@ -124,20 +142,18 @@
     }
   },
   "HELP_SEARCH": {
-    "HEADER": "Hilfeartikel Verwaltung",
+    "HEADER": "Hilfeartikel",
     "SUBHEADER": "Suchen und Verwalten von Hilfeartikeln",
     "SEARCH_TOOLTIP": "Suchen nach Hilfeartikeln mit vorgegebenen Kriterien",
     "MSG_SEARCH_VALIDATION": "Eine Anwendungs ID ist für die Suche erforderlich",
     "NO_APPLICATION_AVAILABLE": "Keine Applikationen gefunden"
   },
   "HELP_DETAIL": {
-    "HEADER": "Hilfeartikel Details",
     "UPDATE_SUCCESSFUL": "Der Hilfeartikel wurde erfolgreich aktualisiert",
     "UPDATE_ERROR": "Der Hilfeartikel konnte nicht aktualisiert werden",
     "VALIDATION_ERROR": "Das Formular ist ungültig. Der Hilfeartikel kann so nicht gespeichert werden."
   },
   "HELPITEM_CREATION": {
-    "HEADER": "Hilfeartikel erstellen",
     "CREATION_SUCCESS": "Der Hilfeartikel wurde erfolgreich erstellt.",
     "CREATION_FAILED": "Der Hilfeartikel konnte nicht erstellt werden.",
     "UNIQUE_CONSTRAINT": "Hilfeartikel existiert bereits",

@@ -20,12 +20,18 @@ const mockForm = new FormGroup({
   resourceUrl: new FormControl(null),
   operator: new FormControl(false)
 })
+const mockHelpItem = {
+  itemId: 'id',
+  productName: 'name',
+  baseUrl: 'base',
+  operator: false
+}
 
 describe('HelpFormComponent', () => {
   let component: HelpFormComponent
   let fixture: ComponentFixture<HelpFormComponent>
 
-  const formGroupSpy = jasmine.createSpyObj<FormGroup>('FormGroup', ['patchValue', 'reset'])
+  const formGroupSpy = jasmine.createSpyObj<FormGroup>('FormGroup', ['patchValue', 'reset', 'disable'])
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
@@ -59,18 +65,23 @@ describe('HelpFormComponent', () => {
   })
 
   it('should patch formGroup OnChanges if helpItem exists', () => {
-    const mockHelpItem = {
-      itemId: 'id',
-      productName: 'name',
-      baseUrl: 'base',
-      operator: false
-    }
     component.helpItem = mockHelpItem
     component.formGroup = mockForm
 
     component.ngOnChanges()
 
     expect(component.formGroup.controls['itemId'].value).toBe(mockHelpItem.itemId)
+  })
+
+  it('should disable formGroup OnChanges if change mode is VIEW', () => {
+    component.helpItem = mockHelpItem
+    component.formGroup = mockForm
+    component.changeMode = 'VIEW'
+
+    component.ngOnChanges()
+
+    expect(component.formGroup.controls['itemId'].value).toBe(mockHelpItem.itemId)
+    expect(component.formGroup.disabled).toBeTruthy()
   })
 
   it('should reset formGroup OnChanges if helpItem does not exist', () => {

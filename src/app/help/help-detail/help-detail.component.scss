@@ -1,6 +1,7 @@
-@import '/src/_mixins.scss';
+@import '/src/app/_hm-mixins.scss';
 
 @include dialog-footer-buttons;
 @include dialog-non-full-size-modal;
 @include displaying-text-responsive;
+@include readable-disabled-form-controls;
 @include correct-autocomplete;

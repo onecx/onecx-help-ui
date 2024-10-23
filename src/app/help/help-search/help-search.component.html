@@ -1,14 +1,14 @@
 <ocx-portal-page permission="HELP#SEARCH" helpArticleId="PAGE_HELP_SEARCH">
   <app-help-criteria
-    [actions]="(actions$ | async) ?? []"
-    [productsChanged]="productsChanged"
     (criteriaEmitter)="search($event)"
+    [productsChanged]="productsChanged"
     [products]="products"
+    [actions]="(actions$ | async) ?? []"
   ></app-help-criteria>
-  <ocx-page-content styleClass="px-3">
-    <div *ngIf="exceptionKey" id="helitem_search_criteria_error" class="card px-3 align-items-center">
+  <ocx-page-content styleClass="px-3 pb-2">
+    <div *ngIf="exceptionKey" id="hm_search_criteria_error" class="card px-3 align-items-center">
       <p-message
-        id="helitem_search_criteria_error_message"
+        id="hm_search_criteria_error_message"
         severity="error"
         styleClass="p-2"
         [text]="exceptionKey! | translate"
@@ -17,7 +17,7 @@
     <p-table
       *ngIf="!exceptionKey"
       #table
-      id="help_search_table"
+      id="hm_search_table"
       responsiveLayout="scroll"
       [value]="loadingResults ? [] : resultsForDisplay"
       [columns]="filteredColumns"
@@ -39,6 +39,7 @@
           [supportedViews]="['table']"
           [enableFiltering]="true"
           [enableSorting]="false"
+          [toggleColumnActive]="true"
           [columnDefinitions]="columns"
           (columnsChange)="onColumnsChange($event)"
           (filterChange)="onFilterChange($event)"
@@ -47,15 +48,15 @@
 
       <ng-template pTemplate="emptymessage">
         <tr>
-          <td id="help_search_table_no_data" colspan="16">{{ 'ACTIONS.SEARCH.NO_DATA' | translate }}</td>
+          <td id="hm_search_table_no_data" colspan="16">{{ 'ACTIONS.SEARCH.NO_DATA' | translate }}</td>
         </tr>
       </ng-template>
       <ng-template pTemplate="header" let-columns>
-        <tr id="help_search_table_header">
+        <tr id="hm_search_table_header">
           <th
-            id="help_search_table_header_action"
+            id="hm_search_table_header_action"
             class="text-center white-space-nowrap"
-            [pTooltip]="'ACTIONS.SEARCH.ACTION' | translate"
+            [pTooltip]="'ACTIONS.SEARCH.ACTION.TOOLTIP' | translate"
             tooltipPosition="top"
             tooltipEvent="hover"
           >
@@ -63,31 +64,32 @@
           </th>
           <th
             *ngFor="let col of columns"
-            [id]="'help_search_table_header_' + col.field"
+            [id]="'hm_search_table_header_' + col.field"
             [class]="col.css"
             [pSortableColumn]="col.field"
-            [pTooltip]="'HELP_ITEM.TOOLTIPS.' + col.header | translate"
+            [pTooltip]="col.translationPrefix + '.TOOLTIPS.' + col.header | translate"
             tooltipPosition="top"
             tooltipEvent="hover"
           >
-            {{ 'HELP_ITEM.' + col.header | translate }}
+            {{ col.translationPrefix + '.' + col.header | translate }}
             <p-sortIcon [field]="col.field"></p-sortIcon>
           </th>
         </tr>
       </ng-template>
+
       <ng-template pTemplate="body" let-row="rowIndex" let-rowData let-columns="columns">
-        <tr [id]="'help_search_table_row_' + row">
+        <tr [id]="'hm_search_table_row_' + row">
           <td class="px-0 text-center white-space-nowrap">
             <ng-container *ocxIfNotPermission="'HELP#EDIT'">
               <button
                 pbutton
                 type="button"
                 *ocxIfPermission="'HELP#VIEW'"
-                [id]="'help_search_table_row_' + row + '_view_action'"
+                [id]="'hm_search_table_row_' + row + '_action_view'"
                 (click)="onDetail($event, rowData, 'VIEW')"
                 class="p-button-rounded font-medium p-button-text p-button p-component p-button-icon-only"
-                aria-label="'ACTIONS.VIEW' | translate"
-                [pTooltip]="'ACTIONS.VIEW' | translate"
+                [aria-label]="'ACTIONS.VIEW.LABEL' | translate"
+                [pTooltip]="'ACTIONS.VIEW.LABEL' | translate"
                 tooltipPosition="top"
                 tooltipEvent="hover"
               >
@@ -98,10 +100,10 @@
               pbutton
               type="button"
               *ocxIfPermission="'HELP#EDIT'"
-              [id]="'help_search_table_row_' + row + '_edit_action'"
+              [id]="'hm_search_table_row_' + row + '_action_edit'"
               (click)="onDetail($event, rowData, 'EDIT')"
               class="p-button-rounded font-medium p-button-text p-button p-component p-button-icon-only"
-              aria-label="'ACTIONS.EDIT.LABEL' | translate"
+              [aria-label]="'ACTIONS.EDIT.LABEL' | translate"
               [pTooltip]="'ACTIONS.EDIT.HELP_ITEM.TOOLTIP' | translate"
               tooltipPosition="top"
               tooltipEvent="hover"
@@ -112,10 +114,10 @@
               pbutton
               type="button"
               *ocxIfPermission="'HELP#EDIT'"
-              [id]="'help_search_table_row_' + row + '_copy_action'"
+              [id]="'hm_search_table_row_' + row + '_action_copy'"
               (click)="onCopy($event, rowData)"
               class="p-button-rounded font-medium p-button-text p-button p-component p-button-icon-only"
-              aria-label="'ACTIONS.COPY.LABEL' | translate"
+              [aria-label]="'ACTIONS.COPY.LABEL' | translate"
               [pTooltip]="'ACTIONS.COPY.HELP_ITEM.TOOLTIP' | translate"
               tooltipPosition="top"
               tooltipEvent="hover"
@@ -126,10 +128,10 @@
               pbutton
               type="button"
               *ocxIfPermission="'HELP#DELETE'"
-              [id]="'help_search_table_row_' + row + '_delete_action'"
+              [id]="'hm_search_table_row_' + row + '_action_delete'"
               (click)="onDelete($event, rowData)"
               class="p-button-rounded font-medium p-button-text p-button p-component p-button-icon-only"
-              aria-label="'ACTIONS.DELETE.HELP_ITEM' | translate"
+              [aria-label]="'ACTIONS.DELETE.HELP_ITEM' | translate"
               [pTooltip]="'ACTIONS.DELETE.HELP_ITEM.TOOLTIP' | translate"
               tooltipPosition="top"
               tooltipEvent="hover"
@@ -137,19 +139,27 @@
               <span class="danger-action-text font-medium p-button-icon pi pi-trash" aria-hidden="true"></span>
             </button>
           </td>
-          <td [id]="'help_search_table_row_' + row + '_' + col.field" *ngFor="let col of columns" [class]="col.css">
-            {{ rowData[col.field] }}
-          </td>
+          <ng-container *ngFor="let col of columns">
+            <td *ngIf="col.field === 'url'" [id]="'hm_search_table_row_' + row + '_' + col.field" [class]="col.css">
+              {{ prepareUrl(rowData) }}
+            </td>
+            <td *ngIf="col.field !== 'url'" [id]="'hm_search_table_row_' + row + '_' + col.field" [class]="col.css">
+              {{ rowData[col.field] }}
+            </td>
+          </ng-container>
         </tr>
       </ng-template>
     </p-table>
   </ocx-page-content>
 </ocx-portal-page>
 
+<!-- DELETE -->
 <p-dialog
   [(visible)]="displayDeleteDialog"
   [header]="'ACTIONS.DELETE.HELP_ITEM' | translate"
   [modal]="true"
+  [closable]="true"
+  [draggable]="true"
   [resizable]="false"
   [dismissableMask]="true"
   [style]="{ 'max-width': '500px' }"
@@ -167,19 +177,21 @@
   <ng-template pTemplate="footer">
     <div class="flex flex-wrap justify-content-end column-gap-2 row-gap-1">
       <p-button
-        id="help_delete_button_no"
+        id="hm_delete_action_no"
         icon="pi pi-times"
         (onClick)="displayDeleteDialog = false"
         [label]="'ACTIONS.CONFIRMATION.NO' | translate"
+        [aria-label]="'ACTIONS.CONFIRMATION.NO' | translate"
         [pTooltip]="'ACTIONS.CONFIRMATION.NO.TOOLTIP' | translate"
         tooltipPosition="top"
         tooltipEvent="hover"
       ></p-button>
       <p-button
-        id="help_delete_button_yes"
+        id="hm_delete_action_yes"
         icon="pi pi-check"
         (onClick)="onDeleteConfirmation()"
         [label]="'ACTIONS.CONFIRMATION.YES' | translate"
+        [aria-label]="'ACTIONS.CONFIRMATION.YES' | translate"
         [pTooltip]="'ACTIONS.CONFIRMATION.YES.TOOLTIP' | translate"
         tooltipPosition="top"
         tooltipEvent="hover"
@@ -188,17 +200,20 @@
   </ng-template>
 </p-dialog>
 
+<!-- IMPORT -->
 <p-dialog
   [(visible)]="displayImportDialog"
   [header]="'ACTIONS.IMPORT.HELP_ITEM' | translate"
   [modal]="true"
-  [resizable]="false"
+  [closable]="true"
+  [draggable]="true"
+  [resizable]="true"
   [dismissableMask]="true"
 >
   <div class="flex flex-wrap column-gap-2 row-gap-1 justify-content-end">
     <p-fileUpload
       #fileUploader
-      id="help_import_file_upload"
+      id="hm_import_file_upload"
       mode="advanced"
       name="file"
       accept=".json"
@@ -217,11 +232,12 @@
   <ng-template pTemplate="footer">
     <div class="flex flex-wrap justify-content-end column-gap-2 row-gap-1">
       <p-button
-        id="help_import_button_cancel"
+        id="hm_import_action_close"
         icon="pi pi-times"
         (onClick)="onCloseImportDialog()"
-        [label]="'ACTIONS.CANCEL' | translate"
-        [pTooltip]="'ACTIONS.TOOLTIPS.CANCEL' | translate"
+        [label]="'ACTIONS.NAVIGATION.CLOSE' | translate"
+        [aria-label]="'ACTIONS.NAVIGATION.CLOSE' | translate"
+        [pTooltip]="'ACTIONS.NAVIGATION.CLOSE.TOOLTIP' | translate"
         tooltipPosition="top"
         tooltipEvent="hover"
       ></p-button>
@@ -229,17 +245,28 @@
   </ng-template>
 </p-dialog>
 
+<!-- EXPORT -->
 <p-dialog
-  [(visible)]="displayExportDialog"
   [header]="'ACTIONS.EXPORT.HELP_ITEM' | translate"
+  [(visible)]="displayExportDialog"
   [modal]="true"
+  [closable]="true"
+  [draggable]="true"
   [resizable]="true"
   [dismissableMask]="true"
-  [style]="{ 'max-width': '500px' }"
+  [style]="{ width: '300px' }"
+  [breakpoints]="{
+    '992px': '50vw',
+    '700px': '70vw',
+    '600px': '80vw',
+    '500px': '90vw',
+    '400px': '100vw'
+  }"
 >
-  <div class="flex flex-column row-gap-2">
+  <div class="flex flex-column row-gap-1">
     <div>{{ 'HELP_ITEM.APPLICATION_LIST' | translate }}</div>
     <p-listbox
+      id="hm_export_product_list"
       [options]="assignedProductNames"
       [(ngModel)]="selectedProductNames"
       [filter]="true"
@@ -254,20 +281,22 @@
   <ng-template pTemplate="footer">
     <div class="flex flex-wrap justify-content-end column-gap-2 row-gap-1">
       <p-button
-        id="help_export_button_cancel"
+        id="hm_export_action_cancel"
         icon="pi pi-times"
         (onClick)="onCloseExportDialog()"
         [label]="'ACTIONS.CANCEL' | translate"
+        [aria-label]="'ACTIONS.CANCEL' | translate"
         [pTooltip]="'ACTIONS.TOOLTIPS.CANCEL' | translate"
         tooltipPosition="top"
         tooltipEvent="hover"
       ></p-button>
       <p-button
-        id="help_export_button_export"
+        id="hm_export_action_export"
         icon="pi pi-download"
         (onClick)="onExportConfirmation()"
         [disabled]="selectedProductNames.length === 0"
         [label]="'ACTIONS.EXPORT.LABEL' | translate"
+        [aria-label]="'ACTIONS.EXPORT.LABEL' | translate"
         [pTooltip]="'ACTIONS.EXPORT.ITEMS_SELECTED.TOOLTIP' | translate"
         tooltipPosition="top"
         tooltipEvent="hover"
@@ -276,6 +305,7 @@
   </ng-template>
 </p-dialog>
 
+<!-- DETAIL -->
 <app-help-detail
   *ngIf="productsLoaded"
   [(displayDetailDialog)]="displayDetailDialog"

@@ -1,8 +1,8 @@
 <form [formGroup]="formGroup" class="flex flex-column row-gap-4 justify-content-center align-items-center">
   <span class="p-float-label w-full mt-2">
     <input
+      id="hm_item_editor_field_helpitem_id"
       class="w-full"
-      id="help-item-editor-field-helpitem-id"
       type="text"
       pInputText
       name="helpItemId"
@@ -11,15 +11,15 @@
       tooltipPosition="top"
       tooltipEvent="hover"
     />
-    <label class="ocx-required-label" for="help-item-editor-field-helpitem-id">
+    <label class="ocx-required-label" for="hm_item_editor_field_helpitem_id">
       {{ 'HELP_ITEM.HELP_ITEM_ID' | translate }}</label
     >
   </span>
 
   <span class="p-float-label w-full">
     <input
+      id="hm_item_editor_field_product_name"
       class="w-full"
-      id="help-item-editor-field-product-name"
       type="text"
       pInputText
       name="productName"
@@ -28,15 +28,15 @@
       tooltipPosition="top"
       tooltipEvent="hover"
     />
-    <label class="ocx-required-label" for="help-item-editor-field-product-name">
+    <label class="ocx-required-label" for="hm_item_editor_field_product_name">
       {{ 'HELP_ITEM.APPLICATION_NAME' | translate }}</label
     >
   </span>
 
   <span class="p-float-label w-full">
     <input
+      id="hm_item_editor_field_base_url"
       class="w-full"
-      id="help-item-editor-field-base-url"
       type="text"
       pInputText
       name="baseUrl"
@@ -45,15 +45,15 @@
       tooltipPosition="top"
       tooltipEvent="hover"
     />
-    <label class="ocx-required-label" for="help-item-editor-field-base-url">
+    <label class="ocx-required-label" for="hm_item_editor_field_base_url">
       {{ 'HELP_ITEM.BASE_URL' | translate }}</label
     >
   </span>
 
   <span class="p-float-label w-full">
     <input
+      id="hm_item_editor_field_resource_url"
       class="w-full"
-      id="help-item-editor-field-resource-url"
       type="text"
       pInputText
       name="resourceUrl"
@@ -62,6 +62,6 @@
       tooltipPosition="top"
       tooltipEvent="hover"
     />
-    <label for="help-item-editor-field-resource-url">{{ 'HELP_ITEM.RESOURCE_URL' | translate }}</label>
+    <label for="hm_item_editor_field_resource_url">{{ 'HELP_ITEM.RESOURCE_URL' | translate }}</label>
   </span>
 </form>

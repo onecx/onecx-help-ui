@@ -19,7 +19,7 @@ export interface HelpDetailForm {
 })
 export class HelpFormComponent implements OnChanges {
   @Input() helpItem: Help | undefined
-  @Input() changeMode = 'NEW'
+  @Input() changeMode = 'CREATE'
   @Input() products: Product[] = []
 
   public formGroup: FormGroup
@@ -44,6 +44,7 @@ export class HelpFormComponent implements OnChanges {
   }
 
   ngOnChanges(): void {
+    if (this.changeMode === 'VIEW') this.formGroup.disable()
     if (this.helpItem) {
       this.formGroup.patchValue({
         ...this.helpItem

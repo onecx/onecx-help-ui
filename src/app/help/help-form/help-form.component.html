@@ -1,7 +1,4 @@
 <form [formGroup]="formGroup">
-  <ng-template pTemplate="header">
-    <span>{{ 'HELPITEM_CREATION.HEADER' | translate }}</span>
-  </ng-template>
   <div class="flex flex-wrap flex-column gap-4 justify-content-between mt-2">
     <span class="p-float-label">
       <p-autoComplete
@@ -33,6 +30,7 @@
         class="w-full pt-3 pb-2 text-responsive"
         formControlName="itemId"
         [pTooltip]="'HELP_ITEM.TOOLTIPS.HELP_ITEM_ID' | translate"
+        [pTooltip]="'HELP_ITEM.TOOLTIPS.HELP_ITEM_ID' | translate"
         tooltipPosition="top"
         tooltipEvent="hover"
       />
@@ -40,7 +38,7 @@
         {{ 'HELP_ITEM.HELP_ITEM_ID' | translate }}</label
       >
     </span>
-    <div *ngIf="changeMode !== 'NEW'">
+    <div *ngIf="changeMode !== 'CREATE'">
       <div class="px-2 mb-2 flex flex-row justify-content-between align-items-center column-gap-3">
         <p-checkbox
           type="text"

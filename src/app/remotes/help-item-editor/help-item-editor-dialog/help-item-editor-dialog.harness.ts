@@ -3,14 +3,14 @@ import { ComponentHarness } from '@angular/cdk/testing'
 export class HelpItemEditorDialogHarness extends ComponentHarness {
   static readonly hostSelector = 'app-ocx-help-item-editor'
 
-  getHelpItemIdInput = this.locatorFor('#help-item-editor-field-helpitem-id')
-  getHelpItemIdLabel = this.locatorFor('label[for=help-item-editor-field-helpitem-id]')
-  getProductNameInput = this.locatorFor('#help-item-editor-field-product-name')
-  getProductNameLabel = this.locatorFor('label[for=help-item-editor-field-product-name]')
-  getBaseUrlInput = this.locatorFor('#help-item-editor-field-base-url')
-  getBaseUrlLabel = this.locatorFor('label[for=help-item-editor-field-base-url]')
-  getResourceUrlInput = this.locatorFor('#help-item-editor-field-resource-url')
-  getResourceUrlLabel = this.locatorFor('label[for=help-item-editor-field-resource-url]')
+  getHelpItemIdInput = this.locatorFor('#hm_item_editor_field_helpitem_id')
+  getHelpItemIdLabel = this.locatorFor('label[for=hm_item_editor_field_helpitem_id]')
+  getProductNameInput = this.locatorFor('#hm_item_editor_field_product_name')
+  getProductNameLabel = this.locatorFor('label[for=hm_item_editor_field_product_name]')
+  getBaseUrlInput = this.locatorFor('#hm_item_editor_field_base_url')
+  getBaseUrlLabel = this.locatorFor('label[for=hm_item_editor_field_base_url]')
+  getResourceUrlInput = this.locatorFor('#hm_item_editor_field_resource_url')
+  getResourceUrlLabel = this.locatorFor('label[for=hm_item_editor_field_resource_url]')
 
   async getHelpItemIdValue(): Promise<string> {
     return await (await this.getHelpItemIdInput()).getProperty<string>('value')

@@ -7,38 +7,41 @@
   [actions]="actions"
 >
   <div simpleCriteria>
-    <div [formGroup]="helpCriteriaGroup" class="flex flex-wrap column-gap-4 row-gap-3 lg:px-2">
+    <div [formGroup]="helpCriteriaGroup" class="flex flex-wrap gap-3 lg:px-2">
       <span class="p-float-label">
         <p-autoComplete
-          id="help_search_criteria_productName"
+          id="hm_search_criteria_product_name"
           styleClass="w-18rem text-responsive"
           formControlName="productName"
           [suggestions]="productDisplayNamesFiltered"
           (completeMethod)="filterProductNames($event)"
           [dropdown]="true"
+          [showClear]="true"
           [forceSelection]="true"
           appendTo="body"
-          ariaLabelledBy="help_search_criteria_productName"
+          ariaLabelledBy="hm_search_criteria_product_name"
           [pTooltip]="'HELP_ITEM.APPLICATION_LIST' | translate"
           tooltipPosition="top"
           tooltipEvent="hover"
         >
           <button pbutton type="button" aria-label="'ACTIONS.VIEW' | translate"></button>
         </p-autoComplete>
-        <label for="help_search_criteria_productName">{{ 'HELP_ITEM.APPLICATION_NAME' | translate }}</label>
+        <label for="hm_search_criteria_product_name">{{ 'HELP_ITEM.APPLICATION_NAME' | translate }}</label>
       </span>
       <span class="p-float-label">
         <input
-          id="help_search_criteria_itemId"
+          id="hm_search_criteria_item_id"
           pInputText
           type="text"
           formControlName="itemId"
           class="w-18rem text-responsive"
+          [showClear]="true"
+          [aria-label]="'HELP_ITEM.HELP_ITEM_ID' | translate"
           [pTooltip]="'HELP_ITEM.TOOLTIPS.HELP_ITEM_ID' | translate"
           tooltipPosition="top"
           tooltipEvent="hover"
         />
-        <label for="help_search_criteria_itemId">{{ 'HELP_ITEM.HELP_ITEM_ID' | translate }}</label>
+        <label for="help_search_criteria_item_id">{{ 'HELP_ITEM.HELP_ITEM_ID' | translate }}</label>
       </span>
     </div>
   </div>

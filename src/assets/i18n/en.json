@@ -34,6 +34,7 @@
       }
     },
     "EDIT": {
+      "LABEL": "Edit",
       "HELP_ITEM": "Edit Help Item",
       "HELP_ITEM.TOOLTIP": "Edit the Help Item properties",
       "MESSAGE": {
@@ -63,8 +64,20 @@
       },
       "VALIDATION_RESULT": "The file has been checked."
     },
+    "NAVIGATION": {
+      "CLOSE": "Close",
+      "CLOSE.TOOLTIP": "Close dialog",
+      "CLOSE_WITHOUT_SAVE": "Close dialog without saving",
+      "BACK": "Back",
+      "NEXT": "Next",
+      "NEXT.TOOLTIP": "Next page",
+      "BACK.TOOLTIP": "Previous page",
+      "GOTO": "Go to ...",
+      "OPEN_IN_NEW_TAB": "Open in a new TAB"
+    },
     "SEARCH": {
       "ACTION": "Action",
+      "ACTION.TOOLLTIP": "Actions on data row",
       "SEARCH": "Search",
       "SEARCH.TOOLTIP": "Start Searching",
       "RESET": "Reset",
@@ -74,6 +87,10 @@
       "MSG_SEARCH_FAILED": "Search failed",
       "OF": "of"
     },
+    "VIEW": {
+      "HELP_ITEM": "Help Item Details",
+      "LABEL": "Show Details"
+    },
     "CANCEL": "Cancel",
     "CHOOSE": "Choose",
     "CONFIRM": "Confirm",
@@ -82,7 +99,6 @@
     "SAVE": "Save",
     "SAVE_AS": "Save as ...",
     "UPLOAD": "Upload",
-    "VIEW": "Show Details",
     "TOOLTIPS": {
       "CANCEL": "Cancel action",
       "CANCEL_AND_CLOSE": "Cancel and close dialog",
@@ -111,12 +127,14 @@
     "APPLICATION_LIST": "Applications with Help Items",
     "HELP_ITEM_ID": "Help Item ID",
     "CONTEXT": "Context",
+    "URL": "URL",
     "BASE_URL": "Base URL",
     "RESOURCE_URL": "Resource URL",
     "OPERATOR": "Created by automation",
     "TOOLTIPS": {
       "APPLICATION_NAME": "Application with Help Item",
       "HELP_ITEM_ID": "Unique ID for a Help Item of the Application. Must have been used within the respective page.",
+      "URL": "The final URL that is used when calling and consists of the parts base, resource and context.",
       "BASE_URL": "Base part of the Help Item URL - the base path to the documentation of the Application",
       "RESOURCE_URL": "Last part of the Help Item URL specific to the page (resource)",
       "CONTEXT": "Specific context within the page (resource)",
@@ -124,20 +142,18 @@
     }
   },
   "HELP_SEARCH": {
-    "HEADER": "Help Item Management",
+    "HEADER": "Help Items",
     "SUBHEADER": "Searching and Managing of Help Items",
     "SEARCH_TOOLTIP": "Search for the Help Items with given criteria",
     "MSG_SEARCH_VALIDATION": "Application ID is required for search",
     "NO_APPLICATION_AVAILABLE": "Could not find any Application"
   },
   "HELP_DETAIL": {
-    "HEADER": "Help Item Details",
     "UPDATE_SUCCESSFUL": "The Help Item was successfully updated",
     "UPDATE_ERROR": "The Help Item could not be updated",
     "VALIDATION_ERROR": "The Help Item form is invalid. The Help Item cannot be saved this way."
   },
   "HELPITEM_CREATION": {
-    "HEADER": "Help Item Creation",
     "CREATION_SUCCESS": "The Help Item was sucessfully created.",
     "CREATION_FAILED": "The Help Item could not be created",
     "UNIQUE_CONSTRAINT": "Help Item already exists",

@@ -51,7 +51,7 @@
 
 // disable preset of opacity in form: not readable
 @mixin readable-disabled-form-controls {
-  :host {
+  :host ::ng-deep {
     .p-inputtext.p-component:disabled,
     .p-dropdown.p-component.p-disabled,
     .p-checkbox-box.p-disabled,
@@ -358,24 +358,24 @@
 @mixin dataview-list-zebra-rows {
   :host ::ng-deep {
     .p-dataview-list .p-dataview-content .p-grid > div {
-      &:nth-child(odd) {
-        background-color: #f8f9fa;
+      &:nth-child(even) {
+        background-color: var(--table-body-row-even-bg);
       }
     }
   }
 }
 @mixin dropdown-zebra-rows {
   :host ::ng-deep {
-    .p-dropdown-panel .p-dropdown-items *:nth-child(odd) .p-dropdown-item {
-      background-color: #f8f9fa;
+    .p-dropdown-panel .p-dropdown-items *:nth-child(even) .p-dropdown-item {
+      background-color: var(--table-body-row-even-bg);
     }
   }
 }
 @mixin listbox-zebra-rows {
   :host ::ng-deep {
     .p-listbox:not(.p-disabled) .p-listbox-item:not(.p-highlight):not(.p-disabled) {
-      &:nth-child(odd) {
-        background-color: #f8f9fa;
+      &:nth-child(even) {
+        background-color: var(--table-body-row-even-bg);
       }
     }
   }
@@ -383,8 +383,36 @@
 @mixin picklist-zebra-rows {
   :host ::ng-deep {
     .p-picklist-list li {
-      &:nth-child(odd) {
-        background-color: #f8f9fa;
+      &:nth-child(even) {
+        background-color: var(--table-body-row-even-bg);
+      }
+    }
+  }
+}
+@mixin table-zebra-rows {
+  :host ::ng-deep {
+    .p-datatable .p-datatable-tbody > tr:nth-child(even) > td {
+      background-color: var(--table-body-row-even-bg);
+    }
+  }
+}
+
+/* LISTBOX*/
+@mixin listbox-layout {
+  :host ::ng-deep {
+    .p-listbox {
+      box-shadow:
+        0 2px 1px -1px rgba(0, 0, 0, 0.2),
+        0 1px 1px 0 rgba(0, 0, 0, 0.14),
+        0 1px 3px 0 rgba(0, 0, 0, 0.12);
+      .p-listbox-list-wrapper {
+        border-radius: var(--border-radius);
+        .p-listbox-list .p-listbox-item {
+          padding: 0.5rem 1rem;
+          .p-checkbox {
+            margin-right: 1rem;
+          }
+        }
       }
     }
   }
