@@ -1,4 +1,4 @@
-@import '/src/_mixins.scss';
+@import '/src/app/_hm-mixins.scss';
 
 @include danger-action;
 @include table-inline-buttons;
@@ -6,6 +6,7 @@
 @include dialog-footer-buttons;
 @include correct-file-upload;
 @include displaying-text-responsive;
+@include listbox-layout;
 
 :host ::ng-deep {
   .p-datatable .p-sortable-column .p-sortable-column-icon {
@@ -18,21 +19,6 @@
     min-width: 10rem;
     &:first-of-type {
       min-width: unset;
-    }
-  }
-  .p-listbox {
-    box-shadow:
-      0 2px 1px -1px rgba(0, 0, 0, 0.2),
-      0 1px 1px 0 rgba(0, 0, 0, 0.14),
-      0 1px 3px 0 rgba(0, 0, 0, 0.12);
-    .p-listbox-list-wrapper {
-      border-radius: var(--border-radius);
-      .p-listbox-list .p-listbox-item {
-        padding: 0.5rem 1rem;
-        .p-checkbox {
-          margin-right: 1rem;
-        }
-      }
     }
   }
 }

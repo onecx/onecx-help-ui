@@ -1,4 +1,5 @@
 import { Component, OnInit, ViewChild } from '@angular/core'
+import { Location } from '@angular/common'
 import { TranslateService } from '@ngx-translate/core'
 import { catchError, finalize, map, Observable, of } from 'rxjs'
 import { Table } from 'primeng/table'
@@ -18,7 +19,7 @@ import {
 import { FileSelectEvent } from 'primeng/fileupload'
 
 type ExtendedColumn = Column & { css?: string; limit?: boolean }
-type ChangeMode = 'VIEW' | 'NEW' | 'EDIT'
+type ChangeMode = 'VIEW' | 'CREATE' | 'EDIT'
 export type HelpForDisplay = Help & { productDisplayName?: string; product?: { name?: string; displayName?: string } }
 
 @Component({
@@ -30,7 +31,7 @@ export class HelpSearchComponent implements OnInit {
   @ViewChild('table', { static: false }) table!: Table
 
   public exceptionKey: string | undefined
-  public changeMode: ChangeMode = 'NEW'
+  public changeMode: ChangeMode = 'CREATE'
   public actions$: Observable<Action[]> | undefined
   public helpItem: Help | undefined
   public resultsForDisplay: HelpForDisplay[] = []
@@ -73,23 +74,30 @@ export class HelpSearchComponent implements OnInit {
       css: 'px-2 py-1 sm:py-2 '
     },
     {
+      field: 'url',
+      header: 'URL',
+      active: true,
+      translationPrefix: 'HELP_ITEM',
+      css: 'hidden md:table-cell px-2 py-1 sm:py-2 '
+    },
+    {
       field: 'baseUrl',
       header: 'BASE_URL',
-      active: true,
+      active: false,
       translationPrefix: 'HELP_ITEM',
       css: 'hidden lg:table-cell px-2 py-1 sm:py-2 '
     },
     {
       field: 'resourceUrl',
       header: 'RESOURCE_URL',
-      active: true,
+      active: false,
       translationPrefix: 'HELP_ITEM',
       css: 'hidden xl:table-cell px-2 py-1 sm:py-2 '
     },
     {
       field: 'context',
       header: 'CONTEXT',
-      active: true,
+      active: false,
       translationPrefix: 'HELP_ITEM',
       css: 'hidden xl:table-cell px-2 py-1 sm:py-2 '
     }
@@ -120,10 +128,9 @@ export class HelpSearchComponent implements OnInit {
       .subscribe((productsPageResult: ProductsPageResult) => {
         this.products = productsPageResult.stream ?? []
         if (this.products?.length === 0) {
-          this.msgService.info({ summaryKey: 'HELP_SEARCH.NO_APPLICATION_AVAILABLE' })
+          this.products = this.products?.filter((product) => product !== null)
+          this.products.sort(this.sortProductsByName)
         }
-        this.products = this.products?.filter((product) => product !== null)
-        this.products.sort(this.sortProductsByName)
         this.productsLoaded = true
         this.search(this.criteria.helpSearchCriteria)
       })
@@ -161,29 +168,29 @@ export class HelpSearchComponent implements OnInit {
       .subscribe({
         next: (data) => {
           if (data.stream !== undefined) {
-            data.stream?.sort(this.sortHelpItemByDefault)
-            this.resultsForDisplay = data.stream.map((result) => {
-              const resultForDisplay = { ...result } as HelpForDisplay
-              resultForDisplay['productName'] = result.productName
-              const product = this.products.find((product) => product.name === result.productName)
-              resultForDisplay['productDisplayName'] = product?.displayName
-              resultForDisplay['product'] = {
-                name: result.productName,
-                displayName: this.products.find((product) => product.name === result.productName)?.displayName
-              }
-              return resultForDisplay
-            })
-          }
-
-          if (data.stream?.length === 0) {
-            this.msgService.info({ summaryKey: 'ACTIONS.SEARCH.MSG_NO_RESULTS' })
+            if (data.stream?.length === 0) {
+              this.msgService.info({ summaryKey: 'ACTIONS.SEARCH.MSG_NO_RESULTS' })
+            } else {
+              data.stream?.sort(this.sortHelpItemByDefault)
+              this.resultsForDisplay = data.stream.map((result) => {
+                const resultForDisplay = { ...result } as HelpForDisplay
+                resultForDisplay['productName'] = result.productName
+                const product = this.products.find((product) => product.name === result.productName)
+                resultForDisplay['productDisplayName'] = product?.displayName
+                resultForDisplay['product'] = {
+                  name: result.productName,
+                  displayName: this.products.find((product) => product.name === result.productName)?.displayName
+                }
+                return resultForDisplay
+              })
+            }
           }
           this.productsChanged = false
         }
       })
   }
   public onSearch() {
-    this.changeMode = 'NEW'
+    this.changeMode = 'CREATE'
     this.productsChanged = true
     this.search(this.criteria.helpSearchCriteria, true)
   }
@@ -211,7 +218,7 @@ export class HelpSearchComponent implements OnInit {
    *  CHANGES
    */
   public onCreate() {
-    this.changeMode = 'NEW'
+    this.changeMode = 'CREATE'
     this.productsChanged = false
     this.helpItem = undefined
     this.displayDetailDialog = true
@@ -225,7 +232,7 @@ export class HelpSearchComponent implements OnInit {
   }
   public onCopy(ev: MouseEvent, item: Help) {
     ev.stopPropagation()
-    this.changeMode = 'NEW'
+    this.changeMode = 'CREATE'
     this.productsChanged = false
     this.helpItem = item
     this.displayDetailDialog = true
@@ -301,8 +308,8 @@ export class HelpSearchComponent implements OnInit {
    *  EXPORT
    */
   public onExport(): void {
-    this.displayExportDialog = true
     this.assignedProductNames = Array.from(new Set(this.resultsForDisplay.map((item) => item.productDisplayName!)))
+    this.displayExportDialog = true
   }
   public onExportConfirmation(): void {
     if (this.selectedProductNames.length > 0) {
@@ -357,7 +364,9 @@ export class HelpSearchComponent implements OnInit {
               actionCallback: () => this.onExport(),
               icon: 'pi pi-download',
               show: 'always',
-              permission: 'HELP#EDIT'
+              permission: 'HELP#EDIT',
+              conditional: true,
+              showCondition: this.assignedProductNames.length > 0
             },
             {
               label: data['ACTIONS.IMPORT.LABEL'],
@@ -388,5 +397,11 @@ export class HelpSearchComponent implements OnInit {
     const product = this.products.find((item) => item.displayName === displayName)
     if (product) return product.name
     else return displayName
+  }
+
+  public prepareUrl(rowData: Help): string {
+    if (rowData.baseUrl && rowData.resourceUrl) {
+      return Location.joinWithSlash(rowData.baseUrl ?? '', rowData.resourceUrl) + (rowData.context ?? '')
+    } else return rowData.baseUrl ?? ''
   }
 }

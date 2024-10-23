@@ -62,7 +62,7 @@ describe('OneCXHelpItemEditorComponent', () => {
       declarations: [],
       imports: [
         TranslateTestingModule.withTranslations({
-          en: require('../../../assets/i18n/en.json')
+          en: require('src/assets/i18n/en.json')
         }).withDefaultLanguage('en')
       ],
       providers: [
@@ -161,17 +161,17 @@ describe('OneCXHelpItemEditorComponent', () => {
     fixture.detectChanges()
     oneCXHelpItemEditorHarness = await TestbedHarnessEnvironment.harnessForFixture(fixture, OneCXHelpItemEditorHarness)
 
-    expect(await oneCXHelpItemEditorHarness.getHelpButtonEditorId()).toBe('help-item-editor-button')
+    expect(await oneCXHelpItemEditorHarness.getHelpButtonEditorId()).toBe('ocx_topbar_action_help_edit')
   })
 
-  it('should call editHelpPage on enter click', () => {
+  it('should call onEditHelpItem on enter click', () => {
     fixture = TestBed.createComponent(OneCXHelpItemEditorComponent)
     component = fixture.componentInstance
     fixture.detectChanges()
 
-    spyOn(component, 'editHelpPage')
+    spyOn(component, 'onEditHelpItem')
     component.onEnterClick()
-    expect(component.editHelpPage).toHaveBeenCalledTimes(1)
+    expect(component.onEditHelpItem).toHaveBeenCalledTimes(1)
   })
 
   it('should contain helpArticleId from current page help id', (done: DoneFn) => {

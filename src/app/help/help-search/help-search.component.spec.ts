@@ -33,7 +33,7 @@ describe('HelpSearchComponent', () => {
   const newHelpItemArr: Help[] | undefined = [
     {
       id: 'id',
-      productName: 'help-mgmt-ui',
+      productName: 'ocx-help-ui',
       itemId: 'PAGE_HELP_SEARCH'
     }
   ]
@@ -82,9 +82,10 @@ describe('HelpSearchComponent', () => {
     expect(component).toBeTruthy()
     expect(component.filteredColumns[0].field).toBe('productDisplayName')
     expect(component.filteredColumns[1].field).toBe('itemId')
-    expect(component.filteredColumns[2].field).toBe('baseUrl')
-    expect(component.filteredColumns[3].field).toBe('resourceUrl')
-    expect(component.filteredColumns[4].field).toBe('context')
+    expect(component.filteredColumns[2].field).toBe('url')
+    //expect(component.filteredColumns[2].field).toBe('baseUrl')
+    //expect(component.filteredColumns[3].field).toBe('resourceUrl')
+    //expect(component.filteredColumns[4].field).toBe('context')
   })
 
   describe('ngOnInit', () => {
@@ -119,13 +120,13 @@ describe('HelpSearchComponent', () => {
         stream: [
           {
             itemId: 'id',
-            productName: 'help-mgmt-ui'
+            productName: 'ocx-help-ui'
           }
         ]
       }
       apiServiceSpy.searchProductsByCriteria.and.returnValue(of(helpPageResultMock))
       component.products = [
-        { name: 'help-mgmt-ui', displayName: 'Help Mgmt UI' },
+        { name: 'ocx-help-ui', displayName: 'OneCX Help UI' },
         { name: '2', displayName: '2dn' }
       ] as Product[]
       spyOn(component, 'search')
@@ -146,20 +147,20 @@ describe('HelpSearchComponent', () => {
         stream: [
           {
             itemId: 'id',
-            productName: 'help-mgmt-ui'
+            productName: 'ocx-help-ui'
           }
         ]
       }
       apiServiceSpy.searchHelps.and.returnValue(of(helpPageResultMock))
       component.products = [
-        { name: 'help-mgmt-ui', displayName: 'Help Mgmt UI' },
+        { name: 'ocx-help-ui', displayName: 'OneCX Help UI' },
         { name: '2', displayName: '2dn' }
       ] as Product[]
       component.resultsForDisplay = []
 
       component.search({})
 
-      expect(component.resultsForDisplay[0].productDisplayName).toEqual('Help Mgmt UI')
+      expect(component.resultsForDisplay[0].productDisplayName).toEqual('OneCX Help UI')
       expect(component.resultsForDisplay[0].itemId).toEqual('id')
     })
 
@@ -185,7 +186,7 @@ describe('HelpSearchComponent', () => {
       apiServiceSpy.searchHelps.and.returnValue(of([]))
       component.criteria = {
         helpSearchCriteria: {
-          productName: 'help-mgmt-ui',
+          productName: 'ocx-help-ui',
           itemId: 'id'
         }
       }
@@ -222,7 +223,6 @@ describe('HelpSearchComponent', () => {
 
         expect(component.exceptionKey).toBeDefined()
         expect(component.exceptionKey).toBe('EXCEPTIONS.HTTP_STATUS_401.HELP_ITEM')
-        expect(msgServiceSpy.info).toHaveBeenCalledWith({ summaryKey: 'HELP_SEARCH.NO_APPLICATION_AVAILABLE' })
       })
 
       it('should handle 403 Exception result on search', () => {
@@ -244,7 +244,6 @@ describe('HelpSearchComponent', () => {
 
         expect(component.exceptionKey).toBeDefined()
         expect(component.exceptionKey).toBe('EXCEPTIONS.HTTP_STATUS_403.HELP_ITEM')
-        expect(msgServiceSpy.info).toHaveBeenCalledWith({ summaryKey: 'HELP_SEARCH.NO_APPLICATION_AVAILABLE' })
       })
 
       it('should handle 404 Exception result on search', () => {
@@ -266,7 +265,6 @@ describe('HelpSearchComponent', () => {
 
         expect(component.exceptionKey).toBeDefined()
         expect(component.exceptionKey).toBe('EXCEPTIONS.HTTP_STATUS_404.HELP_ITEM')
-        expect(msgServiceSpy.info).toHaveBeenCalledWith({ summaryKey: 'HELP_SEARCH.NO_APPLICATION_AVAILABLE' })
       })
 
       it('should handle API call error', () => {
@@ -334,7 +332,7 @@ describe('HelpSearchComponent', () => {
     spyOn(component, 'search')
     component.onSearch()
 
-    expect(component.changeMode).toEqual('NEW')
+    expect(component.changeMode).toEqual('CREATE')
     expect(component.productsChanged).toBeTrue()
     expect(component.search).toHaveBeenCalled()
   })
@@ -342,7 +340,7 @@ describe('HelpSearchComponent', () => {
   it('should set correct values onCreate', () => {
     component.onCreate()
 
-    expect(component.changeMode).toEqual('NEW')
+    expect(component.changeMode).toEqual('CREATE')
     expect(component.productsChanged).toBeFalse()
     expect(component.helpItem).toBe(undefined)
     expect(component.displayDetailDialog).toBeTrue()
@@ -367,7 +365,7 @@ describe('HelpSearchComponent', () => {
     component.onCopy(ev, newHelpItemArr[0])
 
     expect(ev.stopPropagation).toHaveBeenCalled()
-    expect(component.changeMode).toEqual('NEW')
+    expect(component.changeMode).toEqual('CREATE')
     expect(component.productsChanged).toBeFalse()
     expect(component.helpItem).toBe(newHelpItemArr[0])
     expect(component.displayDetailDialog).toBeTrue()
@@ -574,7 +572,7 @@ describe('HelpSearchComponent', () => {
       apiServiceSpy.exportHelps.and.returnValue(of(helpItem))
       const selectedNames = ['Product1', 'Product2']
       component.selectedProductNames = selectedNames
-      component.products = [{ name: 'help-mgmt-ui', displayName: 'Product1' }, { name: '2' }] as Product[]
+      component.products = [{ name: 'ocx-help-ui', displayName: 'Product1' }, { name: '2' }] as Product[]
 
       component.onExportConfirmation()
 

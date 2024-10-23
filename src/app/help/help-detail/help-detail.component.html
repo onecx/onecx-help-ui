@@ -1,8 +1,7 @@
 <p-dialog
-  header="{{ (this.changeMode === 'EDIT' ? 'HELP_DETAIL.HEADER' : 'HELPITEM_CREATION.HEADER') | translate }}"
+  [header]="'ACTIONS.' + this.changeMode + '.HELP_ITEM' | translate"
   [(visible)]="displayDetailDialog"
   (onHide)="onDialogHide()"
-  [baseZIndex]="10000"
   [draggable]="true"
   [resizable]="true"
   [closable]="true"
@@ -22,20 +21,35 @@
   <ng-template pTemplate="footer">
     <div class="flex flex-wrap justify-content-end column-gap-2 row-gap-1">
       <p-button
-        id="help_detail_button_close"
+        *ngIf="changeMode === 'VIEW'"
+        id="hm_detail_action_close"
+        icon="pi pi-times"
+        (onClick)="onDialogHide()"
+        [label]="'ACTIONS.NAVIGATION.CLOSE' | translate"
+        [aria-label]="'ACTIONS.NAVIGATION.CLOSE' | translate"
+        [pTooltip]="'ACTIONS.NAVIGATION.CLOSE.TOOLTIP' | translate"
+        tooltipPosition="top"
+        tooltipEvent="hover"
+      ></p-button>
+      <p-button
+        *ngIf="changeMode !== 'VIEW'"
+        id="hm_detail_action_cancel"
         icon="pi pi-times"
         (onClick)="onDialogHide()"
         [label]="'ACTIONS.CANCEL' | translate"
+        [aria-label]="'ACTIONS.CANCEL' | translate"
         [pTooltip]="'ACTIONS.TOOLTIPS.CANCEL' | translate"
         tooltipPosition="top"
         tooltipEvent="hover"
       ></p-button>
       <p-button
-        id="help_detail_button_save"
+        *ngIf="changeMode !== 'VIEW'"
+        id="hm_detail_action_save"
         icon="pi pi-save"
         (onClick)="onSave()"
         [disabled]="!helpFormComponent.formGroup.valid"
         [label]="'ACTIONS.SAVE' | translate"
+        [aria-label]="'ACTIONS.SAVE' | translate"
         [pTooltip]="'ACTIONS.TOOLTIPS.SAVE' | translate"
         tooltipPosition="top"
         tooltipEvent="hover"

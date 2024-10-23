@@ -7,7 +7,7 @@
   [actions]="actions"
 >
   <div simpleCriteria>
-    <div [formGroup]="helpCriteriaGroup" class="flex flex-wrap column-gap-4 row-gap-3 lg:px-2">
+    <div [formGroup]="helpCriteriaGroup" class="flex flex-wrap gap-3 lg:px-2">
       <span class="p-float-label">
         <p-autoComplete
           id="help_search_criteria_productName"
@@ -16,6 +16,7 @@
           [suggestions]="productDisplayNamesFiltered"
           (completeMethod)="filterProductNames($event)"
           [dropdown]="true"
+          [showClear]="true"
           [forceSelection]="true"
           appendTo="body"
           ariaLabelledBy="help_search_criteria_productName"
@@ -34,6 +35,7 @@
           type="text"
           formControlName="itemId"
           class="w-18rem text-responsive"
+          [aria-label]="'HELP_ITEM.HELP_ITEM_ID' | translate"
           [pTooltip]="'HELP_ITEM.TOOLTIPS.HELP_ITEM_ID' | translate"
           tooltipPosition="top"
           tooltipEvent="hover"

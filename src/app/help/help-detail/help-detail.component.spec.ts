@@ -94,7 +94,7 @@ describe('HelpDetailComponent', () => {
 
   it('should create a help item onSave', () => {
     apiServiceSpy.createNewHelp.and.returnValue(of({}))
-    component.changeMode = 'NEW'
+    component.changeMode = 'CREATE'
     const mockHelpForm = new MockHelpFormComponent()
     mockHelpForm.formGroup.setValue({
       product: 'product2',
@@ -120,7 +120,7 @@ describe('HelpDetailComponent', () => {
       }
     }
     apiServiceSpy.createNewHelp.and.returnValue(throwError(() => mockError))
-    component.changeMode = 'NEW'
+    component.changeMode = 'CREATE'
     const mockHelpForm = new MockHelpFormComponent()
     mockHelpForm.formGroup.setValue({
       product: 'help-mgmt-ui',
@@ -140,7 +140,7 @@ describe('HelpDetailComponent', () => {
       }
     }
     apiServiceSpy.createNewHelp.and.returnValue(throwError(() => mockError))
-    component.changeMode = 'NEW'
+    component.changeMode = 'CREATE'
     const mockHelpForm = new MockHelpFormComponent()
     mockHelpForm.formGroup.setValue({
       product: 'help-mgmt-ui',
@@ -157,7 +157,7 @@ describe('HelpDetailComponent', () => {
   })
 
   it('should display validation error on invalid creation', () => {
-    component.changeMode = 'NEW'
+    component.changeMode = 'CREATE'
     const invalidMockHelpForm = new MockHelpFormComponent()
     invalidMockHelpForm.formGroup = new FormGroup({
       product: new FormControl('', Validators.required),
@@ -250,7 +250,7 @@ describe('HelpDetailComponent', () => {
   })
 
   it('should update ids OnChanges: itemId in new mode', () => {
-    component.changeMode = 'NEW'
+    component.changeMode = 'CREATE'
 
     component.ngOnChanges()
 

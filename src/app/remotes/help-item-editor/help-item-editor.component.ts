@@ -1,6 +1,6 @@
+import { Component, Inject, Input } from '@angular/core'
 import { CommonModule, Location } from '@angular/common'
 import { HttpClient, HttpClientModule } from '@angular/common/http'
-import { Component, Inject, Input } from '@angular/core'
 import { Router } from '@angular/router'
 import { TranslateLoader, TranslateModule, TranslateService } from '@ngx-translate/core'
 import { PrimeIcons } from 'primeng/api'
@@ -68,6 +68,9 @@ import { HelpItemEditorDialogComponent } from './help-item-editor-dialog/help-it
   ]
 })
 export class OneCXHelpItemEditorComponent implements ocxRemoteComponent, ocxRemoteWebcomponent {
+  @Input() set ocxRemoteComponentConfig(config: RemoteComponentConfig) {
+    this.ocxInitRemoteComponent(config)
+  }
   helpArticleId$: Observable<string>
   productName$: Observable<string>
   products$: Observable<Record<string, string>>
@@ -128,11 +131,7 @@ export class OneCXHelpItemEditorComponent implements ocxRemoteComponent, ocxRemo
     )
   }
 
-  @Input() set ocxRemoteComponentConfig(config: RemoteComponentConfig) {
-    this.ocxInitRemoteComponent(config)
-  }
-
-  ocxInitRemoteComponent(config: RemoteComponentConfig): void {
+  public ocxInitRemoteComponent(config: RemoteComponentConfig): void {
     this.baseUrl.next(config.baseUrl)
     this.permissions = config.permissions
     this.helpDataService.configuration = new Configuration({
@@ -203,11 +202,11 @@ export class OneCXHelpItemEditorComponent implements ocxRemoteComponent, ocxRemo
   }
 
   public onEnterClick() {
-    return this.editHelpPage({})
+    return this.onEditHelpItem({})
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  public editHelpPage(event: any) {
+  public onEditHelpItem(event: any) {
     combineLatest([this.helpArticleId$, this.productName$, this.helpDataItem$, this.products$])
       .pipe(
         first(),
