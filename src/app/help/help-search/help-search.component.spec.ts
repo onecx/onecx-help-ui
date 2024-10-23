@@ -683,4 +683,58 @@ describe('HelpSearchComponent', () => {
 
     expect(component['sortProductsByName'](products[0], products[1])).toBeLessThan(0)
   })
+
+  describe('prepare URL', () => {
+    it('should prepare url: base', () => {
+      const help: Help = {
+        id: 'id',
+        productName: 'ocx-help-ui',
+        itemId: 'PAGE_HELP_SEARCH',
+        baseUrl: 'http://localhost:8080/help'
+      }
+      const url = component.prepareUrl(help)
+
+      expect(url).toEqual(help.baseUrl!)
+    })
+
+    it('should prepare url: base + context', () => {
+      const help: Help = {
+        id: 'id',
+        productName: 'ocx-help-ui',
+        itemId: 'PAGE_HELP_SEARCH',
+        baseUrl: 'http://localhost:8080/help',
+        context: 'ctx'
+      }
+      const url = component.prepareUrl(help)
+
+      expect(url).toEqual(help.baseUrl! + '#' + help.context)
+    })
+
+    it('should prepare url: base + resource', () => {
+      const help: Help = {
+        id: 'id',
+        productName: 'ocx-help-ui',
+        itemId: 'PAGE_HELP_SEARCH',
+        baseUrl: 'http://localhost:8080/help',
+        resourceUrl: '/search'
+      }
+      const url = component.prepareUrl(help)
+
+      expect(url).toEqual(help.baseUrl! + help.resourceUrl)
+    })
+
+    it('should prepare url: base + resource + context', () => {
+      const help: Help = {
+        id: 'id',
+        productName: 'ocx-help-ui',
+        itemId: 'PAGE_HELP_SEARCH',
+        baseUrl: 'http://localhost:8080/help',
+        resourceUrl: '/search',
+        context: '#ctx'
+      }
+      const url = component.prepareUrl(help)
+
+      expect(url).toEqual(help.baseUrl! + help.resourceUrl + help.context)
+    })
+  })
 })

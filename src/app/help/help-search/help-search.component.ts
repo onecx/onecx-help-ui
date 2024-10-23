@@ -399,9 +399,20 @@ export class HelpSearchComponent implements OnInit {
     else return displayName
   }
 
-  public prepareUrl(rowData: Help): string {
-    if (rowData.baseUrl && rowData.resourceUrl) {
-      return Location.joinWithSlash(rowData.baseUrl ?? '', rowData.resourceUrl) + (rowData.context ?? '')
-    } else return rowData.baseUrl ?? ''
+  /* Prepare the final URL as follow (#) = optional:
+      1. baseUrl
+      2. baseUrl(#)context
+      3. baseUrl/resourceUrl
+      4. baseUrl/resourceUrl(#)context
+  */
+  public prepareUrl(help: Help): string {
+    let ctx = ''
+    if (help.context) {
+      if (help.context.indexOf('#') !== 0) ctx = '#'
+      ctx = ctx + help.context
+    }
+    if (help.baseUrl && help.resourceUrl) {
+      return Location.joinWithSlash(help.baseUrl ?? '', help.resourceUrl) + ctx
+    } else return (help.baseUrl ?? '') + ctx
   }
 }
