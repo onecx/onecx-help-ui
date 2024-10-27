@@ -21,7 +21,7 @@ import { Help, HelpsInternalAPIService } from 'src/app/shared/generated'
 import { OneCXHelpItemEditorComponent } from './help-item-editor.component'
 import { OneCXHelpItemEditorHarness } from './help-item-editor.harness'
 
-import { HelpItemEditorFormComponent } from './help-item-editor-dialog/help-item-editor-dialog.component'
+import { HelpItemEditorFormComponent } from './help-item-editor-form/help-item-editor-form.component'
 
 @NgModule({
   imports: [],
