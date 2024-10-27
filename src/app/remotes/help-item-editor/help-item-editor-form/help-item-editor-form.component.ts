@@ -10,12 +10,12 @@ import { Help } from 'src/app/shared/generated'
 @Component({
   selector: 'app-ocx-help-item-editor',
   standalone: true,
-  styleUrls: ['./help-item-editor-dialog.component.scss'],
-  templateUrl: './help-item-editor-dialog.component.html',
+  styleUrls: ['./help-item-editor-form.component.scss'],
+  templateUrl: './help-item-editor-form.component.html',
   imports: [InputTextModule, ReactiveFormsModule, TranslateModule, TooltipModule],
   providers: [PortalMessageService, FormBuilder]
 })
-export class HelpItemEditorDialogComponent implements DialogResult<Help>, DialogButtonClicked, OnChanges {
+export class HelpItemEditorFormComponent implements DialogResult<Help>, DialogButtonClicked, OnChanges {
   @Input() helpItem!: Help
   @Input() productDisplayName!: string
   dialogResult!: Help
