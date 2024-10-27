@@ -74,7 +74,7 @@ export class HelpDetailComponent implements OnChanges {
   }
 
   private updateHelpItem(helpObject: CreateHelp): void {
-    if (this.helpFormComponent.formGroup.valid && this.productName && this.helpItem) {
+    if (this.helpFormComponent.formGroup.valid && this.helpItem) {
       this.helpApi
         .updateHelp({
           id: this.helpItem.id ?? '',

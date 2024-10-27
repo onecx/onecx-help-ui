@@ -27,8 +27,10 @@ describe('HelpDetailComponent', () => {
     updateHelp: jasmine.createSpy('updateHelp').and.returnValue(of({}))
   }
   const dummyHelpItem = {
+    id: 'dummy',
     product: 'productName',
-    itemId: 'itemId'
+    itemId: 'itemId',
+    baseUrl: 'http://path'
   }
 
   @Component({
@@ -38,7 +40,8 @@ describe('HelpDetailComponent', () => {
   class MockHelpFormComponent {
     formGroup = new FormGroup({
       product: new FormControl(''),
-      itemId: new FormControl('')
+      itemId: new FormControl(''),
+      baseUrl: new FormControl('')
     })
     changeMode = ''
     helpItem: undefined
@@ -98,7 +101,8 @@ describe('HelpDetailComponent', () => {
     const mockHelpForm = new MockHelpFormComponent()
     mockHelpForm.formGroup.setValue({
       product: 'product2',
-      itemId: 'itemId2'
+      itemId: 'itemId2',
+      baseUrl: 'base'
     })
     component.helpFormComponent = mockHelpForm
     spyOn(component.searchEmitter, 'emit')
@@ -123,9 +127,11 @@ describe('HelpDetailComponent', () => {
     component.changeMode = 'CREATE'
     const mockHelpForm = new MockHelpFormComponent()
     mockHelpForm.formGroup.setValue({
-      product: 'help-mgmt-ui',
-      itemId: 'PAGE_HELP_SEARCH'
+      product: dummyHelpItem.product,
+      itemId: dummyHelpItem.itemId,
+      baseUrl: dummyHelpItem.baseUrl
     })
+    component.helpItem = dummyHelpItem
     component.helpFormComponent = mockHelpForm
 
     component.onSave()
@@ -143,9 +149,11 @@ describe('HelpDetailComponent', () => {
     component.changeMode = 'CREATE'
     const mockHelpForm = new MockHelpFormComponent()
     mockHelpForm.formGroup.setValue({
-      product: 'help-mgmt-ui',
-      itemId: 'PAGE_HELP_SEARCH'
+      product: dummyHelpItem.product,
+      itemId: dummyHelpItem.itemId,
+      baseUrl: dummyHelpItem.baseUrl
     })
+    component.helpItem = dummyHelpItem
     component.helpFormComponent = mockHelpForm
 
     component.onSave()
@@ -161,7 +169,8 @@ describe('HelpDetailComponent', () => {
     const invalidMockHelpForm = new MockHelpFormComponent()
     invalidMockHelpForm.formGroup = new FormGroup({
       product: new FormControl('', Validators.required),
-      itemId: new FormControl('', Validators.required)
+      itemId: new FormControl('', Validators.required),
+      baseUrl: new FormControl('', Validators.required)
     })
     component.helpFormComponent = invalidMockHelpForm
 
@@ -175,9 +184,10 @@ describe('HelpDetailComponent', () => {
     component.changeMode = 'EDIT'
     component.helpItem = { modificationCount: 0, ...dummyHelpItem } as Help
     const mockHelpForm = new MockHelpFormComponent()
-    mockHelpForm.formGroup.patchValue({
+    mockHelpForm.formGroup.setValue({
       product: dummyHelpItem.product,
-      itemId: dummyHelpItem.itemId
+      itemId: dummyHelpItem.itemId,
+      baseUrl: dummyHelpItem.baseUrl
     })
     component.helpFormComponent = mockHelpForm
 
@@ -199,9 +209,11 @@ describe('HelpDetailComponent', () => {
     component.changeMode = 'EDIT'
     const mockHelpForm = new MockHelpFormComponent()
     mockHelpForm.formGroup.setValue({
-      product: 'help-mgmt-ui',
-      itemId: 'PAGE_HELP_SEARCH'
+      product: dummyHelpItem.product,
+      itemId: dummyHelpItem.itemId,
+      baseUrl: dummyHelpItem.baseUrl
     })
+    component.helpItem = dummyHelpItem
     component.helpFormComponent = mockHelpForm
 
     component.onSave()
@@ -214,7 +226,8 @@ describe('HelpDetailComponent', () => {
     const invalidMockHelpForm = new MockHelpFormComponent()
     invalidMockHelpForm.formGroup = new FormGroup({
       product: new FormControl('', Validators.required),
-      itemId: new FormControl('', Validators.required)
+      itemId: new FormControl('', Validators.required),
+      baseUrl: new FormControl('', Validators.required)
     })
     component.helpFormComponent = invalidMockHelpForm
 
