@@ -60,44 +60,56 @@
         [text]="'ACTIONS.DELETE.MESSAGE.OPERATOR_TEXT' | translate"
       ></p-message>
     </div>
-    <span class="p-float-label">
-      <input
-        pInputText
-        type="text"
-        id="help_detail_form_base_url"
-        class="w-full pt-3 pb-2 text-responsive"
-        formControlName="baseUrl"
-        [pTooltip]="'HELP_ITEM.TOOLTIPS.BASE_URL' | translate"
-        tooltipPosition="top"
-        tooltipEvent="hover"
-      />
-      <label class="ocx-required-label" for="help_detail_form_base_url">{{ 'HELP_ITEM.BASE_URL' | translate }}</label>
-    </span>
-    <span class="p-float-label">
-      <input
-        pInputText
-        type="text"
-        id="help_detail_form_resource_url"
-        class="w-full pt-3 pb-2 text-responsive"
-        formControlName="resourceUrl"
-        [pTooltip]="'HELP_ITEM.TOOLTIPS.RESOURCE_URL' | translate"
-        tooltipPosition="top"
-        tooltipEvent="hover"
-      />
-      <label class="" for="help_detail_form_resource_url">{{ 'HELP_ITEM.RESOURCE_URL' | translate }}</label>
-    </span>
-    <span class="p-float-label">
-      <input
-        pInputText
-        type="text"
-        id="help_detail_form_context"
-        class="w-full pt-3 pb-2 text-responsive"
-        formControlName="context"
-        [pTooltip]="'HELP_ITEM.TOOLTIPS.CONTEXT' | translate"
-        tooltipPosition="top"
-        tooltipEvent="hover"
-      />
-      <label class="" for="help_detail_form_context">{{ 'HELP_ITEM.CONTEXT' | translate }}</label>
-    </span>
   </div>
+
+  <p-fieldset [toggleable]="false" [collapsed]="false" styleClass="surface-100 mt-2 pb-3 px-2">
+    <ng-template pTemplate="header">
+      <span [pTooltip]="'HELP_DETAIL.URL.TOOLTIP' | translate" tooltipPosition="top" tooltipEvent="hover">
+        {{ 'HELP_DETAIL.URL' | translate }}
+      </span>
+    </ng-template>
+    <div class="flex flex-wrap flex-column gap-4 justify-content-between mt-2">
+      <span class="p-float-label">
+        <input
+          pInputText
+          type="text"
+          id="help_detail_form_base_url"
+          class="w-full pt-3 pb-2 text-responsive"
+          formControlName="baseUrl"
+          [pTooltip]="'HELP_ITEM.TOOLTIPS.BASE_URL' | translate"
+          tooltipPosition="top"
+          tooltipEvent="hover"
+        />
+        <label class="ocx-required-label" for="help_detail_form_base_url">
+          {{ 'HELP_ITEM.BASE_URL' | translate }}</label
+        >
+      </span>
+      <span class="p-float-label">
+        <input
+          pInputText
+          type="text"
+          id="help_detail_form_resource_url"
+          class="w-full pt-3 pb-2 text-responsive"
+          formControlName="resourceUrl"
+          [pTooltip]="'HELP_ITEM.TOOLTIPS.RESOURCE_URL' | translate"
+          tooltipPosition="top"
+          tooltipEvent="hover"
+        />
+        <label class="" for="help_detail_form_resource_url">{{ 'HELP_ITEM.RESOURCE_URL' | translate }}</label>
+      </span>
+      <span class="p-float-label">
+        <input
+          pInputText
+          type="text"
+          id="help_detail_form_context"
+          class="w-full pt-3 pb-2 text-responsive"
+          formControlName="context"
+          [pTooltip]="'HELP_ITEM.TOOLTIPS.CONTEXT' | translate"
+          tooltipPosition="top"
+          tooltipEvent="hover"
+        />
+        <label class="" for="help_detail_form_context">{{ 'HELP_ITEM.CONTEXT' | translate }}</label>
+      </span>
+    </div>
+  </p-fieldset>
 </form>

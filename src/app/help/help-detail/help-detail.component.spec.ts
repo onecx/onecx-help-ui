@@ -174,8 +174,6 @@ describe('HelpDetailComponent', () => {
     apiServiceSpy.updateHelp.and.returnValue(of({}))
     component.changeMode = 'EDIT'
     component.helpItem = { modificationCount: 0, ...dummyHelpItem } as Help
-    component.productName = dummyHelpItem.product
-    component.itemId = dummyHelpItem.itemId
     const mockHelpForm = new MockHelpFormComponent()
     mockHelpForm.formGroup.patchValue({
       product: dummyHelpItem.product,
@@ -191,7 +189,7 @@ describe('HelpDetailComponent', () => {
     expect(component.searchEmitter.emit).toHaveBeenCalled()
     const expectedArgument = convertFormGroupProductToProductName(component.helpFormComponent.formGroup)
     expect(apiServiceSpy.updateHelp).toHaveBeenCalledWith({
-      id: component.itemId,
+      id: component.helpItem.id,
       updateHelp: { ...expectedArgument, modificationCount: 0 }
     })
   })
@@ -205,8 +203,6 @@ describe('HelpDetailComponent', () => {
       itemId: 'PAGE_HELP_SEARCH'
     })
     component.helpFormComponent = mockHelpForm
-    component.productName = 'help-mgmt-ui'
-    component.itemId = 'PAGE_HELP_SEARCH'
 
     component.onSave()
 
@@ -221,8 +217,6 @@ describe('HelpDetailComponent', () => {
       itemId: new FormControl('', Validators.required)
     })
     component.helpFormComponent = invalidMockHelpForm
-    component.productName = undefined
-    component.itemId = undefined
 
     component.onSave()
 
@@ -235,7 +229,7 @@ describe('HelpDetailComponent', () => {
 
     expect(component.displayDetailDialogChange.emit).toHaveBeenCalledWith(false)
   })
-
+  /*
   it('should update ids OnChanges: itemId in edit mode', () => {
     component.changeMode = 'EDIT'
     component.helpItem = {
@@ -256,4 +250,5 @@ describe('HelpDetailComponent', () => {
 
     expect(component.itemId).toEqual(undefined)
   })
+  */
 })

@@ -151,7 +151,9 @@
   "HELP_DETAIL": {
     "UPDATE_SUCCESSFUL": "Der Hilfeartikel wurde erfolgreich aktualisiert",
     "UPDATE_ERROR": "Der Hilfeartikel konnte nicht aktualisiert werden",
-    "VALIDATION_ERROR": "Das Formular ist ungültig. Der Hilfeartikel kann so nicht gespeichert werden."
+    "VALIDATION_ERROR": "Das Formular ist ungültig. Der Hilfeartikel kann so nicht gespeichert werden.",
+    "URL": "URL zum Hilfeartikel",
+    "URL.TOOLTIP": "Die verwendete URL zum Hilfeartikel, die sich aus den Teilen Basis, Ressource und Kontext zusammensetzt."
   },
   "HELPITEM_CREATION": {
     "CREATION_SUCCESS": "Der Hilfeartikel wurde erfolgreich erstellt.",

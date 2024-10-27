@@ -5,3 +5,16 @@
 @include displaying-text-responsive;
 @include readable-disabled-form-controls;
 @include correct-autocomplete;
+
+:host ::ng-deep {
+  .p-fieldset {
+    &.p-fieldset-toggleable .p-fieldset-legend a,
+    .p-fieldset-legend {
+      background-color: transparent;
+      padding: 0.3rem 0.4rem;
+    }
+    .p-fieldset-content {
+      padding: 0.5rem 0.2rem 0rem;
+    }
+  }
+}
