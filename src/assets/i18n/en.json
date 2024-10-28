@@ -129,14 +129,14 @@
     "CONTEXT": "Context",
     "URL": "URL",
     "BASE_URL": "Base URL",
-    "RESOURCE_URL": "Resource URL",
+    "RESOURCE_URL": "Resource Pfad",
     "OPERATOR": "Created by automation",
     "TOOLTIPS": {
       "APPLICATION_NAME": "Application with Help Item",
       "HELP_ITEM_ID": "Unique ID for a Help Item of the Application. Must have been used within the respective page.",
       "URL": "The final URL that is used when calling and consists of the parts base, resource and context.",
       "BASE_URL": "Base part of the Help Item URL - the base path to the documentation of the Application",
-      "RESOURCE_URL": "Last part of the Help Item URL specific to the page (resource)",
+      "RESOURCE_URL": "Path from the base path to the specific page (resource)",
       "CONTEXT": "Specific context within the page (resource)",
       "OPERATOR": "If set then this Help Item was created by automation. All changes will be lost on the next deployment."
     }
