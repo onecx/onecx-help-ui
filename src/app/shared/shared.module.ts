@@ -11,6 +11,7 @@ import { ConfirmationService } from 'primeng/api'
 import { DataViewModule } from 'primeng/dataview'
 import { DialogModule } from 'primeng/dialog'
 import { DropdownModule } from 'primeng/dropdown'
+import { FieldsetModule } from 'primeng/fieldset'
 import { FileUploadModule } from 'primeng/fileupload'
 import { InputTextModule } from 'primeng/inputtext'
 import { InputTextareaModule } from 'primeng/inputtextarea'
@@ -36,6 +37,7 @@ import { LabelResolver } from './label.resolver'
     DataViewModule,
     DialogModule,
     DropdownModule,
+    FieldsetModule,
     FileUploadModule,
     FormsModule,
     InputTextModule,
@@ -57,6 +59,7 @@ import { LabelResolver } from './label.resolver'
     DataViewModule,
     DialogModule,
     DropdownModule,
+    FieldsetModule,
     FileUploadModule,
     FormsModule,
     InputTextModule,

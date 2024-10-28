@@ -19,7 +19,6 @@ export class HelpDetailComponent implements OnChanges {
 
   @ViewChild(HelpFormComponent, { static: false }) helpFormComponent!: HelpFormComponent
 
-  public itemId: string | undefined
   public productName: string | undefined
 
   constructor(
@@ -28,9 +27,7 @@ export class HelpDetailComponent implements OnChanges {
   ) {}
 
   ngOnChanges() {
-    this.itemId = undefined
     if (this.helpItem) {
-      this.itemId = this.helpItem?.id
       this.productName = this.helpItem?.productName
     }
   }
@@ -77,10 +74,10 @@ export class HelpDetailComponent implements OnChanges {
   }
 
   private updateHelpItem(helpObject: CreateHelp): void {
-    if (this.helpFormComponent.formGroup.valid && this.productName && this.itemId) {
+    if (this.helpFormComponent.formGroup.valid && this.helpItem) {
       this.helpApi
         .updateHelp({
-          id: this.itemId,
+          id: this.helpItem.id ?? '',
           updateHelp: { ...helpObject, modificationCount: this.helpItem?.modificationCount ?? 0 }
         })
         .subscribe({

@@ -21,7 +21,7 @@ import { Help, HelpsInternalAPIService } from 'src/app/shared/generated'
 import { OneCXHelpItemEditorComponent } from './help-item-editor.component'
 import { OneCXHelpItemEditorHarness } from './help-item-editor.harness'
 
-import { HelpItemEditorDialogComponent } from './help-item-editor-dialog/help-item-editor-dialog.component'
+import { HelpItemEditorFormComponent } from './help-item-editor-form/help-item-editor-form.component'
 
 @NgModule({
   imports: [],
@@ -410,7 +410,7 @@ describe('OneCXHelpItemEditorComponent', () => {
     expect(portalDialogServiceSpy.openDialog<Help>).toHaveBeenCalledOnceWith(
       'HELP_ITEM_EDITOR.HEADER',
       {
-        type: HelpItemEditorDialogComponent,
+        type: HelpItemEditorFormComponent,
         inputs: {
           helpItem: {
             productName: 'mfe_product_name',
@@ -553,7 +553,7 @@ describe('OneCXHelpItemEditorComponent', () => {
     expect(portalDialogServiceSpy.openDialog<Help>).toHaveBeenCalledOnceWith(
       'HELP_ITEM_EDITOR.HEADER',
       {
-        type: HelpItemEditorDialogComponent,
+        type: HelpItemEditorFormComponent,
         inputs: {
           helpItem: {
             productName: 'mfe_product_name',
@@ -625,7 +625,7 @@ describe('OneCXHelpItemEditorComponent', () => {
     expect(portalDialogServiceSpy.openDialog<Help>).toHaveBeenCalledOnceWith(
       'HELP_ITEM_EDITOR.HEADER',
       {
-        type: HelpItemEditorDialogComponent,
+        type: HelpItemEditorFormComponent,
         inputs: {
           helpItem: helpItem,
           productDisplayName: 'product_name_1_display'

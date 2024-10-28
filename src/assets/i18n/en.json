@@ -151,7 +151,9 @@
   "HELP_DETAIL": {
     "UPDATE_SUCCESSFUL": "The Help Item was successfully updated",
     "UPDATE_ERROR": "The Help Item could not be updated",
-    "VALIDATION_ERROR": "The Help Item form is invalid. The Help Item cannot be saved this way."
+    "VALIDATION_ERROR": "The Help Item form is invalid. The Help Item cannot be saved this way.",
+    "URL": "URL to Help page",
+    "URL.TOOLTIP": "The used URL to Help page, consists of the parts base, resource and context."
   },
   "HELPITEM_CREATION": {
     "CREATION_SUCCESS": "The Help Item was sucessfully created.",

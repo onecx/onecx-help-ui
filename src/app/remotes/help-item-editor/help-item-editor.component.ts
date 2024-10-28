@@ -31,7 +31,7 @@ import { Configuration, Help, HelpsInternalAPIService } from 'src/app/shared/gen
 import { SharedModule } from 'src/app/shared/shared.module'
 import { environment } from 'src/environments/environment'
 
-import { HelpItemEditorDialogComponent } from './help-item-editor-dialog/help-item-editor-dialog.component'
+import { HelpItemEditorFormComponent } from './help-item-editor-form/help-item-editor-form.component'
 
 @Component({
   selector: 'app-ocx-help-item-editor',
@@ -43,7 +43,7 @@ import { HelpItemEditorDialogComponent } from './help-item-editor-dialog/help-it
     HttpClientModule,
     RippleModule,
     TooltipModule,
-    HelpItemEditorDialogComponent,
+    HelpItemEditorFormComponent,
     TranslateModule,
     SharedModule,
     PortalCoreModule,
@@ -156,7 +156,7 @@ export class OneCXHelpItemEditorComponent implements ocxRemoteComponent, ocxRemo
     return this.portalDialogService.openDialog<Help>(
       'HELP_ITEM_EDITOR.HEADER',
       {
-        type: HelpItemEditorDialogComponent,
+        type: HelpItemEditorFormComponent,
         inputs: {
           helpItem: helpItem,
           productDisplayName: productDisplayName

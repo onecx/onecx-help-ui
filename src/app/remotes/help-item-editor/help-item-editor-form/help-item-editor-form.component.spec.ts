@@ -3,13 +3,13 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms'
 import { NoopAnimationsModule } from '@angular/platform-browser/animations'
 import { PortalMessageService } from '@onecx/angular-integration-interface'
 import { TranslateTestingModule } from 'ngx-translate-testing'
-import { HelpItemEditorDialogComponent } from './help-item-editor-dialog.component'
+import { HelpItemEditorFormComponent } from './help-item-editor-form.component'
 import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed'
-import { HelpItemEditorDialogHarness } from './help-item-editor-dialog.harness'
+import { HelpItemEditorDialogHarness } from './help-item-editor-form.harness'
 
-describe('HelpItemEditorDialogComponent', () => {
-  let component: HelpItemEditorDialogComponent
-  let fixture: ComponentFixture<HelpItemEditorDialogComponent>
+describe('HelpItemEditorFormComponent', () => {
+  let component: HelpItemEditorFormComponent
+  let fixture: ComponentFixture<HelpItemEditorFormComponent>
   let helpItemEditorDialogHarness: HelpItemEditorDialogHarness
 
   const portalMessageServiceSpy = jasmine.createSpyObj<PortalMessageService>('PortalMessageService', ['error'])
@@ -18,7 +18,7 @@ describe('HelpItemEditorDialogComponent', () => {
     await TestBed.configureTestingModule({
       declarations: [],
       imports: [
-        HelpItemEditorDialogComponent,
+        HelpItemEditorFormComponent,
         FormsModule,
         ReactiveFormsModule,
         NoopAnimationsModule,
@@ -28,7 +28,7 @@ describe('HelpItemEditorDialogComponent', () => {
         })
       ]
     })
-      .overrideComponent(HelpItemEditorDialogComponent, {
+      .overrideComponent(HelpItemEditorFormComponent, {
         set: {
           providers: [
             {
@@ -42,7 +42,7 @@ describe('HelpItemEditorDialogComponent', () => {
 
     portalMessageServiceSpy.error.calls.reset()
 
-    fixture = TestBed.createComponent(HelpItemEditorDialogComponent)
+    fixture = TestBed.createComponent(HelpItemEditorFormComponent)
     component = fixture.componentInstance
     fixture.detectChanges()
 
