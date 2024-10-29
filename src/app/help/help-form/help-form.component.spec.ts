@@ -106,4 +106,21 @@ describe('HelpFormComponent', () => {
 
     expect(component.productsFiltered[0].displayName).toEqual('OneCx Tenant UI')
   })
+
+  fdescribe('sortProductsByName', () => {
+    const p1: Product = { name: 'p1', displayName: 'P1' }
+    const p2: Product = { name: 'p2', displayName: 'P2' }
+
+    it('should return 0 when both strings are identical', () => {
+      expect(component.sortProductsByName(p1, p1)).toBe(0)
+    })
+
+    it('should return -1', () => {
+      expect(component.sortProductsByName(p1, p2)).toBe(-1)
+    })
+
+    it('should return 1', () => {
+      expect(component.sortProductsByName(p2, p1)).toBe(1)
+    })
+  })
 })
