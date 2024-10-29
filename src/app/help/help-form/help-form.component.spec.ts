@@ -107,7 +107,7 @@ describe('HelpFormComponent', () => {
     expect(component.productsFiltered[0].displayName).toEqual('OneCx Tenant UI')
   })
 
-  fdescribe('sortProductsByName', () => {
+  describe('sortProductsByName', () => {
     const p1: Product = { name: 'p1', displayName: 'P1' }
     const p2: Product = { name: 'p2', displayName: 'P2' }
 
