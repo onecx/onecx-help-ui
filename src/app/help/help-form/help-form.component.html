@@ -2,7 +2,7 @@
   <div class="flex flex-wrap flex-column gap-4 justify-content-between mt-2">
     <span class="p-float-label">
       <p-autoComplete
-        id="help_detail_form_product_name_autocomplete"
+        id="hm_detail_form_product_name_autocomplete"
         styleClass="w-full"
         inputStyleClass="pt-3 pb-2 text-responsive"
         formControlName="product"
@@ -18,7 +18,7 @@
         tooltipPosition="top"
         tooltipEvent="hover"
       ></p-autoComplete>
-      <label class="ocx-required-label" for="help_detail_form_product_name_autocomplete"
+      <label class="ocx-required-label" for="hm_detail_form_product_name_autocomplete"
         >{{ 'HELP_ITEM.APPLICATION_NAME' | translate }}
       </label>
     </span>
@@ -26,7 +26,7 @@
       <input
         pInputText
         type="text"
-        id="help_detail_form_item_id"
+        id="hm_detail_form_item_id"
         class="w-full pt-3 pb-2 text-responsive"
         formControlName="itemId"
         [pTooltip]="'HELP_ITEM.TOOLTIPS.HELP_ITEM_ID' | translate"
@@ -34,15 +34,13 @@
         tooltipPosition="top"
         tooltipEvent="hover"
       />
-      <label class="ocx-required-label" for="help_detail_form_item_id">
-        {{ 'HELP_ITEM.HELP_ITEM_ID' | translate }}</label
-      >
+      <label class="ocx-required-label" for="hm_detail_form_item_id">{{ 'HELP_ITEM.HELP_ITEM_ID' | translate }}</label>
     </span>
     <div *ngIf="changeMode !== 'CREATE'">
       <div class="px-2 mb-2 flex flex-row justify-content-between align-items-center column-gap-3">
         <p-checkbox
           type="text"
-          inputId="help_detail_operator"
+          inputId="hm_detail_form_operator"
           formControlName="operator"
           [binary]="true"
           [styleClass]="'cursor-auto shadow-none'"
@@ -55,7 +53,7 @@
       <p-message
         *ngIf="helpItem?.operator"
         styleClass="p-1"
-        id="help_detail_form_operator_delete_message"
+        id="hm_detail_form_operator_delete_message"
         severity="info"
         [text]="'ACTIONS.DELETE.MESSAGE.OPERATOR_TEXT' | translate"
       ></p-message>
@@ -73,42 +71,40 @@
         <input
           pInputText
           type="text"
-          id="help_detail_form_base_url"
+          id="hm_detail_form_base_url"
           class="w-full pt-3 pb-2 text-responsive"
           formControlName="baseUrl"
           [pTooltip]="'HELP_ITEM.TOOLTIPS.BASE_URL' | translate"
           tooltipPosition="top"
           tooltipEvent="hover"
         />
-        <label class="ocx-required-label" for="help_detail_form_base_url">
-          {{ 'HELP_ITEM.BASE_URL' | translate }}</label
-        >
+        <label class="ocx-required-label" for="hm_detail_form_base_url"> {{ 'HELP_ITEM.BASE_URL' | translate }}</label>
       </span>
       <span class="p-float-label">
         <input
           pInputText
           type="text"
-          id="help_detail_form_resource_url"
+          id="hm_detail_form_resource_url"
           class="w-full pt-3 pb-2 text-responsive"
           formControlName="resourceUrl"
           [pTooltip]="'HELP_ITEM.TOOLTIPS.RESOURCE_URL' | translate"
           tooltipPosition="top"
           tooltipEvent="hover"
         />
-        <label class="" for="help_detail_form_resource_url">{{ 'HELP_ITEM.RESOURCE_URL' | translate }}</label>
+        <label class="" for="hm_detail_form_resource_url">{{ 'HELP_ITEM.RESOURCE_URL' | translate }}</label>
       </span>
       <span class="p-float-label">
         <input
           pInputText
           type="text"
-          id="help_detail_form_context"
+          id="hm_detail_form_context"
           class="w-full pt-3 pb-2 text-responsive"
           formControlName="context"
           [pTooltip]="'HELP_ITEM.TOOLTIPS.CONTEXT' | translate"
           tooltipPosition="top"
           tooltipEvent="hover"
         />
-        <label class="" for="help_detail_form_context">{{ 'HELP_ITEM.CONTEXT' | translate }}</label>
+        <label class="" for="hm_detail_form_context">{{ 'HELP_ITEM.CONTEXT' | translate }}</label>
       </span>
     </div>
   </p-fieldset>

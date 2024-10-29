@@ -371,6 +371,14 @@
     }
   }
 }
+// This does not work if located inside the app, should be placed into src/styles.scss
+@mixin autocomplete-zebra-rows {
+  .p-autocomplete-panel .p-autocomplete-items {
+    .p-autocomplete-item:nth-child(even) {
+      background-color: var(--table-body-row-even-bg);
+    }
+  }
+}
 @mixin listbox-zebra-rows {
   :host ::ng-deep {
     .p-listbox:not(.p-disabled) .p-listbox-item:not(.p-highlight):not(.p-disabled) {

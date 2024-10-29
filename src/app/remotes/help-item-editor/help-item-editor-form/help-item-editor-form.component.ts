@@ -4,6 +4,7 @@ import { TranslateModule } from '@ngx-translate/core'
 import { DialogButtonClicked, DialogResult, DialogState, PortalMessageService } from '@onecx/portal-integration-angular'
 import { InputTextModule } from 'primeng/inputtext'
 import { TooltipModule } from 'primeng/tooltip'
+import { FieldsetModule } from 'primeng/fieldset'
 import { Observable } from 'rxjs'
 import { Help } from 'src/app/shared/generated'
 
@@ -12,7 +13,7 @@ import { Help } from 'src/app/shared/generated'
   standalone: true,
   styleUrls: ['./help-item-editor-form.component.scss'],
   templateUrl: './help-item-editor-form.component.html',
-  imports: [InputTextModule, ReactiveFormsModule, TranslateModule, TooltipModule],
+  imports: [InputTextModule, ReactiveFormsModule, TranslateModule, TooltipModule, FieldsetModule],
   providers: [PortalMessageService, FormBuilder]
 })
 export class HelpItemEditorFormComponent implements DialogResult<Help>, DialogButtonClicked, OnChanges {
@@ -29,7 +30,8 @@ export class HelpItemEditorFormComponent implements DialogResult<Help>, DialogBu
       helpItemId: new FormControl({ value: null, disabled: true }, [Validators.required]),
       productName: new FormControl({ value: null, disabled: true }, [Validators.required]),
       baseUrl: new FormControl(null, Validators.required),
-      resourceUrl: new FormControl(null)
+      resourceUrl: new FormControl(null),
+      context: new FormControl(null)
     })
   }
 
@@ -41,7 +43,8 @@ export class HelpItemEditorFormComponent implements DialogResult<Help>, DialogBu
       this.formGroup.patchValue({
         helpItemId: this.dialogResult.itemId,
         baseUrl: this.dialogResult.baseUrl,
-        resourceUrl: this.dialogResult.resourceUrl
+        resourceUrl: this.dialogResult.resourceUrl,
+        context: this.dialogResult.context
       })
     }
     if (changes['productDisplayName'] && this.productDisplayName) {
@@ -55,18 +58,16 @@ export class HelpItemEditorFormComponent implements DialogResult<Help>, DialogBu
     if (state.button === 'secondary') {
       return true
     }
-
     if (this.formGroup.valid && this.helpItem) {
       this.dialogResult = {
         ...this.helpItem,
         baseUrl: this.formGroup.value['baseUrl'],
-        resourceUrl: this.formGroup.value['resourceUrl']
+        resourceUrl: this.formGroup.value['resourceUrl'],
+        context: this.formGroup.value['context']
       }
       return true
     } else {
-      this.portalMessageService.error({
-        summaryKey: 'HELP_ITEM_EDITOR.SAVE_ERROR'
-      })
+      this.portalMessageService.error({ summaryKey: 'HELP_ITEM_EDITOR.SAVE_ERROR' })
       return false
     }
   }

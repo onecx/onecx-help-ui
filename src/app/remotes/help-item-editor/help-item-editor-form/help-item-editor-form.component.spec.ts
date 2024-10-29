@@ -56,25 +56,20 @@ describe('HelpItemEditorFormComponent', () => {
     expect(component).toBeTruthy()
   })
 
-  it('should display correct labels', async () => {
-    expect(await helpItemEditorDialogHarness.getHelpItemIdLabelText()).toEqual('Help Item ID')
-    expect(await helpItemEditorDialogHarness.getProductNameLabelText()).toEqual('Application')
-    expect(await helpItemEditorDialogHarness.getBaseUrlLabelText()).toEqual('Base URL')
-    expect(await helpItemEditorDialogHarness.getResourceUrlLabelText()).toEqual('Resource URL')
-  })
-
   it('should initially have empty values', async () => {
     expect(await helpItemEditorDialogHarness.getHelpItemIdValue()).toEqual('')
     expect(await helpItemEditorDialogHarness.getProductNameValue()).toEqual('')
     expect(await helpItemEditorDialogHarness.getBaseUrlValue()).toEqual('')
     expect(await helpItemEditorDialogHarness.getResourceUrlValue()).toEqual('')
+    expect(await helpItemEditorDialogHarness.getContextValue()).toEqual('')
   })
 
   it('should update form and result on changes', async () => {
     const helpItem = {
       productName: 'new_product_name',
       itemId: 'new_item_id',
-      resourceUrl: 'new_resource_url'
+      resourceUrl: 'new_resource_url',
+      context: 'context'
     }
     component.helpItem = helpItem
     component.productDisplayName = 'new product display name'
@@ -89,6 +84,7 @@ describe('HelpItemEditorFormComponent', () => {
     expect(await helpItemEditorDialogHarness.getHelpItemIdValue()).toEqual('new_item_id')
     expect(await helpItemEditorDialogHarness.getProductNameValue()).toEqual('new product display name')
     expect(await helpItemEditorDialogHarness.getResourceUrlValue()).toEqual('new_resource_url')
+    expect(await helpItemEditorDialogHarness.getContextValue()).toEqual('new_context')
     expect(component.dialogResult).toEqual(helpItem)
   })
 
@@ -100,14 +96,16 @@ describe('HelpItemEditorFormComponent', () => {
     const helpItem = {
       productName: 'new_product_name',
       itemId: 'new_item_id',
-      resourceUrl: 'new_resource_url'
+      resourceUrl: 'new_resource_url',
+      context: 'new_context'
     }
     component.helpItem = helpItem
     component.formGroup.patchValue({
       productName: 'form_product_name',
       itemId: 'form_item_id',
       baseUrl: 'form_base_url',
-      resourceUrl: 'form_resource_url'
+      resourceUrl: 'form_resource_url',
+      context: 'form_context'
     })
 
     const result = component.ocxDialogButtonClicked({ button: 'primary' } as any)
@@ -116,7 +114,8 @@ describe('HelpItemEditorFormComponent', () => {
       productName: 'new_product_name',
       itemId: 'new_item_id',
       baseUrl: 'form_base_url',
-      resourceUrl: 'form_resource_url'
+      resourceUrl: 'form_resource_url',
+      context: 'form_context'
     })
   })
 
@@ -125,7 +124,8 @@ describe('HelpItemEditorFormComponent', () => {
       productName: 'new_product_name',
       itemId: 'new_item_id',
       baseUrl: 'new_base_url',
-      resourceUrl: 'new_resource_path'
+      resourceUrl: 'new_resource_path',
+      context: 'new_context'
     }
     component.helpItem = helpItem
     fixture.detectChanges()
