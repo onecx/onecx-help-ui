@@ -29,8 +29,8 @@ export class HelpFormComponent implements OnChanges {
     { field: 'context', header: 'CONTEXT' },
     { field: 'resourceUrl', header: 'RESOURCE_URL' }
   ]
-
   public productsFiltered: Product[] = []
+
   constructor() {
     this.formGroup = new FormGroup<HelpDetailForm>({
       product: new FormControl(null, [Validators.required]),
@@ -55,5 +55,10 @@ export class HelpFormComponent implements OnChanges {
   public filterProducts(event: { query: string }) {
     const query = event.query.toLowerCase()
     this.productsFiltered = this.products?.filter((product) => product.displayName.toLowerCase().includes(query))
+    this.productsFiltered.sort(this.sortProductsByName)
+  }
+
+  public sortProductsByName(a: Product, b: Product): number {
+    return a.displayName.toUpperCase().localeCompare(b.displayName.toUpperCase())
   }
 }

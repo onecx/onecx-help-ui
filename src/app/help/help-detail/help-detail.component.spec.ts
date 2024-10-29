@@ -51,6 +51,9 @@ describe('HelpDetailComponent', () => {
     filterProducts(event: { query: string }): void {
       console.log('Filtering products with query:', event.query)
     }
+    sortProductsByName(a: Product, b: Product): number {
+      return a.displayName.toUpperCase().localeCompare(b.displayName.toUpperCase())
+    }
     // eslint-disable-next-line @angular-eslint/use-lifecycle-interface
     ngOnChanges(): void {
       console.log('On changes')

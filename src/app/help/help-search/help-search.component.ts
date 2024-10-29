@@ -38,9 +38,7 @@ export class HelpSearchComponent implements OnInit {
   public assignedProductNames: string[] = []
   public products: Product[] = []
   public productsLoaded: boolean = false
-  public criteria: SearchHelpsRequestParams = {
-    helpSearchCriteria: {}
-  }
+  public criteria: SearchHelpsRequestParams = { helpSearchCriteria: {} }
   public helpSearchCriteria!: HelpSearchCriteria
   public searchInProgress = false
   public loadingResults = false
