@@ -69,7 +69,7 @@ describe('HelpItemEditorFormComponent', () => {
       productName: 'new_product_name',
       itemId: 'new_item_id',
       resourceUrl: 'new_resource_url',
-      context: 'context'
+      context: 'new_context'
     }
     component.helpItem = helpItem
     component.productDisplayName = 'new product display name'

@@ -58,7 +58,7 @@ export class HelpFormComponent implements OnChanges {
     this.productsFiltered.sort(this.sortProductsByName)
   }
 
-  private sortProductsByName(a: Product, b: Product): number {
+  public sortProductsByName(a: Product, b: Product): number {
     return a.displayName.toUpperCase().localeCompare(b.displayName.toUpperCase())
   }
 }
