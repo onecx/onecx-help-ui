@@ -7,14 +7,14 @@ import FileSaver from 'file-saver'
 
 import { Action, Column, PortalMessageService } from '@onecx/portal-integration-angular'
 import {
-  HelpsInternalAPIService,
   Help,
-  SearchHelpsRequestParams,
+  HelpsInternalAPIService,
+  HelpPageResult,
   HelpSearchCriteria,
-  SearchProductsByCriteriaRequestParams,
-  ProductsPageResult,
   Product,
-  HelpPageResult
+  ProductsPageResult,
+  SearchHelpsRequestParams,
+  SearchProductsByCriteriaRequestParams
 } from 'src/app/shared/generated'
 import { FileSelectEvent } from 'primeng/fileupload'
 
@@ -125,10 +125,7 @@ export class HelpSearchComponent implements OnInit {
       .searchProductsByCriteria(criteria)
       .subscribe((productsPageResult: ProductsPageResult) => {
         this.products = productsPageResult.stream ?? []
-        if (this.products?.length === 0) {
-          this.products = this.products?.filter((product) => product !== null)
-          this.products.sort(this.sortProductsByName)
-        }
+        this.products.sort(this.sortProductsByName)
         this.productsLoaded = true
         this.search(this.criteria.helpSearchCriteria)
       })

@@ -1,6 +1,6 @@
 import { Component, Inject, Input } from '@angular/core'
 import { CommonModule, Location } from '@angular/common'
-import { HttpClient, HttpClientModule } from '@angular/common/http'
+import { HttpClient } from '@angular/common/http'
 import { Router } from '@angular/router'
 import { TranslateLoader, TranslateModule, TranslateService } from '@ngx-translate/core'
 import { Observable, ReplaySubject, catchError, combineLatest, first, map, mergeMap, of, withLatestFrom } from 'rxjs'
@@ -35,7 +35,6 @@ import { NoHelpItemComponent } from './no-help-item/no-help-item.component'
   standalone: true,
   imports: [
     CommonModule,
-    HttpClientModule,
     RippleModule,
     TooltipModule,
     DynamicDialogModule,
@@ -49,10 +48,7 @@ import { NoHelpItemComponent } from './no-help-item/no-help-item.component'
     HelpsInternalAPIService,
     DialogService,
     PortalMessageService,
-    {
-      provide: BASE_URL,
-      useValue: new ReplaySubject<string>(1)
-    },
+    { provide: BASE_URL, useValue: new ReplaySubject<string>(1) },
     provideTranslateServiceForRoot({
       isolate: true,
       loader: {
@@ -130,7 +126,6 @@ export class OneCXShowHelpComponent implements ocxRemoteComponent, ocxRemoteWebc
     return this.openHelpPage({})
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   public openHelpPage(event: any) {
     this.helpDataItem$?.pipe(withLatestFrom(this.helpArticleId$), first()).subscribe({
       next: ([helpDataItem, helpArticleId]) => {

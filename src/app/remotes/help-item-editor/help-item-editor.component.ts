@@ -147,7 +147,7 @@ export class OneCXHelpItemEditorComponent implements ocxRemoteComponent, ocxRemo
           if (helpPageResult.totalElements !== 1) {
             return {} as Help
           }
-          return helpPageResult.stream!.at(0)!
+          return helpPageResult.stream![0]!
         })
       )
   }
@@ -191,7 +191,6 @@ export class OneCXHelpItemEditorComponent implements ocxRemoteComponent, ocxRemo
     return this.onEditHelpItem({})
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   public onEditHelpItem(event: any) {
     combineLatest([this.helpArticleId$, this.productName$, this.helpDataItem$, this.products$])
       .pipe(

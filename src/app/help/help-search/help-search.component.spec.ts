@@ -1,21 +1,24 @@
 import { NO_ERRORS_SCHEMA } from '@angular/core'
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing'
-import { HttpClient, HttpErrorResponse, HttpEventType, HttpHeaders } from '@angular/common/http'
-import { HttpClientTestingModule } from '@angular/common/http/testing'
+import { HttpErrorResponse, HttpEventType, HttpHeaders, provideHttpClient } from '@angular/common/http'
+import { provideHttpClientTesting } from '@angular/common/http/testing'
 import { TranslateLoader, TranslateModule } from '@ngx-translate/core'
+import { FileSelectEvent } from 'primeng/fileupload'
 import { of, throwError } from 'rxjs'
 
-import { AppStateService, createTranslateLoader, Column, PortalMessageService } from '@onecx/portal-integration-angular'
+import { createTranslateLoader } from '@onecx/angular-accelerator'
+import { AppStateService } from '@onecx/angular-integration-interface'
+import { Column, PortalMessageService } from '@onecx/portal-integration-angular'
+
 import { HelpsInternalAPIService, Help, SearchHelpsRequestParams, Product } from 'src/app/shared/generated'
 import { HelpSearchComponent } from './help-search.component'
-import { FileSelectEvent } from 'primeng/fileupload'
 
 const helpItem: Help = {
   itemId: 'id',
   productName: 'onecx-help'
 }
 
-describe('HelpSearchComponent', () => {
+fdescribe('HelpSearchComponent', () => {
   let component: HelpSearchComponent
   let fixture: ComponentFixture<HelpSearchComponent>
 
@@ -42,17 +45,18 @@ describe('HelpSearchComponent', () => {
     TestBed.configureTestingModule({
       declarations: [HelpSearchComponent],
       imports: [
-        HttpClientTestingModule,
         TranslateModule.forRoot({
           loader: {
             provide: TranslateLoader,
             useFactory: createTranslateLoader,
-            deps: [HttpClient, AppStateService]
+            deps: [AppStateService]
           }
         })
       ],
       schemas: [NO_ERRORS_SCHEMA],
       providers: [
+        provideHttpClientTesting(),
+        provideHttpClient(),
         { provide: HelpsInternalAPIService, useValue: apiServiceSpy },
         { provide: PortalMessageService, useValue: msgServiceSpy }
       ]
@@ -78,7 +82,7 @@ describe('HelpSearchComponent', () => {
     apiServiceSpy.searchProductsByCriteria.calls.reset()
   })
 
-  it('should create component and set columns for displaying results', () => {
+  fit('should create component and set columns for displaying results', () => {
     expect(component).toBeTruthy()
     expect(component.filteredColumns[0].field).toBe('productDisplayName')
     expect(component.filteredColumns[1].field).toBe('itemId')

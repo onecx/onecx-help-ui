@@ -15,7 +15,7 @@ import { RippleModule } from 'primeng/ripple'
 import { BASE_URL, RemoteComponentConfig } from '@onecx/angular-remote-components'
 import { AppStateService, PortalMessageService } from '@onecx/angular-integration-interface'
 import { IfPermissionDirective } from '@onecx/angular-accelerator'
-import { PortalDialogService /*, PortalDialogConfig */ } from '@onecx/portal-integration-angular'
+import { PortalDialogService } from '@onecx/portal-integration-angular'
 
 import { Help, HelpsInternalAPIService } from 'src/app/shared/generated'
 import { OneCXHelpItemEditorComponent } from './help-item-editor.component'
@@ -35,24 +35,13 @@ describe('OneCXHelpItemEditorComponent', () => {
   let fixture: ComponentFixture<OneCXHelpItemEditorComponent>
   let oneCXHelpItemEditorHarness: OneCXHelpItemEditorHarness
 
-  /*
-  const dialogStyle: PortalDialogConfig = {
-    showXButton: true,
-    draggable: true,
-    resizable: true,
-    width: '500px'
-  }
-   */
-
   const helpApiServiceSpy = jasmine.createSpyObj<HelpsInternalAPIService>('HelpsInternalAPIService', [
     'searchHelps',
     'createNewHelp',
     'updateHelp',
     'searchProductsByCriteria'
   ])
-
   const messageServiceSpy = jasmine.createSpyObj<PortalMessageService>('PortalMessageService', ['error', 'info'])
-
   const portalDialogServiceSpy = jasmine.createSpyObj<PortalDialogService>('PortalDialogService', ['openDialog'])
 
   let baseUrlSubject: ReplaySubject<any>
@@ -281,23 +270,23 @@ describe('OneCXHelpItemEditorComponent', () => {
   })
 
   it('should load help article when application and help item data are valid', (done: DoneFn) => {
+    const helpItem: Help = { id: 'id', itemId: 'itemId', productName: 'product_name' }
     helpApiServiceSpy.searchHelps.and.returnValue(
       of({
         totalElements: 1,
-        stream: [{ id: '1' }]
+        stream: [helpItem]
       } as any)
     )
     const appStateService = TestBed.inject(AppStateService)
     spyOn(appStateService.currentPage$, 'asObservable').and.returnValue(
       of({
-        helpArticleId: 'article_id'
+        helpArticleId: helpItem.itemId
       }) as any
     )
-
     spyOn(appStateService.currentMfe$, 'asObservable').and.returnValue(
       of({
         remoteBaseUrl: '',
-        productName: 'mfe_product_name'
+        productName: helpItem.productName
       }) as any
     )
 
@@ -306,9 +295,9 @@ describe('OneCXHelpItemEditorComponent', () => {
     fixture.detectChanges()
 
     component.helpDataItem$?.subscribe((item) => {
-      expect(item).toEqual({ id: '1' } as Help)
+      expect(item).toEqual(helpItem)
       expect(helpApiServiceSpy.searchHelps).toHaveBeenCalledOnceWith({
-        helpSearchCriteria: { itemId: 'article_id', productName: 'mfe_product_name' }
+        helpSearchCriteria: { itemId: helpItem.itemId, productName: helpItem.productName }
       })
       done()
     })
