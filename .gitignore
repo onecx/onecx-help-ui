@@ -1,12 +1,13 @@
 # See http://help.github.com/ignore-files/ for more about ignoring files.
 
 # compiled output
-/dist
-/tmp
-/out-tsc
+dist
+tmp
+out-tsc
+reports
 
 # dependencies
-/node_modules
+node_modules
 
 # profiling files
 chrome-profiler-events*.json
@@ -16,23 +17,19 @@ speed-measure-plugin*.json
 .idea
 .project
 .classpath
-.c9/
-*.launch
-.settings/
-*.sublime-workspace
-
-# IDE - VSCode
+.history
+.settings
 .vscode
-.history/*
+*.launch
 
 # misc
 .angular
 .eslintcache
 .sass-cache
-.gitlab*
 .scannerwork
+.husky/_
+.gitlab*
 connect.lock
-reports
 typings
 *.log
 *.sh
