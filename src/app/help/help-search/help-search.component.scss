@@ -29,4 +29,12 @@
       }
     }
   }
+  // hide unusable stuff
+  ocx-column-group-selection,
+  ocx-data-view-controls div div button {
+    display: none;
+  }
+  ocx-data-view-controls div {
+    justify-content: center !important;
+  }
 }

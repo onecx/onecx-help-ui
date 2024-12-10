@@ -5,12 +5,12 @@
     [products]="products"
     [actions]="(actions$ | async) ?? []"
   ></app-help-criteria>
-  <ocx-page-content styleClass="px-3 pb-2">
+  <ocx-page-content>
     <div *ngIf="exceptionKey" id="hm_search_criteria_error" class="card px-3 align-items-center">
       <p-message
         id="hm_search_criteria_error_message"
         severity="error"
-        styleClass="p-2"
+        styleClass="m-3 p-2"
         [text]="exceptionKey! | translate"
       ></p-message>
     </div>
@@ -18,19 +18,19 @@
       *ngIf="!exceptionKey"
       #table
       id="hm_search_table"
-      responsiveLayout="scroll"
+      styleClass="mx-3 mb-2"
       [value]="loadingResults ? [] : resultsForDisplay"
       [columns]="filteredColumns"
-      styleClass="p-datatable-striped"
       stateStorage="local"
       dataKey="id"
       [reorderableColumns]="false"
-      [rows]="rowsPerPage"
-      [autoLayout]="true"
+      [scrollable]="true"
+      scrollHeight="590px"
+      [rows]="10"
+      [rowsPerPageOptions]="[10, 30, 100]"
       [paginator]="true"
       [alwaysShowPaginator]="true"
       paginatorPosition="bottom"
-      [rowsPerPageOptions]="rowsPerPageOptions"
       [showCurrentPageReport]="true"
       currentPageReportTemplate="{first} - {last} {{ 'ACTIONS.SEARCH.OF' | translate }} {totalRecords}"
     >
@@ -54,8 +54,9 @@
       <ng-template pTemplate="header" let-columns>
         <tr id="hm_search_table_header">
           <th
+            pFrozenColumn
             id="hm_search_table_header_action"
-            class="text-center white-space-nowrap"
+            class="border-right-1 text-center white-space-nowrap"
             [pTooltip]="'ACTIONS.SEARCH.ACTION.TOOLTIP' | translate"
             tooltipPosition="top"
             tooltipEvent="hover"
@@ -79,7 +80,8 @@
 
       <ng-template pTemplate="body" let-row="rowIndex" let-rowData let-columns="columns">
         <tr [id]="'hm_search_table_row_' + row">
-          <td class="px-2 text-center white-space-nowrap">
+          <!-- actions -->
+          <td pFrozenColumn class="px-2 border-right-1 text-center white-space-nowrap">
             <ng-container *ocxIfNotPermission="'HELP#EDIT'">
               <button
                 pbutton
