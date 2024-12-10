@@ -1,21 +1,25 @@
+import { NgModule } from '@angular/core'
+import { ComponentFixture, TestBed } from '@angular/core/testing'
 import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed'
 import { provideHttpClient } from '@angular/common/http'
 import { provideHttpClientTesting } from '@angular/common/http/testing'
-import { ComponentFixture, TestBed } from '@angular/core/testing'
-import { NgModule } from '@angular/core'
 import { Router } from '@angular/router'
-import { AppStateService, PortalMessageService } from '@onecx/angular-integration-interface'
-import { BASE_URL, RemoteComponentConfig } from '@onecx/angular-remote-components'
 import { TranslateTestingModule } from 'ngx-translate-testing'
 import { ReplaySubject, of, throwError } from 'rxjs'
-import { DialogService, DynamicDialogModule } from 'primeng/dynamicdialog'
+
 import { TooltipModule } from 'primeng/tooltip'
 import { RippleModule } from 'primeng/ripple'
+import { DialogService, DynamicDialogModule } from 'primeng/dynamicdialog'
+
+import { IfPermissionDirective } from '@onecx/angular-accelerator'
+import { AppStateService } from '@onecx/angular-integration-interface'
+import { PortalMessageService } from '@onecx/portal-integration-angular'
+import { BASE_URL, RemoteComponentConfig } from '@onecx/angular-remote-components'
+
 import { Help, HelpsInternalAPIService } from 'src/app/shared/generated'
 import { OneCXShowHelpComponent } from './show-help.component'
 import { OneCXShowHelpHarness } from './show-help.harness'
 // import { NoHelpItemComponent } from './no-help-item/no-help-item.component'
-import { IfPermissionDirective } from '@onecx/angular-accelerator'
 
 @NgModule({
   imports: [],
@@ -28,13 +32,10 @@ describe('OneCXShowHelpComponent', () => {
   let component: OneCXShowHelpComponent
   let fixture: ComponentFixture<OneCXShowHelpComponent>
   let oneCXShowHelpHarness: OneCXShowHelpHarness
-
   const helpApiServiceSpy = jasmine.createSpyObj<HelpsInternalAPIService>('HelpsInternalAPIService', [
     'getHelpByProductNameItemId'
   ])
-
   const dialogServiceSpy = jasmine.createSpyObj<DialogService>('DialogService', ['open'])
-
   const messageServiceSpy = jasmine.createSpyObj<PortalMessageService>('PortalMessageService', ['error'])
 
   let baseUrlSubject: ReplaySubject<any>
@@ -45,17 +46,10 @@ describe('OneCXShowHelpComponent', () => {
       declarations: [],
       imports: [
         TranslateTestingModule.withTranslations({
-          en: require('../../../assets/i18n/en.json')
+          en: require('/src/assets/i18n/en.json')
         }).withDefaultLanguage('en')
       ],
-      providers: [
-        provideHttpClient(),
-        provideHttpClientTesting(),
-        {
-          provide: BASE_URL,
-          useValue: baseUrlSubject
-        }
-      ]
+      providers: [provideHttpClient(), provideHttpClientTesting(), { provide: BASE_URL, useValue: baseUrlSubject }]
     })
       .overrideComponent(OneCXShowHelpComponent, {
         set: {
@@ -68,12 +62,12 @@ describe('OneCXShowHelpComponent', () => {
         }
       })
       .compileComponents()
-
     baseUrlSubject.next('base_url_mock')
 
     helpApiServiceSpy.getHelpByProductNameItemId.calls.reset()
     dialogServiceSpy.open.calls.reset()
     messageServiceSpy.error.calls.reset()
+    helpApiServiceSpy.getHelpByProductNameItemId.and.returnValue(of({} as any))
   })
 
   it('should create', () => {
@@ -102,11 +96,7 @@ describe('OneCXShowHelpComponent', () => {
     fixture = TestBed.createComponent(OneCXShowHelpComponent)
     component = fixture.componentInstance
     fixture.detectChanges()
-
-    component.ocxInitRemoteComponent({
-      permissions: ['HELP#VIEW'],
-      baseUrl: 'base_url'
-    } as RemoteComponentConfig)
+    component.ocxInitRemoteComponent({ permissions: ['HELP#VIEW'], baseUrl: 'base_url' } as RemoteComponentConfig)
 
     expect(component.permissions).toEqual(['HELP#VIEW'])
     expect(helpApiServiceSpy.configuration.basePath).toEqual('base_url/bff')
@@ -123,30 +113,28 @@ describe('OneCXShowHelpComponent', () => {
     fixture.detectChanges()
     oneCXShowHelpHarness = await TestbedHarnessEnvironment.harnessForFixture(fixture, OneCXShowHelpHarness)
 
-    expect(await oneCXShowHelpHarness.getHelpButton()).toBeNull()
+    expect(await oneCXShowHelpHarness.getShowHelpButton()).toBeNull()
   })
 
   it('should show button if permissions are met', async () => {
     fixture = TestBed.createComponent(OneCXShowHelpComponent)
     component = fixture.componentInstance
-    component.ocxInitRemoteComponent({
-      permissions: ['HELP#VIEW'],
-      baseUrl: 'base_url'
-    } as RemoteComponentConfig)
+    component.ocxInitRemoteComponent({ permissions: ['HELP#VIEW'], baseUrl: 'base_url' } as RemoteComponentConfig)
 
     fixture.detectChanges()
     oneCXShowHelpHarness = await TestbedHarnessEnvironment.harnessForFixture(fixture, OneCXShowHelpHarness)
 
-    expect(await oneCXShowHelpHarness.getHelpButtonId()).toBe('show-help-item-button')
+    expect(await oneCXShowHelpHarness.getShowHelpButtonId()).toBe('hm_show_help_item_action')
   })
 
   it('should call openHelpPage on enter click', () => {
     fixture = TestBed.createComponent(OneCXShowHelpComponent)
     component = fixture.componentInstance
     fixture.detectChanges()
-
     spyOn(component, 'openHelpPage')
-    component.onEnterClick()
+
+    component.onOpenHelpPage()
+
     expect(component.openHelpPage).toHaveBeenCalledTimes(1)
   })
 
@@ -229,35 +217,18 @@ describe('OneCXShowHelpComponent', () => {
   })
 
   it('should load help article when application and help item data are valid', (done: DoneFn) => {
-    helpApiServiceSpy.getHelpByProductNameItemId.and.returnValue(
-      of({
-        totalElements: 1,
-        stream: [{ id: '1' }]
-      } as any)
-    )
+    helpApiServiceSpy.getHelpByProductNameItemId.and.returnValue(of({ totalElements: 1, stream: [{ id: '1' }] } as any))
     const appStateService = TestBed.inject(AppStateService)
-    spyOn(appStateService.currentPage$, 'asObservable').and.returnValue(
-      of({
-        helpArticleId: 'article_id'
-      }) as any
-    )
-
+    spyOn(appStateService.currentPage$, 'asObservable').and.returnValue(of({ helpArticleId: 'article_id' }) as any)
     spyOn(appStateService.currentMfe$, 'asObservable').and.returnValue(
-      of({
-        remoteBaseUrl: '',
-        productName: 'mfe_product_name'
-      }) as any
+      of({ remoteBaseUrl: '', productName: 'mfe_product_name' }) as any
     )
-
     fixture = TestBed.createComponent(OneCXShowHelpComponent)
     component = fixture.componentInstance
     fixture.detectChanges()
 
     component.helpDataItem$?.subscribe((item) => {
-      expect(item).toEqual({
-        totalElements: 1,
-        stream: [{ id: '1' }]
-      } as any)
+      expect(item).toEqual({ totalElements: 1, stream: [{ id: '1' }] } as any)
       expect(helpApiServiceSpy.getHelpByProductNameItemId).toHaveBeenCalled()
       done()
     })
@@ -265,14 +236,8 @@ describe('OneCXShowHelpComponent', () => {
 
   it('should return empty object when application or help item data are invalid', (done: DoneFn) => {
     const appStateService = TestBed.inject(AppStateService)
-    spyOn(appStateService.currentPage$, 'asObservable').and.returnValue(
-      of({
-        helpArticleId: 'article_id'
-      }) as any
-    )
-
+    spyOn(appStateService.currentPage$, 'asObservable').and.returnValue(of({ helpArticleId: 'article_id' }) as any)
     spyOn(appStateService.currentMfe$, 'asObservable').and.returnValue(of({}) as any)
-
     fixture = TestBed.createComponent(OneCXShowHelpComponent)
     component = fixture.componentInstance
     fixture.detectChanges()
@@ -285,22 +250,14 @@ describe('OneCXShowHelpComponent', () => {
   })
 
   it('should return empty object on failed article load', (done: DoneFn) => {
-    spyOn(console, 'log')
-    helpApiServiceSpy.getHelpByProductNameItemId.and.returnValue(throwError(() => {}))
-
+    const errorResponse = { status: 400, statusText: 'An error occur' }
+    helpApiServiceSpy.getHelpByProductNameItemId.and.returnValue(throwError(() => errorResponse))
     const appStateService = TestBed.inject(AppStateService)
-    spyOn(appStateService.currentPage$, 'asObservable').and.returnValue(
-      of({
-        helpArticleId: 'article_id'
-      }) as any
-    )
-
+    spyOn(appStateService.currentPage$, 'asObservable').and.returnValue(of({ helpArticleId: 'article_id' }) as any)
     spyOn(appStateService.currentMfe$, 'asObservable').and.returnValue(
-      of({
-        remoteBaseUrl: '',
-        productName: 'mfe_product_name'
-      }) as any
+      of({ remoteBaseUrl: '', productName: 'mfe_product_name' }) as any
     )
+    spyOn(console, 'error')
 
     fixture = TestBed.createComponent(OneCXShowHelpComponent)
     component = fixture.componentInstance
@@ -309,35 +266,20 @@ describe('OneCXShowHelpComponent', () => {
     component.helpDataItem$?.subscribe((item) => {
       expect(item).toEqual({} as Help)
       expect(helpApiServiceSpy.getHelpByProductNameItemId).toHaveBeenCalled()
+      expect(console.error).toHaveBeenCalledWith('getHelpByProductNameItemId', errorResponse)
       done()
     })
   })
 
   it('should open new window with help article', async () => {
     spyOn(window, 'open')
-
-    const helpItem = {
-      id: 'article_id',
-      baseUrl: 'http://base_url',
-      resourceUrl: '/search'
-    }
-
+    const helpItem = { id: 'article_id', baseUrl: 'http://base_url', resourceUrl: '/search' }
     helpApiServiceSpy.getHelpByProductNameItemId.and.returnValue(of(helpItem as any))
-
     const appStateService = TestBed.inject(AppStateService)
-    spyOn(appStateService.currentPage$, 'asObservable').and.returnValue(
-      of({
-        helpArticleId: 'article_id'
-      }) as any
-    )
-
+    spyOn(appStateService.currentPage$, 'asObservable').and.returnValue(of({ helpArticleId: 'article_id' }) as any)
     spyOn(appStateService.currentMfe$, 'asObservable').and.returnValue(
-      of({
-        remoteBaseUrl: '',
-        productName: 'mfe_product_name'
-      }) as any
+      of({ remoteBaseUrl: '', productName: 'mfe_product_name' }) as any
     )
-
     fixture = TestBed.createComponent(OneCXShowHelpComponent)
     component = fixture.componentInstance
     component.ocxInitRemoteComponent({
@@ -348,30 +290,19 @@ describe('OneCXShowHelpComponent', () => {
     fixture.detectChanges()
 
     oneCXShowHelpHarness = await TestbedHarnessEnvironment.harnessForFixture(fixture, OneCXShowHelpHarness)
-    await oneCXShowHelpHarness.clickHelpButton()
+    await oneCXShowHelpHarness.onClickShowHelpButton()
 
     expect(window.open).toHaveBeenCalled()
   })
 
   it('should open new window with help article with relativeUrl', async () => {
     helpApiServiceSpy.getHelpByProductNameItemId.and.returnValue(
-      of({
-        totalElements: 1,
-        stream: [{ id: '1', resourceUrl: '/admin/helpItem' }]
-      } as any)
+      of({ totalElements: 1, stream: [{ id: '1', resourceUrl: '/admin/helpItem' }] } as any)
     )
     const appStateService = TestBed.inject(AppStateService)
-    spyOn(appStateService.currentPage$, 'asObservable').and.returnValue(
-      of({
-        helpArticleId: 'article_id'
-      }) as any
-    )
-
+    spyOn(appStateService.currentPage$, 'asObservable').and.returnValue(of({ helpArticleId: 'article_id' }) as any)
     spyOn(appStateService.currentMfe$, 'asObservable').and.returnValue(
-      of({
-        remoteBaseUrl: '',
-        productName: 'mfe_product_name'
-      }) as any
+      of({ remoteBaseUrl: '', productName: 'mfe_product_name' }) as any
     )
 
     fixture = TestBed.createComponent(OneCXShowHelpComponent)
@@ -383,32 +314,21 @@ describe('OneCXShowHelpComponent', () => {
     fixture.detectChanges()
 
     oneCXShowHelpHarness = await TestbedHarnessEnvironment.harnessForFixture(fixture, OneCXShowHelpHarness)
-    await oneCXShowHelpHarness.clickHelpButton()
+    await oneCXShowHelpHarness.onClickShowHelpButton()
 
     expect(dialogServiceSpy.open).toHaveBeenCalled()
   })
 
   it('should do nothing when resourceUrl is not defined', async () => {
     spyOn(window, 'open')
-    const helpItem = {
-      id: 'article_id',
-      baseUrl: undefined,
-      resourceUrl: undefined
-    }
+    const helpItem = { id: 'article_id', baseUrl: undefined, resourceUrl: undefined }
 
     helpApiServiceSpy.getHelpByProductNameItemId.and.returnValue(of(helpItem as any))
     const appStateService = TestBed.inject(AppStateService)
-    spyOn(appStateService.currentPage$, 'asObservable').and.returnValue(
-      of({
-        helpArticleId: 'article_id'
-      }) as any
-    )
+    spyOn(appStateService.currentPage$, 'asObservable').and.returnValue(of({ helpArticleId: 'article_id' }) as any)
 
     spyOn(appStateService.currentMfe$, 'asObservable').and.returnValue(
-      of({
-        remoteBaseUrl: '',
-        productName: 'mfe_product_name'
-      }) as any
+      of({ remoteBaseUrl: '', productName: 'mfe_product_name' }) as any
     )
 
     fixture = TestBed.createComponent(OneCXShowHelpComponent)
@@ -420,7 +340,7 @@ describe('OneCXShowHelpComponent', () => {
     fixture.detectChanges()
 
     oneCXShowHelpHarness = await TestbedHarnessEnvironment.harnessForFixture(fixture, OneCXShowHelpHarness)
-    await oneCXShowHelpHarness.clickHelpButton()
+    await oneCXShowHelpHarness.onClickShowHelpButton()
 
     expect(window.open).toHaveBeenCalledTimes(0)
     expect(messageServiceSpy.error).toHaveBeenCalledTimes(0)
@@ -430,44 +350,22 @@ describe('OneCXShowHelpComponent', () => {
     window.open = function () {
       throw new Error()
     }
-
-    const helpItem = {
-      id: 'article_id',
-      baseUrl: 'http://base_url',
-      resourceUrl: '/search'
-    }
-
+    const helpItem = { id: 'article_id', baseUrl: 'http://base_url', resourceUrl: '/search' }
     helpApiServiceSpy.getHelpByProductNameItemId.and.returnValue(of(helpItem as any))
-
     const appStateService = TestBed.inject(AppStateService)
-    spyOn(appStateService.currentPage$, 'asObservable').and.returnValue(
-      of({
-        helpArticleId: 'article_id'
-      }) as any
-    )
-
+    spyOn(appStateService.currentPage$, 'asObservable').and.returnValue(of({ helpArticleId: 'article_id' }) as any)
     spyOn(appStateService.currentMfe$, 'asObservable').and.returnValue(
-      of({
-        remoteBaseUrl: '',
-        productName: 'mfe_product_name'
-      }) as any
+      of({ remoteBaseUrl: '', productName: 'mfe_product_name' }) as any
     )
-
     fixture = TestBed.createComponent(OneCXShowHelpComponent)
     component = fixture.componentInstance
-    component.ocxInitRemoteComponent({
-      permissions: ['HELP#VIEW'],
-      baseUrl: 'base_url'
-    } as RemoteComponentConfig)
-
+    component.ocxInitRemoteComponent({ permissions: ['HELP#VIEW'], baseUrl: 'base_url' } as RemoteComponentConfig)
     fixture.detectChanges()
 
     oneCXShowHelpHarness = await TestbedHarnessEnvironment.harnessForFixture(fixture, OneCXShowHelpHarness)
-    await oneCXShowHelpHarness.clickHelpButton()
+    await oneCXShowHelpHarness.onClickShowHelpButton()
 
-    expect(messageServiceSpy.error).toHaveBeenCalledOnceWith({
-      summaryKey: 'SHOW_HELP.HELP_PAGE_ERROR'
-    })
+    expect(messageServiceSpy.error).toHaveBeenCalledOnceWith({ summaryKey: 'SHOW_HELP.HELP_PAGE_ERROR' })
   })
 
   describe('url construction', () => {
@@ -478,19 +376,16 @@ describe('OneCXShowHelpComponent', () => {
     })
     it('should not append origin for external url', () => {
       const url = component.constructUrl('https://www.google.com/', 'http://localhost:4300', '/shell/')
-      console.log(url.toString())
       expect(url).toEqual(new URL('https://www.google.com/'))
     })
 
     it('should append origin for relative url', () => {
       const url = component.constructUrl('/admin/help', 'http://localhost:4300', '/')
-      console.log(url.toString())
       expect(url).toEqual(new URL('http://localhost:4300/admin/help'))
     })
 
     it('should append origin and deploymentPath for relative url', () => {
       const url = component.constructUrl('/admin/help', 'http://localhost:4300', '/shell/')
-      console.log(url.toString())
       expect(url).toEqual(new URL('http://localhost:4300/shell/admin/help'))
     })
   })

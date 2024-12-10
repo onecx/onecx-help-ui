@@ -7,15 +7,15 @@ import { Router } from '@angular/router'
 import { ReplaySubject, of, throwError } from 'rxjs'
 import { TranslateTestingModule } from 'ngx-translate-testing'
 
-import { DialogService, DynamicDialogModule } from 'primeng/dynamicdialog'
-import { PrimeIcons } from 'primeng/api'
+import { DynamicDialogModule } from 'primeng/dynamicdialog'
 import { TooltipModule } from 'primeng/tooltip'
 import { RippleModule } from 'primeng/ripple'
+import { PrimeIcons } from 'primeng/api'
 
-import { BASE_URL, RemoteComponentConfig } from '@onecx/angular-remote-components'
-import { AppStateService, PortalMessageService } from '@onecx/angular-integration-interface'
+import { AppStateService } from '@onecx/angular-integration-interface'
+import { PortalDialogService, PortalMessageService } from '@onecx/portal-integration-angular'
 import { IfPermissionDirective } from '@onecx/angular-accelerator'
-import { PortalDialogService } from '@onecx/portal-integration-angular'
+import { BASE_URL, RemoteComponentConfig } from '@onecx/angular-remote-components'
 
 import { Help, HelpsInternalAPIService } from 'src/app/shared/generated'
 import { OneCXHelpItemEditorComponent } from './help-item-editor.component'
@@ -67,7 +67,6 @@ describe('OneCXHelpItemEditorComponent', () => {
         set: {
           imports: [PortalDependencyModule, TranslateTestingModule, TooltipModule, RippleModule, DynamicDialogModule],
           providers: [
-            DialogService,
             { provide: HelpsInternalAPIService, useValue: helpApiServiceSpy },
             { provide: PortalDialogService, useValue: portalDialogServiceSpy },
             { provide: PortalMessageService, useValue: messageServiceSpy }
@@ -150,7 +149,7 @@ describe('OneCXHelpItemEditorComponent', () => {
     fixture.detectChanges()
     oneCXHelpItemEditorHarness = await TestbedHarnessEnvironment.harnessForFixture(fixture, OneCXHelpItemEditorHarness)
 
-    expect(await oneCXHelpItemEditorHarness.getHelpButtonEditorId()).toBe('ocx_topbar_action_help_edit')
+    expect(await oneCXHelpItemEditorHarness.getShowHelpButtonEditorId()).toBe('ocx_topbar_action_help_edit')
   })
 
   it('should call onEditHelpItem on enter click', () => {
@@ -408,14 +407,8 @@ describe('OneCXHelpItemEditorComponent', () => {
           productDisplayName: 'mfe_display_product_name'
         }
       },
-      {
-        key: 'HELP_ITEM_EDITOR.SAVE',
-        icon: PrimeIcons.CHECK
-      },
-      {
-        key: 'HELP_ITEM_EDITOR.CANCEL',
-        icon: PrimeIcons.TIMES
-      },
+      { key: 'HELP_ITEM_EDITOR.SAVE', icon: PrimeIcons.CHECK },
+      { key: 'HELP_ITEM_EDITOR.CANCEL', icon: PrimeIcons.TIMES },
       false
       //dialogStyle
     )

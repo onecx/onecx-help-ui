@@ -1,12 +1,12 @@
 <div class="layout-topbar-item" *ocxIfPermission="'HELP#VIEW'; permissions: permissions">
   <button
-    id="show-help-item-button"
+    id="hm_show_help_item_action"
     class="layout-topbar-action rounded-circle"
     pRipple
     pButton
     (click)="openHelpPage($event)"
     tooltipPosition="bottom"
-    (keydown.enter.t)="onEnterClick()"
+    (keydown.enter.t)="onOpenHelpPage()"
     [attr.aria-label]="'SHOW_HELP.LABEL' | translate"
     [pTooltip]="'SHOW_HELP.TOOLTIP' | translate"
     tooltipPosition="top"

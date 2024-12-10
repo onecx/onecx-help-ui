@@ -154,7 +154,7 @@ export class HelpSearchComponent implements OnInit {
       .pipe(
         catchError((err) => {
           this.exceptionKey = 'EXCEPTIONS.HTTP_STATUS_' + err.status + '.HELP_ITEM'
-          console.error('searchHelps():', err)
+          console.error('searchHelps', err)
           this.msgService.error({ summaryKey: 'ACTIONS.SEARCH.MSG_SEARCH_FAILED' })
           return of({ stream: [] } as HelpPageResult)
         }),
@@ -249,7 +249,10 @@ export class HelpSearchComponent implements OnInit {
           this.productsChanged = true
           this.msgService.success({ summaryKey: 'ACTIONS.DELETE.MESSAGE.HELP_ITEM_OK' })
         },
-        error: () => this.msgService.error({ summaryKey: 'ACTIONS.DELETE.MESSAGE.HELP_ITEM_NOK' })
+        error: (err) => {
+          this.msgService.error({ summaryKey: 'ACTIONS.DELETE.MESSAGE.HELP_ITEM_NOK' })
+          console.error('deleteHelp', err)
+        }
       })
     }
   }
@@ -284,7 +287,10 @@ export class HelpSearchComponent implements OnInit {
           this.productsChanged = true
           this.msgService.success({ summaryKey: 'ACTIONS.IMPORT.MESSAGE.HELP_ITEM.IMPORT_OK' })
         },
-        error: () => this.msgService.error({ summaryKey: 'ACTIONS.IMPORT.MESSAGE.HELP_ITEM.IMPORT_NOK' })
+        error: (err) => {
+          this.msgService.error({ summaryKey: 'ACTIONS.IMPORT.MESSAGE.HELP_ITEM.IMPORT_NOK' })
+          console.error('importHelps', err)
+        }
       })
       this.loadData()
     }
@@ -323,7 +329,7 @@ export class HelpSearchComponent implements OnInit {
         },
         error: (err) => {
           this.msgService.error({ summaryKey: 'ACTIONS.EXPORT.MESSAGE.HELP_ITEM.EXPORT_NOK' })
-          console.error(err)
+          console.error('exportHelps', err)
         }
       })
     }
