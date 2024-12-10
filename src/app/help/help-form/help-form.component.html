@@ -42,8 +42,8 @@
           type="text"
           inputId="hm_detail_form_operator"
           formControlName="operator"
+          styleClass="cursor-auto shadow-none"
           [binary]="true"
-          [styleClass]="'cursor-auto shadow-none'"
           [label]="'HELP_ITEM.OPERATOR' | translate"
           [pTooltip]="'HELP_ITEM.TOOLTIPS.OPERATOR' | translate"
           tooltipPosition="right"
@@ -52,10 +52,10 @@
       </div>
       <p-message
         *ngIf="helpItem?.operator"
-        styleClass="p-1"
+        styleClass="mb-2 p-2"
         id="hm_detail_form_operator_delete_message"
         severity="info"
-        [text]="'ACTIONS.DELETE.MESSAGE.OPERATOR_TEXT' | translate"
+        [text]="'ACTIONS.DELETE.OPERATOR_TEXT' | translate"
       ></p-message>
     </div>
   </div>

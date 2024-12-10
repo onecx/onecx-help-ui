@@ -1,18 +1,22 @@
 import { NO_ERRORS_SCHEMA } from '@angular/core'
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing'
-import { HttpClient, HttpErrorResponse, HttpEventType, HttpHeaders } from '@angular/common/http'
-import { HttpClientTestingModule } from '@angular/common/http/testing'
+import { HttpClient, provideHttpClient } from '@angular/common/http'
+import { provideHttpClientTesting } from '@angular/common/http/testing'
 import { TranslateLoader, TranslateModule } from '@ngx-translate/core'
 import { of, throwError } from 'rxjs'
+import { FileSelectEvent } from 'primeng/fileupload'
 
-import { AppStateService, createTranslateLoader, Column, PortalMessageService } from '@onecx/portal-integration-angular'
+import { createTranslateLoader } from '@onecx/angular-accelerator'
+import { AppStateService } from '@onecx/angular-integration-interface'
+import { Column, PortalMessageService } from '@onecx/portal-integration-angular'
+
 import { HelpsInternalAPIService, Help, SearchHelpsRequestParams, Product } from 'src/app/shared/generated'
 import { HelpSearchComponent } from './help-search.component'
-import { FileSelectEvent } from 'primeng/fileupload'
 
 const helpItem: Help = {
   itemId: 'id',
-  productName: 'onecx-help'
+  productName: 'onecx-help',
+  baseUrl: 'baseUrl'
 }
 
 describe('HelpSearchComponent', () => {
@@ -42,7 +46,6 @@ describe('HelpSearchComponent', () => {
     TestBed.configureTestingModule({
       declarations: [HelpSearchComponent],
       imports: [
-        HttpClientTestingModule,
         TranslateModule.forRoot({
           loader: {
             provide: TranslateLoader,
@@ -53,6 +56,8 @@ describe('HelpSearchComponent', () => {
       ],
       schemas: [NO_ERRORS_SCHEMA],
       providers: [
+        provideHttpClient(),
+        provideHttpClientTesting(),
         { provide: HelpsInternalAPIService, useValue: apiServiceSpy },
         { provide: PortalMessageService, useValue: msgServiceSpy }
       ]
@@ -76,6 +81,12 @@ describe('HelpSearchComponent', () => {
     apiServiceSpy.importHelps.calls.reset()
     apiServiceSpy.exportHelps.calls.reset()
     apiServiceSpy.searchProductsByCriteria.calls.reset()
+    // reset response data of used calls
+    apiServiceSpy.searchHelps.and.returnValue(of({}))
+    apiServiceSpy.deleteHelp.and.returnValue(of({}))
+    apiServiceSpy.importHelps.and.returnValue(of({}))
+    apiServiceSpy.exportHelps.and.returnValue(of({}))
+    apiServiceSpy.searchProductsByCriteria.and.returnValue(of({}))
   })
 
   it('should create component and set columns for displaying results', () => {
@@ -92,16 +103,8 @@ describe('HelpSearchComponent', () => {
     it('should call search OnInit and populate filteredColumns/actions correctly', () => {
       translateServiceSpy.get.and.returnValue(of({ 'ACTIONS.CREATE.LABEL': 'Create' }))
       component.columns = [
-        {
-          field: 'productName',
-          header: 'APPLICATION_NAME',
-          active: false
-        },
-        {
-          field: 'context',
-          header: 'CONTEXT',
-          active: true
-        }
+        { field: 'productName', header: 'APPLICATION_NAME', active: false },
+        { field: 'context', header: 'CONTEXT', active: true }
       ]
       spyOn(component, 'search')
 
@@ -137,7 +140,7 @@ describe('HelpSearchComponent', () => {
     })
   })
 
-  describe('search', () => {
+  describe('search - Success', () => {
     it('should correctly assign results if API call returns some data', () => {
       const helpPageResultMock = {
         totalElements: 0,
@@ -165,15 +168,15 @@ describe('HelpSearchComponent', () => {
     })
 
     it('should handle empty results on search', () => {
-      const helpPageResultMock = {
+      const emptyResponse = {
         totalElements: 0,
         number: 0,
         size: 0,
         totalPages: 0,
         stream: []
       }
-      apiServiceSpy.searchHelps.and.returnValue(of(helpPageResultMock))
-      apiServiceSpy.searchProductsByCriteria.and.returnValue(of(helpPageResultMock))
+      apiServiceSpy.searchHelps.and.returnValue(of(emptyResponse))
+      apiServiceSpy.searchProductsByCriteria.and.returnValue(of(emptyResponse))
       component.resultsForDisplay = []
 
       component.search({})
@@ -184,96 +187,13 @@ describe('HelpSearchComponent', () => {
 
     it('should reuse criteria if reuseCriteria is true', () => {
       apiServiceSpy.searchHelps.and.returnValue(of([]))
-      component.criteria = {
-        helpSearchCriteria: {
-          productName: 'ocx-help-ui',
-          itemId: 'id'
-        }
-      }
-      const newCriteria = {
-        helpSearchCriteria: {
-          productName: 'ap-mgmt',
-          itemId: 'newId'
-        }
-      }
+      component.criteria = { helpSearchCriteria: { productName: 'ocx-help-ui', itemId: 'id' } }
+      const newCriteria = { helpSearchCriteria: { productName: 'ap-mgmt', itemId: 'newId' } }
       const reuseCriteria = true
 
       component.search(component.criteria.helpSearchCriteria, reuseCriteria)
 
       expect(component.criteria).not.toBe(newCriteria)
-    })
-
-    describe('searchHelps Error', () => {
-      it('should handle 401 Exception result on search', () => {
-        const helpPageResultMock: HttpErrorResponse = {
-          status: 401,
-          statusText: 'Not Found',
-          name: 'HttpErrorResponse',
-          message: '',
-          error: undefined,
-          ok: false,
-          headers: new HttpHeaders(),
-          url: null,
-          type: HttpEventType.ResponseHeader
-        }
-        apiServiceSpy.searchHelps.and.returnValue(throwError(() => helpPageResultMock))
-        component.resultsForDisplay = []
-
-        component.search({})
-
-        expect(component.exceptionKey).toBeDefined()
-        expect(component.exceptionKey).toBe('EXCEPTIONS.HTTP_STATUS_401.HELP_ITEM')
-      })
-
-      it('should handle 403 Exception result on search', () => {
-        const helpPageResultMock: HttpErrorResponse = {
-          status: 403,
-          statusText: 'Not Found',
-          name: 'HttpErrorResponse',
-          message: '',
-          error: undefined,
-          ok: false,
-          headers: new HttpHeaders(),
-          url: null,
-          type: HttpEventType.ResponseHeader
-        }
-        apiServiceSpy.searchHelps.and.returnValue(throwError(() => helpPageResultMock))
-        component.resultsForDisplay = []
-
-        component.search({})
-
-        expect(component.exceptionKey).toBeDefined()
-        expect(component.exceptionKey).toBe('EXCEPTIONS.HTTP_STATUS_403.HELP_ITEM')
-      })
-
-      it('should handle 404 Exception result on search', () => {
-        const helpPageResultMock: HttpErrorResponse = {
-          status: 404,
-          statusText: 'Not Found',
-          name: 'HttpErrorResponse',
-          message: '',
-          error: undefined,
-          ok: false,
-          headers: new HttpHeaders(),
-          url: null,
-          type: HttpEventType.ResponseHeader
-        }
-        apiServiceSpy.searchHelps.and.returnValue(throwError(() => helpPageResultMock))
-        component.resultsForDisplay = []
-
-        component.search({})
-
-        expect(component.exceptionKey).toBeDefined()
-        expect(component.exceptionKey).toBe('EXCEPTIONS.HTTP_STATUS_404.HELP_ITEM')
-      })
-
-      it('should handle API call error', () => {
-        apiServiceSpy.searchHelps.and.returnValue(throwError(() => new Error()))
-
-        component.search({})
-
-        expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.SEARCH.MSG_SEARCH_FAILED' })
-      })
     })
 
     it('should set productName and itemId as undefined if criteria strings empty', () => {
@@ -292,7 +212,22 @@ describe('HelpSearchComponent', () => {
     })
   })
 
-  describe('onDeleteConfirmation', () => {
+  describe('search - Error', () => {
+    it('should handle 401 Exception result on search', () => {
+      const errorResponse = { status: 404, statusText: 'Not Found' }
+      apiServiceSpy.searchHelps.and.returnValue(throwError(() => errorResponse))
+      component.resultsForDisplay = []
+      spyOn(console, 'error')
+
+      component.search({})
+
+      expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.SEARCH.MSG_SEARCH_FAILED' })
+      expect(component.exceptionKey).toBe('EXCEPTIONS.HTTP_STATUS_' + errorResponse.status + '.HELP_ITEM')
+      expect(console.error).toHaveBeenCalledWith('searchHelps', errorResponse)
+    })
+  })
+
+  describe('delete', () => {
     it('should delete help item', () => {
       apiServiceSpy.deleteHelp({ productName: newHelpItemArr[0].productName, itemId: newHelpItemArr[0].id })
       component.resultsForDisplay = newHelpItemArr
@@ -311,134 +246,134 @@ describe('HelpSearchComponent', () => {
     })
 
     it('should display error on deleteHelpItem failure', () => {
-      apiServiceSpy.deleteHelp.and.returnValue(throwError(() => new Error()))
+      const errorResponse = { status: 400, statusText: 'Cannot delete ...' }
+      apiServiceSpy.deleteHelp.and.returnValue(throwError(() => errorResponse))
       component.resultsForDisplay = newHelpItemArr
       component.helpItem = {
         id: newHelpItemArr[0].id,
         productName: newHelpItemArr[0].productName,
         itemId: newHelpItemArr[0].itemId
       }
+      spyOn(console, 'error')
 
       component.onDeleteConfirmation()
 
       expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.DELETE.MESSAGE.HELP_ITEM_NOK' })
+      expect(console.error).toHaveBeenCalledWith('deleteHelp', errorResponse)
     })
   })
 
   /*
    * UI ACTIONS
    */
-  it('should set correct values onSearch', () => {
-    spyOn(component, 'search')
-    component.onSearch()
+  describe('UI actions', () => {
+    it('should set correct values onSearch', () => {
+      spyOn(component, 'search')
 
-    expect(component.changeMode).toEqual('CREATE')
-    expect(component.productsChanged).toBeTrue()
-    expect(component.search).toHaveBeenCalled()
-  })
+      component.onSearch()
 
-  it('should set correct values onCreate', () => {
-    component.onCreate()
-
-    expect(component.changeMode).toEqual('CREATE')
-    expect(component.productsChanged).toBeFalse()
-    expect(component.helpItem).toBe(undefined)
-    expect(component.displayDetailDialog).toBeTrue()
-  })
-
-  it('should set correct values onDetail', () => {
-    const ev: MouseEvent = new MouseEvent('type')
-    spyOn(ev, 'stopPropagation')
-    const mode = 'EDIT'
-    component.onDetail(ev, newHelpItemArr[0], mode)
-
-    expect(ev.stopPropagation).toHaveBeenCalled()
-    expect(component.changeMode).toEqual(mode)
-    expect(component.productsChanged).toBeFalse()
-    expect(component.helpItem).toBe(newHelpItemArr[0])
-    expect(component.displayDetailDialog).toBeTrue()
-  })
-
-  it('should set correct values onCopy', () => {
-    const ev: MouseEvent = new MouseEvent('type')
-    spyOn(ev, 'stopPropagation')
-    component.onCopy(ev, newHelpItemArr[0])
-
-    expect(ev.stopPropagation).toHaveBeenCalled()
-    expect(component.changeMode).toEqual('CREATE')
-    expect(component.productsChanged).toBeFalse()
-    expect(component.helpItem).toBe(newHelpItemArr[0])
-    expect(component.displayDetailDialog).toBeTrue()
-  })
-
-  it('should set correct values onDelete', () => {
-    const ev: MouseEvent = new MouseEvent('type')
-    spyOn(ev, 'stopPropagation')
-    component.onDelete(ev, newHelpItemArr[0])
-
-    expect(ev.stopPropagation).toHaveBeenCalled()
-    expect(component.productsChanged).toBeFalse()
-    expect(component.helpItem).toBe(newHelpItemArr[0])
-    expect(component.displayDeleteDialog).toBeTrue()
-  })
-
-  it('should update filteredColumns onColumnsChange', () => {
-    const columns: Column[] = [
-      {
-        field: 'productDisplayName',
-        header: 'APPLICATION_NAME'
-      },
-      {
-        field: 'context',
-        header: 'CONTEXT'
-      }
-    ]
-    const expectedColumn = { field: 'productDisplayName', header: 'APPLICATION_NAME' }
-    component.filteredColumns = columns
-    component.onColumnsChange(['productDisplayName'])
-
-    expect(component.filteredColumns).not.toContain(columns[1])
-    expect(component.filteredColumns).toEqual([jasmine.objectContaining(expectedColumn)])
-  })
-
-  it('should call filterGlobal onFilterChange', () => {
-    component.table = jasmine.createSpyObj('table', ['filterGlobal'])
-    component.onFilterChange('test')
-
-    expect(component.table.filterGlobal).toHaveBeenCalledWith('test', 'contains')
-  })
-
-  it('should open create dialog', () => {
-    spyOn(component, 'onExport')
-
-    component.ngOnInit()
-    component.actions$?.subscribe((action) => {
-      action[1].actionCallback()
+      expect(component.changeMode).toEqual('CREATE')
+      expect(component.productsChanged).toBeTrue()
+      expect(component.search).toHaveBeenCalled()
     })
 
-    expect(component.onExport).toHaveBeenCalled()
-  })
+    it('should set correct values onCreate', () => {
+      component.onCreate()
 
-  it('should open export dialog', () => {
-    spyOn(component, 'onImport')
-
-    component.ngOnInit()
-    component.actions$?.subscribe((action) => {
-      action[2].actionCallback()
+      expect(component.changeMode).toEqual('CREATE')
+      expect(component.productsChanged).toBeFalse()
+      expect(component.helpItem).toBe(undefined)
+      expect(component.displayDetailDialog).toBeTrue()
     })
 
-    expect(component.onImport).toHaveBeenCalled()
-  })
+    it('should set correct values onDetail', () => {
+      const ev: MouseEvent = new MouseEvent('type')
+      spyOn(ev, 'stopPropagation')
+      const mode = 'EDIT'
+      component.onDetail(ev, newHelpItemArr[0], mode)
 
-  it('should open import dialog', () => {
-    spyOn(component, 'onCreate')
-
-    component.ngOnInit()
-    component.actions$?.subscribe((action) => {
-      action[0].actionCallback()
+      expect(ev.stopPropagation).toHaveBeenCalled()
+      expect(component.changeMode).toEqual(mode)
+      expect(component.productsChanged).toBeFalse()
+      expect(component.helpItem).toBe(newHelpItemArr[0])
+      expect(component.displayDetailDialog).toBeTrue()
     })
 
-    expect(component.onCreate).toHaveBeenCalled()
+    it('should set correct values onCopy', () => {
+      const ev: MouseEvent = new MouseEvent('type')
+      spyOn(ev, 'stopPropagation')
+      component.onCopy(ev, newHelpItemArr[0])
+
+      expect(ev.stopPropagation).toHaveBeenCalled()
+      expect(component.changeMode).toEqual('CREATE')
+      expect(component.productsChanged).toBeFalse()
+      expect(component.helpItem).toBe(newHelpItemArr[0])
+      expect(component.displayDetailDialog).toBeTrue()
+    })
+
+    it('should set correct values onDelete', () => {
+      const ev: MouseEvent = new MouseEvent('type')
+      spyOn(ev, 'stopPropagation')
+      component.onDelete(ev, newHelpItemArr[0])
+
+      expect(ev.stopPropagation).toHaveBeenCalled()
+      expect(component.productsChanged).toBeFalse()
+      expect(component.helpItem).toBe(newHelpItemArr[0])
+      expect(component.displayDeleteDialog).toBeTrue()
+    })
+
+    it('should update filteredColumns onColumnsChange', () => {
+      const columns: Column[] = [
+        { field: 'productDisplayName', header: 'APPLICATION_NAME' },
+        { field: 'context', header: 'CONTEXT' }
+      ]
+      const expectedColumn = { field: 'productDisplayName', header: 'APPLICATION_NAME' }
+      component.filteredColumns = columns
+      component.onColumnsChange(['productDisplayName'])
+
+      expect(component.filteredColumns).not.toContain(columns[1])
+      expect(component.filteredColumns).toEqual([jasmine.objectContaining(expectedColumn)])
+    })
+
+    it('should call filterGlobal onFilterChange', () => {
+      component.table = jasmine.createSpyObj('table', ['filterGlobal'])
+      component.onFilterChange('test')
+
+      expect(component.table.filterGlobal).toHaveBeenCalledWith('test', 'contains')
+    })
+
+    it('should open create dialog', () => {
+      spyOn(component, 'onExport')
+
+      component.ngOnInit()
+      component.actions$?.subscribe((action) => {
+        action[1].actionCallback()
+      })
+
+      expect(component.onExport).toHaveBeenCalled()
+    })
+
+    it('should open export dialog', () => {
+      spyOn(component, 'onImport')
+
+      component.ngOnInit()
+      component.actions$?.subscribe((action) => {
+        action[2].actionCallback()
+      })
+
+      expect(component.onImport).toHaveBeenCalled()
+    })
+
+    it('should open import dialog', () => {
+      spyOn(component, 'onCreate')
+
+      component.ngOnInit()
+      component.actions$?.subscribe((action) => {
+        action[0].actionCallback()
+      })
+
+      expect(component.onCreate).toHaveBeenCalled()
+    })
   })
 
   /*
@@ -468,7 +403,9 @@ describe('HelpSearchComponent', () => {
     })
 
     it('should select a file to upload', (done) => {
-      spyOn(file, 'text').and.returnValue(Promise.resolve('{ "itemId": "id", "productName": "onecx-help" }'))
+      spyOn(file, 'text').and.returnValue(
+        Promise.resolve('{ "itemId": "id", "productName": "onecx-help", "baseUrl": "baseUrl" }')
+      )
 
       component.onSelect(event as any as FileSelectEvent)
 
@@ -519,13 +456,16 @@ describe('HelpSearchComponent', () => {
     })
 
     it('should call importHelps and handle error', (done) => {
-      apiServiceSpy.importHelps.and.returnValue(throwError(() => 'Error'))
+      const errorResponse = { status: 400, statusText: 'Cannot import ...' }
+      apiServiceSpy.importHelps.and.returnValue(throwError(() => errorResponse))
       component.importHelpItem = helpItem
+      spyOn(console, 'error')
 
       component.onImportConfirmation()
 
       setTimeout(() => {
         expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.IMPORT.MESSAGE.HELP_ITEM.IMPORT_NOK' })
+        expect(console.error).toHaveBeenCalledWith('importHelps', errorResponse)
         done()
       }, 0)
     })
@@ -580,13 +520,16 @@ describe('HelpSearchComponent', () => {
     })
 
     it('should display error msg when export fails', () => {
-      apiServiceSpy.exportHelps.and.returnValue(throwError(() => 'Error'))
+      const errorResponse = { status: 400, statusText: 'Cannot export ...' }
+      apiServiceSpy.exportHelps.and.returnValue(throwError(() => errorResponse))
       const selectedNames = ['Product1', 'Product2']
       component.selectedProductNames = selectedNames
+      spyOn(console, 'error')
 
       component.onExportConfirmation()
 
       expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.EXPORT.MESSAGE.HELP_ITEM.EXPORT_NOK' })
+      expect(console.error).toHaveBeenCalledWith('exportHelps', errorResponse)
     })
   })
 

@@ -2,7 +2,7 @@ import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChange
 import { FormControl, FormGroup } from '@angular/forms'
 
 import { Action, PortalMessageService } from '@onecx/portal-integration-angular'
-import { HelpSearchCriteria, HelpsInternalAPIService, Product } from 'src/app/shared/generated'
+import { HelpSearchCriteria, HelpsInternalAPIService, HelpProductNames, Product } from 'src/app/shared/generated'
 import { sortByLocale } from 'src/app/shared/utils'
 
 export interface HelpCriteriaForm {
@@ -71,21 +71,21 @@ export class HelpCriteriaComponent implements OnInit, OnChanges {
   }
 
   public loadAllProductsWithHelpItems() {
-    this.helpInternalAPIService.getAllProductsWithHelpItems().subscribe((productNames) => {
-      productNames.ProductNames = productNames.ProductNames ?? []
-      this.productDisplayNames = productNames.ProductNames.map((name) => {
-        const product = this.products.find((product) => product.name === name)
-        if (product) {
-          return product.displayName
-        } else {
-          return name
+    this.helpInternalAPIService.getAllProductsWithHelpItems().subscribe({
+      next: (data: HelpProductNames) => {
+        if (data.ProductNames?.length !== 0) {
+          data.ProductNames = data.ProductNames ?? []
+          this.productDisplayNames = data.ProductNames.map((name) => {
+            const product = this.products.find((product) => product.name === name)
+            return product ? product.displayName : name
+          })
+          this.productDisplayNames = this.productDisplayNames?.filter((productName) => productName !== null)
+          this.productDisplayNames.sort(sortByLocale)
         }
-      })
-      if (this.productDisplayNames?.length === 0) {
-        this.msgService.info({ summaryKey: 'HELP_SEARCH.NO_APPLICATION_AVAILABLE' })
+      },
+      error: (err) => {
+        console.error('getAllProductsWithHelpItems', err)
       }
-      this.productDisplayNames = this.productDisplayNames?.filter((productName) => productName !== null)
-      this.productDisplayNames.sort(sortByLocale)
     })
   }
 }

@@ -1,13 +1,15 @@
+import { NO_ERRORS_SCHEMA } from '@angular/core'
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing'
-import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core'
+import { provideHttpClient, HttpClient } from '@angular/common/http'
+import { provideHttpClientTesting } from '@angular/common/http/testing'
 import { ReactiveFormsModule, FormGroup, FormControl } from '@angular/forms'
-import { HttpClient } from '@angular/common/http'
-import { HttpClientTestingModule } from '@angular/common/http/testing'
 import { TranslateModule, TranslateLoader } from '@ngx-translate/core'
-import { AppStateService, createTranslateLoader } from '@onecx/portal-integration-angular'
 import { DropdownModule } from 'primeng/dropdown'
 import { CalendarModule } from 'primeng/calendar'
 import { MessageService } from 'primeng/api'
+
+import { createTranslateLoader } from '@onecx/angular-accelerator'
+import { AppStateService } from '@onecx/angular-integration-interface'
 
 import { Product } from 'src/app/shared/generated'
 import { HelpFormComponent } from './help-form.component'
@@ -38,7 +40,6 @@ describe('HelpFormComponent', () => {
       declarations: [HelpFormComponent],
       imports: [
         ReactiveFormsModule,
-        HttpClientTestingModule,
         DropdownModule,
         CalendarModule,
         TranslateModule.forRoot({
@@ -49,8 +50,8 @@ describe('HelpFormComponent', () => {
           }
         })
       ],
-      providers: [MessageService],
-      schemas: [CUSTOM_ELEMENTS_SCHEMA]
+      schemas: [NO_ERRORS_SCHEMA],
+      providers: [provideHttpClient(), provideHttpClientTesting(), MessageService]
     }).compileComponents()
   }))
 

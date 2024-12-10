@@ -3,13 +3,13 @@ import { ComponentHarness } from '@angular/cdk/testing'
 export class OneCXShowHelpHarness extends ComponentHarness {
   static readonly hostSelector = 'app-ocx-show-help'
 
-  getHelpButton = this.locatorForOptional('#show-help-item-button')
+  getShowHelpButton = this.locatorForOptional('#hm_show_help_item_action')
 
-  async getHelpButtonId(): Promise<string | null | undefined> {
-    return await (await this.getHelpButton())?.getAttribute('id')
+  async getShowHelpButtonId(): Promise<string | null | undefined> {
+    return await (await this.getShowHelpButton())?.getAttribute('id')
   }
 
-  async clickHelpButton() {
-    await (await this.getHelpButton())?.click()
+  async onClickShowHelpButton() {
+    await (await this.getShowHelpButton())?.click()
   }
 }

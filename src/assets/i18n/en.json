@@ -25,10 +25,10 @@
       "LABEL": "Delete",
       "HELP_ITEM": "Delete Help Item",
       "HELP_ITEM.TOOLTIP": "Delete this Help Item",
-      "MESSAGE_TEXT": "Do you want to delete \"{{ITEM}}\"?",
-      "MESSAGE_INFO": "This action cannot be undone!",
+      "TEXT": "Do you want to delete the Help Item with this ID?",
+      "OPERATOR_TEXT": "This Help Item was created by automation. If the application continues to offer this Help Item, it will be restored during the next deployment.",
+      "NO_UNDO": "This action cannot be undone!",
       "MESSAGE": {
-        "OPERATOR_TEXT": "This Help Item was created by automation. If the application continues to offer this Help Item, it will be restored during the next deployment.",
         "HELP_ITEM_OK": "The Help Item was deleted successfully",
         "HELP_ITEM_NOK": "An error has occurred. The Help Item was not deleted."
       }

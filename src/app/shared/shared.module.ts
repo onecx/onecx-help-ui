@@ -2,7 +2,7 @@ import { NgModule } from '@angular/core'
 import { CommonModule } from '@angular/common'
 import { FormsModule, ReactiveFormsModule } from '@angular/forms'
 import { TranslateModule, TranslateService } from '@ngx-translate/core'
-import { provideErrorTailorConfig } from '@ngneat/error-tailor'
+import { provideErrorTailorConfig, errorTailorImports } from '@ngneat/error-tailor'
 
 import { AutoCompleteModule } from 'primeng/autocomplete'
 import { ConfirmDialogModule } from 'primeng/confirmdialog'
@@ -18,9 +18,11 @@ import { InputTextareaModule } from 'primeng/inputtextarea'
 import { KeyFilterModule } from 'primeng/keyfilter'
 import { ListboxModule } from 'primeng/listbox'
 import { MultiSelectModule } from 'primeng/multiselect'
+import { RippleModule } from 'primeng/ripple'
 import { SelectButtonModule } from 'primeng/selectbutton'
 import { TableModule } from 'primeng/table'
 import { ToastModule } from 'primeng/toast'
+import { TooltipModule } from 'primeng/tooltip'
 
 import { PortalCoreModule } from '@onecx/portal-integration-angular'
 
@@ -46,10 +48,13 @@ import { LabelResolver } from './label.resolver'
     ListboxModule,
     MultiSelectModule,
     ReactiveFormsModule,
+    RippleModule,
     SelectButtonModule,
     TableModule,
     ToastModule,
-    TranslateModule
+    TooltipModule,
+    TranslateModule,
+    errorTailorImports
   ],
   exports: [
     AutoCompleteModule,
@@ -68,10 +73,13 @@ import { LabelResolver } from './label.resolver'
     ListboxModule,
     MultiSelectModule,
     ReactiveFormsModule,
+    RippleModule,
     SelectButtonModule,
     TableModule,
     ToastModule,
-    TranslateModule
+    TooltipModule,
+    TranslateModule,
+    errorTailorImports
   ],
   //this is not elegant, for some reason the injection token from primeng does not work across federated module
   providers: [

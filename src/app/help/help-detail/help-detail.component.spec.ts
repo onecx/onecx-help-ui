@@ -1,12 +1,15 @@
 import { NO_ERRORS_SCHEMA, Component } from '@angular/core'
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing'
-import { HttpClient } from '@angular/common/http'
-import { HttpClientTestingModule } from '@angular/common/http/testing'
+import { provideHttpClient, HttpClient } from '@angular/common/http'
+import { provideHttpClientTesting } from '@angular/common/http/testing'
+import { FormControl, FormGroup, Validators } from '@angular/forms'
 import { TranslateLoader, TranslateModule } from '@ngx-translate/core'
 import { of, throwError } from 'rxjs'
-import { FormControl, FormGroup, Validators } from '@angular/forms'
 
-import { AppStateService, createTranslateLoader, Column, PortalMessageService } from '@onecx/portal-integration-angular'
+import { createTranslateLoader } from '@onecx/angular-accelerator'
+import { AppStateService } from '@onecx/angular-integration-interface'
+import { Column, PortalMessageService } from '@onecx/portal-integration-angular'
+
 import { Help, HelpsInternalAPIService, CreateHelp, Product } from 'src/app/shared/generated'
 import { HelpDetailComponent } from './help-detail.component'
 
@@ -64,7 +67,6 @@ describe('HelpDetailComponent', () => {
     TestBed.configureTestingModule({
       declarations: [HelpDetailComponent, MockHelpFormComponent],
       imports: [
-        HttpClientTestingModule,
         TranslateModule.forRoot({
           loader: {
             provide: TranslateLoader,
@@ -75,6 +77,8 @@ describe('HelpDetailComponent', () => {
       ],
       schemas: [NO_ERRORS_SCHEMA],
       providers: [
+        provideHttpClient(),
+        provideHttpClientTesting(),
         { provide: HelpsInternalAPIService, useValue: apiServiceSpy },
         { provide: PortalMessageService, useValue: msgServiceSpy }
       ]

@@ -7,14 +7,14 @@ import FileSaver from 'file-saver'
 
 import { Action, Column, PortalMessageService } from '@onecx/portal-integration-angular'
 import {
-  HelpsInternalAPIService,
   Help,
-  SearchHelpsRequestParams,
+  HelpsInternalAPIService,
+  HelpPageResult,
   HelpSearchCriteria,
-  SearchProductsByCriteriaRequestParams,
-  ProductsPageResult,
   Product,
-  HelpPageResult
+  ProductsPageResult,
+  SearchHelpsRequestParams,
+  SearchProductsByCriteriaRequestParams
 } from 'src/app/shared/generated'
 import { FileSelectEvent } from 'primeng/fileupload'
 
@@ -125,10 +125,7 @@ export class HelpSearchComponent implements OnInit {
       .searchProductsByCriteria(criteria)
       .subscribe((productsPageResult: ProductsPageResult) => {
         this.products = productsPageResult.stream ?? []
-        if (this.products?.length === 0) {
-          this.products = this.products?.filter((product) => product !== null)
-          this.products.sort(this.sortProductsByName)
-        }
+        this.products.sort(this.sortProductsByName)
         this.productsLoaded = true
         this.search(this.criteria.helpSearchCriteria)
       })
@@ -157,7 +154,7 @@ export class HelpSearchComponent implements OnInit {
       .pipe(
         catchError((err) => {
           this.exceptionKey = 'EXCEPTIONS.HTTP_STATUS_' + err.status + '.HELP_ITEM'
-          console.error('searchHelps():', err)
+          console.error('searchHelps', err)
           this.msgService.error({ summaryKey: 'ACTIONS.SEARCH.MSG_SEARCH_FAILED' })
           return of({ stream: [] } as HelpPageResult)
         }),
@@ -252,7 +249,10 @@ export class HelpSearchComponent implements OnInit {
           this.productsChanged = true
           this.msgService.success({ summaryKey: 'ACTIONS.DELETE.MESSAGE.HELP_ITEM_OK' })
         },
-        error: () => this.msgService.error({ summaryKey: 'ACTIONS.DELETE.MESSAGE.HELP_ITEM_NOK' })
+        error: (err) => {
+          this.msgService.error({ summaryKey: 'ACTIONS.DELETE.MESSAGE.HELP_ITEM_NOK' })
+          console.error('deleteHelp', err)
+        }
       })
     }
   }
@@ -287,7 +287,10 @@ export class HelpSearchComponent implements OnInit {
           this.productsChanged = true
           this.msgService.success({ summaryKey: 'ACTIONS.IMPORT.MESSAGE.HELP_ITEM.IMPORT_OK' })
         },
-        error: () => this.msgService.error({ summaryKey: 'ACTIONS.IMPORT.MESSAGE.HELP_ITEM.IMPORT_NOK' })
+        error: (err) => {
+          this.msgService.error({ summaryKey: 'ACTIONS.IMPORT.MESSAGE.HELP_ITEM.IMPORT_NOK' })
+          console.error('importHelps', err)
+        }
       })
       this.loadData()
     }
@@ -326,7 +329,7 @@ export class HelpSearchComponent implements OnInit {
         },
         error: (err) => {
           this.msgService.error({ summaryKey: 'ACTIONS.EXPORT.MESSAGE.HELP_ITEM.EXPORT_NOK' })
-          console.error(err)
+          console.error('exportHelps', err)
         }
       })
     }

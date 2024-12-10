@@ -1,13 +1,21 @@
 import { Component, Inject, Input } from '@angular/core'
 import { CommonModule, Location } from '@angular/common'
-import { HttpClient, HttpClientModule } from '@angular/common/http'
+import { HttpClient } from '@angular/common/http'
+import { provideHttpClientTesting } from '@angular/common/http/testing'
 import { Router } from '@angular/router'
-import { TranslateLoader, TranslateModule, TranslateService } from '@ngx-translate/core'
-import { PrimeIcons } from 'primeng/api'
-import { RippleModule } from 'primeng/ripple'
-import { TooltipModule } from 'primeng/tooltip'
+import { TranslateLoader, TranslateService } from '@ngx-translate/core'
 import { Observable, ReplaySubject, catchError, combineLatest, first, map, mergeMap, of } from 'rxjs'
+import { PrimeIcons } from 'primeng/api'
 
+import { AppStateService, UserService } from '@onecx/angular-integration-interface'
+import {
+  DialogState,
+  PortalCoreModule,
+  PortalDialogService,
+  PortalMessageService,
+  createRemoteComponentTranslateLoader,
+  providePortalDialogService
+} from '@onecx/portal-integration-angular'
 import {
   AngularRemoteComponentsModule,
   BASE_URL,
@@ -16,16 +24,6 @@ import {
   provideTranslateServiceForRoot,
   ocxRemoteWebcomponent
 } from '@onecx/angular-remote-components'
-import {
-  AppStateService,
-  DialogState,
-  PortalCoreModule,
-  PortalDialogService,
-  PortalMessageService,
-  UserService,
-  createRemoteComponentTranslateLoader,
-  providePortalDialogService
-} from '@onecx/portal-integration-angular'
 
 import { Configuration, Help, HelpsInternalAPIService } from 'src/app/shared/generated'
 import { SharedModule } from 'src/app/shared/shared.module'
@@ -38,25 +36,13 @@ import { HelpItemEditorFormComponent } from './help-item-editor-form/help-item-e
   templateUrl: './help-item-editor.component.html',
   styleUrls: ['./help-item-editor.component.scss'],
   standalone: true,
-  imports: [
-    CommonModule,
-    HttpClientModule,
-    RippleModule,
-    TooltipModule,
-    HelpItemEditorFormComponent,
-    TranslateModule,
-    SharedModule,
-    PortalCoreModule,
-    AngularRemoteComponentsModule
-  ],
+  imports: [CommonModule, SharedModule, PortalCoreModule, AngularRemoteComponentsModule],
   providers: [
     HelpsInternalAPIService,
     PortalMessageService,
+    provideHttpClientTesting(),
     providePortalDialogService(),
-    {
-      provide: BASE_URL,
-      useValue: new ReplaySubject<string>(1)
-    },
+    { provide: BASE_URL, useValue: new ReplaySubject<string>(1) },
     provideTranslateServiceForRoot({
       isolate: true,
       loader: {
@@ -147,7 +133,7 @@ export class OneCXHelpItemEditorComponent implements ocxRemoteComponent, ocxRemo
           if (helpPageResult.totalElements !== 1) {
             return {} as Help
           }
-          return helpPageResult.stream!.at(0)!
+          return helpPageResult.stream![0]!
         })
       )
   }
@@ -191,7 +177,6 @@ export class OneCXHelpItemEditorComponent implements ocxRemoteComponent, ocxRemo
     return this.onEditHelpItem({})
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   public onEditHelpItem(event: any) {
     combineLatest([this.helpArticleId$, this.productName$, this.helpDataItem$, this.products$])
       .pipe(

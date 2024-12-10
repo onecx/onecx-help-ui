@@ -1,12 +1,15 @@
 import { NO_ERRORS_SCHEMA, SimpleChange, EventEmitter } from '@angular/core'
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing'
-import { HttpClient } from '@angular/common/http'
-import { HttpClientTestingModule } from '@angular/common/http/testing'
+import { provideHttpClient, HttpClient } from '@angular/common/http'
+import { provideHttpClientTesting } from '@angular/common/http/testing'
 import { FormGroup, FormControl, Validators } from '@angular/forms'
 import { TranslateLoader, TranslateModule } from '@ngx-translate/core'
 import { of } from 'rxjs'
 
-import { AppStateService, createTranslateLoader, PortalMessageService } from '@onecx/portal-integration-angular'
+import { createTranslateLoader } from '@onecx/angular-accelerator'
+import { AppStateService } from '@onecx/angular-integration-interface'
+import { PortalMessageService } from '@onecx/portal-integration-angular'
+
 import { HelpSearchCriteria, HelpsInternalAPIService, Product } from 'src/app/shared/generated'
 import { HelpCriteriaComponent, HelpCriteriaForm } from './help-criteria.component'
 
@@ -25,7 +28,6 @@ describe('HelpDetailComponent', () => {
     TestBed.configureTestingModule({
       declarations: [HelpCriteriaComponent],
       imports: [
-        HttpClientTestingModule,
         TranslateModule.forRoot({
           loader: {
             provide: TranslateLoader,
@@ -36,11 +38,13 @@ describe('HelpDetailComponent', () => {
       ],
       schemas: [NO_ERRORS_SCHEMA],
       providers: [
+        provideHttpClient(),
+        provideHttpClientTesting(),
         { provide: PortalMessageService, useValue: msgServiceSpy },
         { provide: HelpsInternalAPIService, useValue: apiServiceSpy }
       ]
-    }).compileComponents(),
-      msgServiceSpy.error.calls.reset()
+    }).compileComponents()
+    msgServiceSpy.error.calls.reset()
     msgServiceSpy.info.calls.reset()
   }))
 
@@ -140,6 +144,6 @@ describe('HelpDetailComponent', () => {
 
     component.loadAllProductsWithHelpItems()
 
-    expect(msgServiceSpy.info).toHaveBeenCalledWith({ summaryKey: 'HELP_SEARCH.NO_APPLICATION_AVAILABLE' })
+    expect(msgServiceSpy.info).not.toHaveBeenCalled()
   })
 })
