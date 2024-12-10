@@ -14,7 +14,12 @@ import { translateServiceInitializer, PortalCoreModule } from '@onecx/portal-int
 import { environment } from 'src/environments/environment'
 import { AppComponent } from './app.component'
 
-const routes: Routes = [{ path: '', pathMatch: 'full' }]
+const routes: Routes = [
+  {
+    path: '',
+    loadChildren: () => import('./help/help.module').then((m) => m.HelpModule)
+  }
+]
 @NgModule({
   bootstrap: [AppComponent],
   declarations: [AppComponent],
