@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core'
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing'
 import { HttpErrorResponse, provideHttpClient } from '@angular/common/http'
 import { provideHttpClientTesting } from '@angular/common/http/testing'
-import { ComponentFixture, TestBed } from '@angular/core/testing'
 import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed'
 import { Router } from '@angular/router'
 import { ReplaySubject, of, throwError } from 'rxjs'
@@ -12,8 +12,12 @@ import { TooltipModule } from 'primeng/tooltip'
 import { RippleModule } from 'primeng/ripple'
 import { PrimeIcons } from 'primeng/api'
 
-import { AppStateService } from '@onecx/angular-integration-interface'
-import { PortalDialogService, PortalMessageService } from '@onecx/portal-integration-angular'
+import { AppStateService, UserService } from '@onecx/angular-integration-interface'
+import {
+  PortalDialogService,
+  PortalMessageService,
+  providePortalDialogService
+} from '@onecx/portal-integration-angular'
 import { IfPermissionDirective } from '@onecx/angular-accelerator'
 import { BASE_URL, RemoteComponentConfig } from '@onecx/angular-remote-components'
 
@@ -35,6 +39,10 @@ describe('OneCXHelpItemEditorComponent', () => {
   let fixture: ComponentFixture<OneCXHelpItemEditorComponent>
   let oneCXHelpItemEditorHarness: OneCXHelpItemEditorHarness
 
+  const mockUserService = jasmine.createSpyObj('UserService', ['hasPermission'])
+  mockUserService.hasPermission.and.callFake((permission: string) => {
+    return ['HELP#EDIT', 'HELP#VIEW'].includes(permission)
+  })
   const helpApiServiceSpy = jasmine.createSpyObj<HelpsInternalAPIService>('HelpsInternalAPIService', [
     'searchHelps',
     'createNewHelp',
@@ -43,9 +51,9 @@ describe('OneCXHelpItemEditorComponent', () => {
   ])
   const messageServiceSpy = jasmine.createSpyObj<PortalMessageService>('PortalMessageService', ['error', 'info'])
   const portalDialogServiceSpy = jasmine.createSpyObj<PortalDialogService>('PortalDialogService', ['openDialog'])
-
   let baseUrlSubject: ReplaySubject<any>
-  beforeEach(() => {
+
+  beforeEach(waitForAsync(() => {
     baseUrlSubject = new ReplaySubject<any>(1)
     TestBed.configureTestingModule({
       declarations: [],
@@ -57,16 +65,15 @@ describe('OneCXHelpItemEditorComponent', () => {
       providers: [
         provideHttpClient(),
         provideHttpClientTesting(),
-        {
-          provide: BASE_URL,
-          useValue: baseUrlSubject
-        }
+        providePortalDialogService(),
+        { provide: BASE_URL, useValue: baseUrlSubject }
       ]
     })
       .overrideComponent(OneCXHelpItemEditorComponent, {
         set: {
           imports: [PortalDependencyModule, TranslateTestingModule, TooltipModule, RippleModule, DynamicDialogModule],
           providers: [
+            //  { provide: UserService, useValue: mockUserService },
             { provide: HelpsInternalAPIService, useValue: helpApiServiceSpy },
             { provide: PortalDialogService, useValue: portalDialogServiceSpy },
             { provide: PortalMessageService, useValue: messageServiceSpy }
@@ -81,12 +88,14 @@ describe('OneCXHelpItemEditorComponent', () => {
     helpApiServiceSpy.createNewHelp.calls.reset()
     helpApiServiceSpy.updateHelp.calls.reset()
     helpApiServiceSpy.searchProductsByCriteria.calls.reset()
+    // eslint-disable-next-line deprecation/deprecation
     portalDialogServiceSpy.openDialog.calls.reset()
     messageServiceSpy.error.calls.reset()
     messageServiceSpy.info.calls.reset()
+    mockUserService.hasPermission.and.returnValue(true)
 
     helpApiServiceSpy.searchProductsByCriteria.and.returnValue(of({} as any))
-  })
+  }))
 
   it('should create', () => {
     fixture = TestBed.createComponent(OneCXHelpItemEditorComponent)
@@ -100,7 +109,7 @@ describe('OneCXHelpItemEditorComponent', () => {
     const mockConfig: RemoteComponentConfig = {
       appId: 'appId',
       productName: 'prodName',
-      permissions: ['permission'],
+      permissions: ['HELP#VIEW'],
       baseUrl: 'base'
     }
     spyOn(component, 'ocxInitRemoteComponent')
@@ -395,6 +404,7 @@ describe('OneCXHelpItemEditorComponent', () => {
     oneCXHelpItemEditorHarness = await TestbedHarnessEnvironment.harnessForFixture(fixture, OneCXHelpItemEditorHarness)
     await oneCXHelpItemEditorHarness.clickHelpEditorButton()
 
+    // eslint-disable-next-line deprecation/deprecation
     expect(portalDialogServiceSpy.openDialog<Help>).toHaveBeenCalledOnceWith(
       'HELP_ITEM_EDITOR.HEADER',
       {
@@ -410,7 +420,7 @@ describe('OneCXHelpItemEditorComponent', () => {
       { key: 'HELP_ITEM_EDITOR.SAVE', icon: PrimeIcons.CHECK },
       { key: 'HELP_ITEM_EDITOR.CANCEL', icon: PrimeIcons.TIMES },
       false
-      //dialogStyle
+      //{ showXButton: true, draggable: true, resizable: true, width: '550px' }
     )
   })
 
@@ -532,26 +542,18 @@ describe('OneCXHelpItemEditorComponent', () => {
 
     oneCXHelpItemEditorHarness = await TestbedHarnessEnvironment.harnessForFixture(fixture, OneCXHelpItemEditorHarness)
     await oneCXHelpItemEditorHarness.clickHelpEditorButton()
+    // eslint-disable-next-line deprecation/deprecation
     expect(portalDialogServiceSpy.openDialog<Help>).toHaveBeenCalledOnceWith(
       'HELP_ITEM_EDITOR.HEADER',
       {
         type: HelpItemEditorFormComponent,
         inputs: {
-          helpItem: {
-            productName: 'mfe_product_name',
-            itemId: 'article_id'
-          },
+          helpItem: { productName: 'mfe_product_name', itemId: 'article_id' },
           productDisplayName: 'mfe_display_product_name'
         }
       },
-      {
-        key: 'HELP_ITEM_EDITOR.SAVE',
-        icon: PrimeIcons.CHECK
-      },
-      {
-        key: 'HELP_ITEM_EDITOR.CANCEL',
-        icon: PrimeIcons.TIMES
-      },
+      { key: 'HELP_ITEM_EDITOR.SAVE', icon: PrimeIcons.CHECK },
+      { key: 'HELP_ITEM_EDITOR.CANCEL', icon: PrimeIcons.TIMES },
       false
       //dialogStyle
     )
@@ -604,23 +606,15 @@ describe('OneCXHelpItemEditorComponent', () => {
 
     oneCXHelpItemEditorHarness = await TestbedHarnessEnvironment.harnessForFixture(fixture, OneCXHelpItemEditorHarness)
     await oneCXHelpItemEditorHarness.clickHelpEditorButton()
+    // eslint-disable-next-line deprecation/deprecation
     expect(portalDialogServiceSpy.openDialog<Help>).toHaveBeenCalledOnceWith(
       'HELP_ITEM_EDITOR.HEADER',
       {
         type: HelpItemEditorFormComponent,
-        inputs: {
-          helpItem: helpItem,
-          productDisplayName: 'product_name_1_display'
-        }
+        inputs: { helpItem: helpItem, productDisplayName: 'product_name_1_display' }
       },
-      {
-        key: 'HELP_ITEM_EDITOR.SAVE',
-        icon: PrimeIcons.CHECK
-      },
-      {
-        key: 'HELP_ITEM_EDITOR.CANCEL',
-        icon: PrimeIcons.TIMES
-      },
+      { key: 'HELP_ITEM_EDITOR.SAVE', icon: PrimeIcons.CHECK },
+      { key: 'HELP_ITEM_EDITOR.CANCEL', icon: PrimeIcons.TIMES },
       false
       //dialogStyle
     )
@@ -645,6 +639,7 @@ describe('OneCXHelpItemEditorComponent', () => {
         stream: []
       } as any)
     )
+    // eslint-disable-next-line deprecation/deprecation
     portalDialogServiceSpy.openDialog.and.returnValue(
       of({
         button: 'secondary'
@@ -691,6 +686,7 @@ describe('OneCXHelpItemEditorComponent', () => {
       itemId: 'result_item_id',
       resourceUrl: 'result_resource_url'
     }
+    // eslint-disable-next-line deprecation/deprecation
     portalDialogServiceSpy.openDialog.and.returnValue(
       of({
         button: 'primary',
@@ -743,6 +739,7 @@ describe('OneCXHelpItemEditorComponent', () => {
       resourceUrl: 'result_resource_url',
       modificationCount: 1
     }
+    // eslint-disable-next-line deprecation/deprecation
     portalDialogServiceSpy.openDialog.and.returnValue(
       of({
         button: 'primary',
@@ -802,6 +799,7 @@ describe('OneCXHelpItemEditorComponent', () => {
       resourceUrl: 'result_resource_url',
       modificationCount: 1
     }
+    // eslint-disable-next-line deprecation/deprecation
     portalDialogServiceSpy.openDialog.and.returnValue(
       of({
         button: 'primary',
@@ -866,6 +864,7 @@ describe('OneCXHelpItemEditorComponent', () => {
       resourceUrl: 'result_resource_url',
       modificationCount: 1
     }
+    // eslint-disable-next-line deprecation/deprecation
     portalDialogServiceSpy.openDialog.and.returnValue(
       of({
         button: 'primary',
@@ -935,6 +934,7 @@ describe('OneCXHelpItemEditorComponent', () => {
       resourceUrl: 'result_resource_url',
       modificationCount: 1
     }
+    // eslint-disable-next-line deprecation/deprecation
     portalDialogServiceSpy.openDialog.and.returnValue(
       of({
         button: 'primary',
@@ -996,6 +996,7 @@ describe('OneCXHelpItemEditorComponent', () => {
       resourceUrl: 'result_resource_url',
       modificationCount: 1
     }
+    // eslint-disable-next-line deprecation/deprecation
     portalDialogServiceSpy.openDialog.and.returnValue(
       of({
         button: 'primary',

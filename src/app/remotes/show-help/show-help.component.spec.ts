@@ -82,7 +82,7 @@ describe('OneCXShowHelpComponent', () => {
     const mockConfig: RemoteComponentConfig = {
       appId: 'appId',
       productName: 'prodName',
-      permissions: ['permission'],
+      permissions: ['HELP#VIEW'],
       baseUrl: 'base'
     }
     spyOn(component, 'ocxInitRemoteComponent')
@@ -347,6 +347,7 @@ describe('OneCXShowHelpComponent', () => {
   })
 
   it('should display error message on failed window opening', async () => {
+    spyOn(console, 'error')
     window.open = function () {
       throw new Error()
     }
@@ -366,6 +367,7 @@ describe('OneCXShowHelpComponent', () => {
     await oneCXShowHelpHarness.onClickShowHelpButton()
 
     expect(messageServiceSpy.error).toHaveBeenCalledOnceWith({ summaryKey: 'SHOW_HELP.HELP_PAGE_ERROR' })
+    expect(console.error).toHaveBeenCalledTimes(1)
   })
 
   describe('url construction', () => {

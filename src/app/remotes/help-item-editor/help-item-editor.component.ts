@@ -1,7 +1,6 @@
 import { Component, Inject, Input } from '@angular/core'
 import { CommonModule, Location } from '@angular/common'
 import { HttpClient } from '@angular/common/http'
-import { provideHttpClientTesting } from '@angular/common/http/testing'
 import { Router } from '@angular/router'
 import { TranslateLoader, TranslateService } from '@ngx-translate/core'
 import { Observable, ReplaySubject, catchError, combineLatest, first, map, mergeMap, of } from 'rxjs'
@@ -40,7 +39,6 @@ import { HelpItemEditorFormComponent } from './help-item-editor-form/help-item-e
   providers: [
     HelpsInternalAPIService,
     PortalMessageService,
-    provideHttpClientTesting(),
     providePortalDialogService(),
     { provide: BASE_URL, useValue: new ReplaySubject<string>(1) },
     provideTranslateServiceForRoot({
