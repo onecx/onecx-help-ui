@@ -2,6 +2,7 @@
 
 @include danger-action;
 @include table-inline-buttons;
+@include table-zebra-rows;
 @include table-responsive-columns;
 @include dialog-footer-buttons;
 @include dialog-non-full-size-modal;
@@ -17,10 +18,6 @@
     .p-datatable-thead > tr > th {
       white-space: nowrap;
       border-bottom-width: 2px;
-    }
-    .p-datatable-thead > tr > th,
-    .p-datatable-tbody > tr > td {
-      padding: 0.5rem;
     }
     .p-datatable-tbody > tr > td {
       min-width: 10rem;

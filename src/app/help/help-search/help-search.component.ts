@@ -62,21 +62,21 @@ export class HelpSearchComponent implements OnInit {
       header: 'APPLICATION_NAME',
       active: true,
       translationPrefix: 'HELP_ITEM',
-      css: 'hidden sm:table-cell px-2 py-1 sm:py-2 '
+      css: 'px-2 py-1 sm:py-2'
     },
     {
       field: 'itemId',
       header: 'HELP_ITEM_ID',
       active: true,
       translationPrefix: 'HELP_ITEM',
-      css: 'px-2 py-1 sm:py-2 '
+      css: 'px-2 py-1 sm:py-2'
     },
     {
       field: 'url',
       header: 'URL',
       active: true,
       translationPrefix: 'HELP_ITEM',
-      css: 'px-2 py-1 sm:py-2 '
+      css: 'px-2 py-1 sm:py-2'
     }
   ]
 

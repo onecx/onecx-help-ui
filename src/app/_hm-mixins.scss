@@ -399,7 +399,7 @@
 }
 @mixin table-zebra-rows {
   :host ::ng-deep {
-    .p-datatable .p-datatable-tbody > tr:nth-child(even) > td {
+    .p-datatable .p-datatable-tbody > tr:nth-child(even) > td:not(.p-frozen-column) {
       background-color: var(--table-body-row-even-bg);
     }
   }
