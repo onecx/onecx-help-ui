@@ -12,7 +12,7 @@ import { TooltipModule } from 'primeng/tooltip'
 import { RippleModule } from 'primeng/ripple'
 import { PrimeIcons } from 'primeng/api'
 
-import { AppStateService, UserService } from '@onecx/angular-integration-interface'
+import { AppStateService } from '@onecx/angular-integration-interface'
 import {
   PortalDialogService,
   PortalMessageService,
