@@ -81,7 +81,7 @@
       <ng-template pTemplate="body" let-row="rowIndex" let-rowData let-columns="columns">
         <tr [id]="'hm_search_table_row_' + row">
           <!-- actions -->
-          <td pFrozenColumn class="px-2 border-right-1 text-center white-space-nowrap">
+          <td pFrozenColumn class="px-2 py-1 sm:py-2 border-right-1 text-center white-space-nowrap">
             <ng-container *ocxIfNotPermission="'HELP#EDIT'">
               <button
                 pbutton
