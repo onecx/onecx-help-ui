@@ -21,7 +21,7 @@ import { environment } from 'src/environments/environment'
 import { AppEntrypointComponent } from './app-entrypoint.component'
 
 function apiConfigProvider(configService: ConfigurationService, appStateService: AppStateService) {
-  return new PortalApiConfiguration(Configuration, environment.apiPrefix, configService, appStateService)
+  return new PortalApiConfiguration(Configuration, environment.apiPrefix)
 }
 
 const routes: Routes = [

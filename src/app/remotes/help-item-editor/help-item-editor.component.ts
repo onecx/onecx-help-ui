@@ -1,8 +1,7 @@
 import { Component, Inject, Input } from '@angular/core'
 import { CommonModule, Location } from '@angular/common'
-import { HttpClient } from '@angular/common/http'
 import { Router } from '@angular/router'
-import { TranslateLoader, TranslateService } from '@ngx-translate/core'
+import { TranslateService } from '@ngx-translate/core'
 import { Observable, ReplaySubject, catchError, combineLatest, first, map, mergeMap, of } from 'rxjs'
 import { PrimeIcons } from 'primeng/api'
 
@@ -11,16 +10,13 @@ import {
   DialogState,
   PortalCoreModule,
   PortalDialogService,
-  PortalMessageService,
-  createRemoteComponentTranslateLoader,
-  providePortalDialogService
+  PortalMessageService
 } from '@onecx/portal-integration-angular'
 import {
   AngularRemoteComponentsModule,
   BASE_URL,
   RemoteComponentConfig,
   ocxRemoteComponent,
-  provideTranslateServiceForRoot,
   ocxRemoteWebcomponent
 } from '@onecx/angular-remote-components'
 
@@ -36,20 +32,7 @@ import { HelpItemEditorFormComponent } from './help-item-editor-form/help-item-e
   styleUrls: ['./help-item-editor.component.scss'],
   standalone: true,
   imports: [CommonModule, SharedModule, PortalCoreModule, AngularRemoteComponentsModule],
-  providers: [
-    HelpsInternalAPIService,
-    PortalMessageService,
-    providePortalDialogService(),
-    { provide: BASE_URL, useValue: new ReplaySubject<string>(1) },
-    provideTranslateServiceForRoot({
-      isolate: true,
-      loader: {
-        provide: TranslateLoader,
-        useFactory: createRemoteComponentTranslateLoader,
-        deps: [HttpClient, BASE_URL]
-      }
-    })
-  ]
+  providers: [HelpsInternalAPIService, PortalMessageService]
 })
 export class OneCXHelpItemEditorComponent implements ocxRemoteComponent, ocxRemoteWebcomponent {
   @Input() set ocxRemoteComponentConfig(config: RemoteComponentConfig) {

@@ -13,6 +13,7 @@ export interface HelpDetailForm {
 }
 
 @Component({
+  standalone: false,
   selector: 'app-help-form',
   templateUrl: './help-form.component.html'
 })

@@ -1,8 +1,7 @@
 import { Component, Inject, Input } from '@angular/core'
 import { CommonModule, Location } from '@angular/common'
-import { HttpClient } from '@angular/common/http'
 import { Router } from '@angular/router'
-import { TranslateLoader, TranslateModule, TranslateService } from '@ngx-translate/core'
+import { TranslateModule, TranslateService } from '@ngx-translate/core'
 import { Observable, ReplaySubject, catchError, combineLatest, first, map, mergeMap, of, withLatestFrom } from 'rxjs'
 
 import { RippleModule } from 'primeng/ripple'
@@ -12,12 +11,10 @@ import { DialogService, DynamicDialogModule } from 'primeng/dynamicdialog'
 import { getLocation } from '@onecx/accelerator'
 import { AppStateService, UserService } from '@onecx/angular-integration-interface'
 import { PortalMessageService, PortalCoreModule } from '@onecx/portal-integration-angular'
-import { createRemoteComponentTranslateLoader } from '@onecx/angular-accelerator'
 import {
   AngularRemoteComponentsModule,
   BASE_URL,
   RemoteComponentConfig,
-  provideTranslateServiceForRoot,
   ocxRemoteComponent,
   ocxRemoteWebcomponent
 } from '@onecx/angular-remote-components'
@@ -43,20 +40,7 @@ import { NoHelpItemComponent } from './no-help-item/no-help-item.component'
     PortalCoreModule,
     AngularRemoteComponentsModule
   ],
-  providers: [
-    HelpsInternalAPIService,
-    DialogService,
-    PortalMessageService,
-    { provide: BASE_URL, useValue: new ReplaySubject<string>(1) },
-    provideTranslateServiceForRoot({
-      isolate: true,
-      loader: {
-        provide: TranslateLoader,
-        useFactory: createRemoteComponentTranslateLoader,
-        deps: [HttpClient, BASE_URL]
-      }
-    })
-  ]
+  providers: [HelpsInternalAPIService, DialogService, PortalMessageService]
 })
 export class OneCXShowHelpComponent implements ocxRemoteComponent, ocxRemoteWebcomponent {
   helpArticleId$: Observable<string>
