@@ -7,22 +7,34 @@ import { bootstrapRemoteComponent } from '@onecx/angular-webcomponents'
 
 import { environment } from 'src/environments/environment'
 import { OneCXHelpItemEditorComponent } from './help-item-editor.component'
-import { createRemoteComponentTranslateLoader, providePortalDialogService } from '@onecx/portal-integration-angular'
-import { BASE_URL, provideTranslateServiceForRoot } from '@onecx/angular-remote-components'
+import { providePortalDialogService } from '@onecx/portal-integration-angular'
+import {
+  REMOTE_COMPONENT_CONFIG,
+  RemoteComponentConfig,
+  provideTranslateServiceForRoot
+} from '@onecx/angular-remote-components'
 import { ReplaySubject } from 'rxjs'
 import { TranslateLoader } from '@ngx-translate/core'
+import { TRANSLATION_PATH, createTranslateLoader, remoteComponentTranslationPathFactory } from '@onecx/angular-utils'
 
 bootstrapRemoteComponent(OneCXHelpItemEditorComponent, 'ocx-help-item-editor-component', environment.production, [
   provideHttpClient(withInterceptorsFromDi()),
   importProvidersFrom(AngularAuthModule, BrowserAnimationsModule),
   providePortalDialogService(),
-  { provide: BASE_URL, useValue: new ReplaySubject<string>(1) },
+  { provide: REMOTE_COMPONENT_CONFIG, useValue: new ReplaySubject<RemoteComponentConfig>(1) },
   provideTranslateServiceForRoot({
     isolate: true,
     loader: {
       provide: TranslateLoader,
-      useFactory: createRemoteComponentTranslateLoader,
-      deps: [HttpClient, BASE_URL]
+      useFactory: createTranslateLoader,
+      deps: [HttpClient]
     }
-  })
+  }),
+  {
+    provide: TRANSLATION_PATH,
+    useFactory: (remoteComponentConfig: ReplaySubject<RemoteComponentConfig>) =>
+      remoteComponentTranslationPathFactory('assets/i18n/')(remoteComponentConfig),
+    multi: true,
+    deps: [REMOTE_COMPONENT_CONFIG]
+  }
 ])

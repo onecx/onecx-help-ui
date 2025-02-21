@@ -14,7 +14,7 @@ import {
 } from '@onecx/portal-integration-angular'
 import {
   AngularRemoteComponentsModule,
-  BASE_URL,
+  REMOTE_COMPONENT_CONFIG,
   RemoteComponentConfig,
   ocxRemoteComponent,
   ocxRemoteWebcomponent
@@ -46,7 +46,7 @@ export class OneCXHelpItemEditorComponent implements ocxRemoteComponent, ocxRemo
   permissions: string[] = []
 
   constructor(
-    @Inject(BASE_URL) private readonly baseUrl: ReplaySubject<string>,
+    @Inject(REMOTE_COMPONENT_CONFIG) private readonly remoteComponentConfig: ReplaySubject<RemoteComponentConfig>,
     private readonly router: Router,
     private readonly appStateService: AppStateService,
     private readonly userService: UserService,
@@ -69,7 +69,7 @@ export class OneCXHelpItemEditorComponent implements ocxRemoteComponent, ocxRemo
         return ''
       })
     )
-    this.products$ = this.baseUrl.asObservable().pipe(
+    this.products$ = this.remoteComponentConfig.asObservable().pipe(
       mergeMap(() => {
         return this.helpDataService
           .searchProductsByCriteria({
@@ -99,7 +99,7 @@ export class OneCXHelpItemEditorComponent implements ocxRemoteComponent, ocxRemo
   }
 
   public ocxInitRemoteComponent(config: RemoteComponentConfig): void {
-    this.baseUrl.next(config.baseUrl)
+    this.remoteComponentConfig.next(config)
     this.permissions = config.permissions
     this.helpDataService.configuration = new Configuration({
       basePath: Location.joinWithSlash(config.baseUrl, environment.apiPrefix)

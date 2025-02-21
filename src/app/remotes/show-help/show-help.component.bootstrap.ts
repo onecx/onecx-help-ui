@@ -7,21 +7,32 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations'
 
 import { environment } from 'src/environments/environment'
 import { OneCXShowHelpComponent } from './show-help.component'
-import { BASE_URL, provideTranslateServiceForRoot } from '@onecx/angular-remote-components'
+import {
+  REMOTE_COMPONENT_CONFIG,
+  RemoteComponentConfig,
+  provideTranslateServiceForRoot
+} from '@onecx/angular-remote-components'
 import { TranslateLoader } from '@ngx-translate/core'
-import { createRemoteComponentTranslateLoader } from '@onecx/angular-accelerator'
 import { ReplaySubject } from 'rxjs'
+import { TRANSLATION_PATH, createTranslateLoader, remoteComponentTranslationPathFactory } from '@onecx/angular-utils'
 
 bootstrapRemoteComponent(OneCXShowHelpComponent, 'ocx-show-help-component', environment.production, [
   provideHttpClient(withInterceptorsFromDi()),
   importProvidersFrom(AngularAuthModule, BrowserAnimationsModule),
-  { provide: BASE_URL, useValue: new ReplaySubject<string>(1) },
+  { provide: REMOTE_COMPONENT_CONFIG, useValue: new ReplaySubject<RemoteComponentConfig>(1) },
   provideTranslateServiceForRoot({
     isolate: true,
     loader: {
       provide: TranslateLoader,
-      useFactory: createRemoteComponentTranslateLoader,
-      deps: [HttpClient, BASE_URL]
+      useFactory: createTranslateLoader,
+      deps: [HttpClient]
     }
-  })
+  }),
+  {
+    provide: TRANSLATION_PATH,
+    useFactory: (remoteComponentConfig: ReplaySubject<RemoteComponentConfig>) =>
+      remoteComponentTranslationPathFactory('assets/i18n/')(remoteComponentConfig),
+    multi: true,
+    deps: [REMOTE_COMPONENT_CONFIG]
+  }
 ])

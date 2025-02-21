@@ -13,7 +13,7 @@ import { AppStateService, UserService } from '@onecx/angular-integration-interfa
 import { PortalMessageService, PortalCoreModule } from '@onecx/portal-integration-angular'
 import {
   AngularRemoteComponentsModule,
-  BASE_URL,
+  REMOTE_COMPONENT_CONFIG,
   RemoteComponentConfig,
   ocxRemoteComponent,
   ocxRemoteWebcomponent
@@ -50,7 +50,7 @@ export class OneCXShowHelpComponent implements ocxRemoteComponent, ocxRemoteWebc
   permissions: string[] = []
 
   constructor(
-    @Inject(BASE_URL) private readonly baseUrl: ReplaySubject<string>,
+    @Inject(REMOTE_COMPONENT_CONFIG) private readonly remoteComponentConfig: ReplaySubject<RemoteComponentConfig>,
     private readonly appStateService: AppStateService,
     private readonly userService: UserService,
     private readonly router: Router,
@@ -81,7 +81,7 @@ export class OneCXShowHelpComponent implements ocxRemoteComponent, ocxRemoteWebc
   }
 
   ocxInitRemoteComponent(config: RemoteComponentConfig): void {
-    this.baseUrl.next(config.baseUrl)
+    this.remoteComponentConfig.next(config)
     this.permissions = config.permissions
     this.helpDataService.configuration = new Configuration({
       basePath: Location.joinWithSlash(config.baseUrl, environment.apiPrefix)
