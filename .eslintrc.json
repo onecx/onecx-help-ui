@@ -43,7 +43,8 @@
         "@typescript-eslint/no-unused-vars": ["error", { "vars": "all", "args": "none" }],
         "@typescript-eslint/no-explicit-any": "off",
         "@typescript-eslint/ban-types": ["error", { "extendDefaults": true, "types": { "{}": false } }],
-        "@typescript-eslint/no-var-requires": 0
+        "@typescript-eslint/no-var-requires": 0,
+        "@angular-eslint/prefer-standalone": "off"
       }
     },
     {

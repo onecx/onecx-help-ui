@@ -14,7 +14,7 @@ import { DropdownModule } from 'primeng/dropdown'
 import { FieldsetModule } from 'primeng/fieldset'
 import { FileUploadModule } from 'primeng/fileupload'
 import { InputTextModule } from 'primeng/inputtext'
-import { InputTextareaModule } from 'primeng/inputtextarea'
+import { TextareaModule } from 'primeng/textarea'
 import { KeyFilterModule } from 'primeng/keyfilter'
 import { ListboxModule } from 'primeng/listbox'
 import { MultiSelectModule } from 'primeng/multiselect'
@@ -43,7 +43,7 @@ import { LabelResolver } from './label.resolver'
     FileUploadModule,
     FormsModule,
     InputTextModule,
-    InputTextareaModule,
+    TextareaModule,
     KeyFilterModule,
     ListboxModule,
     MultiSelectModule,
@@ -68,7 +68,7 @@ import { LabelResolver } from './label.resolver'
     FileUploadModule,
     FormsModule,
     InputTextModule,
-    InputTextareaModule,
+    TextareaModule,
     KeyFilterModule,
     ListboxModule,
     MultiSelectModule,

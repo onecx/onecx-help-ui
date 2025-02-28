@@ -23,6 +23,7 @@ type ChangeMode = 'VIEW' | 'CREATE' | 'EDIT'
 export type HelpForDisplay = Help & { productDisplayName?: string; product?: { name?: string; displayName?: string } }
 
 @Component({
+  standalone: false,
   selector: 'app-help-search',
   templateUrl: './help-search.component.html',
   styleUrls: ['./help-search.component.scss']

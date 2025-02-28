@@ -4,9 +4,8 @@ import { BrowserModule } from '@angular/platform-browser'
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations'
 import { RouterModule, Routes, Router } from '@angular/router'
 import { TranslateLoader, TranslateModule, MissingTranslationHandler } from '@ngx-translate/core'
-
+import { TRANSLATION_PATH, createTranslateLoader, translationPathFactory } from '@onecx/angular-utils'
 import { AngularAuthModule } from '@onecx/angular-auth'
-import { createTranslateLoader } from '@onecx/angular-accelerator'
 import { addInitializeModuleGuard, AppStateService, ConfigurationService } from '@onecx/angular-integration-interface'
 import { createAppEntrypoint, initializeRouter, startsWith } from '@onecx/angular-webcomponents'
 
@@ -21,7 +20,7 @@ import { environment } from 'src/environments/environment'
 import { AppEntrypointComponent } from './app-entrypoint.component'
 
 function apiConfigProvider(configService: ConfigurationService, appStateService: AppStateService) {
-  return new PortalApiConfiguration(Configuration, environment.apiPrefix, configService, appStateService)
+  return new PortalApiConfiguration(Configuration, environment.apiPrefix)
 }
 
 const routes: Routes = [
@@ -43,7 +42,7 @@ const routes: Routes = [
       loader: {
         provide: TranslateLoader,
         useFactory: createTranslateLoader,
-        deps: [HttpClient, AppStateService]
+        deps: [HttpClient]
       },
       missingTranslationHandler: { provide: MissingTranslationHandler, useClass: PortalMissingTranslationHandler }
     })
@@ -57,7 +56,13 @@ const routes: Routes = [
       multi: true,
       deps: [Router, AppStateService]
     },
-    provideHttpClient(withInterceptorsFromDi())
+    provideHttpClient(withInterceptorsFromDi()),
+    {
+      provide: TRANSLATION_PATH,
+      useFactory: (appStateService: AppStateService) => translationPathFactory('assets/i18n/')(appStateService),
+      multi: true,
+      deps: [AppStateService]
+    }
   ]
 })
 export class OneCXHelpModule implements DoBootstrap {

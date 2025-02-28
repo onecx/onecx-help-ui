@@ -5,6 +5,7 @@ import { HelpsInternalAPIService, Help, CreateHelp, Product } from 'src/app/shar
 import { HelpFormComponent } from '../help-form/help-form.component'
 
 @Component({
+  standalone: false,
   selector: 'app-help-detail',
   templateUrl: './help-detail.component.html',
   styleUrls: ['./help-detail.component.scss']

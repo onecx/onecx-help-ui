@@ -11,6 +11,7 @@ export interface HelpCriteriaForm {
 }
 
 @Component({
+  standalone: false,
   selector: 'app-help-criteria',
   templateUrl: './help-criteria.component.html',
   styleUrls: ['./help-criteria.component.scss']
