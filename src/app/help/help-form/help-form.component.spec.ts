@@ -8,8 +8,7 @@ import { DropdownModule } from 'primeng/dropdown'
 import { CalendarModule } from 'primeng/calendar'
 import { MessageService } from 'primeng/api'
 
-import { createTranslateLoader } from '@onecx/angular-accelerator'
-import { AppStateService } from '@onecx/angular-integration-interface'
+import { createTranslateLoader } from '@onecx/angular-utils'
 
 import { Product } from 'src/app/shared/generated'
 import { HelpFormComponent } from './help-form.component'
@@ -43,11 +42,7 @@ describe('HelpFormComponent', () => {
         DropdownModule,
         CalendarModule,
         TranslateModule.forRoot({
-          loader: {
-            provide: TranslateLoader,
-            useFactory: createTranslateLoader,
-            deps: [HttpClient, AppStateService]
-          }
+          loader: { provide: TranslateLoader, useFactory: createTranslateLoader, deps: [HttpClient] }
         })
       ],
       schemas: [NO_ERRORS_SCHEMA],

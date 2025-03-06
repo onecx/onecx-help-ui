@@ -6,8 +6,7 @@ import { TranslateLoader, TranslateModule } from '@ngx-translate/core'
 import { of, throwError } from 'rxjs'
 import { FileSelectEvent } from 'primeng/fileupload'
 
-import { createTranslateLoader } from '@onecx/angular-accelerator'
-import { AppStateService } from '@onecx/angular-integration-interface'
+import { createTranslateLoader } from '@onecx/angular-utils'
 import { Column, PortalMessageService } from '@onecx/portal-integration-angular'
 
 import { HelpsInternalAPIService, Help, SearchHelpsRequestParams, Product } from 'src/app/shared/generated'
@@ -47,11 +46,7 @@ describe('HelpSearchComponent', () => {
       declarations: [HelpSearchComponent],
       imports: [
         TranslateModule.forRoot({
-          loader: {
-            provide: TranslateLoader,
-            useFactory: createTranslateLoader,
-            deps: [HttpClient, AppStateService]
-          }
+          loader: { provide: TranslateLoader, useFactory: createTranslateLoader, deps: [HttpClient] }
         })
       ],
       schemas: [NO_ERRORS_SCHEMA],
