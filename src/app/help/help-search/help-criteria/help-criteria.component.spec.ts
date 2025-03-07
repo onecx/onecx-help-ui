@@ -6,8 +6,7 @@ import { FormGroup, FormControl, Validators } from '@angular/forms'
 import { TranslateLoader, TranslateModule } from '@ngx-translate/core'
 import { of } from 'rxjs'
 
-import { createTranslateLoader } from '@onecx/angular-accelerator'
-import { AppStateService } from '@onecx/angular-integration-interface'
+import { createTranslateLoader } from '@onecx/angular-utils'
 import { PortalMessageService } from '@onecx/portal-integration-angular'
 
 import { HelpSearchCriteria, HelpsInternalAPIService, Product } from 'src/app/shared/generated'
@@ -29,11 +28,7 @@ describe('HelpDetailComponent', () => {
       declarations: [HelpCriteriaComponent],
       imports: [
         TranslateModule.forRoot({
-          loader: {
-            provide: TranslateLoader,
-            useFactory: createTranslateLoader,
-            deps: [HttpClient, AppStateService]
-          }
+          loader: { provide: TranslateLoader, useFactory: createTranslateLoader, deps: [HttpClient] }
         })
       ],
       schemas: [NO_ERRORS_SCHEMA],
