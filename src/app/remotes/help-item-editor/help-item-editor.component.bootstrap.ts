@@ -15,7 +15,15 @@ import {
 } from '@onecx/angular-remote-components'
 import { ReplaySubject } from 'rxjs'
 import { TranslateLoader } from '@ngx-translate/core'
-import { TRANSLATION_PATH, createTranslateLoader, remoteComponentTranslationPathFactory } from '@onecx/angular-utils'
+import {
+  THEME_OVERRIDES,
+  TRANSLATION_PATH,
+  createTranslateLoader,
+  provideThemeConfig,
+  remoteComponentTranslationPathFactory
+} from '@onecx/angular-utils'
+
+import Nora from '@primeng/themes/nora'
 
 bootstrapRemoteComponent(OneCXHelpItemEditorComponent, 'ocx-help-item-editor-component', environment.production, [
   provideHttpClient(withInterceptorsFromDi()),
@@ -36,5 +44,10 @@ bootstrapRemoteComponent(OneCXHelpItemEditorComponent, 'ocx-help-item-editor-com
       remoteComponentTranslationPathFactory('assets/i18n/')(remoteComponentConfig),
     multi: true,
     deps: [REMOTE_COMPONENT_CONFIG]
-  }
+  },
+  provideThemeConfig()
+  // {
+  //   provide: THEME_OVERRIDES,
+  //   useValue: Nora
+  // }
 ])
