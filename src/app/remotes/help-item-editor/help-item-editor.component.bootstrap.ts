@@ -16,7 +16,6 @@ import {
 import { ReplaySubject } from 'rxjs'
 import { TranslateLoader } from '@ngx-translate/core'
 import {
-  THEME_OVERRIDES,
   TRANSLATION_PATH,
   createTranslateLoader,
   provideThemeConfig,
@@ -45,9 +44,8 @@ bootstrapRemoteComponent(OneCXHelpItemEditorComponent, 'ocx-help-item-editor-com
     multi: true,
     deps: [REMOTE_COMPONENT_CONFIG]
   },
+  // provideThemeConfig({
+  //   overrides: Nora
+  // }),
   provideThemeConfig()
-  // {
-  //   provide: THEME_OVERRIDES,
-  //   useValue: Nora
-  // }
 ])
