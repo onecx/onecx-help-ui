@@ -22,8 +22,6 @@ import {
   remoteComponentTranslationPathFactory
 } from '@onecx/angular-utils'
 
-import Nora from '@primeng/themes/nora'
-
 bootstrapRemoteComponent(OneCXHelpItemEditorComponent, 'ocx-help-item-editor-component', environment.production, [
   provideHttpClient(withInterceptorsFromDi()),
   importProvidersFrom(AngularAuthModule, BrowserAnimationsModule),
@@ -44,8 +42,5 @@ bootstrapRemoteComponent(OneCXHelpItemEditorComponent, 'ocx-help-item-editor-com
     multi: true,
     deps: [REMOTE_COMPONENT_CONFIG]
   },
-  // provideThemeConfig({
-  //   overrides: Nora
-  // }),
   provideThemeConfig()
 ])
