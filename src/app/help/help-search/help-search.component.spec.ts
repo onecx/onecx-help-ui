@@ -1,12 +1,11 @@
 import { NO_ERRORS_SCHEMA } from '@angular/core'
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing'
-import { HttpClient, provideHttpClient } from '@angular/common/http'
+import { provideHttpClient } from '@angular/common/http'
 import { provideHttpClientTesting } from '@angular/common/http/testing'
-import { TranslateLoader, TranslateModule } from '@ngx-translate/core'
+import { TranslateTestingModule } from 'ngx-translate-testing'
 import { of, throwError } from 'rxjs'
 import { FileSelectEvent } from 'primeng/fileupload'
 
-import { createTranslateLoader } from '@onecx/angular-utils'
 import { Column, PortalMessageService } from '@onecx/portal-integration-angular'
 
 import { HelpsInternalAPIService, Help, SearchHelpsRequestParams, Product } from 'src/app/shared/generated'
@@ -45,9 +44,10 @@ describe('HelpSearchComponent', () => {
     TestBed.configureTestingModule({
       declarations: [HelpSearchComponent],
       imports: [
-        TranslateModule.forRoot({
-          loader: { provide: TranslateLoader, useFactory: createTranslateLoader, deps: [HttpClient] }
-        })
+        TranslateTestingModule.withTranslations({
+          de: require('src/assets/i18n/de.json'),
+          en: require('src/assets/i18n/en.json')
+        }).withDefaultLanguage('en')
       ],
       schemas: [NO_ERRORS_SCHEMA],
       providers: [
@@ -177,7 +177,7 @@ describe('HelpSearchComponent', () => {
       component.search({})
 
       expect(component.resultsForDisplay.length).toEqual(0)
-      expect(msgServiceSpy.info).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.SEARCH.MSG_NO_RESULTS' })
+      expect(msgServiceSpy.info).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.SEARCH.MESSAGE.NO_RESULTS' })
     })
 
     it('should reuse criteria if reuseCriteria is true', () => {
@@ -216,7 +216,7 @@ describe('HelpSearchComponent', () => {
 
       component.search({})
 
-      expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.SEARCH.MSG_SEARCH_FAILED' })
+      expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.SEARCH.MESSAGE.SEARCH_FAILED' })
       expect(component.exceptionKey).toBe('EXCEPTIONS.HTTP_STATUS_' + errorResponse.status + '.HELP_ITEM')
       expect(console.error).toHaveBeenCalledWith('searchHelps', errorResponse)
     })

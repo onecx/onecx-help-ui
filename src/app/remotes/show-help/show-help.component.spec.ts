@@ -124,7 +124,7 @@ describe('OneCXShowHelpComponent', () => {
     fixture.detectChanges()
     oneCXShowHelpHarness = await TestbedHarnessEnvironment.harnessForFixture(fixture, OneCXShowHelpHarness)
 
-    expect(await oneCXShowHelpHarness.getShowHelpButtonId()).toBe('hm_show_help_item_action')
+    expect(await oneCXShowHelpHarness.getShowHelpButtonId()).toBe('ocx_topbar_action_show_help_item')
   })
 
   it('should call openHelpPage on enter click', () => {

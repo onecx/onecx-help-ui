@@ -23,8 +23,8 @@ export class HelpFormComponent implements OnChanges {
 
   public formGroup: FormGroup
   public columns: Column[] = [
-    { field: 'product', header: 'PRODUCT' },
     { field: 'itemId', header: 'HELP_ITEM_ID' },
+    { field: 'product', header: 'PRODUCT' },
     { field: 'baseUrl', header: 'BASE_URL' },
     { field: 'context', header: 'CONTEXT' },
     { field: 'resourceUrl', header: 'RESOURCE_URL' }

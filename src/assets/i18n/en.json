@@ -83,13 +83,15 @@
       "RESET": "Reset",
       "RESET_TOOLTIP": "Clear given criteria",
       "NO_DATA": "No data",
-      "MSG_NO_RESULTS": "Search returned no results",
-      "MSG_SEARCH_FAILED": "Search failed",
-      "OF": "of"
+      "OF": "of",
+      "MESSAGE": {
+        "NO_RESULTS": "Search returned no results",
+        "SEARCH_FAILED": "Search failed"
+      }
     },
     "VIEW": {
-      "HELP_ITEM": "Help Item Details",
-      "LABEL": "Show Details"
+      "LABEL": "Details",
+      "TOOLTIP": "Help Item Details"
     },
     "CANCEL": "Cancel",
     "CHOOSE": "Choose",

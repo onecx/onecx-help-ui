@@ -33,7 +33,6 @@ import { HelpItemEditorFormComponent } from './help-item-editor-form/help-item-e
 @Component({
   selector: 'app-ocx-help-item-editor',
   templateUrl: './help-item-editor.component.html',
-  styleUrls: ['./help-item-editor.component.scss'],
   standalone: true,
   imports: [CommonModule, SharedModule, PortalCoreModule, AngularRemoteComponentsModule],
   providers: [

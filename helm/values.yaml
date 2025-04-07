@@ -32,6 +32,11 @@ app:
           technology: WEBCOMPONENTMODULE
           remoteName: onecx-help
           tagName: ocx-help-item-editor-component
+    # Microservice
+    microservice:
+      spec:
+        name: OneCX Help UI
+        description: OneCX Help Frontend
     # Permission
     permission:
       enabled: true
@@ -46,5 +51,3 @@ app:
             VIEW: View mode for help
             EXPORT: Export help            
             IMPORT: Import help
-
-# PIPE Config

@@ -83,13 +83,15 @@
       "RESET": "Zurücksetzen",
       "RESET_TOOLTIP": "Suchkriterien löschen",
       "NO_DATA": "Keine Ergebnisse",
-      "MSG_NO_RESULTS": "Die Suche ergab keine Ergebnisse",
-      "MSG_SEARCH_FAILED": "Die Suche ist fehlgeschlagen",
-      "OF": "von"
+      "OF": "von",
+      "MESSAGE": {
+        "NO_RESULTS": "Die Suche ergab keine Treffer",
+        "SEARCH_FAILED": "Suche ist fehlgeschlagen"
+      }
     },
     "VIEW": {
-      "HELP_ITEM": "Hilfeartikel Details",
-      "LABEL": "Details anzeigen"
+      "LABEL": "Details",
+      "TOOLTIP": "Hilfeartikel Details"
     },
     "CANCEL": "Abbrechen",
     "CHOOSE": "Auswählen",

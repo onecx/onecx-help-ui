@@ -521,23 +521,3 @@
     }
   }
 }
-
-/* **********************************************
- *  TOPBAR
- * **********************************************/
-@mixin topbar-layout-items {
-  :host ::ng-deep {
-    // fix button styles ( .layout-topbar-action is a button )
-    .layout-topbar-item .layout-topbar-action {
-      padding: 0.6rem !important; // fix uneven dimensions
-      color: var(--topbar-item-text-color);
-      background-color: var(--topbar-bg-color);
-      &:hover,
-      &:focus {
-        color: var(--topbar-item-text-hover-color);
-        background-color: var(--topbar-item-text-hover-bg-color);
-        transition: background-color var(--transition-duration);
-      }
-    }
-  }
-}

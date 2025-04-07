@@ -1,14 +1,12 @@
 import { NO_ERRORS_SCHEMA } from '@angular/core'
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing'
-import { provideHttpClient, HttpClient } from '@angular/common/http'
+import { provideHttpClient } from '@angular/common/http'
 import { provideHttpClientTesting } from '@angular/common/http/testing'
 import { ReactiveFormsModule, FormGroup, FormControl } from '@angular/forms'
-import { TranslateModule, TranslateLoader } from '@ngx-translate/core'
+import { TranslateTestingModule } from 'ngx-translate-testing'
 import { DropdownModule } from 'primeng/dropdown'
 import { CalendarModule } from 'primeng/calendar'
 import { MessageService } from 'primeng/api'
-
-import { createTranslateLoader } from '@onecx/angular-utils'
 
 import { Product } from 'src/app/shared/generated'
 import { HelpFormComponent } from './help-form.component'
@@ -41,9 +39,10 @@ describe('HelpFormComponent', () => {
         ReactiveFormsModule,
         DropdownModule,
         CalendarModule,
-        TranslateModule.forRoot({
-          loader: { provide: TranslateLoader, useFactory: createTranslateLoader, deps: [HttpClient] }
-        })
+        TranslateTestingModule.withTranslations({
+          de: require('src/assets/i18n/de.json'),
+          en: require('src/assets/i18n/en.json')
+        }).withDefaultLanguage('en')
       ],
       schemas: [NO_ERRORS_SCHEMA],
       providers: [provideHttpClient(), provideHttpClientTesting(), MessageService]
