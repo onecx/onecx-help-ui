@@ -37,7 +37,6 @@ app:
       spec:
         name: OneCX Help UI
         description: OneCX Help Frontend
-
     # Permission
     permission:
       enabled: true
@@ -52,5 +51,3 @@ app:
             VIEW: View mode for help
             EXPORT: Export help            
             IMPORT: Import help
-
-# PIPE Config
