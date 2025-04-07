@@ -132,7 +132,6 @@ describe('OneCXHelpItemEditorComponent', () => {
     expect(component.permissions).toEqual(['HELP#EDIT'])
     expect(helpApiServiceSpy.configuration.basePath).toEqual('base_url/bff')
     baseUrlSubject.asObservable().subscribe((item) => {
-      console.log(item)
       expect(item).toEqual('base_url')
       done()
     })
@@ -158,7 +157,7 @@ describe('OneCXHelpItemEditorComponent', () => {
     fixture.detectChanges()
     oneCXHelpItemEditorHarness = await TestbedHarnessEnvironment.harnessForFixture(fixture, OneCXHelpItemEditorHarness)
 
-    expect(await oneCXHelpItemEditorHarness.getShowHelpButtonEditorId()).toBe('ocx_topbar_action_help_edit')
+    expect(await oneCXHelpItemEditorHarness.getShowHelpButtonEditorId()).toBe('ocx_topbar_action_edit_help_item')
   })
 
   it('should call onEditHelpItem on enter click', () => {
