@@ -32,6 +32,11 @@ app:
           technology: WEBCOMPONENTMODULE
           remoteName: onecx-help
           tagName: ocx-help-item-editor-component
+    microservice:
+      spec:
+        description: OneCX Help Frontend
+        name: OneCX Help UI
+
     # Permission
     permission:
       enabled: true
