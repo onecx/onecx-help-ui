@@ -34,8 +34,8 @@ app:
           tagName: ocx-help-item-editor-component
     microservice:
       spec:
-        description: OneCX Help Frontend
         name: OneCX Help UI
+        description: OneCX Help Frontend
 
     # Permission
     permission:
