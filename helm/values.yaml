@@ -32,6 +32,7 @@ app:
           technology: WEBCOMPONENTMODULE
           remoteName: onecx-help
           tagName: ocx-help-item-editor-component
+    # Microservice
     microservice:
       spec:
         name: OneCX Help UI
