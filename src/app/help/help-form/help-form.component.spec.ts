@@ -8,7 +8,6 @@ import { DropdownModule } from 'primeng/dropdown'
 import { CalendarModule } from 'primeng/calendar'
 import { MessageService } from 'primeng/api'
 
-import { createTranslateLoader } from '@onecx/angular-utils'
 import { Product } from 'src/app/shared/generated'
 import { HelpFormComponent } from './help-form.component'
 
