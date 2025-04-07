@@ -1,14 +1,14 @@
 <div class="layout-topbar-item" *ocxIfPermission="'HELP#EDIT'; permissions: permissions">
   <button
-    id="ocx_topbar_action_help_edit"
-    class="layout-topbar-action rounded-circle"
+    id="ocx_topbar_action_edit_help_item"
+    class="layout-topbar-action"
     pRipple
     pButton
     (click)="onEditHelpItem($event)"
-    (keydown.enter.t)="onEnterClick()"
+    (keydown.enter.t)="onEditHelpItem({})"
     [attr.aria-label]="'HELP_ITEM_EDITOR.LABEL' | translate"
     [pTooltip]="'HELP_ITEM_EDITOR.TOOLTIP' | translate"
-    tooltipPosition="top"
+    tooltipPosition="bottom"
     tooltipEvent="hover"
   >
     <i id="ocx_topbar_action_help_edit_icon" class="pi pi-pencil fs-xlarge" aria-hidden="true"></i>

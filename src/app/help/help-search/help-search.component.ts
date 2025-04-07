@@ -134,7 +134,7 @@ export class HelpSearchComponent implements OnInit {
         catchError((err) => {
           this.exceptionKey = 'EXCEPTIONS.HTTP_STATUS_' + err.status + '.HELP_ITEM'
           console.error('searchHelps', err)
-          this.msgService.error({ summaryKey: 'ACTIONS.SEARCH.MSG_SEARCH_FAILED' })
+          this.msgService.error({ summaryKey: 'ACTIONS.SEARCH.MESSAGE.SEARCH_FAILED' })
           return of({ stream: [] } as HelpPageResult)
         }),
         finalize(() => (this.searchInProgress = false))
@@ -143,7 +143,7 @@ export class HelpSearchComponent implements OnInit {
         next: (data) => {
           if (data.stream !== undefined) {
             if (data.stream?.length === 0) {
-              this.msgService.info({ summaryKey: 'ACTIONS.SEARCH.MSG_NO_RESULTS' })
+              this.msgService.info({ summaryKey: 'ACTIONS.SEARCH.MESSAGE.NO_RESULTS' })
             } else {
               data.stream?.sort(this.sortHelpItemByDefault)
               this.resultsForDisplay = data.stream.map((result) => {
