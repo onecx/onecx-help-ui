@@ -6,6 +6,7 @@ import { TranslateTestingModule } from 'ngx-translate-testing'
 import { of, throwError } from 'rxjs'
 import { FileSelectEvent } from 'primeng/fileupload'
 
+import { createTranslateLoader } from '@onecx/angular-utils'
 import { Column, PortalMessageService } from '@onecx/portal-integration-angular'
 
 import { HelpsInternalAPIService, Help, SearchHelpsRequestParams, Product } from 'src/app/shared/generated'
