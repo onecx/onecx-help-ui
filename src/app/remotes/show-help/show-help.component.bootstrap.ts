@@ -14,7 +14,12 @@ import {
 } from '@onecx/angular-remote-components'
 import { TranslateLoader } from '@ngx-translate/core'
 import { ReplaySubject } from 'rxjs'
-import { TRANSLATION_PATH, createTranslateLoader, remoteComponentTranslationPathFactory } from '@onecx/angular-utils'
+import {
+  TRANSLATION_PATH,
+  createTranslateLoader,
+  provideThemeConfig,
+  remoteComponentTranslationPathFactory
+} from '@onecx/angular-utils'
 
 bootstrapRemoteComponent(OneCXShowHelpComponent, 'ocx-show-help-component', environment.production, [
   provideHttpClient(withInterceptorsFromDi()),
@@ -34,5 +39,6 @@ bootstrapRemoteComponent(OneCXShowHelpComponent, 'ocx-show-help-component', envi
       remoteComponentTranslationPathFactory('assets/i18n/')(remoteComponentConfig),
     multi: true,
     deps: [REMOTE_COMPONENT_CONFIG]
-  }
+  },
+  provideThemeConfig()
 ])
