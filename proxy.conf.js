@@ -26,6 +26,16 @@ const PROXY_CONFIG = {
     changeOrigin: true,
     logLevel: 'debug',
     onProxyRes: onProxyRes
+  },
+  '/mfe/help': {
+    target: 'http://localhost:4200/',
+    secure: false,
+    pathRewrite: {
+      '^.*/mfe/help': ''
+    },
+    changeOrigin: true,
+    logLevel: 'debug',
+    onProxyRes: onProxyRes
   }
 }
 

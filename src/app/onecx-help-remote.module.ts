@@ -4,7 +4,12 @@ import { BrowserModule } from '@angular/platform-browser'
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations'
 import { RouterModule, Routes, Router } from '@angular/router'
 import { TranslateLoader, TranslateModule, MissingTranslationHandler } from '@ngx-translate/core'
-import { TRANSLATION_PATH, createTranslateLoader, translationPathFactory } from '@onecx/angular-utils'
+import {
+  TRANSLATION_PATH,
+  createTranslateLoader,
+  translationPathFactory,
+  provideThemeConfig
+} from '@onecx/angular-utils'
 import { AngularAuthModule } from '@onecx/angular-auth'
 import { addInitializeModuleGuard, AppStateService, ConfigurationService } from '@onecx/angular-integration-interface'
 import { createAppEntrypoint, initializeRouter, startsWith } from '@onecx/angular-webcomponents'
@@ -62,7 +67,21 @@ const routes: Routes = [
       useFactory: (appStateService: AppStateService) => translationPathFactory('assets/i18n/')(appStateService),
       multi: true,
       deps: [AppStateService]
-    }
+    },
+    provideThemeConfig({
+      overrides: {
+        components: {
+          breadcrumb: {
+            item: {
+              color: 'red'
+            },
+            separator: {
+              color: 'pink'
+            }
+          }
+        }
+      }
+    })
   ]
 })
 export class OneCXHelpModule implements DoBootstrap {

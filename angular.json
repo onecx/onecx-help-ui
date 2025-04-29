@@ -29,7 +29,13 @@
                 "output": "/onecx-portal-lib/assets/"
               }
             ],
-            "styles": ["src/styles.scss"],
+            "styles": [
+              {
+                "input": "./src/styles.scss",
+                "bundleName": "styles",
+                "inject": false
+              }
+            ],
             "scripts": ["node_modules/@webcomponents/webcomponentsjs/webcomponents-bundle.js"],
             "extraWebpackConfig": "webpack.config.js",
             "outputHashing": "all",
