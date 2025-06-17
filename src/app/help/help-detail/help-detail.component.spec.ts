@@ -6,7 +6,8 @@ import { FormControl, FormGroup, Validators } from '@angular/forms'
 import { TranslateTestingModule } from 'ngx-translate-testing'
 import { of, throwError } from 'rxjs'
 
-import { Column, PortalMessageService } from '@onecx/portal-integration-angular'
+import { PortalMessageService } from '@onecx/angular-integration-interface'
+import { Column } from '@onecx/portal-integration-angular'
 
 import { Help, HelpsInternalAPIService, CreateHelp, Product } from 'src/app/shared/generated'
 import { HelpDetailComponent } from './help-detail.component'

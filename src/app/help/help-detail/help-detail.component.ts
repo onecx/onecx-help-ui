@@ -1,5 +1,6 @@
 import { Component, EventEmitter, Input, Output, ViewChild, OnChanges } from '@angular/core'
-import { PortalMessageService } from '@onecx/portal-integration-angular'
+
+import { PortalMessageService } from '@onecx/angular-integration-interface'
 
 import { HelpsInternalAPIService, Help, CreateHelp, Product } from 'src/app/shared/generated'
 import { HelpFormComponent } from '../help-form/help-form.component'
