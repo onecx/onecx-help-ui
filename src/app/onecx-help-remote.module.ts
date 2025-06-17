@@ -8,17 +8,14 @@ import {
   TRANSLATION_PATH,
   createTranslateLoader,
   translationPathFactory,
-  provideThemeConfig
+  provideThemeConfig,
+  PortalApiConfiguration
 } from '@onecx/angular-utils'
 import { AngularAuthModule } from '@onecx/angular-auth'
 import { addInitializeModuleGuard, AppStateService, ConfigurationService } from '@onecx/angular-integration-interface'
 import { createAppEntrypoint, initializeRouter, startsWith } from '@onecx/angular-webcomponents'
 
-import {
-  PortalApiConfiguration,
-  PortalCoreModule,
-  PortalMissingTranslationHandler
-} from '@onecx/portal-integration-angular'
+import { PortalCoreModule, PortalMissingTranslationHandler } from '@onecx/portal-integration-angular'
 
 import { Configuration } from './shared/generated'
 import { environment } from 'src/environments/environment'
