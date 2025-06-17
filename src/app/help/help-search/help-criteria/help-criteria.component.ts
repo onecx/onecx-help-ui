@@ -1,7 +1,9 @@
 import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core'
 import { FormControl, FormGroup } from '@angular/forms'
 
-import { Action, PortalMessageService } from '@onecx/portal-integration-angular'
+import { PortalMessageService } from '@onecx/angular-integration-interface'
+import { Action } from '@onecx/angular-accelerator'
+
 import { HelpSearchCriteria, HelpsInternalAPIService, HelpProductNames, Product } from 'src/app/shared/generated'
 import { sortByLocale } from 'src/app/shared/utils'
 

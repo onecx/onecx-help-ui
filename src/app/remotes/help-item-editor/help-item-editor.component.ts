@@ -6,12 +6,11 @@ import { TranslateLoader, TranslateService } from '@ngx-translate/core'
 import { Observable, ReplaySubject, catchError, combineLatest, first, map, mergeMap, of } from 'rxjs'
 import { PrimeIcons } from 'primeng/api'
 
-import { AppStateService, UserService } from '@onecx/angular-integration-interface'
+import { AppStateService, PortalMessageService, UserService } from '@onecx/angular-integration-interface'
 import {
   DialogState,
   PortalCoreModule,
   PortalDialogService,
-  PortalMessageService,
   createRemoteComponentTranslateLoader,
   providePortalDialogService
 } from '@onecx/portal-integration-angular'

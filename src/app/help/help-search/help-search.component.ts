@@ -3,9 +3,13 @@ import { Location } from '@angular/common'
 import { TranslateService } from '@ngx-translate/core'
 import { catchError, finalize, map, Observable, of } from 'rxjs'
 import { Table } from 'primeng/table'
+import { FileSelectEvent } from 'primeng/fileupload'
 import FileSaver from 'file-saver'
 
-import { Action, Column, PortalMessageService } from '@onecx/portal-integration-angular'
+import { PortalMessageService } from '@onecx/angular-integration-interface'
+import { Action } from '@onecx/angular-accelerator'
+import { Column } from '@onecx/portal-integration-angular'
+
 import {
   Help,
   HelpsInternalAPIService,
@@ -16,7 +20,6 @@ import {
   SearchHelpsRequestParams,
   SearchProductsByCriteriaRequestParams
 } from 'src/app/shared/generated'
-import { FileSelectEvent } from 'primeng/fileupload'
 
 type ExtendedColumn = Column & { css?: string; limit?: boolean }
 type ChangeMode = 'VIEW' | 'CREATE' | 'EDIT'

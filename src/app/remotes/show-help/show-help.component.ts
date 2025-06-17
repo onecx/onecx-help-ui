@@ -10,9 +10,6 @@ import { TooltipModule } from 'primeng/tooltip'
 import { DialogService, DynamicDialogModule } from 'primeng/dynamicdialog'
 
 import { getLocation } from '@onecx/accelerator'
-import { AppStateService, UserService } from '@onecx/angular-integration-interface'
-import { PortalMessageService, PortalCoreModule } from '@onecx/portal-integration-angular'
-import { createRemoteComponentTranslateLoader } from '@onecx/angular-accelerator'
 import {
   AngularRemoteComponentsModule,
   BASE_URL,
@@ -21,6 +18,9 @@ import {
   ocxRemoteComponent,
   ocxRemoteWebcomponent
 } from '@onecx/angular-remote-components'
+import { AppStateService, PortalMessageService, UserService } from '@onecx/angular-integration-interface'
+import { createRemoteComponentTranslateLoader } from '@onecx/angular-accelerator'
+import { PortalCoreModule } from '@onecx/portal-integration-angular'
 
 import { Configuration, Help, HelpsInternalAPIService } from 'src/app/shared/generated'
 import { environment } from 'src/environments/environment'
