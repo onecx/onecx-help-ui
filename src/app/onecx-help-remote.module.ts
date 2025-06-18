@@ -12,7 +12,7 @@ import {
   PortalApiConfiguration
 } from '@onecx/angular-utils'
 import { AngularAuthModule } from '@onecx/angular-auth'
-import { addInitializeModuleGuard, AppStateService, ConfigurationService } from '@onecx/angular-integration-interface'
+import { AppStateService, ConfigurationService } from '@onecx/angular-integration-interface'
 import { createAppEntrypoint, initializeRouter, startsWith } from '@onecx/angular-webcomponents'
 
 import { PortalCoreModule, PortalMissingTranslationHandler } from '@onecx/portal-integration-angular'
@@ -38,7 +38,7 @@ const routes: Routes = [
     BrowserModule,
     BrowserAnimationsModule,
     PortalCoreModule.forMicroFrontend(),
-    RouterModule.forRoot(addInitializeModuleGuard(routes)),
+    RouterModule.forRoot(routes),
     TranslateModule.forRoot({
       isolate: true,
       loader: {
