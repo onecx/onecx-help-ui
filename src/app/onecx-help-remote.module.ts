@@ -7,8 +7,8 @@ import { TranslateLoader, TranslateModule, MissingTranslationHandler } from '@ng
 
 import { AngularAuthModule } from '@onecx/angular-auth'
 import { createTranslateLoader, provideTranslationPathFromMeta } from '@onecx/angular-utils'
-import { addInitializeModuleGuard, AppStateService, ConfigurationService } from '@onecx/angular-integration-interface'
 import { createAppEntrypoint, initializeRouter, startsWith } from '@onecx/angular-webcomponents'
+import { addInitializeModuleGuard, AppStateService, ConfigurationService } from '@onecx/angular-integration-interface'
 
 import {
   PortalApiConfiguration,
