@@ -1,12 +1,14 @@
 ---
 openapi: 3.0.3
 info:
-  title: onecx-help bff
+  title: onecx-help-bff
+  description: Backend-For-Frontend (BFF) service for onecx-help. This API provides endpoints to manage Help items.
   version: 1.0.0
 servers:
-  - url: 'http://onecx-help-bff:8080'
+  - url: "http://onecx-help-bff:8080"
 tags:
   - name: helpsInternal
+    description: Managing Help items
 paths:
   /helps:
     post:
@@ -16,17 +18,17 @@ paths:
             - write
       tags:
         - helpsInternal
-      description: Create new help
+      description: Create a new help item
       operationId: createNewHelp
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CreateHelp'
+              $ref: "#/components/schemas/CreateHelp"
       responses:
-        '201':
-          description: New help created
+        "201":
+          description: Help item created successfully
           headers:
             Location:
               required: true
@@ -36,13 +38,87 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Help'
-        '400':
+                $ref: "#/components/schemas/Help"
+        "400":
           description: Bad request
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ProblemDetailResponse'
+                $ref: "#/components/schemas/ProblemDetailResponse"
+    get:
+      x-onecx:
+        permissions:
+          help:
+            - read
+      tags:
+        - helpsInternal
+      description: Get help item by its id
+      operationId: getHelpById
+      parameters:
+        - name: id
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Help item retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Help"
+        "404":
+          description: Help item not found
+    put:
+      x-onecx:
+        permissions:
+          help:
+            - write
+      tags:
+        - helpsInternal
+      description: Update a help item by its id
+      operationId: updateHelp
+      parameters:
+        - name: id
+          in: query
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateHelp"
+      responses:
+        "204":
+          description: Help item updated successfully
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetailResponse"
+        "404":
+          description: Help item not found
+    delete:
+      x-onecx:
+        permissions:
+          help:
+            - delete
+      tags:
+        - helpsInternal
+      description: Delete a help item by its id
+      operationId: deleteHelp
+      parameters:
+        - name: id
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        "204":
+          description: Help item deleted successfully
   /helps/productNames:
     get:
       x-onecx:
@@ -51,21 +127,21 @@ paths:
             - read
       tags:
         - helpsInternal
-      summary: Get all product names to which help items are assigned
+      description: Get all product names to which help items are assigned to
       operationId: getAllProductsWithHelpItems
       responses:
-        '200':
-          description: OK
+        "200":
+          description: Product names retrieved successfully
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/HelpProductNames'
-        '400':
+                $ref: "#/components/schemas/HelpProductNames"
+        "400":
           description: Bad request
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ProblemDetailResponse'
+                $ref: "#/components/schemas/ProblemDetailResponse"
   /helps/products:
     post:
       x-onecx:
@@ -74,101 +150,26 @@ paths:
             - read
       tags:
         - helpsInternal
-      summary: Get all products to which help items are assigned
+      description: Get all products to which help items are assigned to
       operationId: searchProductsByCriteria
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ProductsSearchCriteria'
+              $ref: "#/components/schemas/ProductsSearchCriteria"
       responses:
-        '200':
-          description: OK
+        "200":
+          description: Product search results retrieved successfully
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ProductsPageResult'
-        '400':
+                $ref: "#/components/schemas/ProductsPageResult"
+        "400":
           description: Bad request
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ProblemDetailResponse'
-  /helps/{id}:
-    get:
-      x-onecx:
-        permissions:
-          help:
-            - read
-      tags:
-        - helpsInternal
-      description: Return help by ID
-      operationId: getHelpById
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Help'
-        '404':
-          description: Not found
-    put:
-      x-onecx:
-        permissions:
-          help:
-            - write
-      tags:
-        - helpsInternal
-      description: Update help by ID
-      operationId: updateHelp
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/UpdateHelp'
-      responses:
-        '204':
-          description: Help updated
-        '400':
-          description: Bad request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ProblemDetailResponse'
-        '404':
-          description: Help not found
-    delete:
-      x-onecx:
-        permissions:
-          help:
-            - delete
-      tags:
-        - helpsInternal
-      description: Delete help by ID
-      operationId: deleteHelp
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
-      responses:
-        '204':
-          description: No Content
+                $ref: "#/components/schemas/ProblemDetailResponse"
   /helps/search:
     post:
       x-onecx:
@@ -177,22 +178,22 @@ paths:
             - read
       tags:
         - helpsInternal
-      description: Search for helps
+      description: Search for help items by search criteria
       operationId: searchHelps
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/HelpSearchCriteria'
+              $ref: "#/components/schemas/HelpSearchCriteria"
       responses:
-        '200':
-          description: OK
+        "200":
+          description: Help search results retrieved successfully
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/HelpPageResult'
-  /helps/{productName}/{helpItemId}:
+                $ref: "#/components/schemas/HelpPageResult"
+  /helps/{productName}:
     get:
       x-onecx:
         permissions:
@@ -200,7 +201,7 @@ paths:
             - read
       tags:
         - helpsInternal
-      description: search help item by product name and item id
+      description: Get a help item by its id and product name
       operationId: getHelpByProductNameItemId
       parameters:
         - name: productName
@@ -210,20 +211,20 @@ paths:
           schema:
             type: string
         - name: helpItemId
-          in: path
+          in: query
           required: true
           description: help item ID
           schema:
             type: string
       responses:
         200:
-          description: OK
+          description: Help item retrieved successfully
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Help'
+                $ref: "#/components/schemas/Help"
         404:
-          description: Help not found
+          description: Help item not found
   /helps/export:
     x-onecx:
       permissions:
@@ -232,23 +233,23 @@ paths:
     post:
       tags:
         - helpsInternal
-      description: Export helps
+      description: Export help items
       operationId: exportHelps
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ExportHelpsRequest'
+              $ref: "#/components/schemas/ExportHelpsRequest"
       responses:
-        '200':
-          description: OK
+        "200":
+          description: Help items exported successfully
           content:
             application/json:
               schema:
                 type: object
-        '404':
-          description: No helps founds
+        "404":
+          description: Help items not found
   /helps/import:
     x-onecx:
       permissions:
@@ -257,7 +258,7 @@ paths:
     post:
       tags:
         - helpsInternal
-      description: Import helps
+      description: Import a help item
       operationId: importHelps
       requestBody:
         required: true
@@ -266,14 +267,14 @@ paths:
             schema:
               type: object
       responses:
-        '200':
-          description: Import result
-        '400':
+        "200":
+          description: Help items imported successfully
+        "400":
           description: Bad request
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ProblemDetailResponse'
+                $ref: "#/components/schemas/ProblemDetailResponse"
 components:
   schemas:
     ExportHelpsRequest:
@@ -327,7 +328,7 @@ components:
         stream:
           type: array
           items:
-            $ref: '#/components/schemas/Help'
+            $ref: "#/components/schemas/Help"
     Help:
       required:
         - itemId
@@ -339,11 +340,11 @@ components:
           format: int32
           type: integer
         creationDate:
-          $ref: '#/components/schemas/OffsetDateTime'
+          $ref: "#/components/schemas/OffsetDateTime"
         creationUser:
           type: string
         modificationDate:
-          $ref: '#/components/schemas/OffsetDateTime'
+          $ref: "#/components/schemas/OffsetDateTime"
         modificationUser:
           type: string
         id:
@@ -377,7 +378,7 @@ components:
         stream:
           type: array
           items:
-            $ref: '#/components/schemas/Product'
+            $ref: "#/components/schemas/Product"
     ProductsSearchCriteria:
       type: object
       properties:
@@ -416,11 +417,11 @@ components:
         params:
           type: array
           items:
-            $ref: '#/components/schemas/ProblemDetailParam'
+            $ref: "#/components/schemas/ProblemDetailParam"
         invalidParams:
           type: array
           items:
-            $ref: '#/components/schemas/ProblemDetailInvalidParam'
+            $ref: "#/components/schemas/ProblemDetailInvalidParam"
     ProblemDetailParam:
       type: object
       properties:
