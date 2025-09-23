@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core'
+import { Component, EventEmitter, Input, Output } from '@angular/core'
 import { FormControl, FormGroup } from '@angular/forms'
 
 import { PortalMessageService } from '@onecx/angular-integration-interface'
@@ -17,7 +17,7 @@ export interface HelpCriteriaForm {
   templateUrl: './help-criteria.component.html',
   styleUrls: ['./help-criteria.component.scss']
 })
-export class HelpCriteriaComponent implements OnInit {
+export class HelpCriteriaComponent {
   @Input() public actions: Action[] = []
   @Input() public productsChanged = false
   @Input() public usedProducts: Product[] = []
@@ -35,10 +35,6 @@ export class HelpCriteriaComponent implements OnInit {
       itemId: new FormControl<string | null>(null),
       productName: new FormControl<string | null>(null)
     })
-  }
-
-  public ngOnInit() {
-    //this.loadAllProductsWithHelpItems()
   }
 
   public filterProducts(event: { query: string }) {

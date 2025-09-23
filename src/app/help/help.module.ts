@@ -1,4 +1,4 @@
-import { CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA, NgModule } from '@angular/core'
+import { NgModule } from '@angular/core'
 import { CommonModule } from '@angular/common'
 import { FormsModule } from '@angular/forms'
 import { RouterModule, Routes } from '@angular/router'
@@ -10,7 +10,6 @@ import { SharedModule } from 'src/app/shared/shared.module'
 import { HelpSearchComponent } from './help-search/help-search.component'
 import { HelpCriteriaComponent } from './help-search/help-criteria/help-criteria.component'
 import { HelpDetailComponent } from './help-detail/help-detail.component'
-import { HelpFormComponent } from './help-form/help-form.component'
 
 const routes: Routes = [
   {
@@ -20,7 +19,7 @@ const routes: Routes = [
   }
 ]
 @NgModule({
-  declarations: [HelpSearchComponent, HelpDetailComponent, HelpCriteriaComponent, HelpFormComponent],
+  declarations: [HelpSearchComponent, HelpDetailComponent, HelpCriteriaComponent],
   imports: [
     CommonModule,
     FormsModule,
@@ -28,8 +27,7 @@ const routes: Routes = [
     [RouterModule.forChild(addInitializeModuleGuard(routes))],
     SharedModule
   ],
-  providers: [InitializeModuleGuard],
-  schemas: [NO_ERRORS_SCHEMA, CUSTOM_ELEMENTS_SCHEMA]
+  providers: [InitializeModuleGuard]
 })
 export class HelpModule {
   constructor() {

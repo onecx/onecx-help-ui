@@ -286,7 +286,7 @@ export class HelpSearchComponent implements OnInit {
     this.metaData$ = combineLatest([this.productData$, this.usedLists$]).pipe(
       map(([products, usedLists]: [Product[] | undefined, Product[]]) => {
         // enrich the used lists with display names taken from master data (allLists)
-        let allProducts = products ?? []
+        const allProducts = products ?? []
         if (products) {
           usedLists.forEach((p) => (p.displayName = this.getDisplayName(p.name, allProducts, p.name)))
         }

@@ -1,11 +1,10 @@
-import { Component, EventEmitter, Input, Output, ViewChild, OnChanges } from '@angular/core'
+import { Component, EventEmitter, Input, Output, OnChanges } from '@angular/core'
 import { FormControl, FormGroup, Validators } from '@angular/forms'
 import { finalize } from 'rxjs'
 
 import { PortalMessageService } from '@onecx/angular-integration-interface'
 
 import { HelpsInternalAPIService, Help, CreateHelp } from 'src/app/shared/generated'
-import { HelpFormComponent } from '../help-form/help-form.component'
 import { ChangeMode, Product } from '../help-search/help-search.component'
 
 export interface HelpDetailForm {
@@ -32,8 +31,6 @@ export class HelpDetailComponent implements OnChanges {
 
   @Output() public displayDetailDialogChange = new EventEmitter<boolean>()
   @Output() public searchEmitter = new EventEmitter()
-
-  @ViewChild(HelpFormComponent, { static: false }) helpFormComponent!: HelpFormComponent
 
   public loading = false
   public exceptionKey: string | undefined = undefined
