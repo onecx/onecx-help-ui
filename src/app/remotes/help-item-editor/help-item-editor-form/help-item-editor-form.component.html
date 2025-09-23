@@ -8,12 +8,12 @@
         pInputText
         formControlName="productName"
         aria-labelledby="hm_item_editor_form_product_name"
-        [pTooltip]="'HELP_ITEM.TOOLTIPS.APPLICATION_NAME' | translate"
+        [pTooltip]="'HELP_ITEM.TOOLTIPS.PRODUCT_NAME' | translate"
         tooltipPosition="top"
         tooltipEvent="hover"
       />
       <label class="ocx-required-label" for="hm_item_editor_form_product_name">
-        {{ 'HELP_ITEM.APPLICATION_NAME' | translate }}</label
+        {{ 'HELP_ITEM.PRODUCT_NAME' | translate }}</label
       >
     </span>
 
@@ -25,13 +25,11 @@
         pInputText
         formControlName="helpItemId"
         aria-labelledby="hm_item_editor_form_helpitem_id"
-        [pTooltip]="'HELP_ITEM.TOOLTIPS.HELP_ITEM_ID' | translate"
+        [pTooltip]="'HELP_ITEM.TOOLTIPS.ID' | translate"
         tooltipPosition="top"
         tooltipEvent="hover"
       />
-      <label class="ocx-required-label" for="hm_item_editor_form_helpitem_id">
-        {{ 'HELP_ITEM.HELP_ITEM_ID' | translate }}</label
-      >
+      <label class="ocx-required-label" for="hm_item_editor_form_helpitem_id"> {{ 'HELP_ITEM.ID' | translate }}</label>
     </span>
 
     <p-fieldset [toggleable]="false" [collapsed]="false" styleClass="surface-100 pb-3 px-2">

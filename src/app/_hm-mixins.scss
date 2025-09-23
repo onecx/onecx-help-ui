@@ -49,15 +49,22 @@
   }
 }
 
+@mixin displaying-text-ellipsis($lines: 1) {
+  text-overflow: ellipsis;
+  overflow: hidden;
+  @if ($lines > 1) {
+    display: -webkit-box;
+    -webkit-line-clamp: $lines;
+    -webkit-box-orient: vertical;
+  } @else {
+    white-space: nowrap;
+  }
+}
+
 // disable preset of opacity in form: not readable
 @mixin readable-disabled-form-controls {
   :host ::ng-deep {
-    .p-inputtext.p-component:disabled,
-    .p-dropdown.p-component.p-disabled,
-    .p-checkbox-box.p-disabled,
-    .p-checkbox-label.p-disabled {
-      opacity: unset;
-    }
+    --disabled-opacity: 0.7;
   }
 }
 
@@ -103,6 +110,19 @@
   }
 }
 
+/* **********************************************
+ *  Badges
+ * **********************************************/
+@mixin text-badges {
+  :host ::ng-deep {
+    .text-badge-right {
+      display: inline-block;
+      position: absolute;
+      right: 20px;
+      top: -10px;
+    }
+  }
+}
 @mixin card-badges {
   :host ::ng-deep {
     .card-badge-right {
@@ -160,8 +180,8 @@
     .p-autocomplete-panel .p-autocomplete-items .p-autocomplete-item {
       padding-top: 0.4rem;
       padding-bottom: 0.4rem;
-      &:nth-child(odd) {
-        background-color: #f8f9fa;
+      &:nth-child(even) {
+        background-color: var(--table-body-row-even-bg);
       }
     }
     .p-autocomplete-clear-icon {
@@ -364,6 +384,15 @@
     }
   }
 }
+@mixin dataview-list-flex-zebra-rows {
+  :host ::ng-deep {
+    .p-dataview-list .p-dataview-content > div {
+      &:nth-child(even) {
+        background-color: var(--table-body-row-even-bg);
+      }
+    }
+  }
+}
 @mixin dropdown-zebra-rows {
   :host ::ng-deep {
     .p-dropdown-panel .p-dropdown-items *:nth-child(even) .p-dropdown-item {
@@ -371,7 +400,6 @@
     }
   }
 }
-// This does not work if located inside the app, should be placed into src/styles.scss
 @mixin autocomplete-zebra-rows {
   .p-autocomplete-panel .p-autocomplete-items {
     .p-autocomplete-item:nth-child(even) {
@@ -399,6 +427,7 @@
 }
 @mixin table-zebra-rows {
   :host ::ng-deep {
+    /* this works only on non-frozen columns (table.p-datatable-striped does not work) */
     .p-datatable .p-datatable-tbody > tr:nth-child(even) > td:not(.p-frozen-column) {
       background-color: var(--table-body-row-even-bg);
     }
@@ -471,6 +500,22 @@
   :host ::ng-deep {
     .p-dialog .p-dialog-footer button {
       margin: 0;
+    }
+  }
+}
+
+@mixin tabview-reduce-padding {
+  :host ::ng-deep {
+    .p-tabview .p-tabview-panels {
+      padding: 1.4rem 0 0 0;
+    }
+  }
+}
+@mixin tabview-fix-color-selected-tab {
+  :host ::ng-deep {
+    // correct the background color on inital selected tab
+    .p-tabview .p-tabview-nav li.p-highlight .p-tabview-nav-link[aria-selected='true'] {
+      background-color: rgba(var(--primary-color-rgb), 0.12);
     }
   }
 }

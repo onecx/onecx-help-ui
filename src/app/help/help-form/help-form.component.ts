@@ -1,7 +1,8 @@
 import { Component, Input, OnChanges } from '@angular/core'
 import { FormControl, FormGroup, Validators } from '@angular/forms'
 import { Column } from '@onecx/portal-integration-angular'
-import { Help, Product } from 'src/app/shared/generated'
+import { Help } from 'src/app/shared/generated'
+import { Product } from '../help-search/help-search.component'
 
 export interface HelpDetailForm {
   product: FormControl<Product | null>
@@ -19,11 +20,11 @@ export interface HelpDetailForm {
 export class HelpFormComponent implements OnChanges {
   @Input() helpItem: Help | undefined
   @Input() changeMode = 'CREATE'
-  @Input() products: Product[] = []
+  @Input() allProducts: Product[] = []
 
   public formGroup: FormGroup
   public columns: Column[] = [
-    { field: 'itemId', header: 'HELP_ITEM_ID' },
+    { field: 'itemId', header: 'ID' },
     { field: 'product', header: 'PRODUCT' },
     { field: 'baseUrl', header: 'BASE_URL' },
     { field: 'context', header: 'CONTEXT' },
@@ -54,11 +55,11 @@ export class HelpFormComponent implements OnChanges {
 
   public filterProducts(event: { query: string }) {
     const query = event.query.toLowerCase()
-    this.productsFiltered = this.products?.filter((product) => product.displayName.toLowerCase().includes(query))
+    this.productsFiltered = this.allProducts?.filter((product) => product.displayName?.toLowerCase().includes(query))
     this.productsFiltered.sort(this.sortProductsByName)
   }
 
   public sortProductsByName(a: Product, b: Product): number {
-    return a.displayName.toUpperCase().localeCompare(b.displayName.toUpperCase())
+    return (a.displayName ?? '').toUpperCase().localeCompare((b.displayName ?? '').toUpperCase())
   }
 }

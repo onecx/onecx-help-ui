@@ -18,9 +18,6 @@ describe('HelpDetailComponent', () => {
   const msgServiceSpy = jasmine.createSpyObj<PortalMessageService>('PortalMessageService', ['error', 'info'])
   const formGroupSpy = jasmine.createSpyObj<FormGroup<HelpCriteriaForm>>('HelpCriteriaGroup', ['reset'])
   const criteriaEmitterSpy = jasmine.createSpyObj<EventEmitter<HelpSearchCriteria>>('EventEmitter', ['emit'])
-  const apiServiceSpy = {
-    getAllProductsWithHelpItems: jasmine.createSpy('getAllProductsWithHelpItems').and.returnValue(of([]))
-  }
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
@@ -35,8 +32,7 @@ describe('HelpDetailComponent', () => {
       providers: [
         provideHttpClient(),
         provideHttpClientTesting(),
-        { provide: PortalMessageService, useValue: msgServiceSpy },
-        { provide: HelpsInternalAPIService, useValue: apiServiceSpy }
+        { provide: PortalMessageService, useValue: msgServiceSpy }
       ]
     }).compileComponents()
     msgServiceSpy.error.calls.reset()
@@ -55,7 +51,7 @@ describe('HelpDetailComponent', () => {
 
   it('should update productNames OnInit', () => {
     component.productsChanged = true
-    component.products = [
+    component.usedProducts = [
       { name: '1', displayName: '1dn' },
       { name: '2', displayName: '2dn' }
     ] as Product[]
@@ -70,15 +66,13 @@ describe('HelpDetailComponent', () => {
 
   it('should update productNames OnChanges if productsChanged', () => {
     component.productsChanged = true
-    component.products = [
+    component.usedProducts = [
       { name: '1', displayName: '1dn' },
       { name: '2', displayName: '2dn' }
     ] as Product[]
     const mockHelpProductNames = {
       ProductNames: ['1', '2']
     }
-    component.productDisplayNames = []
-    apiServiceSpy.getAllProductsWithHelpItems.and.returnValue(of(mockHelpProductNames))
 
     component.ngOnChanges({
       productsChanged: new SimpleChange(false, true, false)
@@ -87,7 +81,7 @@ describe('HelpDetailComponent', () => {
     expect(component.productDisplayNames).toEqual(['1dn', '2dn'])
   })
 
-  it('should filter products', () => {
+  it('should filter usedProducts', () => {
     const notFiltered: string[] = ['filteredItem', 'unfilteredItem']
     component.productDisplayNames = notFiltered
     const event = { query: 'filteredItem' }
@@ -98,47 +92,39 @@ describe('HelpDetailComponent', () => {
   })
 
   it('should reset criteria', () => {
-    component.helpCriteriaGroup = formGroupSpy
+    component.criteriaForm = formGroupSpy
 
-    component.resetCriteria()
+    component.onResetCriteria()
 
-    expect(component.helpCriteriaGroup.reset).toHaveBeenCalled()
+    expect(component.criteriaForm.reset).toHaveBeenCalled()
   })
 
   it('should submit criteria', () => {
     component.criteriaEmitter = criteriaEmitterSpy
-    component.helpCriteriaGroup = new FormGroup<HelpCriteriaForm>({
+    component.criteriaForm = new FormGroup<HelpCriteriaForm>({
       productName: new FormControl('Help Management UI'),
       itemId: new FormControl('PAGE_HELP_SEARCH')
     })
-    component.products = [
+    component.usedProducts = [
       { name: '1', displayName: '1dn' },
       { name: 'help-mgmt-ui', displayName: 'Help Management UI' }
     ] as Product[]
 
-    component.submitCriteria()
+    component.onSearch()
 
-    const expectedValue = component.helpCriteriaGroup.value
+    const expectedValue = component.criteriaForm.value
     expectedValue.productName = 'help-mgmt-ui'
-    expect(criteriaEmitterSpy.emit).toHaveBeenCalledWith(component.helpCriteriaGroup.value as HelpSearchCriteria)
+    expect(criteriaEmitterSpy.emit).toHaveBeenCalledWith(component.criteriaForm.value as HelpSearchCriteria)
   })
 
   it('should display error on invalid criteria', () => {
-    component.helpCriteriaGroup = new FormGroup<HelpCriteriaForm>({
+    component.criteriaForm = new FormGroup<HelpCriteriaForm>({
       productName: new FormControl('', Validators.required),
       itemId: new FormControl('', Validators.required)
     })
 
-    component.submitCriteria()
+    component.onSearch()
 
-    expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'HELP_SEARCH.MSG_SEARCH_VALIDATION' })
-  })
-
-  it('should display info when no productNames available', () => {
-    apiServiceSpy.getAllProductsWithHelpItems.and.returnValue(of([]))
-
-    component.loadAllProductsWithHelpItems()
-
-    expect(msgServiceSpy.info).not.toHaveBeenCalled()
+    expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'DIALOG.SEARCH.MSG_SEARCH_VALIDATION' })
   })
 })

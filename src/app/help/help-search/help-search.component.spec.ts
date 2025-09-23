@@ -99,7 +99,7 @@ describe('HelpSearchComponent', () => {
     it('should call search OnInit and populate filteredColumns/actions correctly', () => {
       translateServiceSpy.get.and.returnValue(of({ 'ACTIONS.CREATE.LABEL': 'Create' }))
       component.columns = [
-        { field: 'productName', header: 'APPLICATION_NAME', active: false },
+        { field: 'productName', header: 'PRODUCT_NAME', active: false },
         { field: 'context', header: 'CONTEXT', active: true }
       ]
       spyOn(component, 'search')
@@ -238,7 +238,7 @@ describe('HelpSearchComponent', () => {
       expect(apiServiceSpy.deleteHelp).toHaveBeenCalled()
       expect(component.resultsForDisplay.length).toBe(0)
       expect(component.resultsForDisplay.length).toBe(0)
-      expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.DELETE.MESSAGE.HELP_ITEM_OK' })
+      expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.DELETE.MESSAGE.OK' })
     })
 
     it('should display error on deleteHelpItem failure', () => {
@@ -254,7 +254,7 @@ describe('HelpSearchComponent', () => {
 
       component.onDeleteConfirmation()
 
-      expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.DELETE.MESSAGE.HELP_ITEM_NOK' })
+      expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.DELETE.MESSAGE.NOK' })
       expect(console.error).toHaveBeenCalledWith('deleteHelp', errorResponse)
     })
   })
@@ -320,10 +320,10 @@ describe('HelpSearchComponent', () => {
 
     it('should update filteredColumns onColumnsChange', () => {
       const columns: Column[] = [
-        { field: 'productDisplayName', header: 'APPLICATION_NAME' },
+        { field: 'productDisplayName', header: 'PRODUCT_NAME' },
         { field: 'context', header: 'CONTEXT' }
       ]
-      const expectedColumn = { field: 'productDisplayName', header: 'APPLICATION_NAME' }
+      const expectedColumn = { field: 'productDisplayName', header: 'PRODUCT_NAME' }
       component.filteredColumns = columns
       component.onColumnsChange(['productDisplayName'])
 
@@ -446,7 +446,7 @@ describe('HelpSearchComponent', () => {
 
       setTimeout(() => {
         expect(component.displayImportDialog).toBeFalse()
-        expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.IMPORT.MESSAGE.HELP_ITEM.IMPORT_OK' })
+        expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.IMPORT.MESSAGE.OK' })
         done()
       })
     })
@@ -460,7 +460,7 @@ describe('HelpSearchComponent', () => {
       component.onImportConfirmation()
 
       setTimeout(() => {
-        expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.IMPORT.MESSAGE.HELP_ITEM.IMPORT_NOK' })
+        expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.IMPORT.MESSAGE.NOK' })
         expect(console.error).toHaveBeenCalledWith('importHelps', errorResponse)
         done()
       }, 0)
@@ -512,7 +512,7 @@ describe('HelpSearchComponent', () => {
 
       component.onExportConfirmation()
 
-      expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.EXPORT.MESSAGE.HELP_ITEM.EXPORT_OK' })
+      expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.EXPORT.MESSAGE.OK' })
     })
 
     it('should display error msg when export fails', () => {

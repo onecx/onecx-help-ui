@@ -1,12 +1,15 @@
 <form [formGroup]="formGroup">
-  <div class="flex flex-wrap flex-column gap-4 justify-content-between mt-2">
+  <section
+    class="flex flex-wrap flex-column gap-4 justify-content-between mt-2"
+    [attr.aria-label]="'DIALOG.DETAIL.TAB.PROPS' | translate"
+  >
     <span class="p-float-label">
       <p-autoComplete
         id="hm_detail_form_product_name_autocomplete"
         styleClass="w-full"
+        panelStyleClass="w-18rem"
         inputStyleClass="pt-3 pb-2 text-responsive"
         formControlName="product"
-        field="displayName"
         ngDefaultControl
         appendTo="body"
         [dropdown]="true"
@@ -14,12 +17,13 @@
         [readonly]="changeMode === 'EDIT'"
         [suggestions]="productsFiltered"
         (completeMethod)="filterProducts($event)"
-        [pTooltip]="'HELP_ITEM.TOOLTIPS.APPLICATION_NAME' | translate"
+        [ariaLabel]="'HELP_ITEM.TOOLTIPS.PRODUCT_NAME' | translate"
+        [pTooltip]="'HELP_ITEM.TOOLTIPS.PRODUCT_NAME' | translate"
         tooltipPosition="top"
         tooltipEvent="hover"
       ></p-autoComplete>
-      <label class="ocx-required-label" for="hm_detail_form_product_name_autocomplete"
-        >{{ 'HELP_ITEM.APPLICATION_NAME' | translate }}
+      <label class="ocx-required-label" for="hm_detail_form_product_name_autocomplete" aria-hidden="true">
+        {{ 'HELP_ITEM.PRODUCT_NAME' | translate }}
       </label>
     </span>
     <span class="p-float-label" controlErrorAnchor>
@@ -29,12 +33,14 @@
         id="hm_detail_form_item_id"
         class="w-full pt-3 pb-2 text-responsive"
         formControlName="itemId"
-        [pTooltip]="'HELP_ITEM.TOOLTIPS.HELP_ITEM_ID' | translate"
-        [pTooltip]="'HELP_ITEM.TOOLTIPS.HELP_ITEM_ID' | translate"
+        [ariaLabel]="'HELP_ITEM.TOOLTIPS.ID' | translate"
+        [pTooltip]="'HELP_ITEM.TOOLTIPS.ID' | translate"
         tooltipPosition="top"
         tooltipEvent="hover"
       />
-      <label class="ocx-required-label" for="hm_detail_form_item_id">{{ 'HELP_ITEM.HELP_ITEM_ID' | translate }}</label>
+      <label class="ocx-required-label" for="hm_detail_form_item_id" aria-hidden="true">
+        {{ 'HELP_ITEM.ID' | translate }}
+      </label>
     </span>
     <div *ngIf="changeMode !== 'CREATE'">
       <div class="px-2 mb-2 flex flex-row justify-content-between align-items-center column-gap-3">
@@ -52,13 +58,13 @@
       </div>
       <p-message
         *ngIf="helpItem?.operator"
-        styleClass="mb-2 p-2"
         id="hm_detail_form_operator_delete_message"
+        styleClass="mb-2 p-2"
         severity="info"
         [text]="'ACTIONS.DELETE.OPERATOR_TEXT' | translate"
       ></p-message>
     </div>
-  </div>
+  </section>
 
   <p-fieldset [toggleable]="false" [collapsed]="false" styleClass="surface-100 mt-2 pb-3 px-2">
     <ng-template pTemplate="header">
@@ -74,11 +80,14 @@
           id="hm_detail_form_base_url"
           class="w-full pt-3 pb-2 text-responsive"
           formControlName="baseUrl"
+          [ariaLabel]="'HELP_ITEM.TOOLTIPS.BASE_URL' | translate"
           [pTooltip]="'HELP_ITEM.TOOLTIPS.BASE_URL' | translate"
           tooltipPosition="top"
           tooltipEvent="hover"
         />
-        <label class="ocx-required-label" for="hm_detail_form_base_url"> {{ 'HELP_ITEM.BASE_URL' | translate }}</label>
+        <label class="ocx-required-label" for="hm_detail_form_base_url" aria-hidden="true">
+          {{ 'HELP_ITEM.BASE_URL' | translate }}
+        </label>
       </span>
       <span class="p-float-label">
         <input
@@ -87,11 +96,14 @@
           id="hm_detail_form_resource_url"
           class="w-full pt-3 pb-2 text-responsive"
           formControlName="resourceUrl"
+          [ariaLabel]="'HELP_ITEM.TOOLTIPS.RESOURCE_URL' | translate"
           [pTooltip]="'HELP_ITEM.TOOLTIPS.RESOURCE_URL' | translate"
           tooltipPosition="top"
           tooltipEvent="hover"
         />
-        <label class="" for="hm_detail_form_resource_url">{{ 'HELP_ITEM.RESOURCE_URL' | translate }}</label>
+        <label class="" for="hm_detail_form_resource_url" aria-hidden="true">
+          {{ 'HELP_ITEM.RESOURCE_URL' | translate }}
+        </label>
       </span>
       <span class="p-float-label">
         <input
@@ -100,11 +112,14 @@
           id="hm_detail_form_context"
           class="w-full pt-3 pb-2 text-responsive"
           formControlName="context"
+          [ariaLabel]="'HELP_ITEM.TOOLTIPS.CONTEXT' | translate"
           [pTooltip]="'HELP_ITEM.TOOLTIPS.CONTEXT' | translate"
           tooltipPosition="top"
           tooltipEvent="hover"
         />
-        <label class="" for="hm_detail_form_context">{{ 'HELP_ITEM.CONTEXT' | translate }}</label>
+        <label class="" for="hm_detail_form_context" aria-hidden="true">
+          {{ 'HELP_ITEM.CONTEXT' | translate }}
+        </label>
       </span>
     </div>
   </p-fieldset>

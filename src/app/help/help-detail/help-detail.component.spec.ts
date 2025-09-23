@@ -112,7 +112,7 @@ describe('HelpDetailComponent', () => {
 
     component.onSave()
 
-    expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'HELPITEM_CREATION.CREATION_SUCCESS' })
+    expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.CREATE.MESSAGE.CREATION_SUCCESS' })
     expect(component.searchEmitter.emit).toHaveBeenCalled()
     const expectedArgument = convertFormGroupProductToProductName(component.helpFormComponent.formGroup)
     expect(apiServiceSpy.createNewHelp).toHaveBeenCalledWith({
@@ -139,7 +139,7 @@ describe('HelpDetailComponent', () => {
 
     component.onSave()
 
-    expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'HELPITEM_CREATION.CREATION_FAILED' })
+    expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.CREATE.MESSAGE.NOK' })
   })
 
   it('should display unique constraint creation error', () => {
@@ -162,8 +162,8 @@ describe('HelpDetailComponent', () => {
     component.onSave()
 
     expect(msgServiceSpy.error).toHaveBeenCalledWith({
-      summaryKey: 'HELPITEM_CREATION.CREATION_FAILED',
-      detailKey: 'HELPITEM_CREATION.UNIQUE_CONSTRAINT'
+      summaryKey: 'ACTIONS.CREATE.MESSAGE.NOK',
+      detailKey: 'VALIDATION.ERRORS.HELP_ITEM.UNIQUE_CONSTRAINT'
     })
   })
 
@@ -179,7 +179,9 @@ describe('HelpDetailComponent', () => {
 
     component.onSave()
 
-    expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'HELPITEM_CREATION.VALIDATION_ERROR' })
+    expect(msgServiceSpy.error).toHaveBeenCalledWith({
+      summaryKey: 'VALIDATION.ERRORS.HELP_ITEM.FORM_INVALID'
+    })
   })
 
   it('should update help item', () => {
@@ -236,7 +238,7 @@ describe('HelpDetailComponent', () => {
 
     component.onSave()
 
-    expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'HELP_DETAIL.VALIDATION_ERROR' })
+    expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'VALIDATION.ERRORS.HELP_ITEM.FORM_INVALID' })
   })
 
   it('should emit display change event onDialogHide', () => {

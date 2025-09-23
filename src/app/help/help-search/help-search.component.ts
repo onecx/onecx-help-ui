@@ -1,29 +1,37 @@
-import { Component, OnInit, ViewChild } from '@angular/core'
+import { Component, EventEmitter, OnInit } from '@angular/core'
 import { Location } from '@angular/common'
 import { TranslateService } from '@ngx-translate/core'
-import { catchError, finalize, map, Observable, of } from 'rxjs'
+import { BehaviorSubject, catchError, combineLatest, finalize, map, Observable, of, switchMap, tap } from 'rxjs'
 import { Table } from 'primeng/table'
 import { FileSelectEvent } from 'primeng/fileupload'
 import FileSaver from 'file-saver'
 
-import { PortalMessageService } from '@onecx/angular-integration-interface'
+import { PortalMessageService, UserService } from '@onecx/angular-integration-interface'
 import { Action } from '@onecx/angular-accelerator'
-import { Column } from '@onecx/portal-integration-angular'
+import { Column, DataViewControlTranslations } from '@onecx/portal-integration-angular'
+import { SlotService } from '@onecx/angular-remote-components'
 
-import {
-  Help,
-  HelpsInternalAPIService,
-  HelpPageResult,
-  HelpSearchCriteria,
-  Product,
-  ProductsPageResult,
-  SearchHelpsRequestParams,
-  SearchProductsByCriteriaRequestParams
-} from 'src/app/shared/generated'
+import { Help, HelpsInternalAPIService, HelpSearchCriteria, HelpProductNames } from 'src/app/shared/generated'
 
 type ExtendedColumn = Column & { css?: string; limit?: boolean }
-type ChangeMode = 'VIEW' | 'CREATE' | 'EDIT'
-export type HelpForDisplay = Help & { productDisplayName?: string; product?: { name?: string; displayName?: string } }
+export type ChangeMode = 'VIEW' | 'CREATE' | 'COPY' | 'EDIT'
+export type AllMetaData = {
+  allProducts: Product[]
+  usedProducts: Product[]
+}
+// DATA structures of product store response
+export type Product = {
+  id?: string
+  name: string
+  version?: string
+  description?: string
+  imageUrl?: string
+  displayName?: string
+  classifications?: Array<string>
+  undeployed?: boolean
+  provider?: string
+  applications?: Array<any>
+}
 
 @Component({
   selector: 'app-help-search',
@@ -31,17 +39,29 @@ export type HelpForDisplay = Help & { productDisplayName?: string; product?: { n
   styleUrls: ['./help-search.component.scss']
 })
 export class HelpSearchComponent implements OnInit {
-  @ViewChild('table', { static: false }) table!: Table
-
+  // dialog
+  public loadingMetaData = false
+  public searching = false
   public exceptionKey: string | undefined
-  public changeMode: ChangeMode = 'CREATE'
+  public changeMode: ChangeMode = 'VIEW'
+  public dateFormat: string
   public actions$: Observable<Action[]> | undefined
+  public criteria: HelpSearchCriteria = {}
+  public dataViewControlsTranslations: DataViewControlTranslations = {}
+
+  // data
+  public data$: Observable<Help[]> | undefined
+  public dataAvailable = false
+  public metaData$!: Observable<AllMetaData>
+  public usedLists$!: Observable<Product[]> // getting data from bff endpoint
+  public usedListsTrigger$ = new BehaviorSubject<void>(undefined) // trigger for refresh data
+  public item4Detail: Help | undefined // used on detail
+  public item4Delete: Help | undefined // used on deletion
+
   public helpItem: Help | undefined
-  public resultsForDisplay: HelpForDisplay[] = []
   public assignedProductNames: string[] = []
   public products: Product[] = []
   public productsLoaded: boolean = false
-  public criteria: SearchHelpsRequestParams = { helpSearchCriteria: {} }
   public helpSearchCriteria!: HelpSearchCriteria
   public searchInProgress = false
   public loadingResults = false
@@ -49,27 +69,26 @@ export class HelpSearchComponent implements OnInit {
   public displayDetailDialog = false
   public displayImportDialog = false
   public displayExportDialog = false
-  public productsChanged = false
   public rowsPerPage = 10
   public rowsPerPageOptions = [10, 20, 50]
 
   importHelpItem: Help | null = null
   public importError = false
-  public validationErrorCause: string
+  public validationErrorCause: string | undefined = undefined
   public selectedProductNames: string[] = []
 
   public filteredColumns: Column[] = []
   public columns: ExtendedColumn[] = [
     {
-      field: 'productDisplayName',
-      header: 'APPLICATION_NAME',
+      field: 'productName',
+      header: 'PRODUCT_NAME',
       active: true,
       translationPrefix: 'HELP_ITEM',
       css: 'px-2 py-1 sm:py-2'
     },
     {
       field: 'itemId',
-      header: 'HELP_ITEM_ID',
+      header: 'ID',
       active: true,
       translationPrefix: 'HELP_ITEM',
       css: 'px-2 py-1 sm:py-2'
@@ -82,35 +101,202 @@ export class HelpSearchComponent implements OnInit {
       css: 'px-2 py-1 sm:py-2'
     }
   ]
+  // slot configuration: get product infos via remote component
+  public pdSlotName = 'onecx-product-data'
+  public pdIsComponentDefined$: Observable<boolean> | undefined // check
+  public productData$ = new BehaviorSubject<Product[] | undefined>(undefined) // product infos
+  public pdSlotEmitter = new EventEmitter<Product[]>()
 
   constructor(
-    private readonly helpInternalAPIService: HelpsInternalAPIService,
+    private readonly user: UserService,
+    private readonly slotService: SlotService,
     private readonly translate: TranslateService,
-    private readonly msgService: PortalMessageService
+    private readonly msgService: PortalMessageService,
+    private readonly helpApi: HelpsInternalAPIService
   ) {
-    this.validationErrorCause = ''
+    this.dateFormat = this.user.lang$.getValue() === 'de' ? 'dd.MM.yyyy HH:mm' : 'M/d/yy, h:mm a'
+    this.pdIsComponentDefined$ = this.slotService.isSomeComponentDefinedForSlot(this.pdSlotName)
   }
 
-  ngOnInit(): void {
+  public ngOnInit(): void {
+    this.prepareActionButtons()
+    this.prepareDialogTranslations()
     this.filteredColumns = this.columns.filter((a) => {
       return a.active === true
     })
-    this.prepareDialogTranslations()
-    this.loadData()
+    this.pdSlotEmitter.subscribe(this.productData$)
+    this.loadMetaData()
+    this.onSearch({})
   }
 
-  private loadData() {
-    const criteria: SearchProductsByCriteriaRequestParams = {
-      productsSearchCriteria: { pageNumber: 0, pageSize: 1000 }
+  /****************************************************************************
+   * DIALOG
+   */
+  private prepareDialogTranslations(): void {
+    this.translate
+      .get(['DIALOG.DATAVIEW.FILTER', 'DIALOG.DATAVIEW.FILTER_BY', 'HELP_ITEM.ID', 'HELP_ITEM.PRODUCT_NAME'])
+      .pipe(
+        map((data) => {
+          this.dataViewControlsTranslations = {
+            filterInputPlaceholder: data['DIALOG.DATAVIEW.FILTER'],
+            filterInputTooltip:
+              data['DIALOG.DATAVIEW.FILTER_BY'] + data['HELP_ITEM.ID'] + ', ' + data['HELP_ITEM.PRODUCT_NAME']
+          }
+        })
+      )
+      .subscribe()
+  }
+  private prepareActionButtons(): void {
+    this.actions$ = this.translate
+      .get([
+        'ACTIONS.CREATE.LABEL',
+        'ACTIONS.CREATE.TOOLTIP',
+        'ACTIONS.IMPORT.LABEL',
+        'ACTIONS.IMPORT.TOOLTIP',
+        'ACTIONS.EXPORT.LABEL',
+        'ACTIONS.EXPORT.TOOLTIP'
+      ])
+      .pipe(
+        map((data) => {
+          return [
+            {
+              label: data['ACTIONS.CREATE.LABEL'],
+              title: data['ACTIONS.CREATE.TOOLTIP'],
+              actionCallback: () => this.onDetail(undefined, undefined, 'CREATE'),
+              icon: 'pi pi-plus',
+              show: 'always',
+              permission: 'HELP#EDIT'
+            },
+            {
+              label: data['ACTIONS.EXPORT.LABEL'],
+              title: data['ACTIONS.EXPORT.TOOLTIP'],
+              actionCallback: () => this.onExport(),
+              icon: 'pi pi-download',
+              show: 'always',
+              permission: 'HELP#EDIT',
+              conditional: true,
+              showCondition: this.dataAvailable
+            },
+            {
+              label: data['ACTIONS.IMPORT.LABEL'],
+              title: data['ACTIONS.IMPORT.TOOLTIP'],
+              actionCallback: () => this.onImport(),
+              icon: 'pi pi-upload',
+              show: 'always',
+              permission: 'HELP#EDIT'
+            }
+          ]
+        })
+      )
+  }
+
+  /****************************************************************************
+   *  UI Events
+   */
+  public onCriteriaReset(): void {
+    this.criteria = {}
+  }
+  public onColumnsChange(activeIds: string[]) {
+    this.filteredColumns = activeIds.map((id) => this.columns.find((col) => col.field === id)) as Column[]
+  }
+  public onFilterChange(event: string, dataTable: Table): void {
+    dataTable?.filterGlobal(event, 'contains')
+  }
+
+  public getDisplayName(name: string | undefined, list: Product[] | undefined, defValue?: string): string | undefined {
+    if (name) return list?.find((item) => item.name === name)?.displayName ?? defValue
+    return undefined
+  }
+
+  /****************************************************************************
+   *  DETAIL => CREATE, COPY, EDIT, VIEW
+   */
+  public onDetail(ev: Event | undefined, item: Help | undefined, mode: ChangeMode): void {
+    ev?.stopPropagation()
+    this.changeMode = mode
+    this.item4Detail = item // do not manipulate the item here
+    this.displayDetailDialog = true
+  }
+  public onCloseDetail(refresh: boolean): void {
+    this.displayDetailDialog = false
+    this.item4Detail = undefined
+    if (refresh) {
+      this.usedListsTrigger$.next() // trigger getting data
+      this.onSearch({}, true)
     }
-    this.helpInternalAPIService
-      .searchProductsByCriteria(criteria)
-      .subscribe((productsPageResult: ProductsPageResult) => {
-        this.products = productsPageResult.stream ?? []
-        this.products.sort(this.sortProductsByName)
-        this.productsLoaded = true
-        this.search(this.criteria.helpSearchCriteria)
+  }
+
+  /****************************************************************************
+   *  DELETE => Ask for confirmation
+   */
+  public onDelete(ev: Event, item: Help): void {
+    ev.stopPropagation()
+    this.item4Delete = item
+    this.displayDeleteDialog = true
+  }
+  public onDeleteConfirmation(data: Help[]): void {
+    if (this.item4Delete?.id && typeof this.item4Delete.productName === 'string') {
+      this.helpApi.deleteHelp({ id: this.item4Delete.id }).subscribe({
+        next: () => {
+          this.msgService.success({ summaryKey: 'ACTIONS.DELETE.MESSAGE.OK' })
+          data = data?.filter((d) => d.id !== this.item4Delete?.id)
+          this.data$ = of(data)
+          // check remaining data: if product still exists - if not then trigger reload
+          if (!data?.find((d) => d.productName === this.item4Delete?.productName)) {
+            this.usedListsTrigger$.next() // trigger getting data
+          }
+          this.displayDeleteDialog = false
+          this.item4Delete = undefined
+        },
+        error: (err) => {
+          this.msgService.error({ summaryKey: 'ACTIONS.DELETE.MESSAGE.NOK' })
+          console.error('deleteHelp', err)
+        }
       })
+    }
+  }
+
+  /****************************************************************************
+   *  LOAD meta data
+   *    declare the requests to getting meta data...
+   *    ...to fill drop down lists => products, workspaces
+   */
+  private loadMetaData(): void {
+    // declare search for used products/workspaces (used === assigned to announcement)
+    // hereby SelectItem[] are prepared without displayName (updated later by combineLatest)
+    this.usedLists$ = this.usedListsTrigger$.pipe(
+      switchMap(() =>
+        this.helpApi.getAllProductsWithHelpItems().pipe(
+          map((data: HelpProductNames) => {
+            let ul: Product[] = []
+            if (data.ProductNames) ul = data.ProductNames.map((s) => ({ name: s, value: s }) as Product)
+            return ul
+          }),
+          catchError((err) => {
+            this.exceptionKey = 'EXCEPTIONS.HTTP_STATUS_' + err.status + '.ASSIGNMENTS'
+            console.error('getAllProductsWithHelpItems', err)
+            return of([])
+          })
+        )
+      )
+    )
+
+    // combine master data (slots) with used data (enrich them with correct display names)
+    this.loadingMetaData = true
+    this.metaData$ = combineLatest([this.productData$, this.usedLists$]).pipe(
+      map(([products, usedLists]: [Product[] | undefined, Product[]]) => {
+        // enrich the used lists with display names taken from master data (allLists)
+        let allProducts = products ?? []
+        if (products) {
+          usedLists.forEach((p) => (p.displayName = this.getDisplayName(p.name, allProducts, p.name)))
+        }
+        this.loadingMetaData = false
+        return {
+          allProducts: allProducts ?? usedLists,
+          usedProducts: usedLists
+        }
+      })
+    )
   }
 
   /****************************************************************************
@@ -119,58 +305,24 @@ export class HelpSearchComponent implements OnInit {
    *    - user initiated search with criteria
    *    - re-searching (with current criteria) after changes in detail dialog
    */
-  public search(criteria: HelpSearchCriteria, reuseCriteria: boolean = false): void {
-    const criteriaSearchParams: SearchHelpsRequestParams = {
-      helpSearchCriteria: criteria
-    }
-    if (!reuseCriteria) {
-      if (criteriaSearchParams.helpSearchCriteria?.productName === '')
-        criteriaSearchParams.helpSearchCriteria.productName = undefined
-      if (criteriaSearchParams.helpSearchCriteria?.itemId === '')
-        criteriaSearchParams.helpSearchCriteria.itemId = undefined
-      this.criteria = criteriaSearchParams
-    }
-    this.searchInProgress = true
-    this.helpInternalAPIService
-      .searchHelps(this.criteria)
-      .pipe(
-        catchError((err) => {
-          this.exceptionKey = 'EXCEPTIONS.HTTP_STATUS_' + err.status + '.HELP_ITEM'
-          console.error('searchHelps', err)
-          this.msgService.error({ summaryKey: 'ACTIONS.SEARCH.MESSAGE.SEARCH_FAILED' })
-          return of({ stream: [] } as HelpPageResult)
-        }),
-        finalize(() => (this.searchInProgress = false))
-      )
-      .subscribe({
-        next: (data) => {
-          if (data.stream !== undefined) {
-            if (data.stream?.length === 0) {
-              this.msgService.info({ summaryKey: 'ACTIONS.SEARCH.MESSAGE.NO_RESULTS' })
-            } else {
-              data.stream?.sort(this.sortHelpItemByDefault)
-              this.resultsForDisplay = data.stream.map((result) => {
-                const resultForDisplay = { ...result } as HelpForDisplay
-                resultForDisplay['productName'] = result.productName
-                const product = this.products.find((product) => product.name === result.productName)
-                resultForDisplay['productDisplayName'] = product?.displayName
-                resultForDisplay['product'] = {
-                  name: result.productName,
-                  displayName: this.products.find((product) => product.name === result.productName)?.displayName
-                }
-                return resultForDisplay
-              })
-              this.prepareDialogTranslations()
-            }
-          }
-          this.productsChanged = false
-        }
-      })
-  }
-  public onSearch() {
-    this.changeMode = 'CREATE'
-    this.productsChanged = true
-    this.search(this.criteria.helpSearchCriteria, true)
+  public onSearch(criteria: HelpSearchCriteria, reuseCriteria = false): void {
+    if (!reuseCriteria) this.criteria = criteria
+    this.searching = true
+    this.exceptionKey = undefined
+    this.data$ = this.helpApi.searchHelps({ helpSearchCriteria: this.criteria }).pipe(
+      tap((data) => {
+        this.dataAvailable = (data.stream && data.stream.length > 0) ?? false
+        if (!this.dataAvailable) this.msgService.info({ summaryKey: 'ACTIONS.SEARCH.MESSAGE.NO_RESULTS' })
+      }),
+      map((data) => data.stream?.sort(this.sortHelpItemByDefault) ?? []),
+      catchError((err) => {
+        this.exceptionKey = 'EXCEPTIONS.HTTP_STATUS_' + err.status + '.HELP_ITEM'
+        this.msgService.error({ summaryKey: 'ACTIONS.SEARCH.MESSAGE.SEARCH_FAILED' })
+        console.error('searchHelps', err)
+        return of([])
+      }),
+      finalize(() => (this.searching = false))
+    )
   }
 
   // default sorting: 1. productName, 2.itemId
@@ -181,63 +333,10 @@ export class HelpSearchComponent implements OnInit {
       ) || (a.itemId ? a.itemId.toUpperCase() : '').localeCompare(b.itemId ? b.itemId.toUpperCase() : '')
     )
   }
+  /*
   private sortProductsByName(a: Product, b: Product): number {
     return a.displayName.toUpperCase().localeCompare(b.displayName.toUpperCase())
-  }
-
-  public onColumnsChange(activeIds: string[]) {
-    this.filteredColumns = activeIds.map((id) => this.columns.find((col) => col.field === id)) as Column[]
-  }
-  public onFilterChange(event: string): void {
-    this.table.filterGlobal(event, 'contains')
-  }
-
-  /****************************************************************************
-   *  CHANGES
-   */
-  public onCreate() {
-    this.changeMode = 'CREATE'
-    this.productsChanged = false
-    this.helpItem = undefined
-    this.displayDetailDialog = true
-  }
-  public onDetail(ev: MouseEvent, item: Help, mode: ChangeMode): void {
-    ev.stopPropagation()
-    this.changeMode = mode
-    this.productsChanged = false
-    this.helpItem = item
-    this.displayDetailDialog = true
-  }
-  public onCopy(ev: MouseEvent, item: Help) {
-    ev.stopPropagation()
-    this.changeMode = 'CREATE'
-    this.productsChanged = false
-    this.helpItem = item
-    this.displayDetailDialog = true
-  }
-  public onDelete(ev: MouseEvent, item: Help): void {
-    ev.stopPropagation()
-    this.helpItem = item
-    this.productsChanged = false
-    this.displayDeleteDialog = true
-  }
-  public onDeleteConfirmation(): void {
-    if (this.helpItem?.id && typeof this.helpItem.productName === 'string') {
-      this.helpInternalAPIService.deleteHelp({ id: this.helpItem?.id }).subscribe({
-        next: () => {
-          this.displayDeleteDialog = false
-          this.resultsForDisplay = this.resultsForDisplay?.filter((a) => a.id !== this.helpItem?.id)
-          this.helpItem = undefined
-          this.productsChanged = true
-          this.msgService.success({ summaryKey: 'ACTIONS.DELETE.MESSAGE.HELP_ITEM_OK' })
-        },
-        error: (err) => {
-          this.msgService.error({ summaryKey: 'ACTIONS.DELETE.MESSAGE.HELP_ITEM_NOK' })
-          console.error('deleteHelp', err)
-        }
-      })
-    }
-  }
+  }*/
 
   /****************************************************************************
    *  IMPORT
@@ -263,18 +362,18 @@ export class HelpSearchComponent implements OnInit {
   }
   public onImportConfirmation(): void {
     if (this.importHelpItem) {
-      this.helpInternalAPIService.importHelps({ body: this.importHelpItem }).subscribe({
+      this.helpApi.importHelps({ body: this.importHelpItem }).subscribe({
         next: () => {
+          this.msgService.success({ summaryKey: 'ACTIONS.IMPORT.MESSAGE.OK' })
+          this.usedListsTrigger$.next() // trigger getting data
           this.displayImportDialog = false
-          this.productsChanged = true
-          this.msgService.success({ summaryKey: 'ACTIONS.IMPORT.MESSAGE.HELP_ITEM.IMPORT_OK' })
         },
         error: (err) => {
-          this.msgService.error({ summaryKey: 'ACTIONS.IMPORT.MESSAGE.HELP_ITEM.IMPORT_NOK' })
+          this.msgService.error({ summaryKey: 'ACTIONS.IMPORT.MESSAGE.NOK' })
           console.error('importHelps', err)
         }
       })
-      this.loadData()
+      this.onSearch({}, true)
     }
   }
   public isFileValid(): boolean {
@@ -292,20 +391,20 @@ export class HelpSearchComponent implements OnInit {
    *  EXPORT
    */
   public onExport(): void {
-    this.assignedProductNames = Array.from(new Set(this.resultsForDisplay.map((item) => item.productDisplayName!)))
+    //this.assignedProductNames = Array.from(new Set(this.resultsForDisplay.map((item) => item.productDisplayName!)))
     this.displayExportDialog = true
   }
   public onExportConfirmation(): void {
     if (this.selectedProductNames.length > 0) {
       const names = this.selectedProductNames.map((item) => this.getProductNameFromDisplayName(item))
-      this.helpInternalAPIService.exportHelps({ exportHelpsRequest: { productNames: names } }).subscribe({
+      this.helpApi.exportHelps({ exportHelpsRequest: { productNames: names } }).subscribe({
         next: (item) => {
           const helpsJson = JSON.stringify(item, null, 2)
           FileSaver.saveAs(
             new Blob([helpsJson], { type: 'text/json' }),
             'onecx-help-items_' + this.getCurrentDateTime() + '.json'
           )
-          this.msgService.success({ summaryKey: 'ACTIONS.EXPORT.MESSAGE.HELP_ITEM.EXPORT_OK' })
+          this.msgService.success({ summaryKey: 'ACTIONS.EXPORT.MESSAGE.OK' })
           this.displayExportDialog = false
           this.selectedProductNames = []
         },
@@ -319,50 +418,6 @@ export class HelpSearchComponent implements OnInit {
   public onCloseExportDialog(): void {
     this.displayExportDialog = false
     this.selectedProductNames = []
-  }
-
-  private prepareDialogTranslations() {
-    this.actions$ = this.translate
-      .get([
-        'ACTIONS.CREATE.LABEL',
-        'ACTIONS.CREATE.HELP_ITEM.TOOLTIP',
-        'ACTIONS.IMPORT.LABEL',
-        'ACTIONS.IMPORT.HELP_ITEM.TOOLTIP',
-        'ACTIONS.EXPORT.LABEL',
-        'ACTIONS.EXPORT.HELP_ITEM.TOOLTIP'
-      ])
-      .pipe(
-        map((data) => {
-          return [
-            {
-              label: data['ACTIONS.CREATE.LABEL'],
-              title: data['ACTIONS.CREATE.HELP_ITEM.TOOLTIP'],
-              actionCallback: () => this.onCreate(),
-              icon: 'pi pi-plus',
-              show: 'always',
-              permission: 'HELP#EDIT'
-            },
-            {
-              label: data['ACTIONS.EXPORT.LABEL'],
-              title: data['ACTIONS.EXPORT.HELP_ITEM.TOOLTIP'],
-              actionCallback: () => this.onExport(),
-              icon: 'pi pi-download',
-              show: 'always',
-              permission: 'HELP#EDIT',
-              conditional: true,
-              showCondition: this.resultsForDisplay.length > 0
-            },
-            {
-              label: data['ACTIONS.IMPORT.LABEL'],
-              title: data['ACTIONS.IMPORT.HELP_ITEM.TOOLTIP'],
-              actionCallback: () => this.onImport(),
-              icon: 'pi pi-upload',
-              show: 'always',
-              permission: 'HELP#EDIT'
-            }
-          ]
-        })
-      )
   }
 
   private getCurrentDateTime(): string {
