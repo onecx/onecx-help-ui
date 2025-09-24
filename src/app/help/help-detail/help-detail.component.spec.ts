@@ -1,24 +1,16 @@
-import { NO_ERRORS_SCHEMA, Component } from '@angular/core'
+import { NO_ERRORS_SCHEMA } from '@angular/core'
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing'
 import { provideHttpClient } from '@angular/common/http'
 import { provideHttpClientTesting } from '@angular/common/http/testing'
-import { FormControl, FormGroup, Validators } from '@angular/forms'
+import { FormControl, FormGroup } from '@angular/forms'
 import { TranslateTestingModule } from 'ngx-translate-testing'
 import { of, throwError } from 'rxjs'
 
 import { PortalMessageService, UserService } from '@onecx/angular-integration-interface'
-import { Column } from '@onecx/portal-integration-angular'
 
-import { Help, HelpsInternalAPIService, CreateHelp } from 'src/app/shared/generated'
+import { Help, HelpsInternalAPIService } from 'src/app/shared/generated'
 import { HelpDetailComponent } from './help-detail.component'
 import { Product } from '../help-search/help-search.component'
-
-function convertFormGroupProductToProductName(formGroup: FormGroup) {
-  const expectedArgument = formGroup.value
-  expectedArgument.productName = expectedArgument.product.name
-  delete expectedArgument.product
-  return expectedArgument
-}
 
 const product1: Product = { name: 'product1', displayName: 'Product 1' }
 const product2: Product = { name: 'product2', displayName: 'Product 2' }

@@ -170,7 +170,7 @@ export class HelpDetailComponent implements OnChanges {
   }
 
   // update product name in form according to the selected product
-  public onChangeProduct(ev: any) {
+  public onChangeProduct(ev: { value: Product }) {
     if (ev.value instanceof Object) this.helpForm.get('productName')?.setValue(ev.value.name)
   }
 
