@@ -144,11 +144,11 @@ export class HelpDetailComponent implements OnChanges {
   }
 
   private updateItem(item: Help): void {
-    if (this.helpItem?.id)
+    if (this.helpItem?.id && this.helpItem?.modificationCount)
       this.helpApi
         .updateHelp({
           id: this.helpItem.id, // the id is not part of the form!
-          updateHelp: { ...item, modificationCount: this.helpItem?.modificationCount! }
+          updateHelp: { ...item, modificationCount: this.helpItem?.modificationCount }
         })
         .subscribe({
           next: () => {
