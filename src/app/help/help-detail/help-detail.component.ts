@@ -73,6 +73,7 @@ export class HelpDetailComponent implements OnChanges {
     switch (this.changeMode) {
       case 'COPY':
         this.helpForm.enable()
+        this.helpForm.get('operator')?.setValue(null)
         break
       case 'CREATE':
         this.helpForm.reset()
@@ -80,6 +81,7 @@ export class HelpDetailComponent implements OnChanges {
         break
       case 'EDIT':
         this.helpForm.enable()
+        this.helpForm.get('operator')?.disable()
         break
       case 'VIEW':
         this.helpForm.disable()

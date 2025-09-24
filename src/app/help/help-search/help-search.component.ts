@@ -48,6 +48,10 @@ export class HelpSearchComponent implements OnInit {
   public actions$: Observable<Action[]> | undefined
   public criteria: HelpSearchCriteria = {}
   public dataViewControlsTranslations: DataViewControlTranslations = {}
+  public displayDeleteDialog = false
+  public displayDetailDialog = false
+  public displayImportDialog = false
+  public displayExportDialog = false
 
   // data
   public data$: Observable<Help[]> | undefined
@@ -57,25 +61,11 @@ export class HelpSearchComponent implements OnInit {
   public usedListsTrigger$ = new BehaviorSubject<void>(undefined) // trigger for refresh data
   public item4Detail: Help | undefined // used on detail
   public item4Delete: Help | undefined // used on deletion
-
-  public helpItem: Help | undefined
-  public assignedProductNames: string[] = []
-  public products: Product[] = []
-  public productsLoaded: boolean = false
-  public helpSearchCriteria!: HelpSearchCriteria
-  public searchInProgress = false
-  public loadingResults = false
-  public displayDeleteDialog = false
-  public displayDetailDialog = false
-  public displayImportDialog = false
-  public displayExportDialog = false
-  public rowsPerPage = 10
-  public rowsPerPageOptions = [10, 20, 50]
-
-  importHelpItem: Help | null = null
+  public exportProductList: string[] = []
   public importError = false
-  public validationErrorCause: string | undefined = undefined
-  public selectedProductNames: string[] = []
+  private importObject: object | undefined = undefined
+
+  public products: Product[] = []
 
   public filteredColumns: Column[] = []
   public columns: ExtendedColumn[] = [
@@ -116,14 +106,12 @@ export class HelpSearchComponent implements OnInit {
   ) {
     this.dateFormat = this.user.lang$.getValue() === 'de' ? 'dd.MM.yyyy HH:mm' : 'M/d/yy, h:mm a'
     this.pdIsComponentDefined$ = this.slotService.isSomeComponentDefinedForSlot(this.pdSlotName)
+    this.filteredColumns = this.columns.filter((a) => a.active === true)
   }
 
   public ngOnInit(): void {
     this.prepareActionButtons()
     this.prepareDialogTranslations()
-    this.filteredColumns = this.columns.filter((a) => {
-      return a.active === true
-    })
     this.pdSlotEmitter.subscribe(this.productData$)
     this.loadMetaData()
     this.onSearch({})
@@ -269,7 +257,7 @@ export class HelpSearchComponent implements OnInit {
         this.helpApi.getAllProductsWithHelpItems().pipe(
           map((data: HelpProductNames) => {
             let ul: Product[] = []
-            if (data.ProductNames) ul = data.ProductNames.map((s) => ({ name: s, value: s }) as Product)
+            if (data.ProductNames) ul = data.ProductNames.map((s) => ({ displayName: s, name: s }) as Product)
             return ul
           }),
           catchError((err) => {
@@ -286,7 +274,7 @@ export class HelpSearchComponent implements OnInit {
     this.metaData$ = combineLatest([this.productData$, this.usedLists$]).pipe(
       map(([products, usedLists]: [Product[] | undefined, Product[]]) => {
         // enrich the used lists with display names taken from master data (allLists)
-        const allProducts = products ?? []
+        const allProducts = products
         if (products) {
           usedLists.forEach((p) => (p.displayName = this.getDisplayName(p.name, allProducts, p.name)))
         }
@@ -313,11 +301,12 @@ export class HelpSearchComponent implements OnInit {
       tap((data) => {
         this.dataAvailable = (data.stream && data.stream.length > 0) ?? false
         if (!this.dataAvailable) this.msgService.info({ summaryKey: 'ACTIONS.SEARCH.MESSAGE.NO_RESULTS' })
+        this.prepareActionButtons()
       }),
       map((data) => data.stream?.sort(this.sortHelpItemByDefault) ?? []),
       catchError((err) => {
         this.exceptionKey = 'EXCEPTIONS.HTTP_STATUS_' + err.status + '.HELP_ITEM'
-        this.msgService.error({ summaryKey: 'ACTIONS.SEARCH.MESSAGE.SEARCH_FAILED' })
+        this.msgService.error({ summaryKey: 'ACTIONS.SEARCH.MESSAGE.NOK' })
         console.error('searchHelps', err)
         return of([])
       }),
@@ -328,9 +317,8 @@ export class HelpSearchComponent implements OnInit {
   // default sorting: 1. productName, 2.itemId
   private sortHelpItemByDefault(a: Help, b: Help): number {
     return (
-      (a.productName ? a.productName.toUpperCase() : '').localeCompare(
-        b.productName ? b.productName.toUpperCase() : ''
-      ) || (a.itemId ? a.itemId.toUpperCase() : '').localeCompare(b.itemId ? b.itemId.toUpperCase() : '')
+      a.productName!.toUpperCase().localeCompare(b.productName!.toUpperCase()) ||
+      a.itemId.toUpperCase().localeCompare(b.itemId.toUpperCase())
     )
   }
   /*
@@ -344,29 +332,27 @@ export class HelpSearchComponent implements OnInit {
   public onImport(): void {
     this.displayImportDialog = true
   }
-  public onSelect(event: FileSelectEvent): void {
+  public onImportSelectFile(event: FileSelectEvent): void {
     event.files[0].text().then((text) => {
       this.importError = false
-      this.validationErrorCause = ''
-
-      this.translate.get(['IMPORT.VALIDATION_RESULT']).subscribe((data) => {
-        try {
-          const importHelp = JSON.parse(text)
-          this.importHelpItem = importHelp
-        } catch (err) {
-          console.error('Import Error', err)
-          this.importError = true
-        }
-      })
+      this.importObject = undefined
+      try {
+        this.importObject = JSON.parse(text)
+        this.msgService.info({ summaryKey: 'ACTIONS.IMPORT.VALIDATION.OK' })
+      } catch (err: any) {
+        this.msgService.error({ summaryKey: 'ACTIONS.IMPORT.VALIDATION.NOK' })
+        console.error('Import parse error', err)
+        this.importError = true
+      }
     })
   }
   public onImportConfirmation(): void {
-    if (this.importHelpItem) {
-      this.helpApi.importHelps({ body: this.importHelpItem }).subscribe({
+    if (this.importObject) {
+      this.helpApi.importHelps({ body: this.importObject }).subscribe({
         next: () => {
           this.msgService.success({ summaryKey: 'ACTIONS.IMPORT.MESSAGE.OK' })
           this.usedListsTrigger$.next() // trigger getting data
-          this.displayImportDialog = false
+          this.onImportCloseDialog()
         },
         error: (err) => {
           this.msgService.error({ summaryKey: 'ACTIONS.IMPORT.MESSAGE.NOK' })
@@ -376,48 +362,44 @@ export class HelpSearchComponent implements OnInit {
       this.onSearch({}, true)
     }
   }
-  public isFileValid(): boolean {
-    return !this.importError
-  }
-  public onCloseImportDialog(): void {
+  public onImportCloseDialog(): void {
     this.displayImportDialog = false
+    this.onImportClear()
   }
-  public onClear(): void {
+  public onImportClear(): void {
     this.importError = false
-    this.validationErrorCause = ''
+    this.importObject = undefined
   }
 
   /****************************************************************************
    *  EXPORT
    */
   public onExport(): void {
-    //this.assignedProductNames = Array.from(new Set(this.resultsForDisplay.map((item) => item.productDisplayName!)))
     this.displayExportDialog = true
   }
   public onExportConfirmation(): void {
-    if (this.selectedProductNames.length > 0) {
-      const names = this.selectedProductNames.map((item) => this.getProductNameFromDisplayName(item))
-      this.helpApi.exportHelps({ exportHelpsRequest: { productNames: names } }).subscribe({
-        next: (item) => {
-          const helpsJson = JSON.stringify(item, null, 2)
+    if (this.exportProductList.length > 0) {
+      this.helpApi.exportHelps({ exportHelpsRequest: { productNames: this.exportProductList } }).subscribe({
+        next: (obj) => {
+          const helpsJson = JSON.stringify(obj, null, 2)
           FileSaver.saveAs(
             new Blob([helpsJson], { type: 'text/json' }),
             'onecx-help-items_' + this.getCurrentDateTime() + '.json'
           )
           this.msgService.success({ summaryKey: 'ACTIONS.EXPORT.MESSAGE.OK' })
           this.displayExportDialog = false
-          this.selectedProductNames = []
+          this.exportProductList = []
         },
         error: (err) => {
-          this.msgService.error({ summaryKey: 'ACTIONS.EXPORT.MESSAGE.HELP_ITEM.EXPORT_NOK' })
+          this.msgService.error({ summaryKey: 'ACTIONS.EXPORT.MESSAGE.NOK' })
           console.error('exportHelps', err)
         }
       })
     }
   }
-  public onCloseExportDialog(): void {
+  public onExportCloseDialog(): void {
     this.displayExportDialog = false
-    this.selectedProductNames = []
+    this.exportProductList = []
   }
 
   private getCurrentDateTime(): string {
@@ -430,12 +412,6 @@ export class HelpSearchComponent implements OnInit {
     const seconds = String(now.getSeconds()).padStart(2, '0')
 
     return `${year}-${month}-${day}_${hours}${minutes}${seconds}`
-  }
-
-  private getProductNameFromDisplayName(displayName: string): string {
-    const product = this.products.find((item) => item.displayName === displayName)
-    if (product) return product.name
-    else return displayName
   }
 
   /* Prepare the final URL as follow (#) = optional:

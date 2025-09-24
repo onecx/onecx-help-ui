@@ -63,7 +63,10 @@
         "OK": "Help Items were imported successfully",
         "NOK": "An error has occurred. Help Items were not imported."
       },
-      "VALIDATION_RESULT": "The file has been checked."
+      "VALIDATION": {
+        "OK": "The file has been checked successfully.",
+        "NOK": "An error occurred. The file cannot be imported. Details in Console."
+      }
     },
     "NAVIGATION": {
       "CLOSE": "Close",
@@ -80,9 +83,10 @@
       "NO_DATA": "No data",
       "IN_PROGRESS": "Searching...",
       "OF": "of",
+      "WILDCARD_SUPPORT": " Wildcards: ?, *",
       "MESSAGE": {
         "NO_RESULTS": "Search returned no results",
-        "SEARCH_FAILED": "Search failed"
+        "NOK": "Search failed"
       }
     },
     "VIEW": {
@@ -125,7 +129,6 @@
       "HEADER": "Help Items",
       "SUBHEADER": "Search and manage Help Items",
       "SEARCH_TOOLTIP": "Search for the Help Items with given criteria",
-      "MSG_SEARCH_VALIDATION": "Application ID is required for search",
       "NO_APPLICATION_AVAILABLE": "Could not find any Application"
     },
     "DETAIL": {
@@ -166,7 +169,7 @@
     "NOT_FOUND": "- unknown -",
     "TOOLTIPS": {
       "PRODUCT_NAME": "Application with Help Item",
-      "ID": "Unique ID for a Help Item of the Application. Must have been used within the respective page.",
+      "ID": "Unique ID for a Help Item of the Application.",
       "URL": "The final URL that is used when calling and consists of the parts base, resource and context.",
       "BASE_URL": "Base part of the Help Item URL - the base path to the documentation of the Application",
       "RESOURCE_URL": "Path from the base path to the specific page (resource)",
@@ -207,6 +210,7 @@
       "FORMAT_URL": "Format: "
     },
     "ERRORS": {
+      "CRITERIA.INVALID": "Search criteria invalid",
       "HELP_ITEM.UNIQUE_CONSTRAINT": "Help Item already exists",
       "HELP_ITEM.FORM_INVALID": "The Help Item form is invalid. The Help Item cannot be saved this way.",
       "INTERNAL_ERROR": "Internal error",

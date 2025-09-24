@@ -60,10 +60,13 @@
       "CHOOSE": "Datei auswählen",
       "UPLOAD": "Datei hochladen",
       "MESSAGE": {
-        "OK": "Die Hilfeartikel wurde erfolgreich importiert",
+        "OK": "Die Hilfeartikel wurde erfolgreich importiert.",
         "NOK": "Ein Fehler ist aufgetreten. Die Hilfeartikel wurden nicht importiert."
       },
-      "VALIDATION_RESULT": "Die Datei wurde geprüft."
+      "VALIDATION": {
+        "OK": "Die Datei wurde erfolgreich geprüft.",
+        "NOK": "Ein Fehler ist aufgetreten. Die Datei kann nicht importiert werden. Details in Console."
+      }
     },
     "NAVIGATION": {
       "CLOSE": "Schließen",
@@ -80,9 +83,10 @@
       "NO_DATA": "Keine Ergebnisse",
       "IN_PROGRESS": "Suche...",
       "OF": "von",
+      "WILDCARD_SUPPORT": " (Wildcards: ?, *)",
       "MESSAGE": {
         "NO_RESULTS": "Die Suche ergab keine Treffer",
-        "SEARCH_FAILED": "Suche ist fehlgeschlagen"
+        "NOK": "Die Suche ist fehlgeschlagen"
       }
     },
     "VIEW": {
@@ -125,7 +129,6 @@
       "HEADER": "Hilfeartikel",
       "SUBHEADER": "Suchen und Verwalten von Hilfeartikel",
       "SEARCH_TOOLTIP": "Suchen nach Hilfeartikeln mit vorgegebenen Kriterien",
-      "MSG_SEARCH_VALIDATION": "Eine Anwendungs ID ist für die Suche erforderlich",
       "NO_APPLICATION_AVAILABLE": "Keine Applikationen gefunden"
     },
     "DETAIL": {
@@ -166,7 +169,7 @@
     "NOT_FOUND": "- unbekannt -",
     "TOOLTIPS": {
       "PRODUCT_NAME": "Applikation mit Hilfeartikel",
-      "ID": "Eindeutige ID für einen Hilfeartikel der Applikation. Muss innerhalb der jeweiligen Seite verwendet worden sein.",
+      "ID": "Eindeutige ID für einen Hilfeartikel der Applikation.",
       "URL": "Die endgültige URL, die beim Aufruf benutzt wird und sich aus den Teilen Basis, Ressource und Kontext zusammensetzt.",
       "BASE_URL": "Basis der Hilfeartikel-URL - der Verweis auf die Hauptseite der Dokumentation der Applikation",
       "RESOURCE_URL": "Letzter Teil der Hilfeartikel-URL speziell für die Seite (Ressource)",
@@ -207,6 +210,7 @@
       "FORMAT_URL": "Format: "
     },
     "ERRORS": {
+      "CRITERIA.INVALID": "Suchkriterien ungültig",
       "HELP_ITEM.UNIQUE_CONSTRAINT": "Hilfeartikel existiert bereits",
       "HELP_ITEM.FORM_INVALID": "Das Formular ist ungültig. Der Hilfeartikel kann so nicht gespeichert werden.",
       "INTERNAL_ERROR": "Interner Fehler",

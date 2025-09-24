@@ -62,31 +62,25 @@
           {{ 'HELP_ITEM.ID' | translate }}
         </label>
       </span>
-      <div *ngIf="changeMode !== 'CREATE'">
-        <div class="px-2 mb-2 flex flex-row justify-content-between align-items-center column-gap-3">
-          <p-checkbox
-            type="text"
-            inputId="hm_detail_form_operator"
-            formControlName="operator"
-            styleClass="cursor-auto shadow-none"
-            [binary]="true"
-            [label]="'HELP_ITEM.OPERATOR' | translate"
-            [pTooltip]="'HELP_ITEM.TOOLTIPS.OPERATOR' | translate"
-            tooltipPosition="right"
-            tooltipEvent="hover"
-          ></p-checkbox>
-        </div>
-        <p-message
-          *ngIf="helpItem?.operator"
-          id="hm_detail_form_operator_delete_message"
-          styleClass="mb-2 p-2"
-          severity="info"
-          [text]="'ACTIONS.DELETE.OPERATOR_TEXT' | translate"
-        ></p-message>
+      <div
+        *ngIf="!['CREATE', 'COPY'].includes(changeMode) && helpItem?.operator === true"
+        class="px-2 mb-1 flex flex-row justify-content-between align-items-center column-gap-3"
+      >
+        <p-checkbox
+          type="text"
+          inputId="hm_detail_form_operator"
+          formControlName="operator"
+          styleClass="cursor-auto shadow-none"
+          [binary]="true"
+          [label]="'HELP_ITEM.OPERATOR' | translate"
+          [pTooltip]="'HELP_ITEM.TOOLTIPS.OPERATOR' | translate"
+          tooltipPosition="right"
+          tooltipEvent="hover"
+        ></p-checkbox>
       </div>
     </section>
 
-    <p-fieldset [toggleable]="false" [collapsed]="false" styleClass="surface-100 mt-2 pb-3 px-2">
+    <p-fieldset [toggleable]="false" [collapsed]="false" styleClass="surface-100 mt-3 pb-3 px-2">
       <ng-template pTemplate="header">
         <span [pTooltip]="'HELP_DETAIL.URL.TOOLTIP' | translate" tooltipPosition="top" tooltipEvent="hover">
           {{ 'HELP_DETAIL.URL' | translate }}

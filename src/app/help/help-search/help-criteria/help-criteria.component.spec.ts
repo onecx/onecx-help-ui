@@ -2,22 +2,29 @@ import { NO_ERRORS_SCHEMA, EventEmitter } from '@angular/core'
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing'
 import { provideHttpClient } from '@angular/common/http'
 import { provideHttpClientTesting } from '@angular/common/http/testing'
-import { FormGroup, FormControl, Validators } from '@angular/forms'
+import { FormGroup, FormControl } from '@angular/forms'
 import { TranslateTestingModule } from 'ngx-translate-testing'
-
-import { PortalMessageService } from '@onecx/angular-integration-interface'
 
 import { HelpSearchCriteria } from 'src/app/shared/generated'
 import { HelpCriteriaComponent, HelpCriteriaForm } from './help-criteria.component'
 import { Product } from '../help-search.component'
 
+const product1: Product = { name: 'product1', displayName: 'Product 1' }
+const product2: Product = { name: 'product2', displayName: 'Product 2' }
+const products: Product[] = [product1, product2]
+
 describe('HelpDetailComponent', () => {
   let component: HelpCriteriaComponent
   let fixture: ComponentFixture<HelpCriteriaComponent>
 
-  const msgServiceSpy = jasmine.createSpyObj<PortalMessageService>('PortalMessageService', ['error', 'info'])
   const formGroupSpy = jasmine.createSpyObj<FormGroup<HelpCriteriaForm>>('HelpCriteriaGroup', ['reset'])
   const criteriaEmitterSpy = jasmine.createSpyObj<EventEmitter<HelpSearchCriteria>>('EventEmitter', ['emit'])
+
+  function initTestComponent() {
+    fixture = TestBed.createComponent(HelpCriteriaComponent)
+    component = fixture.componentInstance
+    fixture.detectChanges()
+  }
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
@@ -29,71 +36,66 @@ describe('HelpDetailComponent', () => {
         }).withDefaultLanguage('en')
       ],
       schemas: [NO_ERRORS_SCHEMA],
-      providers: [
-        provideHttpClient(),
-        provideHttpClientTesting(),
-        { provide: PortalMessageService, useValue: msgServiceSpy }
-      ]
+      providers: [provideHttpClient(), provideHttpClientTesting()]
     }).compileComponents()
-    msgServiceSpy.error.calls.reset()
-    msgServiceSpy.info.calls.reset()
   }))
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(HelpCriteriaComponent)
-    component = fixture.componentInstance
-    fixture.detectChanges()
+    initTestComponent()
   })
 
-  it('should create', () => {
-    expect(component).toBeTruthy()
+  afterEach(() => {})
+
+  describe('construction', () => {
+    it('should create', () => {
+      expect(component).toBeTruthy()
+    })
   })
 
-  /*
+  describe('page actions', () => {
+    it('should submit criteria - item and product', () => {
+      component.searchEmitter = criteriaEmitterSpy
+      const itemId = 'PAGE_HELP_SEARCH'
+      component.criteriaForm = new FormGroup<HelpCriteriaForm>({
+        itemId: new FormControl(itemId),
+        product: new FormControl(product1)
+      })
+      const criteria: HelpSearchCriteria = { itemId: itemId, productName: product1.name }
+
+      component.onSearch()
+
+      expect(criteriaEmitterSpy.emit).toHaveBeenCalledWith(criteria)
+    })
+
+    it('should submit criteria - item only', () => {
+      component.searchEmitter = criteriaEmitterSpy
+      const itemId = 'PAGE*'
+      component.criteriaForm = new FormGroup<HelpCriteriaForm>({
+        itemId: new FormControl(itemId),
+        product: new FormControl(null)
+      })
+      const criteria: HelpSearchCriteria = { itemId: itemId, productName: undefined }
+
+      component.onSearch()
+
+      expect(criteriaEmitterSpy.emit).toHaveBeenCalledWith(criteria)
+    })
+
+    it('should reset criteria', () => {
+      component.criteriaForm = formGroupSpy
+
+      component.onResetCriteria()
+
+      expect(component.criteriaForm.reset).toHaveBeenCalled()
+    })
+  })
+
   it('should filter usedProducts', () => {
-    const notFiltered: string[] = ['filteredItem', 'unfilteredItem']
-    component.productDisplayNames = notFiltered
-    const event = { query: 'filteredItem' }
+    component.usedProducts = products
+    const event = { query: 'prod' }
 
-    component.filterProductNames(event)
+    component.onFilterProducts(event)
 
-    expect(component.productDisplayNamesFiltered[0]).toEqual('filteredItem')
-  })*/
-
-  it('should reset criteria', () => {
-    component.criteriaForm = formGroupSpy
-
-    component.onResetCriteria()
-
-    expect(component.criteriaForm.reset).toHaveBeenCalled()
-  })
-
-  it('should submit criteria', () => {
-    component.criteriaEmitter = criteriaEmitterSpy
-    component.criteriaForm = new FormGroup<HelpCriteriaForm>({
-      productName: new FormControl('Help Management UI'),
-      itemId: new FormControl('PAGE_HELP_SEARCH')
-    })
-    component.usedProducts = [
-      { name: '1', displayName: '1dn' },
-      { name: 'help-mgmt-ui', displayName: 'Help Management UI' }
-    ] as Product[]
-
-    component.onSearch()
-
-    const expectedValue = component.criteriaForm.value
-    expectedValue.productName = 'help-mgmt-ui'
-    expect(criteriaEmitterSpy.emit).toHaveBeenCalledWith(component.criteriaForm.value as HelpSearchCriteria)
-  })
-
-  it('should display error on invalid criteria', () => {
-    component.criteriaForm = new FormGroup<HelpCriteriaForm>({
-      productName: new FormControl('', Validators.required),
-      itemId: new FormControl('', Validators.required)
-    })
-
-    component.onSearch()
-
-    expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'DIALOG.SEARCH.MSG_SEARCH_VALIDATION' })
+    expect(component.productsFiltered).toContain(product1)
   })
 })

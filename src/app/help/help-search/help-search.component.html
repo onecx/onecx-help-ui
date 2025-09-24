@@ -31,15 +31,16 @@
         styleClass="m-3 p-2"
         [text]="exceptionKey! | translate"
       ></p-message>
-      <p-message
-        *ngIf="searching"
-        id="am_search_message_searching"
-        severity="info"
-        styleClass="m-3 p-2"
-        [text]="'ACTIONS.SEARCH.IN_PROGRESS' | translate"
-      ></p-message>
 
       <ng-container *ngIf="data$ | async as data">
+        <!-- placed here to avoid https://angular.dev/errors/NG0100 -->
+        <p-message
+          *ngIf="searching"
+          id="am_search_message_searching"
+          severity="info"
+          styleClass="m-3 p-2"
+          [text]="'ACTIONS.SEARCH.IN_PROGRESS' | translate"
+        ></p-message>
         <p-table
           *ngIf="!(searching || exceptionKey)"
           #dataTable
@@ -65,7 +66,6 @@
               [supportedViews]="['table']"
               [enableFiltering]="true"
               [enableSorting]="false"
-              [toggleColumnActive]="true"
               (columnsChange)="onColumnsChange($event)"
               (filterChange)="onFilterChange($event, dataTable)"
               [translations]="dataViewControlsTranslations"
@@ -268,20 +268,81 @@
 
     <!-- DETAIL -->
     <app-help-detail
-      *ngIf="item4Detail"
       [displayDialog]="displayDetailDialog"
       (hideDialogAndChanged)="onCloseDetail($event)"
       [helpItem]="item4Detail"
       [changeMode]="changeMode"
       [allProducts]="metaData.allProducts"
     ></app-help-detail>
+
+    <!-- EXPORT -->
+    <p-dialog
+      [header]="'ACTIONS.EXPORT.HEADER' | translate"
+      [(visible)]="displayExportDialog"
+      [modal]="true"
+      [closable]="true"
+      [draggable]="true"
+      [resizable]="true"
+      [dismissableMask]="true"
+      [style]="{ width: '300px' }"
+      [breakpoints]="{
+        '992px': '50vw',
+        '700px': '70vw',
+        '600px': '80vw',
+        '500px': '90vw',
+        '400px': '100vw'
+      }"
+    >
+      <div class="flex flex-column row-gap-1">
+        <div>{{ 'HELP_ITEM.PRODUCT_LIST' | translate }}</div>
+        <p-listbox
+          id="hm_export_product_list"
+          optionLabel="displayName"
+          optionValue="name"
+          [options]="metaData.usedProducts"
+          [(ngModel)]="exportProductList"
+          [filter]="true"
+          [checkbox]="true"
+          [multiple]="true"
+          [metaKeySelection]="false"
+          [showToggleAll]="true"
+          [emptyMessage]="'ACTIONS.SEARCH.NO_DATA' | translate"
+          [listStyle]="{ 'max-height': '300px' }"
+        />
+      </div>
+      <ng-template pTemplate="footer">
+        <div class="flex flex-wrap justify-content-end column-gap-2 row-gap-1">
+          <p-button
+            id="hm_export_action_cancel"
+            icon="pi pi-times"
+            (onClick)="onExportCloseDialog()"
+            [label]="'ACTIONS.CANCEL' | translate"
+            [ariaLabel]="'ACTIONS.TOOLTIPS.CANCEL' | translate"
+            [pTooltip]="'ACTIONS.TOOLTIPS.CANCEL' | translate"
+            tooltipPosition="top"
+            tooltipEvent="hover"
+          ></p-button>
+          <p-button
+            id="hm_export_action_export"
+            icon="pi pi-download"
+            (onClick)="onExportConfirmation()"
+            [disabled]="exportProductList.length === 0"
+            [label]="'ACTIONS.EXPORT.LABEL' | translate"
+            [ariaLabel]="'ACTIONS.EXPORT.ITEMS_SELECTED.TOOLTIP' | translate"
+            [pTooltip]="'ACTIONS.EXPORT.ITEMS_SELECTED.TOOLTIP' | translate"
+            tooltipPosition="top"
+            tooltipEvent="hover"
+          ></p-button>
+        </div>
+      </ng-template>
+    </p-dialog>
   </ng-container>
 </ocx-portal-page>
 
 <!-- IMPORT -->
 <p-dialog
   [(visible)]="displayImportDialog"
-  [header]="'ACTIONS.IMPORT.HELP_ITEM' | translate"
+  [header]="'ACTIONS.IMPORT.HEADER' | translate"
   [modal]="true"
   [closable]="true"
   [draggable]="true"
@@ -298,10 +359,10 @@
       [maxFileSize]="1000000"
       [customUpload]="true"
       (uploadHandler)="onImportConfirmation()"
-      (onClear)="onClear()"
-      (onRemove)="onClear()"
-      (onSelect)="onSelect($event)"
-      [showUploadButton]="isFileValid()"
+      (onImportClear)="onImportClear()"
+      (onRemove)="onImportClear()"
+      (onSelect)="onImportSelectFile($event)"
+      [showUploadButton]="!this.importError"
       [chooseLabel]="'ACTIONS.IMPORT.CHOOSE' | translate"
       [uploadLabel]="'ACTIONS.IMPORT.UPLOAD' | translate"
       [cancelLabel]="'ACTIONS.CANCEL' | translate"
@@ -312,70 +373,10 @@
       <p-button
         id="hm_import_action_close"
         icon="pi pi-times"
-        (onClick)="onCloseImportDialog()"
+        (onClick)="onImportCloseDialog()"
         [label]="'ACTIONS.NAVIGATION.CLOSE' | translate"
-        [aria-label]="'ACTIONS.NAVIGATION.CLOSE' | translate"
+        [ariaLabel]="'ACTIONS.NAVIGATION.CLOSE' | translate"
         [pTooltip]="'ACTIONS.NAVIGATION.CLOSE.TOOLTIP' | translate"
-        tooltipPosition="top"
-        tooltipEvent="hover"
-      ></p-button>
-    </div>
-  </ng-template>
-</p-dialog>
-
-<!-- EXPORT -->
-<p-dialog
-  [header]="'ACTIONS.EXPORT.HELP_ITEM' | translate"
-  [(visible)]="displayExportDialog"
-  [modal]="true"
-  [closable]="true"
-  [draggable]="true"
-  [resizable]="true"
-  [dismissableMask]="true"
-  [style]="{ width: '300px' }"
-  [breakpoints]="{
-    '992px': '50vw',
-    '700px': '70vw',
-    '600px': '80vw',
-    '500px': '90vw',
-    '400px': '100vw'
-  }"
->
-  <div class="flex flex-column row-gap-1">
-    <div>{{ 'HELP_ITEM.PRODUCT_LIST' | translate }}</div>
-    <p-listbox
-      id="hm_export_product_list"
-      [options]="assignedProductNames"
-      [(ngModel)]="selectedProductNames"
-      [filter]="true"
-      [checkbox]="true"
-      [multiple]="true"
-      [metaKeySelection]="false"
-      [showToggleAll]="true"
-      [emptyMessage]="'ACTIONS.SEARCH.NO_DATA' | translate"
-      [listStyle]="{ 'max-height': '300px' }"
-    />
-  </div>
-  <ng-template pTemplate="footer">
-    <div class="flex flex-wrap justify-content-end column-gap-2 row-gap-1">
-      <p-button
-        id="hm_export_action_cancel"
-        icon="pi pi-times"
-        (onClick)="onCloseExportDialog()"
-        [label]="'ACTIONS.CANCEL' | translate"
-        [aria-label]="'ACTIONS.CANCEL' | translate"
-        [pTooltip]="'ACTIONS.TOOLTIPS.CANCEL' | translate"
-        tooltipPosition="top"
-        tooltipEvent="hover"
-      ></p-button>
-      <p-button
-        id="hm_export_action_export"
-        icon="pi pi-download"
-        (onClick)="onExportConfirmation()"
-        [disabled]="selectedProductNames.length === 0"
-        [label]="'ACTIONS.EXPORT.LABEL' | translate"
-        [aria-label]="'ACTIONS.EXPORT.LABEL' | translate"
-        [pTooltip]="'ACTIONS.EXPORT.ITEMS_SELECTED.TOOLTIP' | translate"
         tooltipPosition="top"
         tooltipEvent="hover"
       ></p-button>
