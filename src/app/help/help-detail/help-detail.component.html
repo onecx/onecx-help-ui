@@ -34,7 +34,7 @@
           optionName="name"
           (onSelect)="onChangeProduct($event)"
           [suggestions]="productsFiltered"
-          (completeMethod)="filterProducts($event)"
+          (completeMethod)="onFilterProducts($event)"
           [dropdown]="true"
           [forceSelection]="true"
           [ariaLabel]="'HELP_ITEM.TOOLTIPS.PRODUCT_NAME' | translate"

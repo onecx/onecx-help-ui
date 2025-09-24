@@ -34,7 +34,6 @@ export class HelpDetailComponent implements OnChanges {
 
   public loading = false
   public exceptionKey: string | undefined = undefined
-  public productName: string | undefined
   public helpForm: FormGroup
   public productsFiltered: Product[] = []
 
@@ -67,7 +66,6 @@ export class HelpDetailComponent implements OnChanges {
   private prepareForm(data?: Help): void {
     if (data) {
       this.helpForm.patchValue(data)
-      this.productName = data.productName
       this.helpForm.get('product')?.setValue(this.allProducts.find((p) => p.name === data.productName))
     }
     switch (this.changeMode) {
@@ -139,8 +137,9 @@ export class HelpDetailComponent implements OnChanges {
         this.msgService.success({ summaryKey: 'ACTIONS.CREATE.MESSAGE.OK' })
         this.onDialogHide(true)
       },
-      error: (err: { error: { errorCode: string } }) => {
-        err.error.errorCode && err.error.errorCode === 'PERSIST_ENTITY_FAILED'
+      error: (err: any) => {
+        console.error('createNewHelp', err)
+        err.error?.errorCode && err.error.errorCode === 'PERSIST_ENTITY_FAILED'
           ? this.msgService.error({
               summaryKey: 'ACTIONS.CREATE.MESSAGE.NOK',
               detailKey: 'VALIDATION.ERRORS.HELP_ITEM.UNIQUE_CONSTRAINT'
@@ -175,13 +174,13 @@ export class HelpDetailComponent implements OnChanges {
     if (ev.value instanceof Object) this.helpForm.get('productName')?.setValue(ev.value.name)
   }
 
-  public filterProducts(event: { query: string }) {
+  public onFilterProducts(event: { query: string }) {
     const query = event.query.toLowerCase()
     this.productsFiltered = this.allProducts?.filter((product) => product.displayName?.toLowerCase().includes(query))
     this.productsFiltered.sort(this.sortProductsByName)
   }
 
   public sortProductsByName(a: Product, b: Product): number {
-    return (a.displayName ?? '').toUpperCase().localeCompare((b.displayName ?? '').toUpperCase())
+    return a.displayName!.toUpperCase().localeCompare(b.displayName!.toUpperCase())
   }
 }
