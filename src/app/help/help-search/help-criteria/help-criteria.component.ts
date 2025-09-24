@@ -1,7 +1,6 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core'
 import { FormControl, FormGroup } from '@angular/forms'
 
-import { PortalMessageService } from '@onecx/angular-integration-interface'
 import { Action } from '@onecx/angular-accelerator'
 
 import { HelpSearchCriteria } from 'src/app/shared/generated'
@@ -27,7 +26,7 @@ export class HelpCriteriaComponent {
   public criteriaForm: FormGroup<HelpCriteriaForm>
   public productsFiltered: Product[] = []
 
-  constructor(private msgService: PortalMessageService) {
+  constructor() {
     this.criteriaForm = new FormGroup<HelpCriteriaForm>({
       itemId: new FormControl<string | null>(null),
       product: new FormControl<Product | null>(null)

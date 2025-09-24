@@ -57,10 +57,9 @@ export class HelpDetailComponent implements OnChanges {
     this.exceptionKey = undefined
     // matching mode and given data?
     if ('CREATE' === this.changeMode && this.helpItem) return
-    if (['EDIT', 'VIEW'].includes(this.changeMode))
-      if (!this.helpItem) return
-      else this.getData(this.helpItem?.id)
-    else this.prepareForm(this.helpItem)
+    if (['EDIT', 'VIEW'].includes(this.changeMode)) {
+      if (this.helpItem) this.getData(this.helpItem?.id)
+    } else this.prepareForm(this.helpItem)
   }
 
   private prepareForm(data?: Help): void {
