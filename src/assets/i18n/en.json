@@ -212,6 +212,9 @@
     "ERRORS": {
       "CRITERIA.INVALID": "Search criteria invalid",
       "HELP_ITEM.UNIQUE_CONSTRAINT": "Help Item already exists",
+      "HELP_ITEM.PERSIST_ENTITY_FAILED": "Help Item already exists",
+      "HELP_ITEM.MERGE_ENTITY_FAILED": "A Help Item with this ID already exists for the Application.",
+      "HELP_ITEM.OPTIMISTIC_LOCK": "Help Item was updated or deleted in the meantime.",
       "HELP_ITEM.FORM_INVALID": "The Help Item form is invalid. The Help Item cannot be saved this way.",
       "INTERNAL_ERROR": "Internal error",
       "EMPTY_REQUIRED_FIELD": "This field is required.",

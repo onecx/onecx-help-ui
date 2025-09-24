@@ -212,6 +212,9 @@
     "ERRORS": {
       "CRITERIA.INVALID": "Suchkriterien ungültig",
       "HELP_ITEM.UNIQUE_CONSTRAINT": "Hilfeartikel existiert bereits",
+      "HELP_ITEM.PERSIST_ENTITY_FAILED": "Hilfeartikel existiert bereits",
+      "HELP_ITEM.MERGE_ENTITY_FAILED": "Ein Hilfeartikel mit dieser ID existiert bereits für das Produkt",
+      "HELP_ITEM.OPTIMISTIC_LOCK": "Hilfeartikel wurde zwischenzeitlich verändert oder gelöscht.",
       "HELP_ITEM.FORM_INVALID": "Das Formular ist ungültig. Der Hilfeartikel kann so nicht gespeichert werden.",
       "INTERNAL_ERROR": "Interner Fehler",
       "EMPTY_REQUIRED_FIELD": "Dieses Feld ist ein Pflichtfeld.",

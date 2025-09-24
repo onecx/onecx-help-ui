@@ -279,7 +279,10 @@ describe('HelpDetailComponent', () => {
         component.onSave()
 
         expect(component.helpForm.valid).toBeTrue()
-        expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.CREATE.MESSAGE.NOK' })
+        expect(msgServiceSpy.error).toHaveBeenCalledWith({
+          summaryKey: 'ACTIONS.CREATE.MESSAGE.NOK',
+          detailKey: 'VALIDATION.ERRORS.HELP_ITEM.some error'
+        })
         expect(console.error).toHaveBeenCalledWith('createNewHelp', errorResponse)
       })
 
@@ -299,7 +302,7 @@ describe('HelpDetailComponent', () => {
         expect(component.helpForm.valid).toBeTrue()
         expect(msgServiceSpy.error).toHaveBeenCalledWith({
           summaryKey: 'ACTIONS.CREATE.MESSAGE.NOK',
-          detailKey: 'VALIDATION.ERRORS.HELP_ITEM.UNIQUE_CONSTRAINT'
+          detailKey: 'VALIDATION.ERRORS.HELP_ITEM.PERSIST_ENTITY_FAILED'
         })
         expect(console.error).toHaveBeenCalledWith('createNewHelp', errorResponse)
       })

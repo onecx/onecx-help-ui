@@ -138,12 +138,7 @@ export class HelpDetailComponent implements OnChanges {
       },
       error: (err: any) => {
         console.error('createNewHelp', err)
-        err.error?.errorCode && err.error.errorCode === 'PERSIST_ENTITY_FAILED'
-          ? this.msgService.error({
-              summaryKey: 'ACTIONS.CREATE.MESSAGE.NOK',
-              detailKey: 'VALIDATION.ERRORS.HELP_ITEM.UNIQUE_CONSTRAINT'
-            })
-          : this.msgService.error({ summaryKey: 'ACTIONS.CREATE.MESSAGE.NOK' })
+        this.displayErrorMsg('CREATE', err.error?.errorCode)
       }
     })
   }
@@ -153,7 +148,7 @@ export class HelpDetailComponent implements OnChanges {
       this.helpApi
         .updateHelp({
           id: this.helpItem.id, // the id is not part of the form!
-          updateHelp: { ...item, modificationCount: item?.modificationCount ?? 0 }
+          updateHelp: { ...item, modificationCount: this.helpItem?.modificationCount! }
         })
         .subscribe({
           next: () => {
@@ -161,13 +156,21 @@ export class HelpDetailComponent implements OnChanges {
             this.msgService.success({ summaryKey: 'ACTIONS.EDIT.MESSAGE.OK' })
             this.onDialogHide(true)
           },
-          error: (err) => {
-            this.msgService.error({ summaryKey: 'ACTIONS.EDIT.MESSAGE.NOK' })
+          error: (err: any) => {
             console.error('updateHelp', err)
+            this.displayErrorMsg('EDIT', err.error?.errorCode)
           }
         })
   }
 
+  private displayErrorMsg(mode: string, code: string) {
+    if (code) {
+      this.msgService.error({
+        summaryKey: 'ACTIONS.' + mode + '.MESSAGE.NOK',
+        detailKey: 'VALIDATION.ERRORS.HELP_ITEM.' + code
+      })
+    } else this.msgService.error({ summaryKey: 'ACTIONS.' + mode + '.MESSAGE.NOK' })
+  }
   // update product name in form according to the selected product
   public onChangeProduct(ev: { value: Product }) {
     if (ev.value instanceof Object) this.helpForm.get('productName')?.setValue(ev.value.name)
