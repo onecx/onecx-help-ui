@@ -1,68 +1,72 @@
 {
   "ACTIONS": {
+    "LABEL": "Aktionen",
+    "TOOLTIP": "Aktionen für die Daten der Tabellenzeile",
     "CONFIRMATION": {
+      "QUESTION": "Frage",
       "NO": "Nein",
       "YES": "Ja",
-      "NO.TOOLTIP": "Abbruch der Aktion",
-      "YES.TOOLTIP": "Fortfahren mit der Aktion"
+      "NO.TOOLTIP": "Nein - Abbruch der Aktion",
+      "YES.TOOLTIP": "Ja - Fortfahren mit der Aktion"
     },
     "COPY": {
       "LABEL": "Kopieren",
-      "HELP_ITEM.TOOLTIP": "Mit den Daten einen neuen Hilfeartikel anlegen",
+      "HEADER": "Hilfeartikel erstellen",
       "CLIPBOARD.TOOLTIP": "In die Zwischenablage kopieren"
     },
     "CREATE": {
       "LABEL": "Erstellen",
-      "HELP_ITEM": "Hilfeartikel erstellen",
-      "HELP_ITEM.TOOLTIP": "Einen neuen Hilfeartikel erstellen",
+      "HEADER": "Hilfeartikel erstellen",
+      "TOOLTIP": "Einen neuen Hilfeartikel erstellen",
       "MESSAGE": {
-        "HELP_ITEM_ALREADY_EXIST": "Ein Hilfeartikel mit dieser ID existert schon",
-        "HELP_ITEM.CREATE_OK": "Der Hilfeartikel wurde erfolgreich erstellt",
-        "HELP_ITEM.CREATE_NOK": "Ein Fehler ist aufgetreten. Der Hilfeartikel wurde nicht erstellt."
+        "OK": "Der Hilfeartikel wurde erfolgreich erstellt",
+        "NOK": "Ein Fehler ist aufgetreten. Der Hilfeartikel wurde nicht erstellt."
       }
     },
     "DELETE": {
       "LABEL": "Löschen",
-      "HELP_ITEM": "Hilfeartikel löschen",
-      "HELP_ITEM.TOOLTIP": "Hilfeartikel löschen",
+      "HEADER": "Hilfeartikel löschen",
       "TEXT": "Möchten Sie den Hilfeartikel mit dieser ID löschen?",
       "OPERATOR_TEXT": "Dieser Hilfeartikel wurde automatisiert erstellt. Wenn die Applikation diesen Artikel weiterhin anbietet, wird er beim nächsten Deployment wiederhergestellt.",
       "NO_UNDO": "Diese Aktion kann nicht rückgängig gemacht werden!",
       "MESSAGE": {
-        "HELP_ITEM_OK": "Der Hilfeartikel wurde erfolgreich gelöscht",
-        "HELP_ITEM_NOK": "Ein Fehler ist aufgetreten. Der Hilfeartikel wurde nicht gelöscht."
+        "OK": "Der Hilfeartikel wurde erfolgreich gelöscht",
+        "NOK": "Ein Fehler ist aufgetreten. Der Hilfeartikel wurde nicht gelöscht."
       }
     },
     "EDIT": {
       "LABEL": "Bearbeiten",
-      "HELP_ITEM": "Hilfeartikel bearbeiten",
-      "HELP_ITEM.TOOLTIP": "Hilfeartikel bearbeiten",
+      "HEADER": "Hilfeartikel bearbeiten",
+      "TOOLTIP": "Hilfeartikel bearbeiten",
       "MESSAGE": {
-        "HELP_ITEM_OK": "Der Hilfeartikel wurde erfolgreich gespeichert",
-        "HELP_ITEM_NOK": "Ein Fehler ist aufgetreten. Der Hilfeartikel wurde nicht gespeichert."
+        "OK": "Der Hilfeartikel wurde erfolgreich gespeichert",
+        "NOK": "Ein Fehler ist aufgetreten. Der Hilfeartikel wurde nicht gespeichert."
       }
     },
     "EXPORT": {
       "LABEL": "Export",
-      "HELP_ITEM": "Hilfeartikel exportieren",
-      "HELP_ITEM.TOOLTIP": "Hilfeartikel exportieren",
+      "HEADER": "Hilfeartikel exportieren",
+      "TOOLTIP": "Hilfeartikel exportieren",
       "ITEMS_SELECTED.TOOLTIP": "Die ausgewählten Hilfeartikel exportieren (lokal speichern)",
       "MESSAGE": {
-        "HELP_ITEM.EXPORT_OK": "Die Hilfeartikel wurde erfolgreich exportiert",
-        "HELP_ITEM.EXPORT_NOK": "Ein Fehler ist aufgetreten. Die Hilfeartikel wurden nicht exportiert."
+        "OK": "Die Hilfeartikel wurde erfolgreich exportiert",
+        "NOK": "Ein Fehler ist aufgetreten. Die Hilfeartikel wurden nicht exportiert."
       }
     },
     "IMPORT": {
       "LABEL": "Import",
+      "HEADER": "Hilfeartikel importieren",
+      "TOOLTIP": "Hilfeartikel importieren",
       "CHOOSE": "Datei auswählen",
       "UPLOAD": "Datei hochladen",
-      "HELP_ITEM": "Hilfeartikel importieren",
-      "HELP_ITEM.TOOLTIP": "Hilfeartikel importieren",
       "MESSAGE": {
-        "HELP_ITEM.IMPORT_OK": "Die Hilfeartikel wurde erfolgreich importiert",
-        "HELP_ITEM.IMPORT_NOK": "Ein Fehler ist aufgetreten. Die Hilfeartikel wurden nicht importiert."
+        "OK": "Die Hilfeartikel wurde erfolgreich importiert.",
+        "NOK": "Ein Fehler ist aufgetreten. Die Hilfeartikel wurden nicht importiert."
       },
-      "VALIDATION_RESULT": "Die Datei wurde geprüft."
+      "VALIDATION": {
+        "OK": "Die Datei wurde erfolgreich geprüft.",
+        "NOK": "Ein Fehler ist aufgetreten. Die Datei kann nicht importiert werden. Details in Console."
+      }
     },
     "NAVIGATION": {
       "CLOSE": "Schließen",
@@ -76,21 +80,18 @@
       "OPEN_IN_NEW_TAB": "In neuem TAB öffnen"
     },
     "SEARCH": {
-      "ACTION": "Aktionen",
-      "ACTION.TOOLTIP": "Aktionen für Datenzeile",
-      "SEARCH": "Suchen",
-      "SEARCH.TOOLTIP": "Suche starten",
-      "RESET": "Zurücksetzen",
-      "RESET_TOOLTIP": "Suchkriterien löschen",
       "NO_DATA": "Keine Ergebnisse",
+      "IN_PROGRESS": "Suche...",
       "OF": "von",
+      "WILDCARD_SUPPORT": " (Wildcards: ?, *)",
       "MESSAGE": {
         "NO_RESULTS": "Die Suche ergab keine Treffer",
-        "SEARCH_FAILED": "Suche ist fehlgeschlagen"
+        "NOK": "Die Suche ist fehlgeschlagen"
       }
     },
     "VIEW": {
       "LABEL": "Details",
+      "HEADER": "Hilfeartikel Details",
       "TOOLTIP": "Hilfeartikel Details"
     },
     "CANCEL": "Abbrechen",
@@ -124,44 +125,62 @@
       "OPERATOR": "Wenn gesetzt, dann kann der Hilfeartikel nicht gelöscht werden und alle Änderungen gehen beim beim nächsten Deployment verloren."
     }
   },
+  "DIALOG": {
+    "SEARCH": {
+      "HEADER": "Hilfeartikel",
+      "SUBHEADER": "Suchen und Verwalten von Hilfeartikel",
+      "SEARCH_TOOLTIP": "Suchen nach Hilfeartikeln mit vorgegebenen Kriterien",
+      "NO_APPLICATION_AVAILABLE": "Keine Applikationen gefunden"
+    },
+    "DETAIL": {
+      "COPY.HEADER": "Hilfeartikel erstellen",
+      "CREATE.HEADER": "Hilfeartikel erstellen",
+      "DELETE.HEADER": "Hilfeartikel löschen",
+      "EDIT.HEADER": "Hilfeartikel ändern",
+      "VIEW.HEADER": "Hilfeartikel Details",
+      "TAB": {
+        "PROPS": "Eigenschaften",
+        "CONTENT": "Inhalt",
+        "INTERN": "Intern",
+        "TOOLTIPS": {
+          "PROPS": "Basiseigenschaften des Hilfeartikels",
+          "CONTENT": "Titel und Inhalt der Hilfeartikel",
+          "INTERN": "Interne Eigenschaften"
+        }
+      },
+      "CHARACTERS": "Noch mögliche Zeichen"
+    },
+    "DATAVIEW": {
+      "FILTER": "Filter",
+      "FILTER_TOOLTIP": "...filtern",
+      "FILTER_BY": "Filter für ",
+      "FILTER_CLEAR": "Filter entfernen",
+      "FILTER_PLACEHOLDER": "Filter"
+    }
+  },
   "HELP_ITEM": {
-    "APPLICATION_NAME": "Applikation",
-    "APPLICATION_LIST": "Applikationen mit Hilfeartikel",
-    "HELP_ITEM_ID": "Hilfeartikel ID",
+    "PRODUCT_NAME": "Applikation",
+    "PRODUCT_LIST": "Applikationen mit Hilfeartikel",
+    "ID": "Hilfeartikel ID",
     "CONTEXT": "Kontext",
     "URL": "URL",
     "BASE_URL": "Basis URL",
     "RESOURCE_URL": "Ressource Pfad",
     "OPERATOR": "Automatisiert erstellt",
+    "NOT_FOUND": "- unbekannt -",
     "TOOLTIPS": {
-      "APPLICATION_NAME": "Applikation mit Hilfeartikel",
-      "HELP_ITEM_ID": "Eindeutige ID für einen Hilfeartikel der Applikation. Muss innerhalb der jeweiligen Seite verwendet worden sein.",
-      "URL": "Die endgültige URL, die beim Aufruf benutzt wird und sich aus den Teilen Basis, Ressource und Kontext zusammensetzt.",
+      "PRODUCT_NAME": "Applikation mit Hilfeartikel",
+      "ID": "Eindeutige ID für einen Hilfeartikel der Applikation.",
+      "URL": "Die endgültige URL, die beim Aufruf benutzt wird und sich aus den Teilen Basis URL, Ressource und Kontext zusammensetzt.",
       "BASE_URL": "Basis der Hilfeartikel-URL - der Verweis auf die Hauptseite der Dokumentation der Applikation",
       "RESOURCE_URL": "Letzter Teil der Hilfeartikel-URL speziell für die Seite (Ressource)",
       "CONTEXT": "Spezieller Abschnitt innerhalb der Seite (Ressource)",
       "OPERATOR": "Wenn gesetzt, dann wurde dieser Hilfeartikel automatisiert erzeugt. Alle Änderungen gehen beim nächsten Deployment verloren."
     }
   },
-  "HELP_SEARCH": {
-    "HEADER": "Hilfeartikel",
-    "SUBHEADER": "Suchen und Verwalten von Hilfeartikeln",
-    "SEARCH_TOOLTIP": "Suchen nach Hilfeartikeln mit vorgegebenen Kriterien",
-    "MSG_SEARCH_VALIDATION": "Eine Anwendungs ID ist für die Suche erforderlich",
-    "NO_APPLICATION_AVAILABLE": "Keine Applikationen gefunden"
-  },
   "HELP_DETAIL": {
-    "UPDATE_SUCCESSFUL": "Der Hilfeartikel wurde erfolgreich aktualisiert",
-    "UPDATE_ERROR": "Der Hilfeartikel konnte nicht aktualisiert werden",
-    "VALIDATION_ERROR": "Das Formular ist ungültig. Der Hilfeartikel kann so nicht gespeichert werden.",
     "URL": "URL zum Hilfeartikel",
-    "URL.TOOLTIP": "Die verwendete URL zum Hilfeartikel, die sich aus den Teilen Basis, Ressource und Kontext zusammensetzt."
-  },
-  "HELPITEM_CREATION": {
-    "CREATION_SUCCESS": "Der Hilfeartikel wurde erfolgreich erstellt.",
-    "CREATION_FAILED": "Der Hilfeartikel konnte nicht erstellt werden.",
-    "UNIQUE_CONSTRAINT": "Hilfeartikel existiert bereits",
-    "VALIDATION_ERROR": "Das Formular ist ungültig. Der Hilfeartikel kann so nicht gespeichert werden."
+    "URL.TOOLTIP": "Die verwendete URL zum Hilfeartikel, die sich aus den Teilen Basis URL, Ressource und Kontext zusammensetzt."
   },
   "SHOW_HELP": {
     "LABEL": "Hilfe für diese Seite anzeigen",
@@ -182,9 +201,9 @@
     "SAVE_ERROR": "Das Formular ist ungültig. Der Hilfeartikel kann nicht gespeichert werden.",
     "UPDATE_HELP_ARTICLE_INFO": "Hilfeartikel gespeichert",
     "DIALOG": {
-      "HELP_ITEM_ID": "Hilfeartikel ID",
-      "APPLICATION_NAME": "Applikation",
-      "RESOURCE_URL": "Ressource Path"
+      "ID": "Hilfeartikel ID",
+      "PRODUCT_NAME": "Applikation",
+      "RESOURCE_URL": "Ressourcepfad"
     }
   },
   "VALIDATION": {
@@ -192,6 +211,12 @@
       "FORMAT_URL": "Format: "
     },
     "ERRORS": {
+      "CRITERIA.INVALID": "Suchkriterien ungültig",
+      "HELP_ITEM.CONSTRAINT_VIOLATIONS": "OpenAPI Constraint Violation",
+      "HELP_ITEM.PERSIST_ENTITY_FAILED": "Hilfeartikel existiert bereits",
+      "HELP_ITEM.MERGE_ENTITY_FAILED": "Ein Hilfeartikel mit dieser ID existiert bereits für das Produkt",
+      "HELP_ITEM.OPTIMISTIC_LOCK": "Hilfeartikel wurde zwischenzeitlich verändert oder gelöscht.",
+      "HELP_ITEM.FORM_INVALID": "Das Formular ist ungültig. Der Hilfeartikel kann so nicht gespeichert werden.",
       "INTERNAL_ERROR": "Interner Fehler",
       "EMPTY_REQUIRED_FIELD": "Dieses Feld ist ein Pflichtfeld.",
       "MAXIMUM_LENGTH": "Es sind nur {{chars}} Zeichen erlaubt.",
@@ -200,20 +225,33 @@
     }
   },
   "EXCEPTIONS": {
+    "HTTP_STATUS_undefined": {
+      "HELP_ITEM": "Unbekanntes Problem beim Abrufen von Hilfeartikeln - Bitte versuchen sie es noch einmal.",
+      "ASSIGNMENTS": "Unbekanntes Problem beim Abrufen von Applikationen die Hilfeartikeln zugeordnet sind - bitte versuchen Sie es noch einmal."
+    },
     "HTTP_STATUS_0": {
-      "HELP_ITEM": "Unbekanntes Problem beim Abrufen von Hilfeartikeln - Bitte versuchen sie es noch einmal."
+      "HELP_ITEM": "Unbekanntes Problem beim Abrufen von Hilfeartikeln - Bitte versuchen sie es noch einmal.",
+      "ASSIGNMENTS": "Unbekanntes Problem beim Abrufen von Applikationen die Hilfeartikeln zugeordnet sind - bitte versuchen Sie es noch einmal."
+    },
+    "HTTP_STATUS_400": {
+      "HELP_ITEM": "Ihre Anfrage konnte nicht bearbeitet werden.",
+      "ASSIGNMENTS": "Ihre Anfrage konnte nicht bearbeitet werden."
     },
     "HTTP_STATUS_401": {
-      "HELP_ITEM": "Sie sind nicht autorisiert, um Hilfeartikel zu sehen."
+      "HELP_ITEM": "Sie sind nicht autorisiert, um Hilfeartikel zu sehen.",
+      "ASSIGNMENTS": "Sie sind nicht autorisiert, um Applikationen zu sehen, die Hilfeartikeln zugeordnet sind."
     },
     "HTTP_STATUS_403": {
-      "HELP_ITEM": "Sie haben keine Rechte, um Hilfeartikel zu sehen."
+      "HELP_ITEM": "Sie haben keine Rechte, um Hilfeartikel zu sehen.",
+      "ASSIGNMENTS": "Sie haben keine Rechte, um Applikationen zu sehen, die Hilfeartikeln zugeordnet sind."
     },
     "HTTP_STATUS_404": {
-      "HELP_ITEM": "Es konnten keine Hilfeartikel gefunden werden."
+      "HELP_ITEM": "Es konnten keine Hilfeartikel gefunden werden.",
+      "ASSIGNMENTS": "Es konnten keine Applikationen gefunden werden, die Hilfeartikeln zugeordnet sind."
     },
     "HTTP_STATUS_500": {
-      "HELP_ITEM": "Unbekanntes Server-Problem beim Abrufen von Hilfeartikel-Daten - Bitte versuchen sie es noch einmal."
+      "HELP_ITEM": "Unbekanntes Server-Problem beim Abrufen von Hilfeartikel-Daten - Bitte versuchen sie es noch einmal.",
+      "ASSIGNMENTS": "Unbekanntes Server-Problem beim Abrufen von Applikationen - bitte versuchen Sie es noch einmal."
     }
   }
 }

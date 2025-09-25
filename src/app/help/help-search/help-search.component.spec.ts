@@ -6,40 +6,42 @@ import { TranslateTestingModule } from 'ngx-translate-testing'
 import { of, throwError } from 'rxjs'
 import { FileSelectEvent } from 'primeng/fileupload'
 
-import { PortalMessageService } from '@onecx/angular-integration-interface'
+import { PortalMessageService, UserService } from '@onecx/angular-integration-interface'
 import { Column } from '@onecx/portal-integration-angular'
 
-import { HelpsInternalAPIService, Help, SearchHelpsRequestParams, Product } from 'src/app/shared/generated'
-import { HelpSearchComponent } from './help-search.component'
+import { HelpsInternalAPIService, Help } from 'src/app/shared/generated'
+import { HelpSearchComponent, Product } from './help-search.component'
 
-const helpItem: Help = {
-  itemId: 'id',
-  productName: 'onecx-help',
-  baseUrl: 'baseUrl'
-}
+const helpItem1: Help = { id: 'id1', itemId: 'itemId1', productName: 'product1', baseUrl: 'baseUrl 1' }
+const helpItem2: Help = { id: 'id2', itemId: 'itemId2', productName: 'product2', baseUrl: 'baseUrl 2' }
+const helpItem3: Help = { id: 'id3', itemId: 'itemId1', productName: 'product3', baseUrl: 'baseUrl 3' }
+const helpItem4: Help = { id: 'id4', itemId: 'itemId2', productName: 'product1', baseUrl: 'baseUrl 4' }
+const itemData: Help[] = [helpItem1, helpItem2, helpItem3, helpItem4]
+const product1: Product = { name: 'product1', displayName: 'Product 1' }
+const product2: Product = { name: 'product2', displayName: 'Product 2' }
 
 describe('HelpSearchComponent', () => {
   let component: HelpSearchComponent
   let fixture: ComponentFixture<HelpSearchComponent>
 
+  const defaultLang = 'en'
+  const mockUserService = { lang$: { getValue: jasmine.createSpy('getValue') } }
   const msgServiceSpy = jasmine.createSpyObj<PortalMessageService>('PortalMessageService', ['success', 'error', 'info'])
   const apiServiceSpy = {
+    getAllProductsWithHelpItems: jasmine.createSpy('getAllProductsWithHelpItems').and.returnValue(of({})),
     searchHelps: jasmine.createSpy('searchHelps').and.returnValue(of({})),
     addHelpItem: jasmine.createSpy('addHelpItem').and.returnValue(of({})),
     deleteHelp: jasmine.createSpy('deleteHelp').and.returnValue(of({})),
     importHelps: jasmine.createSpy('importHelps').and.returnValue(of({})),
-    exportHelps: jasmine.createSpy('exportHelps').and.returnValue(of({})),
-    searchProductsByCriteria: jasmine.createSpy('searchProductsByCriteria').and.returnValue(of({}))
+    exportHelps: jasmine.createSpy('exportHelps').and.returnValue(of({}))
   }
   const translateServiceSpy = jasmine.createSpyObj('TranslateService', ['get'])
 
-  const newHelpItemArr: Help[] | undefined = [
-    {
-      id: 'id',
-      productName: 'ocx-help-ui',
-      itemId: 'PAGE_HELP_SEARCH'
-    }
-  ]
+  function initTestComponent() {
+    fixture = TestBed.createComponent(HelpSearchComponent)
+    component = fixture.componentInstance
+    fixture.detectChanges()
+  }
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
@@ -48,12 +50,13 @@ describe('HelpSearchComponent', () => {
         TranslateTestingModule.withTranslations({
           de: require('src/assets/i18n/de.json'),
           en: require('src/assets/i18n/en.json')
-        }).withDefaultLanguage('en')
+        }).withDefaultLanguage(defaultLang)
       ],
       schemas: [NO_ERRORS_SCHEMA],
       providers: [
         provideHttpClient(),
         provideHttpClientTesting(),
+        { provide: UserService, useValue: mockUserService },
         { provide: HelpsInternalAPIService, useValue: apiServiceSpy },
         { provide: PortalMessageService, useValue: msgServiceSpy }
       ]
@@ -61,287 +64,55 @@ describe('HelpSearchComponent', () => {
   }))
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(HelpSearchComponent)
-    component = fixture.componentInstance
-    component.helpItem = { id: '', itemId: '' }
-    fixture.detectChanges()
+    initTestComponent()
   })
 
   afterEach(() => {
+    mockUserService.lang$.getValue.and.returnValue(defaultLang)
+    // to spy data: reset
     msgServiceSpy.success.calls.reset()
     msgServiceSpy.error.calls.reset()
     msgServiceSpy.info.calls.reset()
+    apiServiceSpy.getAllProductsWithHelpItems.calls.reset()
     apiServiceSpy.searchHelps.calls.reset()
     apiServiceSpy.addHelpItem.calls.reset()
     apiServiceSpy.deleteHelp.calls.reset()
     apiServiceSpy.importHelps.calls.reset()
     apiServiceSpy.exportHelps.calls.reset()
-    apiServiceSpy.searchProductsByCriteria.calls.reset()
-    // reset response data of used calls
+    // to spy data: refill with neutral data
+    apiServiceSpy.getAllProductsWithHelpItems.and.returnValue(of({}))
     apiServiceSpy.searchHelps.and.returnValue(of({}))
+    apiServiceSpy.addHelpItem.and.returnValue(of({}))
     apiServiceSpy.deleteHelp.and.returnValue(of({}))
     apiServiceSpy.importHelps.and.returnValue(of({}))
     apiServiceSpy.exportHelps.and.returnValue(of({}))
-    apiServiceSpy.searchProductsByCriteria.and.returnValue(of({}))
   })
 
-  it('should create component and set columns for displaying results', () => {
-    expect(component).toBeTruthy()
-    expect(component.filteredColumns[0].field).toBe('productDisplayName')
-    expect(component.filteredColumns[1].field).toBe('itemId')
-    expect(component.filteredColumns[2].field).toBe('url')
-    //expect(component.filteredColumns[2].field).toBe('baseUrl')
-    //expect(component.filteredColumns[3].field).toBe('resourceUrl')
-    //expect(component.filteredColumns[4].field).toBe('context')
-  })
+  describe('construction', () => {
+    it('should create', () => {
+      expect(component).toBeTruthy()
+    })
 
-  describe('ngOnInit', () => {
-    it('should call search OnInit and populate filteredColumns/actions correctly', () => {
-      translateServiceSpy.get.and.returnValue(of({ 'ACTIONS.CREATE.LABEL': 'Create' }))
-      component.columns = [
-        { field: 'productName', header: 'APPLICATION_NAME', active: false },
-        { field: 'context', header: 'CONTEXT', active: true }
-      ]
-      spyOn(component, 'search')
-
+    it('should call OnInit and populate filteredColumns/actions correctly', () => {
       component.ngOnInit()
 
-      expect(component.search).toHaveBeenCalled()
-      expect(component.filteredColumns[0].field).toEqual('context')
+      expect(component.filteredColumns[0]).toEqual(component.columns[0])
     })
 
-    it('should process products onInit', () => {
-      const helpPageResultMock = {
-        totalElements: 0,
-        number: 0,
-        size: 0,
-        totalPages: 0,
-        stream: [
-          {
-            itemId: 'id',
-            productName: 'ocx-help-ui'
-          }
-        ]
-      }
-      apiServiceSpy.searchProductsByCriteria.and.returnValue(of(helpPageResultMock))
-      component.products = [
-        { name: 'ocx-help-ui', displayName: 'OneCX Help UI' },
-        { name: '2', displayName: '2dn' }
-      ] as Product[]
-      spyOn(component, 'search')
-
-      component.ngOnInit()
-
-      expect(component.productsLoaded).toBeTrue()
+    it('should create component and set columns for displaying results', () => {
+      expect(component).toBeTruthy()
+      expect(component.filteredColumns[0].field).toBe('productName')
+      expect(component.filteredColumns[1].field).toBe('itemId')
+      expect(component.filteredColumns[2].field).toBe('url')
     })
   })
 
-  describe('search - Success', () => {
-    it('should correctly assign results if API call returns some data', () => {
-      const helpPageResultMock = {
-        totalElements: 0,
-        number: 0,
-        size: 0,
-        totalPages: 0,
-        stream: [
-          {
-            itemId: 'id',
-            productName: 'ocx-help-ui'
-          }
-        ]
-      }
-      apiServiceSpy.searchHelps.and.returnValue(of(helpPageResultMock))
-      component.products = [
-        { name: 'ocx-help-ui', displayName: 'OneCX Help UI' },
-        { name: '2', displayName: '2dn' }
-      ] as Product[]
-      component.resultsForDisplay = []
-
-      component.search({})
-
-      expect(component.resultsForDisplay[0].productDisplayName).toEqual('OneCX Help UI')
-      expect(component.resultsForDisplay[0].itemId).toEqual('id')
-    })
-
-    it('should handle empty results on search', () => {
-      const emptyResponse = {
-        totalElements: 0,
-        number: 0,
-        size: 0,
-        totalPages: 0,
-        stream: []
-      }
-      apiServiceSpy.searchHelps.and.returnValue(of(emptyResponse))
-      apiServiceSpy.searchProductsByCriteria.and.returnValue(of(emptyResponse))
-      component.resultsForDisplay = []
-
-      component.search({})
-
-      expect(component.resultsForDisplay.length).toEqual(0)
-      expect(msgServiceSpy.info).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.SEARCH.MESSAGE.NO_RESULTS' })
-    })
-
-    it('should reuse criteria if reuseCriteria is true', () => {
-      apiServiceSpy.searchHelps.and.returnValue(of([]))
-      component.criteria = { helpSearchCriteria: { productName: 'ocx-help-ui', itemId: 'id' } }
-      const newCriteria = { helpSearchCriteria: { productName: 'ap-mgmt', itemId: 'newId' } }
-      const reuseCriteria = true
-
-      component.search(component.criteria.helpSearchCriteria, reuseCriteria)
-
-      expect(component.criteria).not.toBe(newCriteria)
-    })
-
-    it('should set productName and itemId as undefined if criteria strings empty', () => {
-      const criteria: SearchHelpsRequestParams = {
-        helpSearchCriteria: {
-          productName: '',
-          itemId: ''
-        }
-      }
-      const reuseCriteria = false
-
-      component.search(criteria.helpSearchCriteria, reuseCriteria)
-
-      expect(component.criteria.helpSearchCriteria.productName).not.toBeDefined()
-      expect(component.criteria.helpSearchCriteria.itemId).not.toBeDefined()
-    })
-  })
-
-  describe('search - Error', () => {
-    it('should handle 401 Exception result on search', () => {
-      const errorResponse = { status: 404, statusText: 'Not Found' }
-      apiServiceSpy.searchHelps.and.returnValue(throwError(() => errorResponse))
-      component.resultsForDisplay = []
-      spyOn(console, 'error')
-
-      component.search({})
-
-      expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.SEARCH.MESSAGE.SEARCH_FAILED' })
-      expect(component.exceptionKey).toBe('EXCEPTIONS.HTTP_STATUS_' + errorResponse.status + '.HELP_ITEM')
-      expect(console.error).toHaveBeenCalledWith('searchHelps', errorResponse)
-    })
-  })
-
-  describe('delete', () => {
-    it('should delete help item', () => {
-      apiServiceSpy.deleteHelp({ productName: newHelpItemArr[0].productName, itemId: newHelpItemArr[0].id })
-      component.resultsForDisplay = newHelpItemArr
-      component.helpItem = {
-        id: newHelpItemArr[0].id,
-        productName: newHelpItemArr[0].productName,
-        itemId: newHelpItemArr[0].itemId
-      }
-
-      component.onDeleteConfirmation()
-
-      expect(apiServiceSpy.deleteHelp).toHaveBeenCalled()
-      expect(component.resultsForDisplay.length).toBe(0)
-      expect(component.resultsForDisplay.length).toBe(0)
-      expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.DELETE.MESSAGE.HELP_ITEM_OK' })
-    })
-
-    it('should display error on deleteHelpItem failure', () => {
-      const errorResponse = { status: 400, statusText: 'Cannot delete ...' }
-      apiServiceSpy.deleteHelp.and.returnValue(throwError(() => errorResponse))
-      component.resultsForDisplay = newHelpItemArr
-      component.helpItem = {
-        id: newHelpItemArr[0].id,
-        productName: newHelpItemArr[0].productName,
-        itemId: newHelpItemArr[0].itemId
-      }
-      spyOn(console, 'error')
-
-      component.onDeleteConfirmation()
-
-      expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.DELETE.MESSAGE.HELP_ITEM_NOK' })
-      expect(console.error).toHaveBeenCalledWith('deleteHelp', errorResponse)
-    })
-  })
-
-  /*
-   * UI ACTIONS
-   */
-  describe('UI actions', () => {
-    it('should set correct values onSearch', () => {
-      spyOn(component, 'search')
-
-      component.onSearch()
-
-      expect(component.changeMode).toEqual('CREATE')
-      expect(component.productsChanged).toBeTrue()
-      expect(component.search).toHaveBeenCalled()
-    })
-
-    it('should set correct values onCreate', () => {
-      component.onCreate()
-
-      expect(component.changeMode).toEqual('CREATE')
-      expect(component.productsChanged).toBeFalse()
-      expect(component.helpItem).toBe(undefined)
-      expect(component.displayDetailDialog).toBeTrue()
-    })
-
-    it('should set correct values onDetail', () => {
-      const ev: MouseEvent = new MouseEvent('type')
-      spyOn(ev, 'stopPropagation')
-      const mode = 'EDIT'
-      component.onDetail(ev, newHelpItemArr[0], mode)
-
-      expect(ev.stopPropagation).toHaveBeenCalled()
-      expect(component.changeMode).toEqual(mode)
-      expect(component.productsChanged).toBeFalse()
-      expect(component.helpItem).toBe(newHelpItemArr[0])
-      expect(component.displayDetailDialog).toBeTrue()
-    })
-
-    it('should set correct values onCopy', () => {
-      const ev: MouseEvent = new MouseEvent('type')
-      spyOn(ev, 'stopPropagation')
-      component.onCopy(ev, newHelpItemArr[0])
-
-      expect(ev.stopPropagation).toHaveBeenCalled()
-      expect(component.changeMode).toEqual('CREATE')
-      expect(component.productsChanged).toBeFalse()
-      expect(component.helpItem).toBe(newHelpItemArr[0])
-      expect(component.displayDetailDialog).toBeTrue()
-    })
-
-    it('should set correct values onDelete', () => {
-      const ev: MouseEvent = new MouseEvent('type')
-      spyOn(ev, 'stopPropagation')
-      component.onDelete(ev, newHelpItemArr[0])
-
-      expect(ev.stopPropagation).toHaveBeenCalled()
-      expect(component.productsChanged).toBeFalse()
-      expect(component.helpItem).toBe(newHelpItemArr[0])
-      expect(component.displayDeleteDialog).toBeTrue()
-    })
-
-    it('should update filteredColumns onColumnsChange', () => {
-      const columns: Column[] = [
-        { field: 'productDisplayName', header: 'APPLICATION_NAME' },
-        { field: 'context', header: 'CONTEXT' }
-      ]
-      const expectedColumn = { field: 'productDisplayName', header: 'APPLICATION_NAME' }
-      component.filteredColumns = columns
-      component.onColumnsChange(['productDisplayName'])
-
-      expect(component.filteredColumns).not.toContain(columns[1])
-      expect(component.filteredColumns).toEqual([jasmine.objectContaining(expectedColumn)])
-    })
-
-    it('should call filterGlobal onFilterChange', () => {
-      component.table = jasmine.createSpyObj('table', ['filterGlobal'])
-      component.onFilterChange('test')
-
-      expect(component.table.filterGlobal).toHaveBeenCalledWith('test', 'contains')
-    })
-
+  describe('page actions', () => {
     it('should open create dialog', () => {
       spyOn(component, 'onExport')
 
       component.ngOnInit()
+
       component.actions$?.subscribe((action) => {
         action[1].actionCallback()
       })
@@ -361,266 +132,462 @@ describe('HelpSearchComponent', () => {
     })
 
     it('should open import dialog', () => {
-      spyOn(component, 'onCreate')
+      spyOn(component, 'onDetail')
 
       component.ngOnInit()
       component.actions$?.subscribe((action) => {
         action[0].actionCallback()
       })
 
-      expect(component.onCreate).toHaveBeenCalled()
+      expect(component.onDetail).toHaveBeenCalledWith(undefined, undefined, 'CREATE')
     })
   })
 
-  /*
-   * IMPORT
-   */
-  it('should display import dialog when import button is clicked', () => {
-    component.displayImportDialog = false
+  describe('UI actions', () => {
+    it('should update filteredColumns onColumnsChange', () => {
+      const columns: Column[] = [
+        { field: 'producName', header: 'PRODUCT_NAME' },
+        { field: 'context', header: 'CONTEXT' }
+      ]
+      const expectedColumn = { field: 'productName', header: 'PRODUCT_NAME' }
+      component.filteredColumns = columns
+      component.onColumnsChange(['productName'])
 
-    component.onImport()
-
-    expect(component.displayImportDialog).toBeTrue()
-  })
-
-  describe('onSelect', () => {
-    let file: File
-    let event: any = {}
-
-    beforeEach(() => {
-      translateServiceSpy.get.and.returnValue(of({}))
-      file = new File(['file content'], 'test.txt', { type: 'text/plain' })
-      const fileList: FileList = {
-        0: file,
-        length: 1,
-        item: (index: number) => file
-      }
-      event = { files: fileList }
+      expect(component.filteredColumns).not.toContain(columns[1])
+      expect(component.filteredColumns).toEqual([jasmine.objectContaining(expectedColumn)])
     })
 
-    it('should select a file to upload', (done) => {
-      spyOn(file, 'text').and.returnValue(
-        Promise.resolve('{ "itemId": "id", "productName": "onecx-help", "baseUrl": "baseUrl" }')
-      )
+    it('should call filterGlobal onFilterChange', () => {
+      const table = jasmine.createSpyObj('table', ['filterGlobal'])
 
-      component.onSelect(event as any as FileSelectEvent)
+      component.onFilterChange('test', table)
 
-      setTimeout(() => {
-        expect(file.text).toHaveBeenCalled()
-        expect(component.importHelpItem).toEqual(helpItem)
-        done()
+      expect().nothing()
+    })
+  })
+
+  describe('search', () => {
+    it('should search without search criteria', (done) => {
+      apiServiceSpy.searchHelps.and.returnValue(of({ stream: itemData }))
+
+      component.onSearch({})
+
+      component.data$!.subscribe({
+        next: (data) => {
+          expect(data).toEqual(itemData)
+          done()
+        },
+        error: done.fail
       })
     })
 
-    it('should handle JSON parse error', (done) => {
-      spyOn(file, 'text').and.returnValue(Promise.resolve('Invalid Json'))
+    it('should search and then reset search criteria', (done) => {
+      apiServiceSpy.searchHelps.and.returnValue(of({ stream: [itemData[1]] }))
+      component.criteria = { productName: itemData[1].productName }
+
+      component.onSearch(component.criteria, true)
+
+      component.data$!.subscribe({
+        next: (data) => {
+          expect(data.length).toBe(1)
+          expect(data[0]).toEqual(itemData[1])
+          done()
+        },
+        error: done.fail
+      })
+
+      component.onCriteriaReset()
+
+      expect(component.criteria).toEqual({})
+    })
+
+    it('should display an error message if the search fails', (done) => {
+      const errorResponse = { status: '403', statusText: 'Not authorized' }
+      apiServiceSpy.searchHelps.and.returnValue(throwError(() => errorResponse))
+      spyOn(console, 'error')
+      component.onSearch({})
+
+      component.data$!.subscribe({
+        next: (data) => {
+          expect(data.length).toBe(0)
+          done()
+        },
+        error: done.fail
+      })
+      expect(console.error).toHaveBeenCalledWith('searchHelps', errorResponse)
+      expect(component.exceptionKey).toEqual('EXCEPTIONS.HTTP_STATUS_' + errorResponse.status + '.HELP_ITEM')
+      expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.SEARCH.MESSAGE.NOK' })
+    })
+
+    it('should search with newly defined criteria', () => {
+      apiServiceSpy.searchHelps.and.returnValue(of([]))
+      component.criteria = { productName: 'product 1', itemId: 'itemId 1' }
+      const newCriteria = { productName: 'product 2', itemId: 'itemId 2' }
+
+      component.onSearch(newCriteria, false)
+
+      expect(component.criteria).toEqual(newCriteria)
+    })
+
+    it('should search with wildcard * in title', (done) => {
+      apiServiceSpy.searchHelps.and.returnValue(of({ stream: itemData }))
+      component.criteria = { itemId: 'A*' }
+
+      component.onSearch(component.criteria, false)
+
+      component.data$!.subscribe({
+        next: (data) => {
+          expect(data).toEqual(itemData)
+          done()
+        },
+        error: done.fail
+      })
+    })
+
+    it('should no display name if no name', () => {
+      const dn = component.getDisplayName(undefined, undefined)
+
+      expect(dn).toBeUndefined()
+    })
+  })
+
+  describe('META data: load used products', () => {
+    it('should get all items assigned to products', (done) => {
+      const assignments = { ProductNames: ['prod1'] }
+      apiServiceSpy.getAllProductsWithHelpItems.and.returnValue(of(assignments))
+
+      component.ngOnInit()
+
+      component.usedLists$?.subscribe({
+        next: (data) => {
+          expect(data).toContain({ displayName: 'prod1', name: 'prod1' })
+          done()
+        }
+      })
+    })
+
+    it('should get all items assigned to products', (done) => {
+      const errorResponse = { status: '404', statusText: 'An error occur' }
+      apiServiceSpy.getAllProductsWithHelpItems.and.returnValue(throwError(() => errorResponse))
       spyOn(console, 'error')
 
-      component.onSelect(event)
+      component.ngOnInit()
 
-      setTimeout(() => {
-        expect(console.error).toHaveBeenCalled()
-        expect(component.importError).toBeTrue()
-        expect(component.validationErrorCause).toBe('')
-        done()
+      component.usedLists$?.subscribe({
+        next: (data) => {
+          expect(data).toEqual([])
+          done()
+        },
+        error: done.fail
+      })
+      expect(console.error).toHaveBeenCalledOnceWith('getAllProductsWithHelpItems', errorResponse)
+    })
+  })
+
+  describe('META data: load all meta data together and check enrichments', () => {
+    it('should get all existing products - successful enrichments', (done) => {
+      const products = [{ name: 'product', displayName: 'Product' }]
+      component.pdSlotEmitter.emit(products)
+      // products are used...
+      const assignments = { ProductNames: ['product', 'unknown'] }
+      apiServiceSpy.getAllProductsWithHelpItems.and.returnValue(of(assignments))
+
+      component.ngOnInit()
+
+      component.metaData$.subscribe({
+        next: (meta) => {
+          if (meta) {
+            expect(meta.allProducts.length).toBe(1)
+            expect(meta.usedProducts?.length).toBe(2)
+            expect(meta.usedProducts).toEqual([
+              { name: 'product', displayName: 'Product' },
+              { name: 'unknown', displayName: 'unknown' }
+            ])
+            done()
+          }
+        }
+      })
+    })
+
+    it('should get no existing products - successful but without enrichments', (done) => {
+      // product and workspace are used...
+      const assignments = { ProductNames: ['product', 'unknown'] }
+      apiServiceSpy.getAllProductsWithHelpItems.and.returnValue(of(assignments))
+
+      component.ngOnInit()
+
+      component.metaData$.subscribe({
+        next: (meta) => {
+          if (meta) {
+            expect(meta.allProducts.length).toBe(2) // take over the used products
+            expect(meta.usedProducts?.length).toBe(2)
+            expect(meta.usedProducts).toEqual([
+              { name: 'product', displayName: 'product' },
+              { name: 'unknown', displayName: 'unknown' }
+            ])
+            done()
+          }
+        }
       })
     })
   })
 
-  it('should reset errors when clear button is clicked', () => {
-    component.importError = true
-    component.validationErrorCause = 'Some error'
+  describe('export', () => {
+    it('should display export dialog', (done) => {
+      apiServiceSpy.searchHelps.and.returnValue(of({ stream: itemData }))
 
-    component.onClear()
+      component.onSearch({})
 
-    expect(component.importError).toBeFalse()
-    expect(component.validationErrorCause).toBe('')
-  })
-
-  describe('onImportConfirmation', () => {
-    it('should import help items', (done) => {
-      apiServiceSpy.importHelps.and.returnValue(of({}))
-      component.importHelpItem = helpItem
-
-      component.onImportConfirmation()
-
-      setTimeout(() => {
-        expect(component.displayImportDialog).toBeFalse()
-        expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.IMPORT.MESSAGE.HELP_ITEM.IMPORT_OK' })
-        done()
+      component.data$!.subscribe({
+        next: (data) => {
+          expect(data).toEqual(itemData)
+          component.onExport()
+          expect(component.displayExportDialog).toBeTrue()
+          done()
+        },
+        error: done.fail
       })
     })
 
-    it('should call importHelps and handle error', (done) => {
-      const errorResponse = { status: 400, statusText: 'Cannot import ...' }
-      apiServiceSpy.importHelps.and.returnValue(throwError(() => errorResponse))
-      component.importHelpItem = helpItem
-      spyOn(console, 'error')
-
-      component.onImportConfirmation()
-
-      setTimeout(() => {
-        expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.IMPORT.MESSAGE.HELP_ITEM.IMPORT_NOK' })
-        expect(console.error).toHaveBeenCalledWith('importHelps', errorResponse)
-        done()
-      }, 0)
-    })
-
-    it('should not call importHelps if importHelpItem is not defined', () => {
-      component.importHelpItem = null
-
-      component.onImportConfirmation()
-
-      expect(apiServiceSpy.importHelps).not.toHaveBeenCalled()
-    })
-  })
-
-  it('should validate a file', () => {
-    component.importError = false
-
-    expect(component.isFileValid()).toBeTrue()
-  })
-
-  it('should close displayImportDialog', () => {
-    component.displayImportDialog = true
-
-    component.onCloseImportDialog()
-
-    expect(component.displayImportDialog).toBeFalse()
-  })
-
-  /*
-   * EXPORT
-   */
-  it('should display export dialog', () => {
-    component.resultsForDisplay = [
-      { productName: 'B', itemId: '2' },
-      { productName: 'A', itemId: '1' }
-    ]
-
-    component.onExport()
-
-    expect(component.displayExportDialog).toBeTrue()
-  })
-
-  describe('onExportConfirmation', () => {
     it('should export help items', () => {
-      apiServiceSpy.exportHelps.and.returnValue(of(helpItem))
-      const selectedNames = ['Product1', 'Product2']
-      component.selectedProductNames = selectedNames
-      component.products = [{ name: 'ocx-help-ui', displayName: 'Product1' }, { name: '2' }] as Product[]
+      apiServiceSpy.exportHelps.and.returnValue(of(product1))
+      component.exportProductList = [product1.name]
 
       component.onExportConfirmation()
 
-      expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.EXPORT.MESSAGE.HELP_ITEM.EXPORT_OK' })
+      expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.EXPORT.MESSAGE.OK' })
     })
 
-    it('should display error msg when export fails', () => {
+    it('should display error message when export fails', () => {
       const errorResponse = { status: 400, statusText: 'Cannot export ...' }
       apiServiceSpy.exportHelps.and.returnValue(throwError(() => errorResponse))
-      const selectedNames = ['Product1', 'Product2']
-      component.selectedProductNames = selectedNames
+      component.exportProductList = [product1.name, product2.name]
       spyOn(console, 'error')
 
       component.onExportConfirmation()
 
-      expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.EXPORT.MESSAGE.HELP_ITEM.EXPORT_NOK' })
+      expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.EXPORT.MESSAGE.NOK' })
       expect(console.error).toHaveBeenCalledWith('exportHelps', errorResponse)
     })
-  })
 
-  it('should reset displayExportDialog, selectedResults, and selectedProductNames', () => {
-    component.displayExportDialog = true
-    component.selectedProductNames = ['Product1']
+    it('should reset displayExportDialog, selectedResults, and selectedProductNames', () => {
+      component.displayExportDialog = true
+      component.exportProductList = [product1.name, product2.name]
 
-    component.onCloseExportDialog()
+      component.onExportCloseDialog()
 
-    expect(component.displayExportDialog).toBeFalse()
-    expect(component.selectedProductNames).toEqual([])
-  })
-
-  /*
-   * SORTING
-   */
-  describe('sortHelpItemsByDefault', () => {
-    it('should correctly sort productNames using sortHelpItemsByDefault 1', () => {
-      component.resultsForDisplay = [
-        { productName: 'B', itemId: '2' },
-        { productName: 'A', itemId: '1' }
-      ]
-      component.resultsForDisplay.sort(component['sortHelpItemByDefault'])
-
-      expect(component.resultsForDisplay).toEqual([
-        { productName: 'A', itemId: '1' },
-        { productName: 'B', itemId: '2' }
-      ])
-    })
-
-    it('should correctly sort productNames using sortHelpItemsByDefault 2', () => {
-      component.resultsForDisplay = [
-        { productName: '', itemId: '1' },
-        { productName: 'A', itemId: '2' }
-      ]
-      component.resultsForDisplay.sort(component['sortHelpItemByDefault'])
-
-      expect(component.resultsForDisplay).toEqual([
-        { productName: '', itemId: '1' },
-        { productName: 'A', itemId: '2' }
-      ])
-    })
-
-    it('should correctly sort productNames using sortHelpItemsByDefault 3', () => {
-      component.resultsForDisplay = [
-        { productName: 'A', itemId: '2' },
-        { productName: '', itemId: '1' }
-      ]
-      component.resultsForDisplay.sort(component['sortHelpItemByDefault'])
-
-      expect(component.resultsForDisplay).toEqual([
-        { productName: '', itemId: '1' },
-        { productName: 'A', itemId: '2' }
-      ])
-    })
-
-    it('should correctly sort productNames using sortHelpItemsByDefault 4', () => {
-      component.resultsForDisplay = [
-        { productName: 'A', itemId: '' },
-        { productName: 'A', itemId: '2' },
-        { productName: 'A', itemId: '1' },
-        { productName: '', itemId: '1' },
-        { productName: '', itemId: '2' },
-        { productName: '', itemId: '' }
-      ]
-      component.resultsForDisplay.sort(component['sortHelpItemByDefault'])
-
-      expect(component.resultsForDisplay).toEqual([
-        { productName: '', itemId: '' },
-        { productName: '', itemId: '1' },
-        { productName: '', itemId: '2' },
-        { productName: 'A', itemId: '' },
-        { productName: 'A', itemId: '1' },
-        { productName: 'A', itemId: '2' }
-      ])
-    })
-
-    it('should correctly sort itemIds using sortHelpItemsByDefault', () => {
-      component.resultsForDisplay = [
-        { productName: 'A', itemId: '2' },
-        { productName: 'A', itemId: '1' }
-      ]
-      component.resultsForDisplay.sort(component['sortHelpItemByDefault'])
-
-      expect(component.resultsForDisplay).toEqual([
-        { productName: 'A', itemId: '1' },
-        { productName: 'A', itemId: '2' }
-      ])
+      expect(component.displayExportDialog).toBeFalse()
+      expect(component.exportProductList).toEqual([])
     })
   })
 
-  it('should sort products', () => {
-    const products = [{ displayName: 'A' }, { displayName: 'B' }] as Product[]
+  describe('import', () => {
+    it('should display import dialog when import button is clicked', () => {
+      component.displayImportDialog = false
 
-    expect(component['sortProductsByName'](products[0], products[1])).toBeLessThan(0)
+      component.onImport()
+
+      expect(component.displayImportDialog).toBeTrue()
+    })
+
+    describe('on file select', () => {
+      let file: File
+      let event: any = {}
+
+      beforeEach(() => {
+        translateServiceSpy.get.and.returnValue(of({}))
+        file = new File(['file content'], 'test.txt', { type: 'text/plain' })
+        const fileList: FileList = {
+          0: file,
+          length: 1,
+          item: (index: number) => file
+        }
+        event = { files: fileList }
+      })
+
+      it('should select a file to upload - valid JSON', (done) => {
+        const json = '{ "helps": { "product": { "itemId": { "baseUrl": "https://..." } } } }'
+        spyOn(file, 'text').and.returnValue(Promise.resolve(json))
+
+        component.onImportSelectFile(event as any as FileSelectEvent)
+
+        setTimeout(() => {
+          expect(file.text).toHaveBeenCalled()
+          expect(msgServiceSpy.info).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.IMPORT.VALIDATION.OK' })
+          expect(component.importError).toBeFalse()
+          done()
+        })
+      })
+
+      it('should select a file to upload - invalid JSON - handle error', (done) => {
+        spyOn(file, 'text').and.returnValue(Promise.resolve('Invalid Json'))
+        spyOn(console, 'error')
+
+        component.onImportSelectFile(event)
+
+        setTimeout(() => {
+          expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.IMPORT.VALIDATION.NOK' })
+          expect(console.error).toHaveBeenCalled()
+          expect(component.importError).toBeTrue()
+          done()
+        })
+      })
+    })
+
+    describe('on import confirmation', () => {
+      it('should import help items', (done) => {
+        apiServiceSpy.importHelps.and.returnValue(of({}))
+        component['importObject'] = helpItem1
+
+        component.onImportConfirmation()
+
+        setTimeout(() => {
+          expect(component.displayImportDialog).toBeFalse()
+          expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.IMPORT.MESSAGE.OK' })
+          done()
+        })
+      })
+
+      it('should call importHelps and handle error', (done) => {
+        const errorResponse = { status: 400, statusText: 'Cannot import ...' }
+        apiServiceSpy.importHelps.and.returnValue(throwError(() => errorResponse))
+        component['importObject'] = helpItem1
+        spyOn(console, 'error')
+
+        component.onImportConfirmation()
+
+        setTimeout(() => {
+          expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.IMPORT.MESSAGE.NOK' })
+          expect(console.error).toHaveBeenCalledWith('importHelps', errorResponse)
+          done()
+        }, 0)
+      })
+
+      it('should not call importHelps if importHelpItem is not defined', () => {
+        component['importObject'] = undefined
+
+        component.onImportConfirmation()
+
+        expect(apiServiceSpy.importHelps).not.toHaveBeenCalled()
+      })
+    })
+
+    it('should reset import objects when clear button is clicked', () => {
+      component.importError = true
+      component['importObject'] = helpItem1
+
+      component.onImportClear()
+
+      expect(component.importError).toBeFalse()
+      expect(component['importObject']).toBeUndefined()
+    })
+
+    it('should close displayImportDialog', () => {
+      component.importError = true
+      component['importObject'] = helpItem1
+      component.displayImportDialog = true
+
+      component.onImportCloseDialog()
+
+      expect(component.displayImportDialog).toBeFalse()
+      expect(component.importError).toBeFalse()
+      expect(component['importObject']).toBeUndefined()
+    })
+  })
+
+  describe('detail actions', () => {
+    it('should prepare the creation of a new item', () => {
+      const ev: Event = new Event('type')
+      spyOn(ev, 'stopPropagation')
+      const mode = 'CREATE'
+
+      component.onDetail(ev, undefined, mode)
+
+      expect(ev.stopPropagation).toHaveBeenCalled()
+      expect(component.changeMode).toEqual(mode)
+      expect(component.item4Detail).toBe(undefined)
+      expect(component.displayDetailDialog).toBeTrue()
+
+      component.onCloseDetail(false)
+
+      expect(component.displayDetailDialog).toBeFalse()
+    })
+
+    it('should show details of a item', () => {
+      const mode = 'EDIT'
+
+      component.onDetail(undefined, itemData[0], mode)
+
+      expect(component.changeMode).toEqual(mode)
+      expect(component.item4Detail).toBe(itemData[0])
+      expect(component.displayDetailDialog).toBeTrue()
+    })
+
+    it('should prepare the copy of a item', () => {
+      const mode = 'COPY'
+
+      component.onDetail(undefined, itemData[0], mode)
+
+      expect(component.changeMode).toEqual(mode)
+      expect(component.item4Detail).toBe(itemData[0])
+      expect(component.displayDetailDialog).toBeTrue()
+
+      component.onCloseDetail(true)
+
+      expect(component.displayDetailDialog).toBeFalse()
+    })
+  })
+
+  describe('deletion', () => {
+    let items4Deletion: any[] = []
+
+    beforeEach(() => {
+      items4Deletion = [...itemData]
+    })
+
+    it('should prepare the deletion of a item - ok', () => {
+      const ev: Event = new Event('type')
+      spyOn(ev, 'stopPropagation')
+
+      component.onDelete(ev, items4Deletion[0])
+
+      expect(ev.stopPropagation).toHaveBeenCalled()
+      expect(component.item4Delete).toBe(items4Deletion[0])
+      expect(component.displayDeleteDialog).toBeTrue()
+    })
+
+    it('should delete a item with confirmation', () => {
+      apiServiceSpy.deleteHelp.and.returnValue(of(null))
+      const ev: Event = new Event('type')
+
+      component.onDelete(ev, items4Deletion[1])
+      component.onDeleteConfirmation(items4Deletion) // remove but not the last of the product
+
+      expect(component.displayDeleteDialog).toBeFalse()
+      expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.DELETE.MESSAGE.OK' })
+
+      component.onDelete(ev, items4Deletion[2])
+      component.onDeleteConfirmation(items4Deletion) // remove and this was the last of the product
+    })
+
+    it('should display error if deleting a item fails', () => {
+      const errorResponse = { status: '400', statusText: 'Error on deletion' }
+      apiServiceSpy.deleteHelp.and.returnValue(throwError(() => errorResponse))
+      const ev: Event = new Event('type')
+      spyOn(console, 'error')
+
+      component.onDelete(ev, items4Deletion[0])
+      component.onDeleteConfirmation(items4Deletion)
+
+      expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.DELETE.MESSAGE.NOK' })
+      expect(console.error).toHaveBeenCalledWith('deleteHelp', errorResponse)
+    })
+
+    it('should reject confirmation if param was not set', () => {
+      component.onDeleteConfirmation(items4Deletion)
+
+      expect(apiServiceSpy.deleteHelp).not.toHaveBeenCalled()
+    })
   })
 
   describe('prepare URL', () => {
@@ -685,6 +652,18 @@ describe('HelpSearchComponent', () => {
       const url = component.prepareUrl(help)
 
       expect(url).toEqual(help.baseUrl! + help.resourceUrl + help.context)
+    })
+  })
+
+  describe('Language tests', () => {
+    it('should use default format: English', () => {
+      expect(component.dateFormat).toEqual('M/d/yy, h:mm a')
+    })
+
+    it('should set German date format', () => {
+      mockUserService.lang$.getValue.and.returnValue('de')
+      initTestComponent()
+      expect(component.dateFormat).toEqual('dd.MM.yyyy HH:mm')
     })
   })
 })

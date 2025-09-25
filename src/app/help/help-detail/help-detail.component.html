@@ -1,6 +1,6 @@
 <p-dialog
-  [header]="'ACTIONS.' + this.changeMode + '.HELP_ITEM' | translate"
-  [(visible)]="displayDetailDialog"
+  [header]="'ACTIONS.' + changeMode + '.HEADER' | translate"
+  [(visible)]="displayDialog"
   (onHide)="onDialogHide()"
   [modal]="true"
   [showHeader]="true"
@@ -16,10 +16,131 @@
     '400px': '100vw'
   }"
 >
-  <app-help-form [changeMode]="changeMode" [helpItem]="helpItem" [products]="products"></app-help-form>
+  <form [formGroup]="helpForm">
+    <section
+      class="flex flex-wrap flex-column gap-4 justify-content-between mt-2"
+      [attr.aria-label]="'DIALOG.DETAIL.TAB.PROPS' | translate"
+    >
+      <span class="p-float-label">
+        <p-autoComplete
+          id="hm_detail_form_product_name_autocomplete"
+          styleClass="w-full"
+          panelStyleClass="w-full"
+          inputStyleClass="pt-3 pb-2 text-responsive"
+          ngDefaultControl
+          appendTo="body"
+          formControlName="product"
+          optionLabel="displayName"
+          optionName="name"
+          (onSelect)="onChangeProduct($event)"
+          [suggestions]="productsFiltered"
+          (completeMethod)="onFilterProducts($event)"
+          [dropdown]="true"
+          [forceSelection]="true"
+          [ariaLabel]="'HELP_ITEM.TOOLTIPS.PRODUCT_NAME' | translate"
+          [pTooltip]="'HELP_ITEM.TOOLTIPS.PRODUCT_NAME' | translate"
+          tooltipPosition="top"
+          tooltipEvent="hover"
+        ></p-autoComplete>
+        <label class="ocx-required-label" for="hm_detail_form_product_name_autocomplete" aria-hidden="true">
+          {{ 'HELP_ITEM.PRODUCT_NAME' | translate }}
+        </label>
+      </span>
+      <span class="p-float-label" controlErrorAnchor>
+        <input
+          pInputText
+          type="text"
+          id="hm_detail_form_item_id"
+          class="w-full pt-3 pb-2 text-responsive"
+          formControlName="itemId"
+          [ariaLabel]="'HELP_ITEM.TOOLTIPS.ID' | translate"
+          [pTooltip]="'HELP_ITEM.TOOLTIPS.ID' | translate"
+          tooltipPosition="top"
+          tooltipEvent="hover"
+        />
+        <label class="ocx-required-label" for="hm_detail_form_item_id" aria-hidden="true">
+          {{ 'HELP_ITEM.ID' | translate }}
+        </label>
+      </span>
+      <div
+        *ngIf="!['CREATE', 'COPY'].includes(changeMode) && helpItem?.operator === true"
+        class="px-2 mb-1 flex flex-row justify-content-between align-items-center column-gap-3"
+      >
+        <p-checkbox
+          type="text"
+          inputId="hm_detail_form_operator"
+          formControlName="operator"
+          styleClass="cursor-auto shadow-none"
+          [binary]="true"
+          [label]="'HELP_ITEM.OPERATOR' | translate"
+          [pTooltip]="'HELP_ITEM.TOOLTIPS.OPERATOR' | translate"
+          tooltipPosition="right"
+          tooltipEvent="hover"
+        ></p-checkbox>
+      </div>
+    </section>
+
+    <p-fieldset [toggleable]="false" [collapsed]="false" styleClass="surface-100 mt-3 pb-3 px-2">
+      <ng-template pTemplate="header">
+        <span [pTooltip]="'HELP_DETAIL.URL.TOOLTIP' | translate" tooltipPosition="top" tooltipEvent="hover">
+          {{ 'HELP_DETAIL.URL' | translate }}
+        </span>
+      </ng-template>
+      <div class="flex flex-wrap flex-column gap-4 justify-content-between mt-2">
+        <span class="p-float-label">
+          <input
+            pInputText
+            type="text"
+            id="hm_detail_form_base_url"
+            class="w-full pt-3 pb-2 text-responsive"
+            formControlName="baseUrl"
+            [ariaLabel]="'HELP_ITEM.TOOLTIPS.BASE_URL' | translate"
+            [pTooltip]="'HELP_ITEM.TOOLTIPS.BASE_URL' | translate"
+            tooltipPosition="top"
+            tooltipEvent="hover"
+          />
+          <label class="ocx-required-label" for="hm_detail_form_base_url" aria-hidden="true">
+            {{ 'HELP_ITEM.BASE_URL' | translate }}
+          </label>
+        </span>
+        <span class="p-float-label">
+          <input
+            pInputText
+            type="text"
+            id="hm_detail_form_resource_url"
+            class="w-full pt-3 pb-2 text-responsive"
+            formControlName="resourceUrl"
+            [ariaLabel]="'HELP_ITEM.TOOLTIPS.RESOURCE_URL' | translate"
+            [pTooltip]="'HELP_ITEM.TOOLTIPS.RESOURCE_URL' | translate"
+            tooltipPosition="top"
+            tooltipEvent="hover"
+          />
+          <label class="" for="hm_detail_form_resource_url" aria-hidden="true">
+            {{ 'HELP_ITEM.RESOURCE_URL' | translate }}
+          </label>
+        </span>
+        <span class="p-float-label">
+          <input
+            pInputText
+            type="text"
+            id="hm_detail_form_context"
+            class="w-full pt-3 pb-2 text-responsive"
+            formControlName="context"
+            [ariaLabel]="'HELP_ITEM.TOOLTIPS.CONTEXT' | translate"
+            [pTooltip]="'HELP_ITEM.TOOLTIPS.CONTEXT' | translate"
+            tooltipPosition="top"
+            tooltipEvent="hover"
+          />
+          <label class="" for="hm_detail_form_context" aria-hidden="true">
+            {{ 'HELP_ITEM.CONTEXT' | translate }}
+          </label>
+        </span>
+      </div>
+    </p-fieldset>
+  </form>
 
   <ng-template pTemplate="footer">
-    <div class="flex flex-wrap justify-content-end column-gap-2 row-gap-1">
+    <footer class="flex flex-wrap justify-content-end column-gap-2 row-gap-1">
       <p-button
         *ngIf="changeMode === 'VIEW'"
         id="hm_detail_action_close"
@@ -37,7 +158,7 @@
         icon="pi pi-times"
         (onClick)="onDialogHide()"
         [label]="'ACTIONS.CANCEL' | translate"
-        [ariaLabel]="'ACTIONS.CANCEL' | translate"
+        [ariaLabel]="'ACTIONS.TOOLTIPS.CANCEL' | translate"
         [pTooltip]="'ACTIONS.TOOLTIPS.CANCEL' | translate"
         tooltipPosition="top"
         tooltipEvent="hover"
@@ -47,13 +168,13 @@
         id="hm_detail_action_save"
         icon="pi pi-save"
         (onClick)="onSave()"
-        [disabled]="!helpFormComponent.formGroup.valid"
+        [disabled]="!helpForm.valid"
         [label]="'ACTIONS.SAVE' | translate"
-        [ariaLabel]="'ACTIONS.SAVE' | translate"
+        [ariaLabel]="'ACTIONS.TOOLTIPS.SAVE' | translate"
         [pTooltip]="'ACTIONS.TOOLTIPS.SAVE' | translate"
         tooltipPosition="top"
         tooltipEvent="hover"
       ></p-button>
-    </div>
+    </footer>
   </ng-template>
 </p-dialog>

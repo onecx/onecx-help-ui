@@ -1,68 +1,72 @@
 {
   "ACTIONS": {
+    "LABEL": "Actions",
+    "TOOLTIP": "Actions for the data of the table row",
     "CONFIRMATION": {
+      "QUESTION": "Question",
       "NO": "No",
       "YES": "Yes",
-      "NO.TOOLTIP": "Cancel the action",
-      "YES.TOOLTIP": "Proceed with the action"
+      "NO.TOOLTIP": "No - Cancel the action",
+      "YES.TOOLTIP": "Yes - Proceed with the action"
     },
     "COPY": {
       "LABEL": "Copy",
-      "HELP_ITEM.TOOLTIP": "Create a new Help Item with the data",
+      "HEADER": "Create Help Item",
       "CLIPBOARD.TOOLTIP": "Copy to clipboard"
     },
     "CREATE": {
       "LABEL": "Create",
-      "HELP_ITEM": "Create Help Item",
-      "HELP_ITEM.TOOLTIP": "Create a new Help Item",
+      "HEADER": "Create Help Item",
+      "TOOLTIP": "Create a new Help Item",
       "MESSAGE": {
-        "HELP_ITEM_ALREADY_EXIST": "A Help Item with that ID already exists",
-        "HELP_ITEM.CREATE_OK": "The Help Item was created successfully",
-        "HELP_ITEM.CREATE_NOK": "An error has occurred. The Help Item was not created."
+        "OK": "The Help Item was created successfully",
+        "NOK": "An error has occurred. The Help Item was not created."
       }
     },
     "DELETE": {
       "LABEL": "Delete",
-      "HELP_ITEM": "Delete Help Item",
-      "HELP_ITEM.TOOLTIP": "Delete this Help Item",
+      "HEADER": "Delete Help Item",
       "TEXT": "Do you want to delete the Help Item with this ID?",
       "OPERATOR_TEXT": "This Help Item was created by automation. If the application continues to offer this Help Item, it will be restored during the next deployment.",
       "NO_UNDO": "This action cannot be undone!",
       "MESSAGE": {
-        "HELP_ITEM_OK": "The Help Item was deleted successfully",
-        "HELP_ITEM_NOK": "An error has occurred. The Help Item was not deleted."
+        "OK": "The Help Item was deleted successfully",
+        "NOK": "An error has occurred. The Help Item was not deleted."
       }
     },
     "EDIT": {
       "LABEL": "Edit",
-      "HELP_ITEM": "Edit Help Item",
-      "HELP_ITEM.TOOLTIP": "Edit the Help Item properties",
+      "HEADER": "Edit Help Item",
+      "TOOLTIP": "Edit the Help Item properties",
       "MESSAGE": {
-        "HELP_ITEM_OK": "The Help Item was saved successfully",
-        "HELP_ITEM_NOK": "An error has occurred. The Help Item was not saved."
+        "OK": "The Help Item was saved successfully",
+        "NOK": "An error has occurred. The Help Item was not saved."
       }
     },
     "EXPORT": {
       "LABEL": "Export",
-      "HELP_ITEM": "Export Help Items",
-      "HELP_ITEM.TOOLTIP": "Export of Help Items",
+      "HEADER": "Export Help Items",
+      "TOOLTIP": "Export of Help Items",
       "ITEMS_SELECTED.TOOLTIP": "Export selected Help Items (store locally)",
       "MESSAGE": {
-        "HELP_ITEM.EXPORT_OK": "Help Items were exported successfully",
-        "HELP_ITEM.EXPORT_NOK": "An error has occurred. Help Items were not exported."
+        "OK": "Help Items were exported successfully",
+        "NOK": "An error has occurred. Help Items were not exported."
       }
     },
     "IMPORT": {
       "LABEL": "Import",
+      "HEADER": "Import Help Items",
+      "TOOLTIP": "Import of Help Items",
       "CHOOSE": "Choose file",
       "UPLOAD": "Upload file",
-      "HELP_ITEM": "Import Help Items",
-      "HELP_ITEM.TOOLTIP": "Import of Help Items",
       "MESSAGE": {
-        "HELP_ITEM.IMPORT_OK": "Help Items were imported successfully",
-        "HELP_ITEM.IMPORT_NOK": "An error has occurred. Help Items were not imported."
+        "OK": "Help Items were imported successfully",
+        "NOK": "An error has occurred. Help Items were not imported."
       },
-      "VALIDATION_RESULT": "The file has been checked."
+      "VALIDATION": {
+        "OK": "The file has been checked successfully.",
+        "NOK": "An error occurred. The file cannot be imported. Details in Console."
+      }
     },
     "NAVIGATION": {
       "CLOSE": "Close",
@@ -76,21 +80,18 @@
       "OPEN_IN_NEW_TAB": "Open in a new TAB"
     },
     "SEARCH": {
-      "ACTION": "Action",
-      "ACTION.TOOLLTIP": "Actions on data row",
-      "SEARCH": "Search",
-      "SEARCH.TOOLTIP": "Start Searching",
-      "RESET": "Reset",
-      "RESET_TOOLTIP": "Clear given criteria",
       "NO_DATA": "No data",
+      "IN_PROGRESS": "Searching...",
       "OF": "of",
+      "WILDCARD_SUPPORT": " Wildcards: ?, *",
       "MESSAGE": {
         "NO_RESULTS": "Search returned no results",
-        "SEARCH_FAILED": "Search failed"
+        "NOK": "Search failed"
       }
     },
     "VIEW": {
       "LABEL": "Details",
+      "HEADER": "Help Item Details",
       "TOOLTIP": "Help Item Details"
     },
     "CANCEL": "Cancel",
@@ -124,44 +125,62 @@
       "OPERATOR": "If set, the Help Item cannot be deleted and all changes will be lost during the next deployment."
     }
   },
+  "DIALOG": {
+    "SEARCH": {
+      "HEADER": "Help Items",
+      "SUBHEADER": "Search and manage Help Items",
+      "SEARCH_TOOLTIP": "Search for the Help Items with given criteria",
+      "NO_APPLICATION_AVAILABLE": "Could not find any Application"
+    },
+    "DETAIL": {
+      "COPY.HEADER": "Create Help Item",
+      "CREATE.HEADER": "Create Help Item",
+      "DELETE.HEADER": "Delete Help Item",
+      "EDIT.HEADER": "Edit Help Item",
+      "VIEW.HEADER": "Help Item Details",
+      "TAB": {
+        "PROPS": "Properties",
+        "CONTENT": "Content",
+        "INTERN": "Internal",
+        "TOOLTIPS": {
+          "PROPS": "Base properties of the Help Item",
+          "CONTENT": "Titel and Content of the Help Item",
+          "INTERN": "Internal Properties"
+        }
+      },
+      "CHARACTERS": "Still remaining characters"
+    },
+    "DATAVIEW": {
+      "FILTER": "Filter",
+      "FILTER_TOOLTIP": "Filter Applications",
+      "FILTER_BY": "Filter by ",
+      "FILTER_CLEAR": "Clear Filter",
+      "FILTER_PLACEHOLDER": "Filter"
+    }
+  },
   "HELP_ITEM": {
-    "APPLICATION_NAME": "Application",
-    "APPLICATION_LIST": "Applications with Help Items",
-    "HELP_ITEM_ID": "Help Item ID",
+    "PRODUCT_NAME": "Application",
+    "PRODUCT_LIST": "Applications with Help Items",
+    "ID": "Help Item ID",
     "CONTEXT": "Context",
     "URL": "URL",
     "BASE_URL": "Base URL",
     "RESOURCE_URL": "Resource Pfad",
     "OPERATOR": "Created by automation",
+    "NOT_FOUND": "- unknown -",
     "TOOLTIPS": {
-      "APPLICATION_NAME": "Application with Help Item",
-      "HELP_ITEM_ID": "Unique ID for a Help Item of the Application. Must have been used within the respective page.",
-      "URL": "The final URL that is used when calling and consists of the parts base, resource and context.",
+      "PRODUCT_NAME": "Application with Help Item",
+      "ID": "Unique ID for a Help Item of the Application.",
+      "URL": "The final URL that is used when calling and consists of the parts base URL, resource and context.",
       "BASE_URL": "Base part of the Help Item URL - the base path to the documentation of the Application",
       "RESOURCE_URL": "Path from the base path to the specific page (resource)",
       "CONTEXT": "Specific context within the page (resource)",
       "OPERATOR": "If set then this Help Item was created by automation. All changes will be lost on the next deployment."
     }
   },
-  "HELP_SEARCH": {
-    "HEADER": "Help Items",
-    "SUBHEADER": "Searching and Managing of Help Items",
-    "SEARCH_TOOLTIP": "Search for the Help Items with given criteria",
-    "MSG_SEARCH_VALIDATION": "Application ID is required for search",
-    "NO_APPLICATION_AVAILABLE": "Could not find any Application"
-  },
   "HELP_DETAIL": {
-    "UPDATE_SUCCESSFUL": "The Help Item was successfully updated",
-    "UPDATE_ERROR": "The Help Item could not be updated",
-    "VALIDATION_ERROR": "The Help Item form is invalid. The Help Item cannot be saved this way.",
     "URL": "URL to Help page",
-    "URL.TOOLTIP": "The used URL to Help page, consists of the parts base, resource and context."
-  },
-  "HELPITEM_CREATION": {
-    "CREATION_SUCCESS": "The Help Item was sucessfully created.",
-    "CREATION_FAILED": "The Help Item could not be created",
-    "UNIQUE_CONSTRAINT": "Help Item already exists",
-    "VALIDATION_ERROR": "The Help Item form is invalid. The Help Item cannot be saved this way."
+    "URL.TOOLTIP": "The used URL to Help page, consists of the parts base URL, resource and context."
   },
   "SHOW_HELP": {
     "LABEL": "Show Help for this page",
@@ -182,8 +201,8 @@
     "SAVE_ERROR": "Form is not valid. Cannot update the Help Item.",
     "UPDATE_HELP_ARTICLE_INFO": "Help Item updated",
     "DIALOG": {
-      "HELP_ITEM_ID": "Help Item ID",
-      "APPLICATION_NAME": "Application",
+      "ID": "Help Item ID",
+      "PRODUCT_NAME": "Application",
       "RESOURCE_URL": "Resource Path"
     }
   },
@@ -192,6 +211,12 @@
       "FORMAT_URL": "Format: "
     },
     "ERRORS": {
+      "CRITERIA.INVALID": "Search criteria invalid",
+      "HELP_ITEM.CONSTRAINT_VIOLATIONS": "OpenAPI Constraint Violation",
+      "HELP_ITEM.PERSIST_ENTITY_FAILED": "Help Item already exists",
+      "HELP_ITEM.MERGE_ENTITY_FAILED": "A Help Item with this ID already exists for the Application.",
+      "HELP_ITEM.OPTIMISTIC_LOCK": "Help Item was updated or deleted in the meantime.",
+      "HELP_ITEM.FORM_INVALID": "The Help Item form is invalid. The Help Item cannot be saved this way.",
       "INTERNAL_ERROR": "Internal error",
       "EMPTY_REQUIRED_FIELD": "This field is required.",
       "MAXIMUM_LENGTH": "Only {{chars}} characters are allowed.",
@@ -200,20 +225,33 @@
     }
   },
   "EXCEPTIONS": {
+    "HTTP_STATUS_undefined": {
+      "HELP_ITEM": "Unknown problem retrieving Help Item data - please try again.",
+      "ASSIGNMENTS": "Unknown problem retrieving Applications with assigned Announcements - please try again."
+    },
     "HTTP_STATUS_0": {
-      "HELP_ITEM": "Unknown problem retrieving Help Item data - please try again."
+      "HELP_ITEM": "Unknown problem retrieving Help Item data - please try again.",
+      "ASSIGNMENTS": "Unknown problem retrieving Applications with assigned Announcements - please try again."
+    },
+    "HTTP_STATUS_400": {
+      "HELP_ITEM": "Your request could not be processed.",
+      "ASSIGNMENTS": "Your request could not be processed."
     },
     "HTTP_STATUS_401": {
-      "HELP_ITEM": "You are not authorized to see Help Items."
+      "HELP_ITEM": "You are not authorized to see Help Items.",
+      "ASSIGNMENTS": "You are not authorized to see Applications with assigned Announcements."
     },
     "HTTP_STATUS_403": {
-      "HELP_ITEM": "You have no permissions to see Help Items."
+      "HELP_ITEM": "You have no permissions to see Help Items.",
+      "ASSIGNMENTS": "You have no permissions to see Applications with assigned Announcements."
     },
     "HTTP_STATUS_404": {
-      "HELP_ITEM": "No Help Items could be found."
+      "HELP_ITEM": "No Help Items could be found.",
+      "ASSIGNMENTS": "No Applications with assigned Announcements could be loaded."
     },
     "HTTP_STATUS_500": {
-      "HELP_ITEM": "Unknown server problem retrieving Help Item data - please try again."
+      "HELP_ITEM": "Unknown server problem retrieving Help Item data - please try again.",
+      "ASSIGNMENTS": "Unknown server problem retrieving Applications with assigned Announcements - please try again."
     }
   }
 }

@@ -1,48 +1,49 @@
 <ocx-search-header
-  [header]="'HELP_SEARCH.HEADER' | translate"
-  [subheader]="'HELP_SEARCH.SUBHEADER' | translate"
-  (searched)="submitCriteria()"
-  (resetted)="resetCriteria()"
+  [header]="'DIALOG.SEARCH.HEADER' | translate"
+  [subheader]="'DIALOG.SEARCH.SUBHEADER' | translate"
+  (searched)="onSearch()"
+  (resetted)="onResetCriteria()"
   [manualBreadcrumbs]="false"
   [actions]="actions"
 >
-  <div simpleCriteria>
-    <div [formGroup]="helpCriteriaGroup" class="flex flex-wrap gap-3 lg:px-2">
-      <span class="p-float-label">
-        <p-autoComplete
-          id="hm_search_criteria_product_name"
-          styleClass="w-18rem text-responsive"
-          formControlName="productName"
-          [suggestions]="productDisplayNamesFiltered"
-          (completeMethod)="filterProductNames($event)"
-          [dropdown]="true"
-          [showClear]="true"
-          [forceSelection]="true"
-          appendTo="body"
-          ariaLabelledBy="hm_search_criteria_product_name"
-          [pTooltip]="'HELP_ITEM.APPLICATION_LIST' | translate"
-          tooltipPosition="top"
-          tooltipEvent="hover"
-        >
-          <button pbutton type="button" aria-label="'ACTIONS.VIEW' | translate"></button>
-        </p-autoComplete>
-        <label for="hm_search_criteria_product_name">{{ 'HELP_ITEM.APPLICATION_NAME' | translate }}</label>
-      </span>
-      <span class="p-float-label">
-        <input
-          id="hm_search_criteria_item_id"
-          pInputText
-          type="text"
-          formControlName="itemId"
-          class="w-18rem text-responsive"
-          [showClear]="true"
-          [aria-label]="'HELP_ITEM.HELP_ITEM_ID' | translate"
-          [pTooltip]="'HELP_ITEM.TOOLTIPS.HELP_ITEM_ID' | translate"
-          tooltipPosition="top"
-          tooltipEvent="hover"
-        />
-        <label for="help_search_criteria_item_id">{{ 'HELP_ITEM.HELP_ITEM_ID' | translate }}</label>
-      </span>
-    </div>
-  </div>
+  <form [formGroup]="criteriaForm" class="flex flex-wrap gap-3">
+    <span class="p-float-label">
+      <input
+        id="hm_search_criteria_item_id"
+        pInputText
+        type="text"
+        formControlName="itemId"
+        class="w-18rem text-responsive"
+        [ariaLabel]="('HELP_ITEM.TOOLTIPS.ID' | translate) + ('ACTIONS.SEARCH.WILDCARD_SUPPORT' | translate)"
+        [pTooltip]="('HELP_ITEM.TOOLTIPS.ID' | translate) + ('ACTIONS.SEARCH.WILDCARD_SUPPORT' | translate)"
+        tooltipPosition="top"
+        tooltipEvent="hover"
+      />
+      <label for="help_search_criteria_item_id" aria-hidden="true">{{ 'HELP_ITEM.ID' | translate }}</label>
+    </span>
+    <span class="p-float-label">
+      <p-autoComplete
+        id="hm_search_criteria_product_name"
+        styleClass="w-18rem text-responsive"
+        panelStyleClass="w-18rem"
+        formControlName="product"
+        optionLabel="displayName"
+        optionName="name"
+        [suggestions]="productsFiltered"
+        (completeMethod)="onFilterProducts($event)"
+        [dropdown]="true"
+        [showClear]="true"
+        [forceSelection]="true"
+        appendTo="body"
+        [ariaLabel]="'HELP_ITEM.PRODUCT_LIST' | translate"
+        [pTooltip]="'HELP_ITEM.PRODUCT_LIST' | translate"
+        tooltipPosition="top"
+        tooltipEvent="hover"
+      >
+      </p-autoComplete>
+      <label for="hm_search_criteria_product_name" aria-hidden="true">
+        {{ 'HELP_ITEM.PRODUCT_NAME' | translate }}
+      </label>
+    </span>
+  </form>
 </ocx-search-header>

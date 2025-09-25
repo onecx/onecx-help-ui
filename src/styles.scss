@@ -9,10 +9,3 @@
 @import 'node_modules/@onecx/portal-layout-styles/src/styles/shell/shell.scss';
 @import 'node_modules/@onecx/portal-layout-styles/src/styles/primeng/theme-light.scss';
 @import 'node_modules/@onecx/portal-integration-angular/assets/styles.scss';
-
-// This does not work if located inside the app
-.p-autocomplete-panel .p-autocomplete-items {
-  .p-autocomplete-item:nth-child(even) {
-    background-color: var(--table-body-row-even-bg);
-  }
-}

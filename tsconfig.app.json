@@ -13,6 +13,6 @@
     "src/app/remotes/show-help/show-help.component.main.ts",
     "src/app/remotes/help-item-editor/help-item-editor.component.main.ts"
   ],
-  "include": ["src/**/*.d.ts"],
+  "include": ["src/**/*.ts"],
   "exclude": ["src/test.ts", "src/**/*.spec.ts"]
 }

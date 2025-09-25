@@ -129,21 +129,19 @@ export class OneCXShowHelpComponent implements ocxRemoteComponent, ocxRemoteWebc
     this.helpDataItem$?.pipe(withLatestFrom(this.helpArticleId$), first()).subscribe({
       next: ([helpDataItem, helpArticleId]) => {
         if (helpDataItem?.id) {
-          if (helpDataItem.baseUrl || helpDataItem.resourceUrl) {
+          if (helpDataItem.baseUrl) {
             const currentLocation = getLocation()
             const url = this.constructUrl(
-              Location.joinWithSlash(helpDataItem.baseUrl ?? '', helpDataItem.resourceUrl ?? ''),
+              this.prepareUrl(helpDataItem),
               currentLocation.origin,
               currentLocation.deploymentPath
             )
-            console.log(`navigate to help page: ${url.toString()}`)
+            console.info(`navigate to help page: ${url.toString()}`)
             try {
               window.open(url, '_blank')?.focus()
             } catch (e) {
               console.error(`Could not construct help page url ${url.toString()}`, e)
-              this.portalMessageService.error({
-                summaryKey: 'SHOW_HELP.HELP_PAGE_ERROR'
-              })
+              this.portalMessageService.error({ summaryKey: 'SHOW_HELP.HELP_PAGE_ERROR' })
             }
           }
         } else {
@@ -162,9 +160,25 @@ export class OneCXShowHelpComponent implements ocxRemoteComponent, ocxRemoteWebc
     event.preventDefault()
   }
 
-  public constructUrl(helpUrl: string, basePath: string, deploymentPath: string): URL {
+  private constructUrl(helpUrl: string, basePath: string, deploymentPath: string): URL {
     const isRelative = new URL(basePath).origin === new URL(helpUrl, basePath).origin
     if (isRelative) return new URL(Location.joinWithSlash(deploymentPath, helpUrl), basePath)
     return new URL(helpUrl)
+  }
+
+  /* Prepare the final URL as follow (#) = optional:
+      1. baseUrl
+      2. baseUrl(#)context
+      3. baseUrl/resourceUrl
+      4. baseUrl/resourceUrl(#)context
+  */
+  private prepareUrl(help: Help): string {
+    let ctx = ''
+    if (help.context) {
+      ctx = (help.context.startsWith('#') ? '' : '#') + help.context
+    }
+    if (help.baseUrl && help.resourceUrl) {
+      return Location.joinWithSlash(help.baseUrl, help.resourceUrl) + ctx
+    } else return (help.baseUrl ?? '') + ctx
   }
 }

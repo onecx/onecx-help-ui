@@ -37,6 +37,13 @@ app:
       spec:
         name: OneCX Help UI
         description: OneCX Help Frontend
+    # Slot
+    slot:
+      enabled: true
+      specs:
+        onecx-product-data:
+          name: 'onecx-product-data'
+          description: 'Getting base data of all products provided by product store'
     # Permission
     permission:
       enabled: true
