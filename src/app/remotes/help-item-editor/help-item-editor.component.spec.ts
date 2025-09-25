@@ -14,7 +14,7 @@ import { PrimeIcons } from 'primeng/api'
 
 import { IfPermissionDirective } from '@onecx/angular-accelerator'
 import { BASE_URL, RemoteComponentConfig } from '@onecx/angular-remote-components'
-import { AppStateService, PortalMessageService } from '@onecx/angular-integration-interface'
+import { AppStateService, PortalMessageService, UserService } from '@onecx/angular-integration-interface'
 import { PortalDialogService, providePortalDialogService } from '@onecx/portal-integration-angular'
 
 import { Help, HelpsInternalAPIService } from 'src/app/shared/generated'
@@ -35,7 +35,7 @@ describe('OneCXHelpItemEditorComponent', () => {
   let fixture: ComponentFixture<OneCXHelpItemEditorComponent>
   let oneCXHelpItemEditorHarness: OneCXHelpItemEditorHarness
 
-  const mockUserService = jasmine.createSpyObj('UserService', ['hasPermission'])
+  const mockUserService = jasmine.createSpyObj<UserService>('UserService', ['hasPermission'])
   mockUserService.hasPermission.and.callFake((permission: string) => {
     return ['HELP#EDIT', 'HELP#VIEW'].includes(permission)
   })
@@ -48,6 +48,13 @@ describe('OneCXHelpItemEditorComponent', () => {
   const messageServiceSpy = jasmine.createSpyObj<PortalMessageService>('PortalMessageService', ['error', 'success'])
   const portalDialogServiceSpy = jasmine.createSpyObj<PortalDialogService>('PortalDialogService', ['openDialog'])
   let baseUrlSubject: ReplaySubject<any>
+
+  function initTestComponent(rcc?: RemoteComponentConfig) {
+    fixture = TestBed.createComponent(OneCXHelpItemEditorComponent)
+    component = fixture.componentInstance
+    if (rcc) component.ocxInitRemoteComponent(rcc)
+    fixture.detectChanges()
+  }
 
   beforeEach(waitForAsync(() => {
     baseUrlSubject = new ReplaySubject<any>(1)
@@ -69,7 +76,7 @@ describe('OneCXHelpItemEditorComponent', () => {
         set: {
           imports: [PortalDependencyModule, TranslateTestingModule, TooltipModule, RippleModule, DynamicDialogModule],
           providers: [
-            //  { provide: UserService, useValue: mockUserService },
+            // { provide: UserService, useValue: mockUserService }
             { provide: HelpsInternalAPIService, useValue: helpApiServiceSpy },
             { provide: PortalDialogService, useValue: portalDialogServiceSpy },
             { provide: PortalMessageService, useValue: messageServiceSpy }
@@ -96,9 +103,7 @@ describe('OneCXHelpItemEditorComponent', () => {
   })
 
   it('should create', () => {
-    fixture = TestBed.createComponent(OneCXHelpItemEditorComponent)
-    component = fixture.componentInstance
-    fixture.detectChanges()
+    initTestComponent()
 
     expect(component).toBeTruthy()
   })
@@ -118,14 +123,8 @@ describe('OneCXHelpItemEditorComponent', () => {
   })
 
   it('should init remote component', (done: DoneFn) => {
-    fixture = TestBed.createComponent(OneCXHelpItemEditorComponent)
-    component = fixture.componentInstance
-    fixture.detectChanges()
-
-    component.ocxInitRemoteComponent({
-      permissions: ['HELP#EDIT'],
-      baseUrl: 'base_url'
-    } as RemoteComponentConfig)
+    initTestComponent()
+    component.ocxInitRemoteComponent({ permissions: ['HELP#EDIT'], baseUrl: 'base_url' } as RemoteComponentConfig)
 
     expect(component.permissions).toEqual(['HELP#EDIT'])
     expect(helpApiServiceSpy.configuration.basePath).toEqual('base_url/bff')
@@ -136,35 +135,26 @@ describe('OneCXHelpItemEditorComponent', () => {
   })
 
   it('should not show button if permissions are not met', async () => {
-    fixture = TestBed.createComponent(OneCXHelpItemEditorComponent)
-    component = fixture.componentInstance
-    fixture.detectChanges()
+    initTestComponent()
     oneCXHelpItemEditorHarness = await TestbedHarnessEnvironment.harnessForFixture(fixture, OneCXHelpItemEditorHarness)
 
     expect(await oneCXHelpItemEditorHarness.getHelpEditorButton()).toBeNull()
   })
 
   it('should show button if permissions are met', async () => {
-    fixture = TestBed.createComponent(OneCXHelpItemEditorComponent)
-    component = fixture.componentInstance
-    component.ocxInitRemoteComponent({
-      permissions: ['HELP#EDIT'],
-      baseUrl: 'base_url'
-    } as RemoteComponentConfig)
+    initTestComponent({ permissions: ['HELP#EDIT'], baseUrl: 'base_url' } as RemoteComponentConfig)
 
-    fixture.detectChanges()
     oneCXHelpItemEditorHarness = await TestbedHarnessEnvironment.harnessForFixture(fixture, OneCXHelpItemEditorHarness)
 
     expect(await oneCXHelpItemEditorHarness.getShowHelpButtonEditorId()).toBe('ocx_topbar_action_edit_help_item')
   })
 
   it('should call onEditHelpItem on enter click', () => {
-    fixture = TestBed.createComponent(OneCXHelpItemEditorComponent)
-    component = fixture.componentInstance
-    fixture.detectChanges()
-
+    initTestComponent()
     spyOn(component, 'onEditHelpItem')
+
     component.onEnterClick()
+
     expect(component.onEditHelpItem).toHaveBeenCalledTimes(1)
   })
 
@@ -179,9 +169,7 @@ describe('OneCXHelpItemEditorComponent', () => {
     const router = TestBed.inject(Router)
     router.routerState.snapshot.url = 'router_url'
 
-    fixture = TestBed.createComponent(OneCXHelpItemEditorComponent)
-    component = fixture.componentInstance
-    fixture.detectChanges()
+    initTestComponent()
 
     component.helpArticleId$?.subscribe((id) => {
       expect(id).toEqual('article_id')
@@ -199,9 +187,7 @@ describe('OneCXHelpItemEditorComponent', () => {
     const router = TestBed.inject(Router)
     router.routerState.snapshot.url = 'router_url'
 
-    fixture = TestBed.createComponent(OneCXHelpItemEditorComponent)
-    component = fixture.componentInstance
-    fixture.detectChanges()
+    initTestComponent()
 
     component.helpArticleId$?.subscribe((id) => {
       expect(id).toEqual('page_name')
@@ -215,9 +201,7 @@ describe('OneCXHelpItemEditorComponent', () => {
     const router = TestBed.inject(Router)
     router.routerState.snapshot.url = 'current_url/page'
 
-    fixture = TestBed.createComponent(OneCXHelpItemEditorComponent)
-    component = fixture.componentInstance
-    fixture.detectChanges()
+    initTestComponent()
 
     component.helpArticleId$?.subscribe((id) => {
       expect(id).toEqual('current_url/page')
@@ -236,9 +220,7 @@ describe('OneCXHelpItemEditorComponent', () => {
       }) as any
     )
 
-    fixture = TestBed.createComponent(OneCXHelpItemEditorComponent)
-    component = fixture.componentInstance
-    fixture.detectChanges()
+    initTestComponent()
 
     component.productName$?.subscribe((id) => {
       expect(id).toEqual('mfe_product_name')
@@ -263,9 +245,7 @@ describe('OneCXHelpItemEditorComponent', () => {
       } as any)
     )
 
-    fixture = TestBed.createComponent(OneCXHelpItemEditorComponent)
-    component = fixture.componentInstance
-    fixture.detectChanges()
+    initTestComponent()
 
     component.products$?.subscribe((products) => {
       expect(products['prod-1']).toBe('Product 1')
@@ -295,9 +275,7 @@ describe('OneCXHelpItemEditorComponent', () => {
       }) as any
     )
 
-    fixture = TestBed.createComponent(OneCXHelpItemEditorComponent)
-    component = fixture.componentInstance
-    fixture.detectChanges()
+    initTestComponent()
 
     component.helpDataItem$?.subscribe((item) => {
       expect(item).toEqual(helpItem)
@@ -318,9 +296,7 @@ describe('OneCXHelpItemEditorComponent', () => {
 
     spyOn(appStateService.currentMfe$, 'asObservable').and.returnValue(of({}) as any)
 
-    fixture = TestBed.createComponent(OneCXHelpItemEditorComponent)
-    component = fixture.componentInstance
-    fixture.detectChanges()
+    initTestComponent()
 
     component.helpDataItem$?.subscribe((item) => {
       expect(item).toEqual({} as Help)
@@ -346,9 +322,7 @@ describe('OneCXHelpItemEditorComponent', () => {
       }) as any
     )
 
-    fixture = TestBed.createComponent(OneCXHelpItemEditorComponent)
-    component = fixture.componentInstance
-    fixture.detectChanges()
+    initTestComponent()
 
     component.helpDataItem$?.subscribe((item) => {
       expect(item).toEqual({} as Help)
@@ -390,13 +364,7 @@ describe('OneCXHelpItemEditorComponent', () => {
       } as any)
     )
 
-    fixture = TestBed.createComponent(OneCXHelpItemEditorComponent)
-    component = fixture.componentInstance
-    component.ocxInitRemoteComponent({
-      permissions: ['HELP#EDIT'],
-      baseUrl: 'base_url'
-    } as RemoteComponentConfig)
-    fixture.detectChanges()
+    initTestComponent({ permissions: ['HELP#EDIT'], baseUrl: 'base_url' } as RemoteComponentConfig)
 
     oneCXHelpItemEditorHarness = await TestbedHarnessEnvironment.harnessForFixture(fixture, OneCXHelpItemEditorHarness)
     await oneCXHelpItemEditorHarness.clickHelpEditorButton()
@@ -441,13 +409,7 @@ describe('OneCXHelpItemEditorComponent', () => {
       } as any)
     )
 
-    fixture = TestBed.createComponent(OneCXHelpItemEditorComponent)
-    component = fixture.componentInstance
-    component.ocxInitRemoteComponent({
-      permissions: ['HELP#EDIT'],
-      baseUrl: 'base_url'
-    } as RemoteComponentConfig)
-    fixture.detectChanges()
+    initTestComponent({ permissions: ['HELP#EDIT'], baseUrl: 'base_url' } as RemoteComponentConfig)
 
     oneCXHelpItemEditorHarness = await TestbedHarnessEnvironment.harnessForFixture(fixture, OneCXHelpItemEditorHarness)
     await oneCXHelpItemEditorHarness.clickHelpEditorButton()
@@ -477,13 +439,7 @@ describe('OneCXHelpItemEditorComponent', () => {
       } as any)
     )
 
-    fixture = TestBed.createComponent(OneCXHelpItemEditorComponent)
-    component = fixture.componentInstance
-    component.ocxInitRemoteComponent({
-      permissions: ['HELP#EDIT'],
-      baseUrl: 'base_url'
-    } as RemoteComponentConfig)
-    fixture.detectChanges()
+    initTestComponent({ permissions: ['HELP#EDIT'], baseUrl: 'base_url' } as RemoteComponentConfig)
 
     oneCXHelpItemEditorHarness = await TestbedHarnessEnvironment.harnessForFixture(fixture, OneCXHelpItemEditorHarness)
     await oneCXHelpItemEditorHarness.clickHelpEditorButton()
@@ -525,13 +481,7 @@ describe('OneCXHelpItemEditorComponent', () => {
       } as any)
     )
 
-    fixture = TestBed.createComponent(OneCXHelpItemEditorComponent)
-    component = fixture.componentInstance
-    component.ocxInitRemoteComponent({
-      permissions: ['HELP#EDIT'],
-      baseUrl: 'base_url'
-    } as RemoteComponentConfig)
-    fixture.detectChanges()
+    initTestComponent({ permissions: ['HELP#EDIT'], baseUrl: 'base_url' } as RemoteComponentConfig)
 
     oneCXHelpItemEditorHarness = await TestbedHarnessEnvironment.harnessForFixture(fixture, OneCXHelpItemEditorHarness)
     await oneCXHelpItemEditorHarness.clickHelpEditorButton()
@@ -589,13 +539,7 @@ describe('OneCXHelpItemEditorComponent', () => {
       } as any)
     )
 
-    fixture = TestBed.createComponent(OneCXHelpItemEditorComponent)
-    component = fixture.componentInstance
-    component.ocxInitRemoteComponent({
-      permissions: ['HELP#EDIT'],
-      baseUrl: 'base_url'
-    } as RemoteComponentConfig)
-    fixture.detectChanges()
+    initTestComponent({ permissions: ['HELP#EDIT'], baseUrl: 'base_url' } as RemoteComponentConfig)
 
     oneCXHelpItemEditorHarness = await TestbedHarnessEnvironment.harnessForFixture(fixture, OneCXHelpItemEditorHarness)
     await oneCXHelpItemEditorHarness.clickHelpEditorButton()
@@ -639,13 +583,7 @@ describe('OneCXHelpItemEditorComponent', () => {
       }) as any
     )
 
-    fixture = TestBed.createComponent(OneCXHelpItemEditorComponent)
-    component = fixture.componentInstance
-    component.ocxInitRemoteComponent({
-      permissions: ['HELP#EDIT'],
-      baseUrl: 'base_url'
-    } as RemoteComponentConfig)
-    fixture.detectChanges()
+    initTestComponent({ permissions: ['HELP#EDIT'], baseUrl: 'base_url' } as RemoteComponentConfig)
 
     oneCXHelpItemEditorHarness = await TestbedHarnessEnvironment.harnessForFixture(fixture, OneCXHelpItemEditorHarness)
     await oneCXHelpItemEditorHarness.clickHelpEditorButton()
@@ -687,13 +625,7 @@ describe('OneCXHelpItemEditorComponent', () => {
       }) as any
     )
 
-    fixture = TestBed.createComponent(OneCXHelpItemEditorComponent)
-    component = fixture.componentInstance
-    component.ocxInitRemoteComponent({
-      permissions: ['HELP#EDIT'],
-      baseUrl: 'base_url'
-    } as RemoteComponentConfig)
-    fixture.detectChanges()
+    initTestComponent({ permissions: ['HELP#EDIT'], baseUrl: 'base_url' } as RemoteComponentConfig)
 
     oneCXHelpItemEditorHarness = await TestbedHarnessEnvironment.harnessForFixture(fixture, OneCXHelpItemEditorHarness)
     await oneCXHelpItemEditorHarness.clickHelpEditorButton()
@@ -740,13 +672,7 @@ describe('OneCXHelpItemEditorComponent', () => {
       }) as any
     )
 
-    fixture = TestBed.createComponent(OneCXHelpItemEditorComponent)
-    component = fixture.componentInstance
-    component.ocxInitRemoteComponent({
-      permissions: ['HELP#EDIT'],
-      baseUrl: 'base_url'
-    } as RemoteComponentConfig)
-    fixture.detectChanges()
+    initTestComponent({ permissions: ['HELP#EDIT'], baseUrl: 'base_url' } as RemoteComponentConfig)
 
     oneCXHelpItemEditorHarness = await TestbedHarnessEnvironment.harnessForFixture(fixture, OneCXHelpItemEditorHarness)
     await oneCXHelpItemEditorHarness.clickHelpEditorButton()
@@ -802,13 +728,7 @@ describe('OneCXHelpItemEditorComponent', () => {
 
     helpApiServiceSpy.updateHelp.and.returnValue(of({} as any))
 
-    fixture = TestBed.createComponent(OneCXHelpItemEditorComponent)
-    component = fixture.componentInstance
-    component.ocxInitRemoteComponent({
-      permissions: ['HELP#EDIT'],
-      baseUrl: 'base_url'
-    } as RemoteComponentConfig)
-    fixture.detectChanges()
+    initTestComponent({ permissions: ['HELP#EDIT'], baseUrl: 'base_url' } as RemoteComponentConfig)
 
     oneCXHelpItemEditorHarness = await TestbedHarnessEnvironment.harnessForFixture(fixture, OneCXHelpItemEditorHarness)
     await oneCXHelpItemEditorHarness.clickHelpEditorButton()
@@ -872,13 +792,7 @@ describe('OneCXHelpItemEditorComponent', () => {
       } as any)
     )
 
-    fixture = TestBed.createComponent(OneCXHelpItemEditorComponent)
-    component = fixture.componentInstance
-    component.ocxInitRemoteComponent({
-      permissions: ['HELP#EDIT'],
-      baseUrl: 'base_url'
-    } as RemoteComponentConfig)
-    fixture.detectChanges()
+    initTestComponent({ permissions: ['HELP#EDIT'], baseUrl: 'base_url' } as RemoteComponentConfig)
 
     oneCXHelpItemEditorHarness = await TestbedHarnessEnvironment.harnessForFixture(fixture, OneCXHelpItemEditorHarness)
     await oneCXHelpItemEditorHarness.clickHelpEditorButton()
@@ -944,13 +858,7 @@ describe('OneCXHelpItemEditorComponent', () => {
       )
     )
 
-    fixture = TestBed.createComponent(OneCXHelpItemEditorComponent)
-    component = fixture.componentInstance
-    component.ocxInitRemoteComponent({
-      permissions: ['HELP#EDIT'],
-      baseUrl: 'base_url'
-    } as RemoteComponentConfig)
-    fixture.detectChanges()
+    initTestComponent({ permissions: ['HELP#EDIT'], baseUrl: 'base_url' } as RemoteComponentConfig)
 
     oneCXHelpItemEditorHarness = await TestbedHarnessEnvironment.harnessForFixture(fixture, OneCXHelpItemEditorHarness)
     await oneCXHelpItemEditorHarness.clickHelpEditorButton()
@@ -1006,13 +914,7 @@ describe('OneCXHelpItemEditorComponent', () => {
       )
     )
 
-    fixture = TestBed.createComponent(OneCXHelpItemEditorComponent)
-    component = fixture.componentInstance
-    component.ocxInitRemoteComponent({
-      permissions: ['HELP#EDIT'],
-      baseUrl: 'base_url'
-    } as RemoteComponentConfig)
-    fixture.detectChanges()
+    initTestComponent({ permissions: ['HELP#EDIT'], baseUrl: 'base_url' } as RemoteComponentConfig)
 
     oneCXHelpItemEditorHarness = await TestbedHarnessEnvironment.harnessForFixture(fixture, OneCXHelpItemEditorHarness)
     await oneCXHelpItemEditorHarness.clickHelpEditorButton()

@@ -12,7 +12,7 @@ import { RippleModule } from 'primeng/ripple'
 import { DialogService, DynamicDialogModule } from 'primeng/dynamicdialog'
 
 import { IfPermissionDirective } from '@onecx/angular-accelerator'
-import {} from '@onecx/angular-integration-interface'
+import { UserService } from '@onecx/angular-integration-interface'
 import { AppStateService, PortalMessageService } from '@onecx/angular-integration-interface'
 import { BASE_URL, RemoteComponentConfig } from '@onecx/angular-remote-components'
 
@@ -33,6 +33,10 @@ describe('OneCXShowHelpComponent', () => {
   let fixture: ComponentFixture<OneCXShowHelpComponent>
   let oneCXShowHelpHarness: OneCXShowHelpHarness
 
+  const mockUserService = jasmine.createSpyObj('UserService', ['hasPermission'])
+  mockUserService.hasPermission.and.callFake((permission: string) => {
+    return ['HELP#EDIT', 'HELP#VIEW'].includes(permission)
+  })
   const helpApiServiceSpy = jasmine.createSpyObj<HelpsInternalAPIService>('HelpsInternalAPIService', [
     'getHelpByProductNameItemId'
   ])
@@ -63,6 +67,7 @@ describe('OneCXShowHelpComponent', () => {
         set: {
           imports: [PortalDependencyModule, TranslateTestingModule, TooltipModule, RippleModule, DynamicDialogModule],
           providers: [
+            //{ provide: UserService, useValue: mockUserService },
             { provide: HelpsInternalAPIService, useValue: helpApiServiceSpy },
             { provide: DialogService, useValue: dialogServiceSpy },
             { provide: PortalMessageService, useValue: messageServiceSpy }
