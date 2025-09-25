@@ -190,10 +190,14 @@
                     </div>
                   }
                   @case ('url') {
-                    {{ prepareUrl(rowData) }}
+                    <div class="text-ellipsis-2-lines word-break-all">
+                      {{ prepareUrl(rowData) }}
+                    </div>
                   }
                   @default {
-                    {{ rowData[col.field] }}
+                    <div class="text-ellipsis-2-lines word-break-all">
+                      {{ rowData[col.field] }}
+                    </div>
                   }
                 }
               </td>
@@ -284,12 +288,13 @@
       [draggable]="true"
       [resizable]="true"
       [dismissableMask]="true"
-      [style]="{ width: '300px' }"
+      [style]="{ width: '350px' }"
       [breakpoints]="{
-        '992px': '50vw',
-        '700px': '70vw',
-        '600px': '80vw',
-        '500px': '90vw',
+        '992px': '40vw',
+        '800px': '50vw',
+        '700px': '60vw',
+        '600px': '70vw',
+        '500px': '80vw',
         '400px': '100vw'
       }"
     >
@@ -308,7 +313,13 @@
           [showToggleAll]="true"
           [emptyMessage]="'ACTIONS.SEARCH.NO_DATA' | translate"
           [listStyle]="{ 'max-height': '300px' }"
-        />
+        >
+          <ng-template let-product pTemplate="item">
+            <div class="text-responsive">
+              {{ product.displayName }}
+            </div>
+          </ng-template>
+        </p-listbox>
       </div>
       <ng-template pTemplate="footer">
         <div class="flex flex-wrap justify-content-end column-gap-2 row-gap-1">

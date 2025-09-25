@@ -45,7 +45,7 @@ describe('OneCXHelpItemEditorComponent', () => {
     'updateHelp',
     'searchProductsByCriteria'
   ])
-  const messageServiceSpy = jasmine.createSpyObj<PortalMessageService>('PortalMessageService', ['error', 'info'])
+  const messageServiceSpy = jasmine.createSpyObj<PortalMessageService>('PortalMessageService', ['error', 'success'])
   const portalDialogServiceSpy = jasmine.createSpyObj<PortalDialogService>('PortalDialogService', ['openDialog'])
   let baseUrlSubject: ReplaySubject<any>
 
@@ -79,7 +79,9 @@ describe('OneCXHelpItemEditorComponent', () => {
       .compileComponents()
 
     baseUrlSubject.next('base_url_mock')
+  }))
 
+  afterEach(() => {
     helpApiServiceSpy.searchHelps.calls.reset()
     helpApiServiceSpy.createNewHelp.calls.reset()
     helpApiServiceSpy.updateHelp.calls.reset()
@@ -87,11 +89,11 @@ describe('OneCXHelpItemEditorComponent', () => {
     // eslint-disable-next-line deprecation/deprecation
     portalDialogServiceSpy.openDialog.calls.reset()
     messageServiceSpy.error.calls.reset()
-    messageServiceSpy.info.calls.reset()
+    messageServiceSpy.success.calls.reset()
     mockUserService.hasPermission.and.returnValue(true)
 
     helpApiServiceSpy.searchProductsByCriteria.and.returnValue(of({} as any))
-  }))
+  })
 
   it('should create', () => {
     fixture = TestBed.createComponent(OneCXHelpItemEditorComponent)
@@ -449,8 +451,6 @@ describe('OneCXHelpItemEditorComponent', () => {
 
     oneCXHelpItemEditorHarness = await TestbedHarnessEnvironment.harnessForFixture(fixture, OneCXHelpItemEditorHarness)
     await oneCXHelpItemEditorHarness.clickHelpEditorButton()
-    expect(messageServiceSpy.error).toHaveBeenCalledTimes(1)
-    expect(messageServiceSpy.info).toHaveBeenCalledTimes(0)
     expect(messageServiceSpy.error).toHaveBeenCalledOnceWith({
       summaryKey: 'HELP_ITEM_EDITOR.OPEN_HELP_PAGE_EDITOR_ERROR'
     })
@@ -487,8 +487,6 @@ describe('OneCXHelpItemEditorComponent', () => {
 
     oneCXHelpItemEditorHarness = await TestbedHarnessEnvironment.harnessForFixture(fixture, OneCXHelpItemEditorHarness)
     await oneCXHelpItemEditorHarness.clickHelpEditorButton()
-    expect(messageServiceSpy.error).toHaveBeenCalledTimes(1)
-    expect(messageServiceSpy.info).toHaveBeenCalledTimes(0)
     expect(messageServiceSpy.error).toHaveBeenCalledOnceWith({
       summaryKey: 'HELP_ITEM_EDITOR.OPEN_HELP_PAGE_EDITOR_ERROR'
     })
@@ -815,7 +813,7 @@ describe('OneCXHelpItemEditorComponent', () => {
     oneCXHelpItemEditorHarness = await TestbedHarnessEnvironment.harnessForFixture(fixture, OneCXHelpItemEditorHarness)
     await oneCXHelpItemEditorHarness.clickHelpEditorButton()
 
-    expect(messageServiceSpy.info).toHaveBeenCalledOnceWith({
+    expect(messageServiceSpy.success).toHaveBeenCalledOnceWith({
       summaryKey: 'OCX_PORTAL_VIEWPORT.UPDATE_HELP_ARTICLE_INFO'
     })
     expect(helpApiServiceSpy.searchHelps).toHaveBeenCalledWith({
@@ -885,7 +883,7 @@ describe('OneCXHelpItemEditorComponent', () => {
     oneCXHelpItemEditorHarness = await TestbedHarnessEnvironment.harnessForFixture(fixture, OneCXHelpItemEditorHarness)
     await oneCXHelpItemEditorHarness.clickHelpEditorButton()
 
-    expect(messageServiceSpy.info).toHaveBeenCalledOnceWith({
+    expect(messageServiceSpy.success).toHaveBeenCalledOnceWith({
       summaryKey: 'OCX_PORTAL_VIEWPORT.UPDATE_HELP_ARTICLE_INFO'
     })
     expect(helpApiServiceSpy.searchHelps).toHaveBeenCalledWith({

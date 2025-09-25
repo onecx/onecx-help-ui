@@ -1,5 +1,6 @@
 @import '/src/app/_hm-mixins.scss';
 
+@include word-break-all;
 @include danger-action;
 @include table-inline-buttons;
 @include table-zebra-rows;
@@ -9,6 +10,7 @@
 @include correct-file-upload;
 @include displaying-text-responsive;
 @include listbox-layout;
+@include listbox-zebra-rows;
 
 :host ::ng-deep {
   .p-datatable {
@@ -33,5 +35,9 @@
   }
   ocx-data-view-controls div {
     justify-content: center !important;
+  }
+
+  .text-ellipsis-2-lines {
+    @include displaying-text-ellipsis(2);
   }
 }

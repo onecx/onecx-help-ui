@@ -206,7 +206,7 @@ export class OneCXHelpItemEditorComponent implements ocxRemoteComponent, ocxRemo
       .subscribe({
         next: ([itemId, productName]) => {
           if (itemId && productName) {
-            this.portalMessageService.info({
+            this.portalMessageService.success({
               summaryKey: 'OCX_PORTAL_VIEWPORT.UPDATE_HELP_ARTICLE_INFO'
             })
             this.loadHelpArticle(productName, itemId)

@@ -272,13 +272,18 @@ export class HelpSearchComponent implements OnInit {
     // combine master data (slots) with used data (enrich them with correct display names)
     this.loadingMetaData = true
     this.metaData$ = combineLatest([this.productData$, this.usedLists$]).pipe(
-      map(([products, usedLists]: [Product[] | undefined, Product[]]) => {
+      map(([products, usedList]: [Product[] | undefined, Product[]]) => {
         // enrich the used lists with display names taken from master data (allLists)
-        if (products) for (const p of usedLists) p.displayName = this.getDisplayName(p.name, products, p.name)
+        const allProducts = products
+        if (products) {
+          for (const p of usedList) p.displayName = this.getDisplayName(p.name, products, p.name)
+          products.sort(this.sortProductsByName)
+        }
+        usedList.sort(this.sortProductsByName)
         this.loadingMetaData = false
         return {
-          allProducts: products ?? usedLists,
-          usedProducts: usedLists
+          allProducts: products ?? usedList,
+          usedProducts: usedList
         }
       })
     )
@@ -311,17 +316,16 @@ export class HelpSearchComponent implements OnInit {
     )
   }
 
-  // default sorting: 1. productName, 2.itemId
+  // default sorting: 1.productName, 2.itemId
   private sortHelpItemByDefault(a: Help, b: Help): number {
     return (
       a.productName!.toUpperCase().localeCompare(b.productName!.toUpperCase()) ||
       a.itemId.toUpperCase().localeCompare(b.itemId.toUpperCase())
     )
   }
-  /*
   private sortProductsByName(a: Product, b: Product): number {
-    return a.displayName.toUpperCase().localeCompare(b.displayName.toUpperCase())
-  }*/
+    return a.displayName!.toUpperCase().localeCompare(b.displayName!.toUpperCase())
+  }
 
   /****************************************************************************
    *  IMPORT

@@ -91,6 +91,7 @@
     },
     "VIEW": {
       "LABEL": "Details",
+      "HEADER": "Help Item Details",
       "TOOLTIP": "Help Item Details"
     },
     "CANCEL": "Cancel",
@@ -170,7 +171,7 @@
     "TOOLTIPS": {
       "PRODUCT_NAME": "Application with Help Item",
       "ID": "Unique ID for a Help Item of the Application.",
-      "URL": "The final URL that is used when calling and consists of the parts base, resource and context.",
+      "URL": "The final URL that is used when calling and consists of the parts base URL, resource and context.",
       "BASE_URL": "Base part of the Help Item URL - the base path to the documentation of the Application",
       "RESOURCE_URL": "Path from the base path to the specific page (resource)",
       "CONTEXT": "Specific context within the page (resource)",
@@ -179,7 +180,7 @@
   },
   "HELP_DETAIL": {
     "URL": "URL to Help page",
-    "URL.TOOLTIP": "The used URL to Help page, consists of the parts base, resource and context."
+    "URL.TOOLTIP": "The used URL to Help page, consists of the parts base URL, resource and context."
   },
   "SHOW_HELP": {
     "LABEL": "Show Help for this page",
@@ -224,6 +225,10 @@
     }
   },
   "EXCEPTIONS": {
+    "HTTP_STATUS_undefined": {
+      "HELP_ITEM": "Unknown problem retrieving Help Item data - please try again.",
+      "ASSIGNMENTS": "Unknown problem retrieving Applications with assigned Announcements - please try again."
+    },
     "HTTP_STATUS_0": {
       "HELP_ITEM": "Unknown problem retrieving Help Item data - please try again.",
       "ASSIGNMENTS": "Unknown problem retrieving Applications with assigned Announcements - please try again."

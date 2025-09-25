@@ -8,6 +8,7 @@ import { HelpsInternalAPIService, Help, CreateHelp } from 'src/app/shared/genera
 import { ChangeMode, Product } from '../help-search/help-search.component'
 
 export interface HelpDetailForm {
+  modificationCount: FormControl<number | null>
   product: FormControl<Product | null>
   productName: FormControl<string | null>
   itemId: FormControl<string | null>
@@ -42,6 +43,7 @@ export class HelpDetailComponent implements OnChanges {
     private readonly msgService: PortalMessageService
   ) {
     this.helpForm = new FormGroup<HelpDetailForm>({
+      modificationCount: new FormControl(null),
       product: new FormControl(null),
       productName: new FormControl(null, [Validators.required]),
       itemId: new FormControl(null, [Validators.required, Validators.minLength(2), Validators.maxLength(255)]),
@@ -52,7 +54,7 @@ export class HelpDetailComponent implements OnChanges {
     })
   }
 
-  ngOnChanges() {
+  public ngOnChanges() {
     if (!this.displayDialog) return
     this.exceptionKey = undefined
     // matching mode and given data?
@@ -89,7 +91,7 @@ export class HelpDetailComponent implements OnChanges {
   /****************************************************************************
    *  UI Events
    */
-  public onDialogHide(changed?: boolean) {
+  public onDialogHide(changed?: boolean): void {
     this.hideDialogAndChanged.emit(changed ?? false)
     this.helpForm.reset()
   }
@@ -119,7 +121,7 @@ export class HelpDetailComponent implements OnChanges {
   /****************************************************************************
    *  SAVING
    */
-  public onSave() {
+  public onSave(): void {
     if (!this.helpForm.valid) {
       this.msgService.error({ summaryKey: 'VALIDATION.ERRORS.HELP_ITEM.FORM_INVALID' })
       return
@@ -129,7 +131,7 @@ export class HelpDetailComponent implements OnChanges {
     else this.updateItem(item)
   }
 
-  private createItem(item: CreateHelp) {
+  private createItem(item: CreateHelp): void {
     this.helpApi.createNewHelp({ createHelp: item }).subscribe({
       next: () => {
         this.searchEmitter.emit()
@@ -144,11 +146,11 @@ export class HelpDetailComponent implements OnChanges {
   }
 
   private updateItem(item: Help): void {
-    if (this.helpItem?.id && this.helpItem?.modificationCount)
+    if (this.helpItem?.id)
       this.helpApi
         .updateHelp({
-          id: this.helpItem.id, // the id is not part of the form!
-          updateHelp: { ...item, modificationCount: this.helpItem?.modificationCount }
+          id: this.helpItem.id, // id is not part of the form!
+          updateHelp: { ...item, modificationCount: item.modificationCount! }
         })
         .subscribe({
           next: () => {
@@ -163,7 +165,7 @@ export class HelpDetailComponent implements OnChanges {
         })
   }
 
-  private displayErrorMsg(mode: string, code: string) {
+  private displayErrorMsg(mode: string, code: string): void {
     if (code) {
       this.msgService.error({
         summaryKey: 'ACTIONS.' + mode + '.MESSAGE.NOK',
@@ -171,12 +173,13 @@ export class HelpDetailComponent implements OnChanges {
       })
     } else this.msgService.error({ summaryKey: 'ACTIONS.' + mode + '.MESSAGE.NOK' })
   }
+
   // update product name in form according to the selected product
-  public onChangeProduct(ev: { value: Product }) {
+  public onChangeProduct(ev: { value: Product }): void {
     if (ev.value instanceof Object) this.helpForm.get('productName')?.setValue(ev.value.name)
   }
 
-  public onFilterProducts(event: { query: string }) {
+  public onFilterProducts(event: { query: string }): void {
     const query = event.query.toLowerCase()
     this.productsFiltered = this.allProducts?.filter((product) => product.displayName?.toLowerCase().includes(query))
     this.productsFiltered.sort(this.sortProductsByName)

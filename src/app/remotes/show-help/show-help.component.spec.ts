@@ -335,18 +335,83 @@ describe('OneCXShowHelpComponent', () => {
       initTestComponent()
     })
     it('should not append origin for external url', () => {
-      const url = component.constructUrl('https://www.google.com/', 'http://localhost:4300', '/shell/')
+      const url = component['constructUrl']('https://www.google.com/', 'http://localhost:4300', '/shell/')
       expect(url).toEqual(new URL('https://www.google.com/'))
     })
 
     it('should append origin for relative url', () => {
-      const url = component.constructUrl('/admin/help', 'http://localhost:4300', '/')
+      const url = component['constructUrl']('/admin/help', 'http://localhost:4300', '/')
       expect(url).toEqual(new URL('http://localhost:4300/admin/help'))
     })
 
     it('should append origin and deploymentPath for relative url', () => {
-      const url = component.constructUrl('/admin/help', 'http://localhost:4300', '/shell/')
+      const url = component['constructUrl']('/admin/help', 'http://localhost:4300', '/shell/')
       expect(url).toEqual(new URL('http://localhost:4300/shell/admin/help'))
+    })
+  })
+
+  describe('prepare URL', () => {
+    it('should prepare empty url: ', () => {
+      const help: Help = {
+        id: 'id',
+        productName: 'ocx-help-ui',
+        itemId: 'PAGE_HELP_SEARCH'
+      }
+      const url = component['prepareUrl'](help)
+
+      expect(url).toEqual('')
+    })
+
+    it('should prepare the url on: base', () => {
+      const help: Help = {
+        id: 'id',
+        productName: 'ocx-help-ui',
+        itemId: 'PAGE_HELP_SEARCH',
+        baseUrl: 'http://localhost:8080/help'
+      }
+      const url = component['prepareUrl'](help)
+
+      expect(url).toEqual(help.baseUrl!)
+    })
+
+    it('should prepare the url on: base + context', () => {
+      const help: Help = {
+        id: 'id',
+        productName: 'ocx-help-ui',
+        itemId: 'PAGE_HELP_SEARCH',
+        baseUrl: 'http://localhost:8080/help',
+        context: 'ctx'
+      }
+      const url = component['prepareUrl'](help)
+
+      expect(url).toEqual(help.baseUrl! + '#' + help.context)
+    })
+
+    it('should prepare the url on: base + resource', () => {
+      const help: Help = {
+        id: 'id',
+        productName: 'ocx-help-ui',
+        itemId: 'PAGE_HELP_SEARCH',
+        baseUrl: 'http://localhost:8080/help',
+        resourceUrl: '/search'
+      }
+      const url = component['prepareUrl'](help)
+
+      expect(url).toEqual(help.baseUrl! + help.resourceUrl)
+    })
+
+    it('should prepare the url on: base + resource + context', () => {
+      const help: Help = {
+        id: 'id',
+        productName: 'ocx-help-ui',
+        itemId: 'PAGE_HELP_SEARCH',
+        baseUrl: 'http://localhost:8080/help',
+        resourceUrl: '/search',
+        context: '#ctx'
+      }
+      const url = component['prepareUrl'](help)
+
+      expect(url).toEqual(help.baseUrl! + help.resourceUrl + help.context)
     })
   })
 })
