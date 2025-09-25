@@ -33,7 +33,7 @@ describe('OneCXShowHelpComponent', () => {
   let fixture: ComponentFixture<OneCXShowHelpComponent>
   let oneCXShowHelpHarness: OneCXShowHelpHarness
 
-  const mockUserService = jasmine.createSpyObj('UserService', ['hasPermission'])
+  const mockUserService = jasmine.createSpyObj<UserService>('UserService', ['hasPermission'])
   mockUserService.hasPermission.and.callFake((permission: string) => {
     return ['HELP#EDIT', 'HELP#VIEW'].includes(permission)
   })
