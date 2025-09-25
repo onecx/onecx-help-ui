@@ -212,7 +212,7 @@
     },
     "ERRORS": {
       "CRITERIA.INVALID": "Search criteria invalid",
-      "HELP_ITEM.UNIQUE_CONSTRAINT": "Help Item already exists",
+      "HELP_ITEM.CONSTRAINT_VIOLATIONS": "OpenAPI Constraint Violation",
       "HELP_ITEM.PERSIST_ENTITY_FAILED": "Help Item already exists",
       "HELP_ITEM.MERGE_ENTITY_FAILED": "A Help Item with this ID already exists for the Application.",
       "HELP_ITEM.OPTIMISTIC_LOCK": "Help Item was updated or deleted in the meantime.",
