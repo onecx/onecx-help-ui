@@ -333,6 +333,7 @@ describe('OneCXHelpItemEditorComponent', () => {
     })
   })
 
+  // Reason: Seems a duplication
   xit('should open help item editor dialog when article and application defined', async () => {
     const appStateService = TestBed.inject(AppStateService)
     spyOn(appStateService.currentPage$, 'asObservable').and.returnValue(
@@ -450,6 +451,7 @@ describe('OneCXHelpItemEditorComponent', () => {
     expect(helpApiServiceSpy.updateHelp).toHaveBeenCalledTimes(0)
   })
 
+  // Reason: Seems a duplication
   xit('should open help item editor dialog for new item', async () => {
     const appStateService = TestBed.inject(AppStateService)
     spyOn(appStateService.currentPage$, 'asObservable').and.returnValue(
@@ -502,6 +504,7 @@ describe('OneCXHelpItemEditorComponent', () => {
     )
   })
 
+  // Reason: Seems a duplication
   xit('should open help item editor dialog for existing item', async () => {
     const appStateService = TestBed.inject(AppStateService)
     spyOn(appStateService.currentPage$, 'asObservable').and.returnValue(
