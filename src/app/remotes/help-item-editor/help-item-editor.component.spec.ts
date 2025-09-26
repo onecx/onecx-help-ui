@@ -125,7 +125,7 @@ describe('OneCXHelpItemEditorComponent', () => {
   })
 
   describe('initialize', () => {
-    xit('should call ocxInitRemoteComponent with the correct config', () => {
+    it('should call ocxInitRemoteComponent with the correct config', () => {
       const rcc: RemoteComponentConfig = {
         appId: 'appId',
         productName: 'prodName',
