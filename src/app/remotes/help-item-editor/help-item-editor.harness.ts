@@ -5,7 +5,7 @@ export class OneCXHelpItemEditorHarness extends ComponentHarness {
 
   getHelpEditorButton = this.locatorForOptional('#ocx_topbar_action_edit_help_item')
 
-  async getShowHelpButtonEditorId(): Promise<string | null | undefined> {
+  async getHelpEditorButtonId(): Promise<string | null | undefined> {
     return await (await this.getHelpEditorButton())?.getAttribute('id')
   }
 

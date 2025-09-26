@@ -3,16 +3,16 @@
     <span class="p-float-label">
       <input
         id="hm_item_editor_form_product_name"
-        class="w-full"
+        class="w-full pt-3 pb-2 text-responsive"
         type="text"
         pInputText
         formControlName="productName"
-        aria-labelledby="hm_item_editor_form_product_name"
+        [ariaLabel]="'HELP_ITEM.TOOLTIPS.PRODUCT_NAME' | translate"
         [pTooltip]="'HELP_ITEM.TOOLTIPS.PRODUCT_NAME' | translate"
         tooltipPosition="top"
         tooltipEvent="hover"
       />
-      <label class="ocx-required-label" for="hm_item_editor_form_product_name">
+      <label class="ocx-required-label" for="hm_item_editor_form_product_name" aria-hidden="true">
         {{ 'HELP_ITEM.PRODUCT_NAME' | translate }}</label
       >
     </span>
@@ -24,12 +24,14 @@
         type="text"
         pInputText
         formControlName="helpItemId"
-        aria-labelledby="hm_item_editor_form_helpitem_id"
+        [ariaLabel]="'HELP_ITEM.TOOLTIPS.ID' | translate"
         [pTooltip]="'HELP_ITEM.TOOLTIPS.ID' | translate"
         tooltipPosition="top"
         tooltipEvent="hover"
       />
-      <label class="ocx-required-label" for="hm_item_editor_form_helpitem_id"> {{ 'HELP_ITEM.ID' | translate }}</label>
+      <label class="ocx-required-label" for="hm_item_editor_form_helpitem_id" aria-hidden="true">
+        {{ 'HELP_ITEM.ID' | translate }}</label
+      >
     </span>
 
     <p-fieldset [toggleable]="false" [collapsed]="false" styleClass="surface-100 pb-3 px-2">
@@ -46,12 +48,12 @@
             type="text"
             pInputText
             formControlName="baseUrl"
-            aria-labelledby="hm_item_editor_form_base_url"
+            [ariaLabel]="'HELP_ITEM.TOOLTIPS.BASE_URL' | translate"
             [pTooltip]="'HELP_ITEM.TOOLTIPS.BASE_URL' | translate"
             tooltipPosition="top"
             tooltipEvent="hover"
           />
-          <label class="ocx-required-label" for="hm_item_editor_form_base_url">
+          <label class="ocx-required-label" for="hm_item_editor_form_base_url" aria-hidden="true">
             {{ 'HELP_ITEM.BASE_URL' | translate }}</label
           >
         </span>
@@ -62,12 +64,14 @@
             type="text"
             pInputText
             formControlName="resourceUrl"
-            aria-labelledby="hm_item_editor_form_resource_url"
+            [ariaLabel]="'HELP_ITEM.TOOLTIPS.RESOURCE_URL' | translate"
             [pTooltip]="'HELP_ITEM.TOOLTIPS.RESOURCE_URL' | translate"
             tooltipPosition="top"
             tooltipEvent="hover"
           />
-          <label for="hm_item_editor_form_resource_url">{{ 'HELP_ITEM.RESOURCE_URL' | translate }}</label>
+          <label for="hm_item_editor_form_resource_url" aria-hidden="true">{{
+            'HELP_ITEM.RESOURCE_URL' | translate
+          }}</label>
         </span>
         <span class="p-float-label">
           <input
@@ -76,12 +80,14 @@
             id="hm_item_editor_form_context"
             class="w-full pt-3 pb-2 text-responsive"
             formControlName="context"
-            aria-labelledby="hm_item_editor_form_context"
+            [ariaLabel]="'HELP_ITEM.TOOLTIPS.CONTEXT' | translate"
             [pTooltip]="'HELP_ITEM.TOOLTIPS.CONTEXT' | translate"
             tooltipPosition="top"
             tooltipEvent="hover"
           />
-          <label class="" for="hm_item_editor_form_context">{{ 'HELP_ITEM.CONTEXT' | translate }}</label>
+          <label class="" for="hm_item_editor_form_context" aria-hidden="true">{{
+            'HELP_ITEM.CONTEXT' | translate
+          }}</label>
         </span>
       </div>
     </p-fieldset>

@@ -253,7 +253,7 @@ describe('HelpSearchComponent', () => {
 
   describe('META data: load used products', () => {
     it('should get all items assigned to products', (done) => {
-      const assignments = { ProductNames: ['prod1'] }
+      const assignments = { productNames: ['prod1'] }
       apiServiceSpy.getAllProductsWithHelpItems.and.returnValue(of(assignments))
 
       component.ngOnInit()
@@ -289,7 +289,7 @@ describe('HelpSearchComponent', () => {
       const products = [{ name: 'product', displayName: 'Product' }]
       component.pdSlotEmitter.emit(products)
       // products are used...
-      const assignments = { ProductNames: ['product', 'unknown'] }
+      const assignments = { productNames: ['product', 'unknown'] }
       apiServiceSpy.getAllProductsWithHelpItems.and.returnValue(of(assignments))
 
       component.ngOnInit()
@@ -311,7 +311,7 @@ describe('HelpSearchComponent', () => {
 
     it('should get no existing products - successful but without enrichments', (done) => {
       // product and workspace are used...
-      const assignments = { ProductNames: ['product', 'unknown'] }
+      const assignments = { productNames: ['product', 'unknown'] }
       apiServiceSpy.getAllProductsWithHelpItems.and.returnValue(of(assignments))
 
       component.ngOnInit()
@@ -370,7 +370,7 @@ describe('HelpSearchComponent', () => {
       expect(console.error).toHaveBeenCalledWith('exportHelps', errorResponse)
     })
 
-    it('should reset displayExportDialog, selectedResults, and selectedProductNames', () => {
+    it('should reset displayExportDialog, selectedResults, and selectedproductNames', () => {
       component.displayExportDialog = true
       component.exportProductList = [product1.name, product2.name]
 

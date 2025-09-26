@@ -1,12 +1,21 @@
 <div class="layout-topbar-item" *ocxIfPermission="'HELP#EDIT'; permissions: permissions">
+  <!-- slot getting data from product store: one time only -->
+  <ocx-slot
+    *ngIf="pdIsComponentDefined"
+    id="ocx_topbar_action_edit_help_item_slot_products"
+    [name]="pdSlotName"
+    [inputs]="{ dataType: 'products', logEnabled: false, logPrefix: 'help-editor' }"
+    [outputs]="{ products: pdSlotEmitter }"
+  >
+  </ocx-slot>
   <button
     id="ocx_topbar_action_edit_help_item"
     class="layout-topbar-action"
     pRipple
     pButton
     (click)="onEditHelpItem($event)"
-    (keydown.enter.t)="onEditHelpItem({})"
-    [attr.aria-label]="'HELP_ITEM_EDITOR.LABEL' | translate"
+    (keydown.enter.t)="onEditHelpItem($event)"
+    [attr.aria-label]="'HELP_ITEM_EDITOR.TOOLTIP' | translate"
     [pTooltip]="'HELP_ITEM_EDITOR.TOOLTIP' | translate"
     tooltipPosition="bottom"
     tooltipEvent="hover"

@@ -33,10 +33,6 @@ import { HelpSearchCriteria } from '../model/helpSearchCriteria';
 // @ts-ignore
 import { ProblemDetailResponse } from '../model/problemDetailResponse';
 // @ts-ignore
-import { ProductsPageResult } from '../model/productsPageResult';
-// @ts-ignore
-import { ProductsSearchCriteria } from '../model/productsSearchCriteria';
-// @ts-ignore
 import { UpdateHelp } from '../model/updateHelp';
 
 // @ts-ignore
@@ -73,10 +69,6 @@ export interface ImportHelpsRequestParams {
 
 export interface SearchHelpsRequestParams {
     helpSearchCriteria: HelpSearchCriteria;
-}
-
-export interface SearchProductsByCriteriaRequestParams {
-    productsSearchCriteria?: ProductsSearchCriteria;
 }
 
 export interface UpdateHelpRequestParams {
@@ -233,12 +225,6 @@ export class HelpsInternalAPIService {
             throw new Error('Required parameter id was null or undefined when calling deleteHelp.');
         }
 
-        let localVarQueryParameters = new HttpParams({encoder: this.encoder});
-        if (id !== undefined && id !== null) {
-          localVarQueryParameters = this.addToHttpParams(localVarQueryParameters,
-            <any>id, 'id');
-        }
-
         let localVarHeaders = this.defaultHeaders;
 
         let localVarHttpHeaderAcceptSelected: string | undefined = options && options.httpHeaderAccept;
@@ -269,11 +255,10 @@ export class HelpsInternalAPIService {
             }
         }
 
-        let localVarPath = `/helps`;
+        let localVarPath = `/helps/${this.configuration.encodeParam({name: "id", value: id, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: undefined})}`;
         return this.httpClient.request<any>('delete', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
-                params: localVarQueryParameters,
                 responseType: <any>responseType_,
                 withCredentials: this.configuration.withCredentials,
                 headers: localVarHeaders,
@@ -421,12 +406,6 @@ export class HelpsInternalAPIService {
             throw new Error('Required parameter id was null or undefined when calling getHelpById.');
         }
 
-        let localVarQueryParameters = new HttpParams({encoder: this.encoder});
-        if (id !== undefined && id !== null) {
-          localVarQueryParameters = this.addToHttpParams(localVarQueryParameters,
-            <any>id, 'id');
-        }
-
         let localVarHeaders = this.defaultHeaders;
 
         let localVarHttpHeaderAcceptSelected: string | undefined = options && options.httpHeaderAccept;
@@ -458,11 +437,10 @@ export class HelpsInternalAPIService {
             }
         }
 
-        let localVarPath = `/helps`;
+        let localVarPath = `/helps/${this.configuration.encodeParam({name: "id", value: id, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: undefined})}`;
         return this.httpClient.request<Help>('get', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
-                params: localVarQueryParameters,
                 responseType: <any>responseType_,
                 withCredentials: this.configuration.withCredentials,
                 headers: localVarHeaders,
@@ -473,7 +451,7 @@ export class HelpsInternalAPIService {
     }
 
     /**
-     * Get a help item by its id and product name
+     * Get a help item by its id and product name. If not exist, a default item will be created and returned.
      * @param requestParameters
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
@@ -528,7 +506,7 @@ export class HelpsInternalAPIService {
             }
         }
 
-        let localVarPath = `/helps/${this.configuration.encodeParam({name: "productName", value: productName, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: undefined})}`;
+        let localVarPath = `/helps/item/${this.configuration.encodeParam({name: "productName", value: productName, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: undefined})}`;
         return this.httpClient.request<Help>('get', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
@@ -681,72 +659,6 @@ export class HelpsInternalAPIService {
     }
 
     /**
-     * Get all products to which help items are assigned to
-     * @param requestParameters
-     * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
-     * @param reportProgress flag to report request and response progress.
-     */
-    public searchProductsByCriteria(requestParameters: SearchProductsByCriteriaRequestParams, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<ProductsPageResult>;
-    public searchProductsByCriteria(requestParameters: SearchProductsByCriteriaRequestParams, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<HttpResponse<ProductsPageResult>>;
-    public searchProductsByCriteria(requestParameters: SearchProductsByCriteriaRequestParams, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<HttpEvent<ProductsPageResult>>;
-    public searchProductsByCriteria(requestParameters: SearchProductsByCriteriaRequestParams, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<any> {
-        const productsSearchCriteria = requestParameters.productsSearchCriteria;
-
-        let localVarHeaders = this.defaultHeaders;
-
-        let localVarHttpHeaderAcceptSelected: string | undefined = options && options.httpHeaderAccept;
-        if (localVarHttpHeaderAcceptSelected === undefined) {
-            // to determine the Accept header
-            const httpHeaderAccepts: string[] = [
-                'application/json'
-            ];
-            localVarHttpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
-        }
-        if (localVarHttpHeaderAcceptSelected !== undefined) {
-            localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
-        }
-
-        let localVarHttpContext: HttpContext | undefined = options && options.context;
-        if (localVarHttpContext === undefined) {
-            localVarHttpContext = new HttpContext();
-        }
-
-
-        // to determine the Content-Type header
-        const consumes: string[] = [
-            'application/json'
-        ];
-        const httpContentTypeSelected: string | undefined = this.configuration.selectHeaderContentType(consumes);
-        if (httpContentTypeSelected !== undefined) {
-            localVarHeaders = localVarHeaders.set('Content-Type', httpContentTypeSelected);
-        }
-
-        let responseType_: 'text' | 'json' | 'blob' = 'json';
-        if (localVarHttpHeaderAcceptSelected) {
-            if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
-                responseType_ = 'text';
-            } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
-                responseType_ = 'json';
-            } else {
-                responseType_ = 'blob';
-            }
-        }
-
-        let localVarPath = `/helps/products`;
-        return this.httpClient.request<ProductsPageResult>('post', `${this.configuration.basePath}${localVarPath}`,
-            {
-                context: localVarHttpContext,
-                body: productsSearchCriteria,
-                responseType: <any>responseType_,
-                withCredentials: this.configuration.withCredentials,
-                headers: localVarHeaders,
-                observe: observe,
-                reportProgress: reportProgress
-            }
-        );
-    }
-
-    /**
      * Update a help item by its id
      * @param requestParameters
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
@@ -765,12 +677,6 @@ export class HelpsInternalAPIService {
             throw new Error('Required parameter updateHelp was null or undefined when calling updateHelp.');
         }
 
-        let localVarQueryParameters = new HttpParams({encoder: this.encoder});
-        if (id !== undefined && id !== null) {
-          localVarQueryParameters = this.addToHttpParams(localVarQueryParameters,
-            <any>id, 'id');
-        }
-
         let localVarHeaders = this.defaultHeaders;
 
         let localVarHttpHeaderAcceptSelected: string | undefined = options && options.httpHeaderAccept;
@@ -811,12 +717,11 @@ export class HelpsInternalAPIService {
             }
         }
 
-        let localVarPath = `/helps`;
+        let localVarPath = `/helps/${this.configuration.encodeParam({name: "id", value: id, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: undefined})}`;
         return this.httpClient.request<any>('put', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
                 body: updateHelp,
-                params: localVarQueryParameters,
                 responseType: <any>responseType_,
                 withCredentials: this.configuration.withCredentials,
                 headers: localVarHeaders,

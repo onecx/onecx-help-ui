@@ -49,7 +49,10 @@ describe('OneCXShowHelpComponent', () => {
     if (rcc) component.ocxInitRemoteComponent(rcc)
     fixture.detectChanges()
   }
-
+  async function initHarness() {
+    fixture.detectChanges()
+    oneCXShowHelpHarness = await TestbedHarnessEnvironment.harnessForFixture(fixture, OneCXShowHelpHarness)
+  }
   let baseUrlSubject: ReplaySubject<any>
 
   beforeEach(() => {
@@ -76,61 +79,70 @@ describe('OneCXShowHelpComponent', () => {
       })
       .compileComponents()
     baseUrlSubject.next('base_url_mock')
+  })
 
-    helpApiServiceSpy.getHelpByProductNameItemId.calls.reset()
+  afterEach(() => {
+    mockUserService.hasPermission.and.returnValue(true)
+    // to spy data: reset
     dialogServiceSpy.open.calls.reset()
     messageServiceSpy.error.calls.reset()
+    helpApiServiceSpy.getHelpByProductNameItemId.calls.reset()
     helpApiServiceSpy.getHelpByProductNameItemId.and.returnValue(of({} as any))
   })
 
-  it('should create', () => {
-    initTestComponent()
+  describe('construction', () => {
+    it('should create', () => {
+      initTestComponent({ permissions: ['HELP#VIEW'], baseUrl: 'base_url' } as RemoteComponentConfig)
 
-    expect(component).toBeTruthy()
-  })
-
-  it('should call ocxInitRemoteComponent with the correct config', () => {
-    const mockConfig: RemoteComponentConfig = {
-      appId: 'appId',
-      productName: 'prodName',
-      permissions: ['HELP#VIEW'],
-      baseUrl: 'base'
-    }
-    spyOn(component, 'ocxInitRemoteComponent')
-
-    component.ocxRemoteComponentConfig = mockConfig
-
-    expect(component.ocxInitRemoteComponent).toHaveBeenCalledWith(mockConfig)
-  })
-
-  it('should init remote component', (done: DoneFn) => {
-    initTestComponent({ permissions: ['HELP#VIEW'], baseUrl: 'base_url' } as RemoteComponentConfig)
-
-    expect(component.permissions).toEqual(['HELP#VIEW'])
-    expect(helpApiServiceSpy.configuration.basePath).toEqual('base_url/bff')
-    baseUrlSubject.asObservable().subscribe((item) => {
-      expect(item).toEqual('base_url')
-      done()
+      expect(component).toBeTruthy()
     })
   })
 
-  it('should not show button if permissions are not met', async () => {
-    initTestComponent()
-    oneCXShowHelpHarness = await TestbedHarnessEnvironment.harnessForFixture(fixture, OneCXShowHelpHarness)
+  describe('initialize', () => {
+    it('should call ocxInitRemoteComponent with the correct config', () => {
+      const mockConfig: RemoteComponentConfig = {
+        appId: 'appId',
+        productName: 'prodName',
+        permissions: ['HELP#VIEW'],
+        baseUrl: 'base'
+      }
+      spyOn(component, 'ocxInitRemoteComponent')
 
-    expect(await oneCXShowHelpHarness.getShowHelpButton()).toBeNull()
+      component.ocxRemoteComponentConfig = mockConfig
+
+      expect(component.ocxInitRemoteComponent).toHaveBeenCalledWith(mockConfig)
+    })
+
+    it('should init remote component', (done: DoneFn) => {
+      initTestComponent({ permissions: ['HELP#VIEW'], baseUrl: 'base_url' } as RemoteComponentConfig)
+
+      expect(component.permissions).toEqual(['HELP#VIEW'])
+      expect(helpApiServiceSpy.configuration.basePath).toEqual('base_url/bff')
+      baseUrlSubject.asObservable().subscribe((item) => {
+        expect(item).toEqual('base_url')
+        done()
+      })
+    })
   })
 
-  it('should show button if permissions are met', async () => {
-    initTestComponent({ permissions: ['HELP#VIEW'], baseUrl: 'base_url' } as RemoteComponentConfig)
+  describe('button permissions', () => {
+    it('should not show button if permissions are not met', async () => {
+      initTestComponent()
+      await initHarness()
 
-    oneCXShowHelpHarness = await TestbedHarnessEnvironment.harnessForFixture(fixture, OneCXShowHelpHarness)
+      expect(await oneCXShowHelpHarness.getShowHelpButton()).toBeNull()
+    })
 
-    expect(await oneCXShowHelpHarness.getShowHelpButtonId()).toBe('ocx_topbar_action_show_help_item')
+    it('should show button if permissions are met', async () => {
+      initTestComponent({ permissions: ['HELP#VIEW'], baseUrl: 'base_url' } as RemoteComponentConfig)
+      await initHarness()
+
+      expect(await oneCXShowHelpHarness.getShowHelpButtonId()).toBe('ocx_topbar_action_show_help_item')
+    })
   })
 
   it('should call openHelpPage on enter click', () => {
-    initTestComponent()
+    initTestComponent({ permissions: ['HELP#VIEW'], baseUrl: 'base_url' } as RemoteComponentConfig)
     spyOn(component, 'openHelpPage')
 
     component.onOpenHelpPage()
@@ -138,285 +150,299 @@ describe('OneCXShowHelpComponent', () => {
     expect(component.openHelpPage).toHaveBeenCalledTimes(1)
   })
 
-  it('should contain helpArticleId from current page help id', (done: DoneFn) => {
-    const appStateService = TestBed.inject(AppStateService)
-    spyOn(appStateService.currentPage$, 'asObservable').and.returnValue(
-      of({
-        helpArticleId: 'article_id',
-        pageName: 'page_name'
-      }) as any
-    )
-    const router = TestBed.inject(Router)
-    router.routerState.snapshot.url = 'router_url'
+  describe('get helpArticleId', () => {
+    it('should contain helpArticleId from current page help id', (done: DoneFn) => {
+      const appStateService = TestBed.inject(AppStateService)
+      spyOn(appStateService.currentPage$, 'asObservable').and.returnValue(
+        of({
+          helpArticleId: 'article_id',
+          pageName: 'page_name'
+        }) as any
+      )
+      const router = TestBed.inject(Router)
+      router.routerState.snapshot.url = 'router_url'
 
-    initTestComponent()
+      initTestComponent({ permissions: ['HELP#VIEW'], baseUrl: 'base_url' } as RemoteComponentConfig)
 
-    component.helpArticleId$?.subscribe((id) => {
-      expect(id).toEqual('article_id')
-      done()
+      component.helpArticleId$?.subscribe((id) => {
+        expect(id).toEqual('article_id')
+        done()
+      })
+    })
+
+    it('should contain helpArticleId from current page name', (done: DoneFn) => {
+      const appStateService = TestBed.inject(AppStateService)
+      spyOn(appStateService.currentPage$, 'asObservable').and.returnValue(
+        of({
+          pageName: 'page_name'
+        }) as any
+      )
+      const router = TestBed.inject(Router)
+      router.routerState.snapshot.url = 'router_url'
+
+      initTestComponent({ permissions: ['HELP#VIEW'], baseUrl: 'base_url' } as RemoteComponentConfig)
+
+      component.helpArticleId$?.subscribe((id) => {
+        expect(id).toEqual('page_name')
+        done()
+      })
+    })
+
+    it('should contain helpArticleId from router', (done: DoneFn) => {
+      const appStateService = TestBed.inject(AppStateService)
+      spyOn(appStateService.currentPage$, 'asObservable').and.returnValue(of({}) as any)
+      const router = TestBed.inject(Router)
+      router.routerState.snapshot.url = 'current_url/page'
+
+      initTestComponent({ permissions: ['HELP#VIEW'], baseUrl: 'base_url' } as RemoteComponentConfig)
+
+      component.helpArticleId$?.subscribe((id) => {
+        expect(id).toEqual('current_url/page')
+        done()
+      })
     })
   })
 
-  it('should contain helpArticleId from current page name', (done: DoneFn) => {
-    const appStateService = TestBed.inject(AppStateService)
-    spyOn(appStateService.currentPage$, 'asObservable').and.returnValue(
-      of({
-        pageName: 'page_name'
-      }) as any
-    )
-    const router = TestBed.inject(Router)
-    router.routerState.snapshot.url = 'router_url'
+  describe('rest', () => {
+    it('should contain productName from mfe', (done: DoneFn) => {
+      const appStateService = TestBed.inject(AppStateService)
+      spyOn(appStateService.currentPage$, 'asObservable').and.returnValue(of({}) as any)
 
-    initTestComponent()
+      spyOn(appStateService.currentMfe$, 'asObservable').and.returnValue(
+        of({
+          remoteBaseUrl: '',
+          productName: 'mfe_product_name'
+        }) as any
+      )
 
-    component.helpArticleId$?.subscribe((id) => {
-      expect(id).toEqual('page_name')
-      done()
-    })
-  })
+      initTestComponent({ permissions: ['HELP#VIEW'], baseUrl: 'base_url' } as RemoteComponentConfig)
 
-  it('should contain helpArticleId from router', (done: DoneFn) => {
-    const appStateService = TestBed.inject(AppStateService)
-    spyOn(appStateService.currentPage$, 'asObservable').and.returnValue(of({}) as any)
-    const router = TestBed.inject(Router)
-    router.routerState.snapshot.url = 'current_url/page'
-
-    initTestComponent()
-
-    component.helpArticleId$?.subscribe((id) => {
-      expect(id).toEqual('current_url/page')
-      done()
-    })
-  })
-
-  it('should contain productName from mfe', (done: DoneFn) => {
-    const appStateService = TestBed.inject(AppStateService)
-    spyOn(appStateService.currentPage$, 'asObservable').and.returnValue(of({}) as any)
-
-    spyOn(appStateService.currentMfe$, 'asObservable').and.returnValue(
-      of({
-        remoteBaseUrl: '',
-        productName: 'mfe_product_name'
-      }) as any
-    )
-
-    initTestComponent()
-
-    component.productName$?.subscribe((id) => {
-      expect(id).toEqual('mfe_product_name')
-      done()
-    })
-  })
-
-  it('should load help article when application and help item data are valid', (done: DoneFn) => {
-    helpApiServiceSpy.getHelpByProductNameItemId.and.returnValue(of({ totalElements: 1, stream: [{ id: '1' }] } as any))
-    const appStateService = TestBed.inject(AppStateService)
-    spyOn(appStateService.currentPage$, 'asObservable').and.returnValue(of({ helpArticleId: 'article_id' }) as any)
-    spyOn(appStateService.currentMfe$, 'asObservable').and.returnValue(
-      of({ remoteBaseUrl: '', productName: 'mfe_product_name' }) as any
-    )
-    initTestComponent()
-
-    component.helpDataItem$?.subscribe((item) => {
-      expect(item).toEqual({ totalElements: 1, stream: [{ id: '1' }] } as any)
-      expect(helpApiServiceSpy.getHelpByProductNameItemId).toHaveBeenCalled()
-      done()
-    })
-  })
-
-  it('should return empty object when application or help item data are invalid', (done: DoneFn) => {
-    const appStateService = TestBed.inject(AppStateService)
-    spyOn(appStateService.currentPage$, 'asObservable').and.returnValue(of({ helpArticleId: 'article_id' }) as any)
-    spyOn(appStateService.currentMfe$, 'asObservable').and.returnValue(of({}) as any)
-    initTestComponent()
-
-    component.helpDataItem$?.subscribe((item) => {
-      expect(item).toEqual({} as Help)
-      expect(helpApiServiceSpy.getHelpByProductNameItemId).toHaveBeenCalledTimes(0)
-      done()
-    })
-  })
-
-  it('should return empty object on failed article load', (done: DoneFn) => {
-    const errorResponse = { status: 400, statusText: 'An error occur' }
-    helpApiServiceSpy.getHelpByProductNameItemId.and.returnValue(throwError(() => errorResponse))
-    const appStateService = TestBed.inject(AppStateService)
-    spyOn(appStateService.currentPage$, 'asObservable').and.returnValue(of({ helpArticleId: 'article_id' }) as any)
-    spyOn(appStateService.currentMfe$, 'asObservable').and.returnValue(
-      of({ remoteBaseUrl: '', productName: 'mfe_product_name' }) as any
-    )
-    spyOn(console, 'error')
-
-    initTestComponent()
-
-    component.helpDataItem$?.subscribe((item) => {
-      expect(item).toEqual({} as Help)
-      expect(helpApiServiceSpy.getHelpByProductNameItemId).toHaveBeenCalled()
-      expect(console.error).toHaveBeenCalledWith('getHelpByProductNameItemId', errorResponse)
-      done()
-    })
-  })
-
-  it('should open new window with help article', async () => {
-    spyOn(window, 'open')
-    const helpItem = { id: 'article_id', baseUrl: 'http://base_url', resourceUrl: '/search' }
-    helpApiServiceSpy.getHelpByProductNameItemId.and.returnValue(of(helpItem as any))
-    const appStateService = TestBed.inject(AppStateService)
-    spyOn(appStateService.currentPage$, 'asObservable').and.returnValue(of({ helpArticleId: 'article_id' }) as any)
-    spyOn(appStateService.currentMfe$, 'asObservable').and.returnValue(
-      of({ remoteBaseUrl: '', productName: 'mfe_product_name' }) as any
-    )
-    initTestComponent({ permissions: ['HELP#VIEW'], baseUrl: 'base_url' } as RemoteComponentConfig)
-
-    oneCXShowHelpHarness = await TestbedHarnessEnvironment.harnessForFixture(fixture, OneCXShowHelpHarness)
-    await oneCXShowHelpHarness.onClickShowHelpButton()
-
-    expect(window.open).toHaveBeenCalled()
-  })
-
-  it('should open new window with help article with relativeUrl', async () => {
-    helpApiServiceSpy.getHelpByProductNameItemId.and.returnValue(
-      of({ totalElements: 1, stream: [{ id: '1', resourceUrl: '/admin/helpItem' }] } as any)
-    )
-    const appStateService = TestBed.inject(AppStateService)
-    spyOn(appStateService.currentPage$, 'asObservable').and.returnValue(of({ helpArticleId: 'article_id' }) as any)
-    spyOn(appStateService.currentMfe$, 'asObservable').and.returnValue(
-      of({ remoteBaseUrl: '', productName: 'mfe_product_name' }) as any
-    )
-
-    initTestComponent({ permissions: ['HELP#VIEW'], baseUrl: 'base_url' } as RemoteComponentConfig)
-
-    oneCXShowHelpHarness = await TestbedHarnessEnvironment.harnessForFixture(fixture, OneCXShowHelpHarness)
-    await oneCXShowHelpHarness.onClickShowHelpButton()
-
-    expect(dialogServiceSpy.open).toHaveBeenCalled()
-  })
-
-  it('should do nothing when resourceUrl is not defined', async () => {
-    spyOn(window, 'open')
-    const helpItem = { id: 'article_id', baseUrl: undefined, resourceUrl: undefined }
-
-    helpApiServiceSpy.getHelpByProductNameItemId.and.returnValue(of(helpItem as any))
-    const appStateService = TestBed.inject(AppStateService)
-    spyOn(appStateService.currentPage$, 'asObservable').and.returnValue(of({ helpArticleId: 'article_id' }) as any)
-
-    spyOn(appStateService.currentMfe$, 'asObservable').and.returnValue(
-      of({ remoteBaseUrl: '', productName: 'mfe_product_name' }) as any
-    )
-
-    initTestComponent({ permissions: ['HELP#VIEW'], baseUrl: 'base_url' } as RemoteComponentConfig)
-
-    oneCXShowHelpHarness = await TestbedHarnessEnvironment.harnessForFixture(fixture, OneCXShowHelpHarness)
-    await oneCXShowHelpHarness.onClickShowHelpButton()
-
-    expect(window.open).toHaveBeenCalledTimes(0)
-    expect(messageServiceSpy.error).toHaveBeenCalledTimes(0)
-  })
-
-  it('should display error message on failed window opening', async () => {
-    spyOn(console, 'error')
-    window.open = function () {
-      throw new Error()
-    }
-    const helpItem = { id: 'article_id', baseUrl: 'http://base_url', resourceUrl: '/search' }
-    helpApiServiceSpy.getHelpByProductNameItemId.and.returnValue(of(helpItem as any))
-    const appStateService = TestBed.inject(AppStateService)
-    spyOn(appStateService.currentPage$, 'asObservable').and.returnValue(of({ helpArticleId: 'article_id' }) as any)
-    spyOn(appStateService.currentMfe$, 'asObservable').and.returnValue(
-      of({ remoteBaseUrl: '', productName: 'mfe_product_name' }) as any
-    )
-
-    initTestComponent({ permissions: ['HELP#VIEW'], baseUrl: 'base_url' } as RemoteComponentConfig)
-
-    oneCXShowHelpHarness = await TestbedHarnessEnvironment.harnessForFixture(fixture, OneCXShowHelpHarness)
-    await oneCXShowHelpHarness.onClickShowHelpButton()
-
-    expect(messageServiceSpy.error).toHaveBeenCalledOnceWith({ summaryKey: 'SHOW_HELP.HELP_PAGE_ERROR' })
-    expect(console.error).toHaveBeenCalledTimes(1)
-  })
-
-  describe('url construction', () => {
-    beforeEach(() => {
-      initTestComponent()
-    })
-    it('should not append origin for external url', () => {
-      const url = component['constructUrl']('https://www.google.com/', 'http://localhost:4300', '/shell/')
-      expect(url).toEqual(new URL('https://www.google.com/'))
+      component.productName$?.subscribe((id) => {
+        expect(id).toEqual('mfe_product_name')
+        done()
+      })
     })
 
-    it('should append origin for relative url', () => {
-      const url = component['constructUrl']('/admin/help', 'http://localhost:4300', '/')
-      expect(url).toEqual(new URL('http://localhost:4300/admin/help'))
+    it('should load help article when application and help item data are valid', (done: DoneFn) => {
+      helpApiServiceSpy.getHelpByProductNameItemId.and.returnValue(
+        of({ totalElements: 1, stream: [{ id: '1' }] } as any)
+      )
+      const appStateService = TestBed.inject(AppStateService)
+      spyOn(appStateService.currentPage$, 'asObservable').and.returnValue(of({ helpArticleId: 'article_id' }) as any)
+      spyOn(appStateService.currentMfe$, 'asObservable').and.returnValue(
+        of({ remoteBaseUrl: '', productName: 'mfe_product_name' }) as any
+      )
+
+      initTestComponent({ permissions: ['HELP#VIEW'], baseUrl: 'base_url' } as RemoteComponentConfig)
+
+      component.helpDataItem$?.subscribe((item) => {
+        expect(item).toEqual({ totalElements: 1, stream: [{ id: '1' }] } as any)
+        expect(helpApiServiceSpy.getHelpByProductNameItemId).toHaveBeenCalled()
+        done()
+      })
     })
 
-    it('should append origin and deploymentPath for relative url', () => {
-      const url = component['constructUrl']('/admin/help', 'http://localhost:4300', '/shell/')
-      expect(url).toEqual(new URL('http://localhost:4300/shell/admin/help'))
-    })
-  })
+    it('should return empty object when application or help item data are invalid', (done: DoneFn) => {
+      const appStateService = TestBed.inject(AppStateService)
+      spyOn(appStateService.currentPage$, 'asObservable').and.returnValue(of({ helpArticleId: 'article_id' }) as any)
+      spyOn(appStateService.currentMfe$, 'asObservable').and.returnValue(of({}) as any)
 
-  describe('prepare URL', () => {
-    it('should prepare empty url: ', () => {
-      const help: Help = {
-        id: 'id',
-        productName: 'ocx-help-ui',
-        itemId: 'PAGE_HELP_SEARCH'
+      initTestComponent({ permissions: ['HELP#VIEW'], baseUrl: 'base_url' } as RemoteComponentConfig)
+
+      component.helpDataItem$?.subscribe((item) => {
+        expect(item).toEqual({} as Help)
+        expect(helpApiServiceSpy.getHelpByProductNameItemId).toHaveBeenCalledTimes(0)
+        done()
+      })
+    })
+
+    it('should return empty object on failed article load', (done: DoneFn) => {
+      const errorResponse = { status: 400, statusText: 'An error occur' }
+      helpApiServiceSpy.getHelpByProductNameItemId.and.returnValue(throwError(() => errorResponse))
+      const appStateService = TestBed.inject(AppStateService)
+      spyOn(appStateService.currentPage$, 'asObservable').and.returnValue(of({ helpArticleId: 'article_id' }) as any)
+      spyOn(appStateService.currentMfe$, 'asObservable').and.returnValue(
+        of({ remoteBaseUrl: '', productName: 'mfe_product_name' }) as any
+      )
+      spyOn(console, 'error')
+
+      initTestComponent({ permissions: ['HELP#VIEW'], baseUrl: 'base_url' } as RemoteComponentConfig)
+
+      component.helpDataItem$?.subscribe((item) => {
+        expect(item).toEqual({} as Help)
+        expect(helpApiServiceSpy.getHelpByProductNameItemId).toHaveBeenCalled()
+        expect(console.error).toHaveBeenCalledWith('getHelpByProductNameItemId', errorResponse)
+        done()
+      })
+    })
+
+    it('should open new window with help article', async () => {
+      spyOn(window, 'open')
+      const helpItem = { id: 'article_id', baseUrl: 'http://base_url', resourceUrl: '/search' }
+      helpApiServiceSpy.getHelpByProductNameItemId.and.returnValue(of(helpItem as any))
+      const appStateService = TestBed.inject(AppStateService)
+      spyOn(appStateService.currentPage$, 'asObservable').and.returnValue(of({ helpArticleId: 'article_id' }) as any)
+      spyOn(appStateService.currentMfe$, 'asObservable').and.returnValue(
+        of({ remoteBaseUrl: '', productName: 'mfe_product_name' }) as any
+      )
+
+      initTestComponent({ permissions: ['HELP#VIEW'], baseUrl: 'base_url' } as RemoteComponentConfig)
+
+      oneCXShowHelpHarness = await TestbedHarnessEnvironment.harnessForFixture(fixture, OneCXShowHelpHarness)
+      await oneCXShowHelpHarness.onClickShowHelpButton()
+
+      expect(window.open).toHaveBeenCalled()
+    })
+
+    it('should open new window with help article with relativeUrl', async () => {
+      helpApiServiceSpy.getHelpByProductNameItemId.and.returnValue(
+        of({ totalElements: 1, stream: [{ id: '1', resourceUrl: '/admin/helpItem' }] } as any)
+      )
+      const appStateService = TestBed.inject(AppStateService)
+      spyOn(appStateService.currentPage$, 'asObservable').and.returnValue(of({ helpArticleId: 'article_id' }) as any)
+      spyOn(appStateService.currentMfe$, 'asObservable').and.returnValue(
+        of({ remoteBaseUrl: '', productName: 'mfe_product_name' }) as any
+      )
+
+      initTestComponent({ permissions: ['HELP#VIEW'], baseUrl: 'base_url' } as RemoteComponentConfig)
+
+      oneCXShowHelpHarness = await TestbedHarnessEnvironment.harnessForFixture(fixture, OneCXShowHelpHarness)
+      await oneCXShowHelpHarness.onClickShowHelpButton()
+
+      expect(dialogServiceSpy.open).toHaveBeenCalled()
+    })
+
+    it('should do nothing when resourceUrl is not defined', async () => {
+      spyOn(window, 'open')
+      const helpItem = { id: 'article_id', baseUrl: undefined, resourceUrl: undefined }
+
+      helpApiServiceSpy.getHelpByProductNameItemId.and.returnValue(of(helpItem as any))
+      const appStateService = TestBed.inject(AppStateService)
+      spyOn(appStateService.currentPage$, 'asObservable').and.returnValue(of({ helpArticleId: 'article_id' }) as any)
+
+      spyOn(appStateService.currentMfe$, 'asObservable').and.returnValue(
+        of({ remoteBaseUrl: '', productName: 'mfe_product_name' }) as any
+      )
+
+      initTestComponent({ permissions: ['HELP#VIEW'], baseUrl: 'base_url' } as RemoteComponentConfig)
+
+      oneCXShowHelpHarness = await TestbedHarnessEnvironment.harnessForFixture(fixture, OneCXShowHelpHarness)
+      await oneCXShowHelpHarness.onClickShowHelpButton()
+
+      expect(window.open).toHaveBeenCalledTimes(0)
+      expect(messageServiceSpy.error).toHaveBeenCalledTimes(0)
+    })
+
+    it('should display error message on failed window opening', async () => {
+      spyOn(console, 'error')
+      window.open = function () {
+        throw new Error()
       }
-      const url = component['prepareUrl'](help)
+      const helpItem = { id: 'article_id', baseUrl: 'http://base_url', resourceUrl: '/search' }
+      helpApiServiceSpy.getHelpByProductNameItemId.and.returnValue(of(helpItem as any))
+      const appStateService = TestBed.inject(AppStateService)
+      spyOn(appStateService.currentPage$, 'asObservable').and.returnValue(of({ helpArticleId: 'article_id' }) as any)
+      spyOn(appStateService.currentMfe$, 'asObservable').and.returnValue(
+        of({ remoteBaseUrl: '', productName: 'mfe_product_name' }) as any
+      )
 
-      expect(url).toEqual('')
+      initTestComponent({ permissions: ['HELP#VIEW'], baseUrl: 'base_url' } as RemoteComponentConfig)
+
+      oneCXShowHelpHarness = await TestbedHarnessEnvironment.harnessForFixture(fixture, OneCXShowHelpHarness)
+      await oneCXShowHelpHarness.onClickShowHelpButton()
+
+      expect(messageServiceSpy.error).toHaveBeenCalledOnceWith({ summaryKey: 'SHOW_HELP.HELP_PAGE_ERROR' })
+      expect(console.error).toHaveBeenCalledTimes(1)
     })
 
-    it('should prepare the url on: base', () => {
-      const help: Help = {
-        id: 'id',
-        productName: 'ocx-help-ui',
-        itemId: 'PAGE_HELP_SEARCH',
-        baseUrl: 'http://localhost:8080/help'
-      }
-      const url = component['prepareUrl'](help)
+    describe('url construction', () => {
+      beforeEach(() => {
+        initTestComponent({ permissions: ['HELP#VIEW'], baseUrl: 'base_url' } as RemoteComponentConfig)
+      })
 
-      expect(url).toEqual(help.baseUrl!)
+      it('should not append origin for external url', () => {
+        const url = component['constructUrl']('https://www.google.com/', 'http://localhost:4300', '/shell/')
+        expect(url).toEqual(new URL('https://www.google.com/'))
+      })
+
+      it('should append origin for relative url', () => {
+        const url = component['constructUrl']('/admin/help', 'http://localhost:4300', '/')
+        expect(url).toEqual(new URL('http://localhost:4300/admin/help'))
+      })
+
+      it('should append origin and deploymentPath for relative url', () => {
+        const url = component['constructUrl']('/admin/help', 'http://localhost:4300', '/shell/')
+        expect(url).toEqual(new URL('http://localhost:4300/shell/admin/help'))
+      })
     })
 
-    it('should prepare the url on: base + context', () => {
-      const help: Help = {
-        id: 'id',
-        productName: 'ocx-help-ui',
-        itemId: 'PAGE_HELP_SEARCH',
-        baseUrl: 'http://localhost:8080/help',
-        context: 'ctx'
-      }
-      const url = component['prepareUrl'](help)
+    describe('prepare URL', () => {
+      beforeEach(() => {
+        initTestComponent({ permissions: ['HELP#VIEW'], baseUrl: 'base_url' } as RemoteComponentConfig)
+      })
 
-      expect(url).toEqual(help.baseUrl! + '#' + help.context)
-    })
+      it('should prepare empty url: ', () => {
+        const help: Help = {
+          id: 'id',
+          productName: 'ocx-help-ui',
+          itemId: 'PAGE_HELP_SEARCH'
+        }
+        const url = component['prepareUrl'](help)
 
-    it('should prepare the url on: base + resource', () => {
-      const help: Help = {
-        id: 'id',
-        productName: 'ocx-help-ui',
-        itemId: 'PAGE_HELP_SEARCH',
-        baseUrl: 'http://localhost:8080/help',
-        resourceUrl: '/search'
-      }
-      const url = component['prepareUrl'](help)
+        expect(url).toEqual('')
+      })
 
-      expect(url).toEqual(help.baseUrl! + help.resourceUrl)
-    })
+      it('should prepare the url on: base', () => {
+        const help: Help = {
+          id: 'id',
+          productName: 'ocx-help-ui',
+          itemId: 'PAGE_HELP_SEARCH',
+          baseUrl: 'http://localhost:8080/help'
+        }
+        const url = component['prepareUrl'](help)
 
-    it('should prepare the url on: base + resource + context', () => {
-      const help: Help = {
-        id: 'id',
-        productName: 'ocx-help-ui',
-        itemId: 'PAGE_HELP_SEARCH',
-        baseUrl: 'http://localhost:8080/help',
-        resourceUrl: '/search',
-        context: '#ctx'
-      }
-      const url = component['prepareUrl'](help)
+        expect(url).toEqual(help.baseUrl!)
+      })
 
-      expect(url).toEqual(help.baseUrl! + help.resourceUrl + help.context)
+      it('should prepare the url on: base + context', () => {
+        const help: Help = {
+          id: 'id',
+          productName: 'ocx-help-ui',
+          itemId: 'PAGE_HELP_SEARCH',
+          baseUrl: 'http://localhost:8080/help',
+          context: 'ctx'
+        }
+        const url = component['prepareUrl'](help)
+
+        expect(url).toEqual(help.baseUrl! + '#' + help.context)
+      })
+
+      it('should prepare the url on: base + resource', () => {
+        const help: Help = {
+          id: 'id',
+          productName: 'ocx-help-ui',
+          itemId: 'PAGE_HELP_SEARCH',
+          baseUrl: 'http://localhost:8080/help',
+          resourceUrl: '/search'
+        }
+        const url = component['prepareUrl'](help)
+
+        expect(url).toEqual(help.baseUrl! + help.resourceUrl)
+      })
+
+      it('should prepare the url on: base + resource + context', () => {
+        const help: Help = {
+          id: 'id',
+          productName: 'ocx-help-ui',
+          itemId: 'PAGE_HELP_SEARCH',
+          baseUrl: 'http://localhost:8080/help',
+          resourceUrl: '/search',
+          context: '#ctx'
+        }
+        const url = component['prepareUrl'](help)
+
+        expect(url).toEqual(help.baseUrl! + help.resourceUrl + help.context)
+      })
     })
   })
 })

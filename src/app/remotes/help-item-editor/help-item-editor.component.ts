@@ -1,9 +1,9 @@
-import { Component, Inject, Input } from '@angular/core'
+import { APP_INITIALIZER, Component, CUSTOM_ELEMENTS_SCHEMA, EventEmitter, Inject, Input } from '@angular/core'
 import { CommonModule, Location } from '@angular/common'
 import { HttpClient } from '@angular/common/http'
 import { Router } from '@angular/router'
 import { TranslateLoader, TranslateService } from '@ngx-translate/core'
-import { Observable, ReplaySubject, catchError, combineLatest, first, map, mergeMap, of } from 'rxjs'
+import { BehaviorSubject, Observable, ReplaySubject, catchError, combineLatest, first, map, mergeMap, of } from 'rxjs'
 import { PrimeIcons } from 'primeng/api'
 
 import { AppStateService, PortalMessageService, UserService } from '@onecx/angular-integration-interface'
@@ -17,10 +17,12 @@ import {
 import {
   AngularRemoteComponentsModule,
   BASE_URL,
-  RemoteComponentConfig,
   ocxRemoteComponent,
+  ocxRemoteWebcomponent,
   provideTranslateServiceForRoot,
-  ocxRemoteWebcomponent
+  RemoteComponentConfig,
+  SlotService,
+  SLOT_SERVICE
 } from '@onecx/angular-remote-components'
 
 import { Configuration, Help, HelpsInternalAPIService } from 'src/app/shared/generated'
@@ -29,13 +31,34 @@ import { environment } from 'src/environments/environment'
 
 import { HelpItemEditorFormComponent } from './help-item-editor-form/help-item-editor-form.component'
 
+// DATA structures of product store response
+export type Product = {
+  id?: string
+  name: string
+  version?: string
+  description?: string
+  imageUrl?: string
+  displayName?: string
+  classifications?: Array<string>
+  undeployed?: boolean
+  provider?: string
+  applications?: Array<any>
+}
+
+export function slotInitializer(slotService: SlotService) {
+  return () => slotService.init()
+}
+
 @Component({
   selector: 'app-ocx-help-item-editor',
   templateUrl: './help-item-editor.component.html',
   styleUrls: ['./help-item-editor.component.scss'],
   standalone: true,
   imports: [CommonModule, SharedModule, PortalCoreModule, AngularRemoteComponentsModule],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
   providers: [
+    { provide: APP_INITIALIZER, useFactory: slotInitializer, deps: [SLOT_SERVICE], multi: true },
+    { provide: SLOT_SERVICE, useExisting: SlotService },
     HelpsInternalAPIService,
     PortalMessageService,
     providePortalDialogService(),
@@ -54,19 +77,27 @@ export class OneCXHelpItemEditorComponent implements ocxRemoteComponent, ocxRemo
   @Input() set ocxRemoteComponentConfig(config: RemoteComponentConfig) {
     this.ocxInitRemoteComponent(config)
   }
-  helpArticleId$: Observable<string>
-  productName$: Observable<string>
-  products$: Observable<Record<string, string>>
+  helpArticleId$: Observable<string> // picked from current page
+  productName$: Observable<string> // name of the current product (from mfe)
+  //products$: Observable<Record<string, string>>
   helpDataItem$: Observable<Help>
-
   permissions: string[] = []
+  // slot configuration: get product data via remote component
+  public pdSlotName = 'onecx-product-data'
+  public pdIsComponentDefined = false
+  public pdIsComponentDefined$: Observable<boolean> | undefined // check
+  public productData$ = new BehaviorSubject<Product[] | undefined>(undefined) // product infos
+  public pdSlotEmitter = new EventEmitter<Product[]>()
+  public pdComponentTrigger$ = new BehaviorSubject<void>(undefined) // trigger for getting data
+  private products: Product[] = []
 
   constructor(
     @Inject(BASE_URL) private readonly baseUrl: ReplaySubject<string>,
     private readonly router: Router,
-    private readonly appStateService: AppStateService,
     private readonly userService: UserService,
-    private readonly helpDataService: HelpsInternalAPIService,
+    private readonly slotService: SlotService,
+    private readonly appStateService: AppStateService,
+    private readonly helpApi: HelpsInternalAPIService,
     private readonly portalMessageService: PortalMessageService,
     private readonly portalDialogService: PortalDialogService,
     private readonly translateService: TranslateService
@@ -85,24 +116,6 @@ export class OneCXHelpItemEditorComponent implements ocxRemoteComponent, ocxRemo
         return ''
       })
     )
-    this.products$ = this.baseUrl.asObservable().pipe(
-      mergeMap(() => {
-        return this.helpDataService
-          .searchProductsByCriteria({
-            productsSearchCriteria: {
-              pageNumber: 0,
-              pageSize: 1000
-            }
-          })
-          .pipe(
-            map((productsPageResult) => {
-              productsPageResult.stream = productsPageResult.stream ?? []
-              return Object.fromEntries(productsPageResult.stream.map((product) => [product.name, product.displayName]))
-            })
-          )
-      })
-    )
-
     this.helpDataItem$ = combineLatest([this.productName$, this.helpArticleId$]).pipe(
       mergeMap(([productName, helpArticleId]) => {
         if (productName && helpArticleId) return this.loadHelpArticle(productName, helpArticleId)
@@ -112,27 +125,29 @@ export class OneCXHelpItemEditorComponent implements ocxRemoteComponent, ocxRemo
         return of({} as Help)
       })
     )
+    this.pdSlotEmitter.subscribe((products: Product[]) => (this.products = products))
+    this.slotService
+      .isSomeComponentDefinedForSlot(this.pdSlotName)
+      .subscribe((defined) => (this.pdIsComponentDefined = defined === true))
   }
 
   public ocxInitRemoteComponent(config: RemoteComponentConfig): void {
     this.baseUrl.next(config.baseUrl)
     this.permissions = config.permissions
-    this.helpDataService.configuration = new Configuration({
+    this.helpApi.configuration = new Configuration({
       basePath: Location.joinWithSlash(config.baseUrl, environment.apiPrefix)
     })
   }
 
   private loadHelpArticle(productName: string, helpItemId: string): Observable<Help> {
-    return this.helpDataService
-      .searchHelps({ helpSearchCriteria: { itemId: helpItemId, productName: productName } })
-      .pipe(
-        map((helpPageResult) => {
-          if (helpPageResult.totalElements !== 1) {
-            return {} as Help
-          }
-          return helpPageResult.stream![0]!
-        })
-      )
+    return this.helpApi.searchHelps({ helpSearchCriteria: { itemId: helpItemId, productName: productName } }).pipe(
+      map((helpPageResult) => {
+        if (helpPageResult.totalElements !== 1) {
+          return {} as Help
+        }
+        return helpPageResult.stream![0]!
+      })
+    )
   }
 
   private openHelpEditorDialog(helpItem: Help, productDisplayName: string): Observable<DialogState<Help>> {
@@ -153,13 +168,13 @@ export class OneCXHelpItemEditorComponent implements ocxRemoteComponent, ocxRemo
     isNewHelpItem: boolean
   ): Observable<[itemId: string, productName: string]> {
     if (isNewHelpItem) {
-      return this.helpDataService
+      return this.helpApi
         .createNewHelp({
           createHelp: dialogState.result!
         })
         .pipe(map((help): [string, string] => [help.itemId, help.productName!]))
     }
-    return this.helpDataService
+    return this.helpApi
       .updateHelp({
         id: dialogState.result!.id!,
         updateHelp: {
@@ -170,15 +185,12 @@ export class OneCXHelpItemEditorComponent implements ocxRemoteComponent, ocxRemo
       .pipe(map((): [string, string] => [dialogState.result!.itemId, dialogState.result!.productName!]))
   }
 
-  public onEnterClick() {
-    return this.onEditHelpItem({})
-  }
-
-  public onEditHelpItem(event: any) {
-    combineLatest([this.helpArticleId$, this.productName$, this.helpDataItem$, this.products$])
+  public onEditHelpItem(ev?: Event) {
+    ev?.stopPropagation()
+    combineLatest([this.helpArticleId$, this.productName$, this.helpDataItem$])
       .pipe(
         first(),
-        mergeMap(([helpArticleId, productName, helpDataItem, products]) => {
+        mergeMap(([helpArticleId, productName, helpDataItem]) => {
           let isNewItem = false
           if (helpArticleId && productName) {
             if (!helpDataItem.itemId) {
@@ -186,13 +198,15 @@ export class OneCXHelpItemEditorComponent implements ocxRemoteComponent, ocxRemo
               isNewItem = true
             }
             helpDataItem.productName = helpDataItem.productName ?? productName
-            return this.openHelpEditorDialog(helpDataItem, products[helpDataItem.productName]).pipe(
+            let productDisplayName: string | undefined = 'product'
+            if (this.products && this.products?.length > 0) {
+              productDisplayName = this.products.find((p) => p.name === helpDataItem.productName)?.displayName
+            }
+            return this.openHelpEditorDialog(helpDataItem, productDisplayName!).pipe(
               map((dialogState): [DialogState<Help>, boolean] => [dialogState, isNewItem])
             )
           } else {
-            this.portalMessageService.error({
-              summaryKey: 'HELP_ITEM_EDITOR.OPEN_HELP_PAGE_EDITOR_ERROR'
-            })
+            this.portalMessageService.error({ summaryKey: 'HELP_ITEM_EDITOR.OPEN_HELP_PAGE_EDITOR_ERROR' })
             return of([])
           }
         }),
