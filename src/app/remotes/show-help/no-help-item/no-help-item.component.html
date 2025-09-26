@@ -1,9 +1,9 @@
 <div>
-  <div class="dialog-content">
-    <span id="no-help-item-content">{{ 'SHOW_HELP.NO_HELP_ITEM.CONTENT' | translate }}</span>
-    <div *ngIf="helpArticleId">
-      <span id="no-help-item-hint"> {{ 'SHOW_HELP.NO_HELP_ITEM.ITEM_HINT' | translate }}</span>
-      <span id="no-help-item-hint-article-id" class="code p-my-2">{{ helpArticleId }}</span>
+  <div class="dialog-content flex flex-column gap-3">
+    <span id="hm_no_help-item_content" class="font-bold">{{ 'SHOW_HELP.NO_HELP_ITEM.CONTENT' | translate }}</span>
+    <div *ngIf="helpArticleId" class="flex flex-column gap-2">
+      <div id="hm_no-help-item-hint">{{ 'SHOW_HELP.NO_HELP_ITEM.ITEM_HINT' | translate }}</div>
+      <div id="hm_no-help-item-hint-article-id" class="code p-my-2">{{ helpArticleId }}</div>
     </div>
   </div>
 </div>

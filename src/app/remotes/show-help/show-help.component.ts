@@ -20,13 +20,14 @@ import {
 } from '@onecx/angular-remote-components'
 import { AppStateService, PortalMessageService, UserService } from '@onecx/angular-integration-interface'
 import { createRemoteComponentTranslateLoader } from '@onecx/angular-accelerator'
-import { PortalCoreModule } from '@onecx/portal-integration-angular'
+import { DialogFooterComponent, PortalCoreModule } from '@onecx/portal-integration-angular'
 
 import { Configuration, Help, HelpsInternalAPIService } from 'src/app/shared/generated'
 import { environment } from 'src/environments/environment'
 import { SharedModule } from 'src/app/shared/shared.module'
 
 import { NoHelpItemComponent } from './no-help-item/no-help-item.component'
+import { PrimeIcons } from 'primeng/api/primeicons'
 
 @Component({
   selector: 'app-ocx-show-help',
@@ -151,7 +152,10 @@ export class OneCXShowHelpComponent implements ocxRemoteComponent, ocxRemoteWebc
               width: '400px',
               data: {
                 helpArticleId: helpArticleId
-              }
+              },
+              draggable: true,
+              closable: true,
+              modal: true
             })
           })
         }

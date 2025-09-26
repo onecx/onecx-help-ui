@@ -157,8 +157,20 @@ export class OneCXHelpItemEditorComponent implements ocxRemoteComponent, ocxRemo
         type: HelpItemEditorFormComponent,
         inputs: { helpItem: helpItem, productDisplayName: productDisplayName }
       },
-      { key: 'ACTIONS.SAVE', icon: PrimeIcons.CHECK },
-      { key: 'ACTIONS.CANCEL', icon: PrimeIcons.TIMES },
+      {
+        key: 'ACTIONS.SAVE',
+        icon: PrimeIcons.CHECK,
+        tooltipKey: 'ACTIONS.TOOLTIPS.SAVE',
+        tooltipPosition: 'top',
+        id: 'hm_detail_action_save'
+      },
+      {
+        key: 'ACTIONS.CANCEL',
+        icon: PrimeIcons.TIMES,
+        tooltipKey: 'ACTIONS.TOOLTIPS.CANCEL',
+        tooltipPosition: 'top',
+        id: 'hm_detail_action_cancel'
+      },
       { showXButton: true, draggable: true, resizable: true, width: '550px' }
     )
   }
