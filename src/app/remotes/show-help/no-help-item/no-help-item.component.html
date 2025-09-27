@@ -1,9 +1,14 @@
-<div>
-  <div class="dialog-content flex flex-column gap-3">
-    <span id="hm_no_help-item_content" class="font-bold">{{ 'SHOW_HELP.NO_HELP_ITEM.CONTENT' | translate }}</span>
-    <div *ngIf="helpArticleId" class="flex flex-column gap-2">
-      <div id="hm_no-help-item-hint">{{ 'SHOW_HELP.NO_HELP_ITEM.ITEM_HINT' | translate }}</div>
-      <div id="hm_no-help-item-hint-article-id" class="code p-my-2">{{ helpArticleId }}</div>
+<div class="flex column-gap-3 row-gap-1 justify-content-start align-items-center">
+  <div class="pi pi-info-circle text-3xl info-button-text-color"></div>
+  <div class="mt-2 ml-2 flex flex-column gap-3">
+    <div id="hm_no_help_item_text" class="font-bold" role="note">
+      {{ 'SHOW_HELP.' + issueTypeKey + '.CONTENT' | translate }}
+    </div>
+    <div *ngIf="helpArticleId" id="hm_no_help_item_hint" role="note">
+      {{ 'SHOW_HELP.' + issueTypeKey + '.ITEM_HINT' | translate }}
+      <div id="hm_no_help_item_hint_article_id" class="m-2 p-2 border-round-md surface-200 text-responsive">
+        {{ helpArticleId }}
+      </div>
     </div>
   </div>
 </div>

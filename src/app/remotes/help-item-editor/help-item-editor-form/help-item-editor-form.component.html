@@ -46,11 +46,13 @@
     <div class="flex flex-wrap flex-column gap-4 justify-content-between mt-2">
       <span class="p-float-label">
         <input
+          #baseURL
           id="hm_item_editor_form_base_url"
           class="w-full pt-3 pb-2 text-responsive"
           type="text"
           pInputText
           formControlName="baseUrl"
+          (keyup)="onChangeBaseUrl(baseURL.value)"
           [ariaLabel]="'HELP_ITEM.TOOLTIPS.BASE_URL' | translate"
           [pTooltip]="'HELP_ITEM.TOOLTIPS.BASE_URL' | translate"
           tooltipPosition="top"

@@ -1,4 +1,4 @@
-import { Component, Input, OnChanges, SimpleChanges } from '@angular/core'
+import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core'
 import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms'
 import { TranslateModule } from '@ngx-translate/core'
 import { Observable } from 'rxjs'
@@ -7,7 +7,12 @@ import { TooltipModule } from 'primeng/tooltip'
 import { FieldsetModule } from 'primeng/fieldset'
 
 import { PortalMessageService } from '@onecx/angular-integration-interface'
-import { DialogButtonClicked, DialogResult, DialogState } from '@onecx/portal-integration-angular'
+import {
+  DialogButtonClicked,
+  DialogPrimaryButtonDisabled,
+  DialogResult,
+  DialogState
+} from '@onecx/portal-integration-angular'
 
 import { Help } from 'src/app/shared/generated'
 
@@ -19,9 +24,13 @@ import { Help } from 'src/app/shared/generated'
   imports: [InputTextModule, ReactiveFormsModule, TranslateModule, TooltipModule, FieldsetModule],
   providers: [PortalMessageService, FormBuilder]
 })
-export class HelpItemEditorFormComponent implements DialogResult<Help>, DialogButtonClicked, OnChanges {
+export class HelpItemEditorFormComponent
+  implements DialogResult<Help>, DialogPrimaryButtonDisabled, DialogButtonClicked, OnChanges
+{
   @Input() helpItem!: Help
   @Input() productDisplayName!: string
+  @Output() primaryButtonEnabled: EventEmitter<boolean> = new EventEmitter()
+
   dialogResult!: Help
   public formGroup!: FormGroup
 
@@ -73,5 +82,9 @@ export class HelpItemEditorFormComponent implements DialogResult<Help>, DialogBu
       this.portalMessageService.error({ summaryKey: 'HELP_ITEM_EDITOR.SAVE_ERROR' })
       return false
     }
+  }
+
+  public onChangeBaseUrl(val: string) {
+    this.primaryButtonEnabled.emit(val !== '')
   }
 }

@@ -1,8 +1,8 @@
-.code {
-  display: block;
-  clear: both;
-  padding: 0.5em;
-  font-family: monospace;
-  background-color: #ececec;
-  border-radius: 4px;
+@import '../../../_hm-mixins.scss';
+
+@include word-break-all;
+@include displaying-text-responsive;
+
+.info-button-text-color {
+  color: var(--info-button-bg);
 }

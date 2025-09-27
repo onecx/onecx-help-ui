@@ -210,7 +210,7 @@ export class OneCXHelpItemEditorComponent implements ocxRemoteComponent, ocxRemo
               isNewItem = true
             }
             helpDataItem.productName = helpDataItem.productName ?? productName
-            let productDisplayName: string | undefined = 'product'
+            let productDisplayName: string | undefined = helpDataItem.productName
             if (this.products && this.products?.length > 0) {
               productDisplayName = this.products.find((p) => p.name === helpDataItem.productName)?.displayName
             }

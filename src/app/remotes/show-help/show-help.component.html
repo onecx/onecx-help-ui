@@ -4,8 +4,8 @@
     class="layout-topbar-action"
     pRipple
     pButton
-    (click)="openHelpPage($event)"
-    (keydown.enter.t)="onOpenHelpPage()"
+    (click)="onOpenHelpPage($event)"
+    (keydown.enter)="onOpenHelpPage($event)"
     [attr.aria-label]="'SHOW_HELP.LABEL' | translate"
     [pTooltip]="'SHOW_HELP.TOOLTIP' | translate"
     tooltipPosition="bottom"

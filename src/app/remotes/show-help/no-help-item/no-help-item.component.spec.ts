@@ -11,6 +11,13 @@ describe('NoHelpItemComponent', () => {
   let fixture: ComponentFixture<NoHelpItemComponent>
   let noHelpItemHarness: NoHelpItemHarness
 
+  function initTestComponent() {
+    fixture = TestBed.createComponent(NoHelpItemComponent)
+    component = fixture.componentInstance
+    fixture.detectChanges()
+  }
+  const helpArticleId = 'PAGE_SEARCH'
+
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [],
@@ -24,33 +31,32 @@ describe('NoHelpItemComponent', () => {
       providers: [DynamicDialogConfig, DynamicDialogRef]
     }).compileComponents()
 
-    getTestBed().inject(DynamicDialogConfig).data = { helpArticleId: 'help-article-id' }
-
-    fixture = TestBed.createComponent(NoHelpItemComponent)
-    component = fixture.componentInstance
-
-    fixture.detectChanges()
-
-    noHelpItemHarness = await TestbedHarnessEnvironment.harnessForFixture(fixture, NoHelpItemHarness)
+    getTestBed().inject(DynamicDialogConfig).data = { helpArticleId: helpArticleId }
   })
 
-  it('should create', () => {
+  it('should create', async () => {
+    initTestComponent()
+    noHelpItemHarness = await TestbedHarnessEnvironment.harnessForFixture(fixture, NoHelpItemHarness)
+
     expect(component).toBeTruthy()
   })
 
-  it('should display translated content and hint from dialog config', async () => {
-    getTestBed().inject(DynamicDialogConfig).data = { helpArticleId: 'help-article-id' }
+  it('should display and close', async () => {
+    const data = { helpArticleId: helpArticleId, issueTypeKey: 'NO_HELP_ITEM' }
+    getTestBed().inject(DynamicDialogConfig).data = data
 
-    fixture = TestBed.createComponent(NoHelpItemComponent)
-    component = fixture.componentInstance
-
-    fixture.detectChanges()
-
+    initTestComponent()
     noHelpItemHarness = await TestbedHarnessEnvironment.harnessForFixture(fixture, NoHelpItemHarness)
 
     expect(await noHelpItemHarness.getContent()).toBe('No Help Item has been defined for this page.')
-    expect(await noHelpItemHarness.getHintTitle()).toBe('The Help Item ID for this page is:')
-    expect(await noHelpItemHarness.getArticleId()).toBe('help-article-id')
+    expect(await noHelpItemHarness.getHintTitle()).toBe('The Help Item ID for this page is:  ' + data.helpArticleId)
+    expect(await noHelpItemHarness.getArticleId()).toBe(helpArticleId)
+
+    component.ocxDialogButtonClicked({
+      id: helpArticleId,
+      result: true,
+      button: 'primary'
+    })
   })
 
   it('should not display hint if helpArticleId is not defined', async () => {
