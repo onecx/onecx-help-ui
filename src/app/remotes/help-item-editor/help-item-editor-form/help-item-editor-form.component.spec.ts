@@ -52,101 +52,112 @@ describe('HelpItemEditorFormComponent', () => {
     )
   })
 
-  it('should create', () => {
-    expect(component).toBeTruthy()
-  })
-
-  it('should initially have empty values', async () => {
-    expect(await helpItemEditorDialogHarness.getHelpItemIdValue()).toEqual('')
-    expect(await helpItemEditorDialogHarness.getProductNameValue()).toEqual('')
-    expect(await helpItemEditorDialogHarness.getBaseUrlValue()).toEqual('')
-    expect(await helpItemEditorDialogHarness.getResourceUrlValue()).toEqual('')
-    expect(await helpItemEditorDialogHarness.getContextValue()).toEqual('')
-  })
-
-  it('should update form and result on changes', async () => {
-    const helpItem = {
-      productName: 'new_product_name',
-      itemId: 'new_item_id',
-      resourceUrl: 'new_resource_url',
-      context: 'new_context'
-    }
-    component.helpItem = helpItem
-    component.productDisplayName = 'new product display name'
-    component.ngOnChanges({
-      helpItem: {} as any
-    })
-    component.ngOnChanges({
-      productDisplayName: 'new product display name' as any
-    })
-    fixture.detectChanges()
-
-    expect(await helpItemEditorDialogHarness.getHelpItemIdValue()).toEqual('new_item_id')
-    expect(await helpItemEditorDialogHarness.getProductNameValue()).toEqual('new product display name')
-    expect(await helpItemEditorDialogHarness.getResourceUrlValue()).toEqual('new_resource_url')
-    expect(await helpItemEditorDialogHarness.getContextValue()).toEqual('new_context')
-    expect(component.dialogResult).toEqual(helpItem)
-  })
-
-  it('should allow to close dialog if secondary button was clicked', () => {
-    expect(component.ocxDialogButtonClicked({ button: 'secondary' } as any)).toBeTrue()
-  })
-
-  it('should allow to close dialog and update dialogResult on primary button click if form was valid and helpItem was provided', () => {
-    const helpItem = {
-      productName: 'new_product_name',
-      itemId: 'new_item_id',
-      resourceUrl: 'new_resource_url',
-      context: 'new_context'
-    }
-    component.helpItem = helpItem
-    component.formGroup.patchValue({
-      productName: 'form_product_name',
-      itemId: 'form_item_id',
-      baseUrl: 'form_base_url',
-      resourceUrl: 'form_resource_url',
-      context: 'form_context'
-    })
-
-    const result = component.ocxDialogButtonClicked({ button: 'primary' } as any)
-    expect(result).toBeTrue()
-    expect(component.dialogResult).toEqual({
-      productName: 'new_product_name',
-      itemId: 'new_item_id',
-      baseUrl: 'form_base_url',
-      resourceUrl: 'form_resource_url',
-      context: 'form_context'
+  describe('construction', () => {
+    it('should create', () => {
+      expect(component).toBeTruthy()
     })
   })
 
-  it('should not allow to close dialog display SAVE_ERROR message on primary button click if form was not valid', () => {
-    const helpItem = {
-      productName: 'new_product_name',
-      itemId: 'new_item_id',
-      baseUrl: 'new_base_url',
-      resourceUrl: 'new_resource_path',
-      context: 'new_context'
-    }
-    component.helpItem = helpItem
-    fixture.detectChanges()
-    component.formGroup.controls['baseUrl'].setValue('')
+  describe('init form', () => {
+    it('should initially have empty values', async () => {
+      expect(await helpItemEditorDialogHarness.getHelpItemIdValue()).toEqual('')
+      expect(await helpItemEditorDialogHarness.getProductNameValue()).toEqual('')
+      expect(await helpItemEditorDialogHarness.getBaseUrlValue()).toEqual('')
+      expect(await helpItemEditorDialogHarness.getResourceUrlValue()).toEqual('')
+      expect(await helpItemEditorDialogHarness.getContextValue()).toEqual('')
+    })
 
-    const result = component.ocxDialogButtonClicked({ button: 'primary' } as any)
-    expect(result).toBeFalse()
-    expect(portalMessageServiceSpy.error).toHaveBeenCalledOnceWith({
-      summaryKey: 'HELP_ITEM_EDITOR.SAVE_ERROR'
+    it('should update form and result on changes', async () => {
+      const helpItem = {
+        productName: 'new_product_name',
+        itemId: 'new_item_id',
+        resourceUrl: 'new_resource_url',
+        context: 'new_context'
+      }
+      component.helpItem = helpItem
+      component.productDisplayName = 'new product display name'
+      component.ngOnChanges({ helpItem: {} as any })
+      component.ngOnChanges({ productDisplayName: 'new product display name' as any })
+      fixture.detectChanges()
+
+      expect(await helpItemEditorDialogHarness.getHelpItemIdValue()).toEqual('new_item_id')
+      expect(await helpItemEditorDialogHarness.getProductNameValue()).toEqual('new product display name')
+      expect(await helpItemEditorDialogHarness.getResourceUrlValue()).toEqual('new_resource_url')
+      expect(await helpItemEditorDialogHarness.getContextValue()).toEqual('new_context')
+      expect(component.dialogResult).toEqual(helpItem)
     })
   })
 
-  it('should not allow to close dialog display SAVE_ERROR message on primary button click if helpitem was not provided', () => {
-    component.formGroup.controls['helpItemId'].setValue('valid')
-    component.formGroup.controls['productName'].setValue('valid')
-    component.formGroup.controls['baseUrl'].setValue('valid')
+  describe('change and validate form', () => {
+    it('should allow to close dialog if secondary button was clicked', () => {
+      expect(component.ocxDialogButtonClicked({ button: 'secondary' } as any)).toBeTrue()
+    })
 
-    const result = component.ocxDialogButtonClicked({ button: 'primary' } as any)
-    expect(result).toBeFalse()
-    expect(portalMessageServiceSpy.error).toHaveBeenCalledOnceWith({
-      summaryKey: 'HELP_ITEM_EDITOR.SAVE_ERROR'
+    it('should allow to close dialog if form was valid', () => {
+      const helpItem = {
+        productName: 'new_product_name',
+        itemId: 'new_item_id',
+        resourceUrl: 'new_resource_url',
+        context: 'new_context'
+      }
+      component.helpItem = helpItem
+      component.formGroup.patchValue({
+        productName: 'form_product_name',
+        itemId: 'form_item_id',
+        baseUrl: 'form_base_url',
+        resourceUrl: 'form_resource_url',
+        context: 'form_context'
+      })
+
+      const result = component.ocxDialogButtonClicked({ button: 'primary' } as any)
+
+      expect(result).toBeTrue()
+      expect(component.dialogResult).toEqual({
+        productName: 'new_product_name',
+        itemId: 'new_item_id',
+        baseUrl: 'form_base_url',
+        resourceUrl: 'form_resource_url',
+        context: 'form_context'
+      })
+    })
+
+    it('should not allow to close dialog display if form was not valid', () => {
+      const helpItem = {
+        productName: 'new_product_name',
+        itemId: 'new_item_id',
+        baseUrl: 'new_base_url',
+        resourceUrl: 'new_resource_path',
+        context: 'new_context'
+      }
+      component.helpItem = helpItem
+      fixture.detectChanges()
+      component.formGroup.controls['baseUrl'].setValue('')
+
+      const result = component.ocxDialogButtonClicked({ button: 'primary' } as any)
+      expect(result).toBeFalse()
+      expect(portalMessageServiceSpy.error).toHaveBeenCalledOnceWith({
+        summaryKey: 'HELP_ITEM_EDITOR.SAVE_ERROR'
+      })
+    })
+
+    it('should not allow to close dialog display if helpitem was not provided', () => {
+      component.formGroup.controls['helpItemId'].setValue('valid')
+      component.formGroup.controls['productName'].setValue('valid')
+      component.formGroup.controls['baseUrl'].setValue('valid')
+
+      const result = component.ocxDialogButtonClicked({ button: 'primary' } as any)
+      expect(result).toBeFalse()
+      expect(portalMessageServiceSpy.error).toHaveBeenCalledOnceWith({
+        summaryKey: 'HELP_ITEM_EDITOR.SAVE_ERROR'
+      })
+    })
+  })
+
+  describe('extras', () => {
+    it('should enable primary button if there is a value in baseUrl', () => {
+      component.onChangeBaseUrl('')
+
+      expect().nothing()
     })
   })
 })

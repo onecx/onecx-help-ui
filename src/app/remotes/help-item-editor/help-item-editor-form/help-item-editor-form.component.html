@@ -1,89 +1,99 @@
-<form [formGroup]="formGroup">
-  <div class="flex flex-wrap flex-column gap-4 justify-content-between mt-2">
-    <span class="p-float-label">
-      <input
-        id="hm_item_editor_form_product_name"
-        class="w-full"
-        type="text"
-        pInputText
-        formControlName="productName"
-        aria-labelledby="hm_item_editor_form_product_name"
-        [pTooltip]="'HELP_ITEM.TOOLTIPS.PRODUCT_NAME' | translate"
-        tooltipPosition="top"
-        tooltipEvent="hover"
-      />
-      <label class="ocx-required-label" for="hm_item_editor_form_product_name">
-        {{ 'HELP_ITEM.PRODUCT_NAME' | translate }}</label
-      >
-    </span>
+<form
+  [formGroup]="formGroup"
+  class="flex flex-wrap flex-column gap-4 justify-content-between mt-2"
+  [attr.aria-label]="'DIALOG.DETAIL.TAB.PROPS' | translate"
+>
+  <span class="p-float-label">
+    <input
+      id="hm_item_editor_form_product_name"
+      class="w-full pt-3 pb-2 text-responsive"
+      type="text"
+      pInputText
+      formControlName="productName"
+      [ariaLabel]="'HELP_ITEM.TOOLTIPS.PRODUCT_NAME' | translate"
+      [pTooltip]="'HELP_ITEM.TOOLTIPS.PRODUCT_NAME' | translate"
+      tooltipPosition="top"
+      tooltipEvent="hover"
+    />
+    <label class="ocx-required-label" for="hm_item_editor_form_product_name" aria-hidden="true">
+      {{ 'HELP_ITEM.PRODUCT_NAME' | translate }}
+    </label>
+  </span>
 
-    <span class="p-float-label">
-      <input
-        id="hm_item_editor_form_helpitem_id"
-        class="w-full pt-3 pb-2 text-responsive"
-        type="text"
-        pInputText
-        formControlName="helpItemId"
-        aria-labelledby="hm_item_editor_form_helpitem_id"
-        [pTooltip]="'HELP_ITEM.TOOLTIPS.ID' | translate"
-        tooltipPosition="top"
-        tooltipEvent="hover"
-      />
-      <label class="ocx-required-label" for="hm_item_editor_form_helpitem_id"> {{ 'HELP_ITEM.ID' | translate }}</label>
-    </span>
+  <span class="p-float-label">
+    <input
+      id="hm_item_editor_form_helpitem_id"
+      class="w-full pt-3 pb-2 text-responsive"
+      type="text"
+      pInputText
+      formControlName="helpItemId"
+      [ariaLabel]="'HELP_ITEM.TOOLTIPS.ID' | translate"
+      [pTooltip]="'HELP_ITEM.TOOLTIPS.ID' | translate"
+      tooltipPosition="top"
+      tooltipEvent="hover"
+    />
+    <label class="ocx-required-label" for="hm_item_editor_form_helpitem_id" aria-hidden="true">
+      {{ 'HELP_ITEM.ID' | translate }}
+    </label>
+  </span>
 
-    <p-fieldset [toggleable]="false" [collapsed]="false" styleClass="surface-100 pb-3 px-2">
-      <ng-template pTemplate="header">
-        <span [pTooltip]="'HELP_DETAIL.URL.TOOLTIP' | translate" tooltipPosition="top" tooltipEvent="hover">
-          {{ 'HELP_DETAIL.URL' | translate }}
-        </span>
-      </ng-template>
-      <div class="flex flex-wrap flex-column gap-4 justify-content-between mt-2">
-        <span class="p-float-label">
-          <input
-            id="hm_item_editor_form_base_url"
-            class="w-full pt-3 pb-2 text-responsive"
-            type="text"
-            pInputText
-            formControlName="baseUrl"
-            aria-labelledby="hm_item_editor_form_base_url"
-            [pTooltip]="'HELP_ITEM.TOOLTIPS.BASE_URL' | translate"
-            tooltipPosition="top"
-            tooltipEvent="hover"
-          />
-          <label class="ocx-required-label" for="hm_item_editor_form_base_url">
-            {{ 'HELP_ITEM.BASE_URL' | translate }}</label
-          >
-        </span>
-        <span class="p-float-label">
-          <input
-            id="hm_item_editor_form_resource_url"
-            class="w-full pt-3 pb-2 text-responsive"
-            type="text"
-            pInputText
-            formControlName="resourceUrl"
-            aria-labelledby="hm_item_editor_form_resource_url"
-            [pTooltip]="'HELP_ITEM.TOOLTIPS.RESOURCE_URL' | translate"
-            tooltipPosition="top"
-            tooltipEvent="hover"
-          />
-          <label for="hm_item_editor_form_resource_url">{{ 'HELP_ITEM.RESOURCE_URL' | translate }}</label>
-        </span>
-        <span class="p-float-label">
-          <input
-            pInputText
-            type="text"
-            id="hm_item_editor_form_context"
-            class="w-full pt-3 pb-2 text-responsive"
-            formControlName="context"
-            aria-labelledby="hm_item_editor_form_context"
-            [pTooltip]="'HELP_ITEM.TOOLTIPS.CONTEXT' | translate"
-            tooltipPosition="top"
-            tooltipEvent="hover"
-          />
-          <label class="" for="hm_item_editor_form_context">{{ 'HELP_ITEM.CONTEXT' | translate }}</label>
-        </span>
-      </div>
-    </p-fieldset>
-  </div>
+  <p-fieldset [toggleable]="false" [collapsed]="false" styleClass="surface-100 pb-3 px-2">
+    <ng-template pTemplate="header">
+      <span [pTooltip]="'HELP_DETAIL.URL.TOOLTIP' | translate" tooltipPosition="top" tooltipEvent="hover">
+        {{ 'HELP_DETAIL.URL' | translate }}
+      </span>
+    </ng-template>
+    <div class="flex flex-wrap flex-column gap-4 justify-content-between mt-2">
+      <span class="p-float-label">
+        <input
+          #baseURL
+          id="hm_item_editor_form_base_url"
+          class="w-full pt-3 pb-2 text-responsive"
+          type="text"
+          pInputText
+          formControlName="baseUrl"
+          (keyup)="onChangeBaseUrl(baseURL.value)"
+          [ariaLabel]="'HELP_ITEM.TOOLTIPS.BASE_URL' | translate"
+          [pTooltip]="'HELP_ITEM.TOOLTIPS.BASE_URL' | translate"
+          tooltipPosition="top"
+          tooltipEvent="hover"
+        />
+        <label class="ocx-required-label" for="hm_item_editor_form_base_url" aria-hidden="true">
+          {{ 'HELP_ITEM.BASE_URL' | translate }}
+        </label>
+      </span>
+      <span class="p-float-label">
+        <input
+          id="hm_item_editor_form_resource_url"
+          class="w-full pt-3 pb-2 text-responsive"
+          type="text"
+          pInputText
+          formControlName="resourceUrl"
+          [ariaLabel]="'HELP_ITEM.TOOLTIPS.RESOURCE_URL' | translate"
+          [pTooltip]="'HELP_ITEM.TOOLTIPS.RESOURCE_URL' | translate"
+          tooltipPosition="top"
+          tooltipEvent="hover"
+        />
+        <label for="hm_item_editor_form_resource_url" aria-hidden="true">
+          {{ 'HELP_ITEM.RESOURCE_URL' | translate }}
+        </label>
+      </span>
+      <span class="p-float-label">
+        <input
+          pInputText
+          type="text"
+          id="hm_item_editor_form_context"
+          class="w-full pt-3 pb-2 text-responsive"
+          formControlName="context"
+          [ariaLabel]="'HELP_ITEM.TOOLTIPS.CONTEXT' | translate"
+          [pTooltip]="'HELP_ITEM.TOOLTIPS.CONTEXT' | translate"
+          tooltipPosition="top"
+          tooltipEvent="hover"
+        />
+        <label class="" for="hm_item_editor_form_context" aria-hidden="true">
+          {{ 'HELP_ITEM.CONTEXT' | translate }}
+        </label>
+      </span>
+    </div>
+  </p-fieldset>
 </form>

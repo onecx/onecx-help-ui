@@ -25,7 +25,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/CreateHelp"
+              $ref: '#/components/schemas/CreateHelp'
       responses:
         "201":
           description: Help item created successfully
@@ -38,13 +38,14 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Help"
+                $ref: '#/components/schemas/Help'
         "400":
           description: Bad request
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ProblemDetailResponse"
+                $ref: '#/components/schemas/ProblemDetailResponse'
+  /helps/{id}:
     get:
       x-onecx:
         permissions:
@@ -56,7 +57,7 @@ paths:
       operationId: getHelpById
       parameters:
         - name: id
-          in: query
+          in: path
           required: true
           schema:
             type: string
@@ -66,7 +67,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Help"
+                $ref: '#/components/schemas/Help'
         "404":
           description: Help item not found
     put:
@@ -80,7 +81,7 @@ paths:
       operationId: updateHelp
       parameters:
         - name: id
-          in: query
+          in: path
           required: true
           schema:
             type: string
@@ -89,7 +90,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/UpdateHelp"
+              $ref: '#/components/schemas/UpdateHelp'
       responses:
         "204":
           description: Help item updated successfully
@@ -98,7 +99,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ProblemDetailResponse"
+                $ref: '#/components/schemas/ProblemDetailResponse'
         "404":
           description: Help item not found
     delete:
@@ -112,7 +113,7 @@ paths:
       operationId: deleteHelp
       parameters:
         - name: id
-          in: query
+          in: path
           required: true
           schema:
             type: string
@@ -135,41 +136,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/HelpProductNames"
+                $ref: '#/components/schemas/HelpProductNames'
         "400":
           description: Bad request
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ProblemDetailResponse"
-  /helps/products:
-    post:
-      x-onecx:
-        permissions:
-          product:
-            - read
-      tags:
-        - helpsInternal
-      description: Get all products to which help items are assigned to
-      operationId: searchProductsByCriteria
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/ProductsSearchCriteria"
-      responses:
-        "200":
-          description: Product search results retrieved successfully
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ProductsPageResult"
-        "400":
-          description: Bad request
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ProblemDetailResponse"
+                $ref: '#/components/schemas/ProblemDetailResponse'
   /helps/search:
     post:
       x-onecx:
@@ -185,15 +158,15 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/HelpSearchCriteria"
+              $ref: '#/components/schemas/HelpSearchCriteria'
       responses:
         "200":
           description: Help search results retrieved successfully
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/HelpPageResult"
-  /helps/{productName}:
+                $ref: '#/components/schemas/HelpPageResult'
+  /helps/item/{productName}:
     get:
       x-onecx:
         permissions:
@@ -201,7 +174,7 @@ paths:
             - read
       tags:
         - helpsInternal
-      description: Get a help item by its id and product name
+      description: Get a help item by its id and product name. If not exist, a default item will be created and returned.
       operationId: getHelpByProductNameItemId
       parameters:
         - name: productName
@@ -222,7 +195,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Help"
+                $ref: '#/components/schemas/Help'
         404:
           description: Help item not found
   /helps/export:
@@ -240,7 +213,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/ExportHelpsRequest"
+              $ref: '#/components/schemas/ExportHelpsRequest'
       responses:
         "200":
           description: Help items exported successfully
@@ -274,7 +247,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ProblemDetailResponse"
+                $ref: '#/components/schemas/ProblemDetailResponse'
 components:
   schemas:
     ExportHelpsRequest:
@@ -328,7 +301,7 @@ components:
         stream:
           type: array
           items:
-            $ref: "#/components/schemas/Help"
+            $ref: '#/components/schemas/Help'
     Help:
       required:
         - itemId
@@ -340,11 +313,11 @@ components:
           format: int32
           type: integer
         creationDate:
-          $ref: "#/components/schemas/OffsetDateTime"
+          $ref: '#/components/schemas/OffsetDateTime'
         creationUser:
           type: string
         modificationDate:
-          $ref: "#/components/schemas/OffsetDateTime"
+          $ref: '#/components/schemas/OffsetDateTime'
         modificationUser:
           type: string
         id:
@@ -378,21 +351,7 @@ components:
         stream:
           type: array
           items:
-            $ref: "#/components/schemas/Product"
-    ProductsSearchCriteria:
-      type: object
-      properties:
-        pageNumber:
-          format: int32
-          description: The number of page.
-          default: 0
-          type: integer
-        pageSize:
-          format: int32
-          description: The size of page
-          default: 100
-          maximum: 1000
-          type: integer
+            $ref: '#/components/schemas/Product'
     Product:
       type: object
       required:
@@ -417,11 +376,11 @@ components:
         params:
           type: array
           items:
-            $ref: "#/components/schemas/ProblemDetailParam"
+            $ref: '#/components/schemas/ProblemDetailParam'
         invalidParams:
           type: array
           items:
-            $ref: "#/components/schemas/ProblemDetailInvalidParam"
+            $ref: '#/components/schemas/ProblemDetailInvalidParam'
     ProblemDetailParam:
       type: object
       properties:
@@ -476,7 +435,7 @@ components:
     HelpProductNames:
       type: object
       properties:
-        ProductNames:
+        productNames:
           type: array
           items:
             type: string

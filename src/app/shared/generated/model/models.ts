@@ -9,5 +9,4 @@ export * from './problemDetailParam';
 export * from './problemDetailResponse';
 export * from './product';
 export * from './productsPageResult';
-export * from './productsSearchCriteria';
 export * from './updateHelp';

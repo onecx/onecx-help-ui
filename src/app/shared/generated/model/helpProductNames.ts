@@ -12,6 +12,6 @@
 
 
 export interface HelpProductNames { 
-    ProductNames?: Array<string>;
+    productNames?: Array<string>;
 }
 

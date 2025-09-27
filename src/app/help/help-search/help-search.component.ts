@@ -65,8 +65,6 @@ export class HelpSearchComponent implements OnInit {
   public importError = false
   private importObject: object | undefined = undefined
 
-  public products: Product[] = []
-
   public filteredColumns: Column[] = []
   public columns: ExtendedColumn[] = [
     {
@@ -91,7 +89,7 @@ export class HelpSearchComponent implements OnInit {
       css: 'px-2 py-1 sm:py-2'
     }
   ]
-  // slot configuration: get product infos via remote component
+  // slot configuration: get product data via remote component
   public pdSlotName = 'onecx-product-data'
   public pdIsComponentDefined$: Observable<boolean> | undefined // check
   public productData$ = new BehaviorSubject<Product[] | undefined>(undefined) // product infos
@@ -110,9 +108,9 @@ export class HelpSearchComponent implements OnInit {
   }
 
   public ngOnInit(): void {
+    this.pdSlotEmitter.subscribe(this.productData$)
     this.prepareActionButtons()
     this.prepareDialogTranslations()
-    this.pdSlotEmitter.subscribe(this.productData$)
     this.loadMetaData()
     this.onSearch({})
   }
@@ -257,7 +255,7 @@ export class HelpSearchComponent implements OnInit {
         this.helpApi.getAllProductsWithHelpItems().pipe(
           map((data: HelpProductNames) => {
             let ul: Product[] = []
-            if (data.ProductNames) ul = data.ProductNames.map((s) => ({ displayName: s, name: s }) as Product)
+            if (data.productNames) ul = data.productNames.map((s) => ({ displayName: s, name: s }) as Product)
             return ul
           }),
           catchError((err) => {

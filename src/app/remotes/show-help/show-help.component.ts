@@ -4,10 +4,7 @@ import { HttpClient } from '@angular/common/http'
 import { Router } from '@angular/router'
 import { TranslateLoader, TranslateModule, TranslateService } from '@ngx-translate/core'
 import { Observable, ReplaySubject, catchError, combineLatest, first, map, mergeMap, of, withLatestFrom } from 'rxjs'
-
-import { RippleModule } from 'primeng/ripple'
-import { TooltipModule } from 'primeng/tooltip'
-import { DialogService, DynamicDialogModule } from 'primeng/dynamicdialog'
+import { PrimeIcons } from 'primeng/api'
 
 import { getLocation } from '@onecx/accelerator'
 import {
@@ -20,7 +17,12 @@ import {
 } from '@onecx/angular-remote-components'
 import { AppStateService, PortalMessageService, UserService } from '@onecx/angular-integration-interface'
 import { createRemoteComponentTranslateLoader } from '@onecx/angular-accelerator'
-import { PortalCoreModule } from '@onecx/portal-integration-angular'
+import {
+  DialogState,
+  PortalCoreModule,
+  PortalDialogService,
+  providePortalDialogService
+} from '@onecx/portal-integration-angular'
 
 import { Configuration, Help, HelpsInternalAPIService } from 'src/app/shared/generated'
 import { environment } from 'src/environments/environment'
@@ -33,21 +35,12 @@ import { NoHelpItemComponent } from './no-help-item/no-help-item.component'
   templateUrl: './show-help.component.html',
   styleUrls: ['./show-help.component.scss'],
   standalone: true,
-  imports: [
-    CommonModule,
-    RippleModule,
-    TooltipModule,
-    DynamicDialogModule,
-    TranslateModule,
-    SharedModule,
-    PortalCoreModule,
-    AngularRemoteComponentsModule
-  ],
+  imports: [CommonModule, TranslateModule, SharedModule, PortalCoreModule, AngularRemoteComponentsModule],
   providers: [
     HelpsInternalAPIService,
-    DialogService,
     PortalMessageService,
     { provide: BASE_URL, useValue: new ReplaySubject<string>(1) },
+    providePortalDialogService(),
     provideTranslateServiceForRoot({
       isolate: true,
       loader: {
@@ -59,10 +52,12 @@ import { NoHelpItemComponent } from './no-help-item/no-help-item.component'
   ]
 })
 export class OneCXShowHelpComponent implements ocxRemoteComponent, ocxRemoteWebcomponent {
+  @Input() set ocxRemoteComponentConfig(config: RemoteComponentConfig) {
+    this.ocxInitRemoteComponent(config)
+  }
   helpArticleId$: Observable<string>
   productName$: Observable<string>
-  helpDataItem$: Observable<Help> | undefined
-
+  helpItem$: Observable<Help> | undefined
   permissions: string[] = []
 
   constructor(
@@ -70,8 +65,8 @@ export class OneCXShowHelpComponent implements ocxRemoteComponent, ocxRemoteWebc
     private readonly appStateService: AppStateService,
     private readonly userService: UserService,
     private readonly router: Router,
-    private readonly helpDataService: HelpsInternalAPIService,
-    private readonly dialogService: DialogService,
+    private readonly portalDialogService: PortalDialogService,
+    private readonly helpApi: HelpsInternalAPIService,
     private readonly portalMessageService: PortalMessageService,
     private readonly translateService: TranslateService
   ) {
@@ -89,75 +84,85 @@ export class OneCXShowHelpComponent implements ocxRemoteComponent, ocxRemoteWebc
         return ''
       })
     )
-    this.loadHelpDataItem()
-  }
-
-  @Input() set ocxRemoteComponentConfig(config: RemoteComponentConfig) {
-    this.ocxInitRemoteComponent(config)
-  }
-
-  ocxInitRemoteComponent(config: RemoteComponentConfig): void {
-    this.baseUrl.next(config.baseUrl)
-    this.permissions = config.permissions
-    this.helpDataService.configuration = new Configuration({
-      basePath: Location.joinWithSlash(config.baseUrl, environment.apiPrefix)
-    })
-  }
-
-  private loadHelpDataItem() {
-    this.helpDataItem$ = combineLatest([this.productName$, this.helpArticleId$]).pipe(
+    this.helpItem$ = combineLatest([this.productName$, this.helpArticleId$]).pipe(
       mergeMap(([productName, helpArticleId]) => {
         if (productName && helpArticleId) {
-          return this.helpDataService.getHelpByProductNameItemId({
+          return this.helpApi.getHelpByProductNameItemId({
             helpItemId: helpArticleId,
             productName: productName
           })
         } else return of({} as Help)
       }),
-      catchError((err) => {
-        console.error('getHelpByProductNameItemId', err)
+      catchError(() => {
         return of({} as Help)
       })
     )
   }
 
-  public onOpenHelpPage() {
-    return this.openHelpPage({})
+  ocxInitRemoteComponent(config: RemoteComponentConfig): void {
+    this.baseUrl.next(config.baseUrl)
+    this.permissions = config.permissions
+    this.helpApi.configuration = new Configuration({
+      basePath: Location.joinWithSlash(config.baseUrl, environment.apiPrefix)
+    })
   }
 
-  public openHelpPage(event: any) {
-    this.helpDataItem$?.pipe(withLatestFrom(this.helpArticleId$), first()).subscribe({
-      next: ([helpDataItem, helpArticleId]) => {
-        if (helpDataItem?.id) {
-          if (helpDataItem.baseUrl) {
-            const currentLocation = getLocation()
-            const url = this.constructUrl(
-              this.prepareUrl(helpDataItem),
-              currentLocation.origin,
-              currentLocation.deploymentPath
-            )
-            console.info(`navigate to help page: ${url.toString()}`)
-            try {
-              window.open(url, '_blank')?.focus()
-            } catch (e) {
-              console.error(`Could not construct help page url ${url.toString()}`, e)
-              this.portalMessageService.error({ summaryKey: 'SHOW_HELP.HELP_PAGE_ERROR' })
-            }
+  public onOpenHelpPage(ev: Event) {
+    ev.stopPropagation()
+    this.helpItem$?.pipe(withLatestFrom(this.helpArticleId$), first()).subscribe({
+      next: ([helpItem, helpArticleId]) => {
+        // if item exists with baseUrl: open URL in new TAB
+        if (helpItem?.id && helpItem.baseUrl) {
+          const currentLocation = getLocation()
+          const url = this.constructUrl(
+            this.prepareUrl(helpItem), // complete URL: base/resource#context
+            currentLocation.origin,
+            currentLocation.deploymentPath
+          )
+          console.info(`navigate to help page: ${url.toString()}`)
+          try {
+            window.open(url, '_blank')?.focus()
+          } catch (e) {
+            this.portalMessageService.error({ summaryKey: 'SHOW_HELP.HELP_PAGE_ERROR' })
           }
         } else {
-          this.translateService.get('SHOW_HELP.NO_HELP_ITEM.HEADER').subscribe((dialogTitle) => {
-            this.dialogService.open(NoHelpItemComponent, {
-              header: dialogTitle,
-              width: '400px',
-              data: {
-                helpArticleId: helpArticleId
-              }
-            })
-          })
+          this.openNoHelpItemDialog(helpItem, helpArticleId)
         }
       }
     })
-    event.preventDefault()
+  }
+
+  private openNoHelpItemDialog(helpItem: Help, articleId: string) {
+    const issueTypeKey = helpItem?.id ? 'MISSING_BASE_URL' : 'NO_HELP_ITEM'
+    // call no-help dialog if item is missing or not usable
+    this.portalDialogService
+      .openDialog<NoHelpItemComponent>(
+        'SHOW_HELP.' + issueTypeKey + '.HEADER',
+        {
+          type: NoHelpItemComponent,
+          inputs: { issueTypeKey: issueTypeKey, helpArticleId: articleId }
+        },
+        {
+          id: 'hm_no_help_action_close',
+          key: 'ACTIONS.NAVIGATION.CLOSE',
+          icon: PrimeIcons.TIMES,
+          tooltipKey: 'ACTIONS.NAVIGATION.CLOSE.TOOLTIP',
+          tooltipPosition: 'top'
+        },
+        undefined, // no second button
+        {
+          width: '450px',
+          draggable: true,
+          resizable: false,
+          showHeader: true,
+          showXButton: true, // this does not work: missing second button prevents the x button
+          keepInViewport: true,
+          closeOnEscape: true,
+          closeAriaLabel: 'ACTIONS.NAVIGATION.CLOSE.TOOLTIP'
+        }
+      )
+      .pipe(map((dialogState): [DialogState<NoHelpItemComponent>] => [dialogState]))
+      .subscribe()
   }
 
   private constructUrl(helpUrl: string, basePath: string, deploymentPath: string): URL {

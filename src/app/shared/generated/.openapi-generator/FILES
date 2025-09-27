@@ -20,7 +20,6 @@ model/problemDetailParam.ts
 model/problemDetailResponse.ts
 model/product.ts
 model/productsPageResult.ts
-model/productsSearchCriteria.ts
 model/updateHelp.ts
 param.ts
 variables.ts

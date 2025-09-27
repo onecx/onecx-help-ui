@@ -186,6 +186,11 @@
     "LABEL": "Show Help for this page",
     "TOOLTIP": "Show Help for this page",
     "HELP_PAGE_ERROR": "Help Item URL not valid",
+    "MISSING_BASE_URL": {
+      "HEADER": "Help Item without Base URL",
+      "CONTENT": "A help article has been defined for this page but the base URL is missing.",
+      "ITEM_HINT": "Die Hilfeartikel ID für die Seite ist:"
+    },
     "NO_HELP_ITEM": {
       "HEADER": "Help Item missing",
       "CONTENT": "No Help Item has been defined for this page.",

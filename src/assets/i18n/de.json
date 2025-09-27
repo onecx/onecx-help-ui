@@ -186,6 +186,11 @@
     "LABEL": "Hilfe für diese Seite anzeigen",
     "TOOLTIP": "Hilfe für diese Seite anzeigen",
     "HELP_PAGE_ERROR": "Hilfeartikel URL nicht gültig",
+    "MISSING_BASE_URL": {
+      "HEADER": "Hilfeartikel ohne Basis URL",
+      "CONTENT": "Für diese Seite wurde ein Hilfeartikel definiert dem die Basis URL fehlt.",
+      "ITEM_HINT": "Die Hilfeartikel ID für die Seite ist:"
+    },
     "NO_HELP_ITEM": {
       "HEADER": "Hilfeartikel fehlt",
       "CONTENT": "Für diese Seite wurde kein Hilfeartikel definiert.",
