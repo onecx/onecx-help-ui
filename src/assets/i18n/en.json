@@ -161,7 +161,7 @@
   "HELP_ITEM": {
     "PRODUCT_NAME": "Application",
     "PRODUCT_LIST": "Applications with Help Items",
-    "ID": "Help Item ID",
+    "ID": "Help Article ID",
     "CONTEXT": "Context",
     "URL": "URL",
     "BASE_URL": "Base URL",
@@ -172,7 +172,7 @@
       "PRODUCT_NAME": "Application with Help Item",
       "ID": "Unique ID for a Help Item of the Application.",
       "URL": "The final URL that is used when calling and consists of the parts base URL, resource and context.",
-      "BASE_URL": "Base part of the Help Item URL - the base path to the documentation of the Application",
+      "BASE_URL": "Base part of the Help Article URL - the base path to the documentation of the Application",
       "RESOURCE_URL": "Path from the base path to the specific page (resource)",
       "CONTEXT": "Specific context within the page (resource)",
       "OPERATOR": "If set then this Help Item was created by automation. All changes will be lost on the next deployment."
@@ -185,28 +185,28 @@
   "SHOW_HELP": {
     "LABEL": "Show Help for this page",
     "TOOLTIP": "Show Help for this page",
-    "HELP_PAGE_ERROR": "Help Item URL not valid",
+    "HELP_PAGE_ERROR": "Help Article URL not valid",
     "MISSING_BASE_URL": {
       "HEADER": "Help Item without Base URL",
-      "CONTENT": "A help article has been defined for this page but the base URL is missing.",
-      "ITEM_HINT": "Die Hilfeartikel ID für die Seite ist:"
+      "CONTENT": "A Help Article has been defined for this page but the base URL is missing.",
+      "ITEM_HINT": "The Help Article ID for the page is:"
     },
     "NO_HELP_ITEM": {
       "HEADER": "Help Item missing",
       "CONTENT": "No Help Item has been defined for this page.",
-      "ITEM_HINT": "The Help Item ID for this page is:"
+      "ITEM_HINT": "The Help Article ID for this page is:"
     }
   },
   "HELP_ITEM_EDITOR": {
     "LABEL": "Edit Help Item for this page",
     "TOOLTIP": "Edit Help Item for this page",
     "HEADER": "Edit Help Item",
-    "OPEN_HELP_PAGE_EDITOR_ERROR": "Cannot edit the Help Item. Help Item ID or Application Name missing.",
+    "OPEN_HELP_PAGE_EDITOR_ERROR": "Cannot edit the Help Item. Help Article ID or Application Name missing.",
     "UPDATE_HELP_ARTICLE_ERROR": "Help Item update failed",
     "SAVE_ERROR": "Form is not valid. Cannot update the Help Item.",
     "UPDATE_HELP_ARTICLE_INFO": "Help Item updated",
     "DIALOG": {
-      "ID": "Help Item ID",
+      "ID": "Help Article ID",
       "PRODUCT_NAME": "Application",
       "RESOURCE_URL": "Resource Path"
     }
