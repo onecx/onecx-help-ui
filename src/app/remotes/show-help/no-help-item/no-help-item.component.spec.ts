@@ -49,7 +49,7 @@ describe('NoHelpItemComponent', () => {
     noHelpItemHarness = await TestbedHarnessEnvironment.harnessForFixture(fixture, NoHelpItemHarness)
 
     expect(await noHelpItemHarness.getContent()).toBe('No Help Item has been defined for this page.')
-    expect(await noHelpItemHarness.getHintTitle()).toBe('The Help Item ID for this page is:  ' + data.helpArticleId)
+    expect(await noHelpItemHarness.getHintTitle()).toBe('The Help Article ID for this page is:  ' + data.helpArticleId)
     expect(await noHelpItemHarness.getArticleId()).toBe(helpArticleId)
 
     component.ocxDialogButtonClicked({
