@@ -123,6 +123,7 @@ export class OneCXShowHelpComponent implements ocxRemoteComponent, ocxRemoteWebc
           try {
             window.open(url, '_blank')?.focus()
           } catch (e) {
+            // NOSONAR typescript:S2486
             this.portalMessageService.error({ summaryKey: 'SHOW_HELP.HELP_PAGE_ERROR' })
           }
         } else {
