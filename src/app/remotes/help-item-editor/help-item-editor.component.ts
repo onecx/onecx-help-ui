@@ -145,7 +145,7 @@ export class OneCXHelpItemEditorComponent implements ocxRemoteComponent, ocxRemo
         if (helpPageResult.totalElements !== 1) {
           return {} as Help
         }
-        return helpPageResult.stream![0]!
+        return helpPageResult.stream![0]
       })
     )
   }

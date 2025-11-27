@@ -35,8 +35,8 @@ export class HelpItemEditorFormComponent
   public formGroup!: FormGroup
 
   constructor(
-    private fb: FormBuilder,
-    private portalMessageService: PortalMessageService
+    private readonly fb: FormBuilder,
+    private readonly portalMessageService: PortalMessageService
   ) {
     this.formGroup = this.fb.group({
       helpItemId: new FormControl({ value: null, disabled: true }, [Validators.required]),
