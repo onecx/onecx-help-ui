@@ -36,7 +36,8 @@ export type Product = {
 @Component({
   selector: 'app-help-search',
   templateUrl: './help-search.component.html',
-  styleUrls: ['./help-search.component.scss']
+  styleUrls: ['./help-search.component.scss'],
+  standalone: false
 })
 export class HelpSearchComponent implements OnInit {
   // dialog
