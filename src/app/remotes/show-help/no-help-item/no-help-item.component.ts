@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common'
 import { Component, Input } from '@angular/core'
 import { TranslateModule } from '@ngx-translate/core'
-import { DialogButtonClicked, DialogResult, DialogState } from '@onecx/portal-integration-angular'
+import { DialogButtonClicked, DialogResult, DialogState } from '@onecx/angular-accelerator'
 import { DynamicDialogConfig, DynamicDialogModule, DynamicDialogRef } from 'primeng/dynamicdialog'
 import { Observable } from 'rxjs'
 

@@ -106,6 +106,7 @@
     "karma-jasmine": "^5.1.0",
     "karma-jasmine-html-reporter": "^2.1.0",
     "karma-sonarqube-unit-reporter": "^0.0.23",
+    "modify-source-webpack-plugin": "^4.1.0",
     "ng-packagr": "19.2.2",
     "ngx-build-plus": "^19.0.0",
     "ngx-translate-testing": "^7.0.0",

@@ -7,7 +7,7 @@ import { of, throwError } from 'rxjs'
 import { FileSelectEvent } from 'primeng/fileupload'
 
 import { PortalMessageService, UserService } from '@onecx/angular-integration-interface'
-import { Column } from '@onecx/portal-integration-angular'
+import { Column } from '@onecx/angular-accelerator'
 
 import { HelpsInternalAPIService, Help } from 'src/app/shared/generated'
 import { HelpSearchComponent, Product } from './help-search.component'

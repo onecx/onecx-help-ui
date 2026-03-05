@@ -7,8 +7,7 @@ import { FileSelectEvent } from 'primeng/fileupload'
 import FileSaver from 'file-saver'
 
 import { PortalMessageService, UserService } from '@onecx/angular-integration-interface'
-import { Action } from '@onecx/angular-accelerator'
-import { Column, DataViewControlTranslations } from '@onecx/portal-integration-angular'
+import { Action, Column, DataViewControlTranslations } from '@onecx/angular-accelerator'
 import { SlotService } from '@onecx/angular-remote-components'
 
 import { Help, HelpsInternalAPIService, HelpSearchCriteria, HelpProductNames } from 'src/app/shared/generated'

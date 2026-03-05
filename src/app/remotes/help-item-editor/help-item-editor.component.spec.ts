@@ -13,9 +13,10 @@ import { RippleModule } from 'primeng/ripple'
 import { PrimeIcons } from 'primeng/api'
 
 import { IfPermissionDirective } from '@onecx/angular-accelerator'
-import { BASE_URL, RemoteComponentConfig, SlotService } from '@onecx/angular-remote-components'
+import { REMOTE_COMPONENT_CONFIG, RemoteComponentConfig } from '@onecx/angular-utils'
+import { SlotService } from '@onecx/angular-remote-components'
 import { AppStateService, PortalMessageService, UserService } from '@onecx/angular-integration-interface'
-import { PortalDialogService, providePortalDialogService } from '@onecx/portal-integration-angular'
+import { PortalDialogService, providePortalDialogService } from '@onecx/angular-accelerator'
 
 import { Help, HelpsInternalAPIService } from 'src/app/shared/generated'
 import { OneCXHelpItemEditorComponent, Product, slotInitializer } from './help-item-editor.component'
@@ -80,7 +81,7 @@ describe('OneCXHelpItemEditorComponent', () => {
         provideHttpClient(),
         provideHttpClientTesting(),
         providePortalDialogService(),
-        { provide: BASE_URL, useValue: baseUrlSubject }
+        { provide: REMOTE_COMPONENT_CONFIG, useValue: baseUrlSubject }
       ]
     })
       .overrideComponent(OneCXHelpItemEditorComponent, {
