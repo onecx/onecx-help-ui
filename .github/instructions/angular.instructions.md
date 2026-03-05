@@ -1,0 +1,129 @@
+---
+description: 'Angular-specific coding standards and best practices'
+applyTo: '**/*.ts, **/*.html, **/*.scss, **/*.css'
+---
+
+# Angular Guidelines
+
+This document provides guidelines that should be followed during Angular development in OneCX projects.
+
+## Testing
+
+- Write Unit Tests and Component Tests.
+  - Prefer Unit Tests over Component Tests.
+- Manually test with shell and in the standalone mode.
+- Tests should run in the build pipeline.
+
+## Asynchronous behavior / observables
+
+The following guidelines apply for asynchronous code and working with Observables:
+
+**IMPORTANT:** Do not assign the value of an Observable to members of a component or other class (function calls are OK). If storing of the value is needed, consider a BehaviorSubject.
+
+- Consider the use of the Async pipe when displaying asynchronous values.
+- Always think about unsubscribing. Unsubscribing is needed when the Observable is not created inside the component and emits an infinite number of values.
+  - HTTP Call: no unsubscribing needed (created externally but emits only one value).
+  - BehaviorSubject inside the component: no unsubscribing needed (emits an infinite number of values but created inside the component).
+  - BehaviorSubject in a service: unsubscribing needed (created externally and emits an infinite number of values).
+
+## Translations
+
+The following guidelines apply for translations:
+
+- Consider the translate pipe.
+- If needed, the translations should be done locally and not in `ngOnInit()`.
+- Do not use `TranslateService.instant`.
+- A translation key is only used in one place. Create new ones with the same value if required.
+- Shared components in a library should have default translations in the translation files of the library. Only if needed, create an Input in the component to customize the displayed string.
+- Every page has its own subsection in the translation file that is called like the component.
+- The structure in the subsection follows the structure of the page.
+- Translations of shared components are stored in a subsection with the name of the component.
+- No wrapper "DEFAULTS" is needed in the translation files in a library.
+
+## Components
+
+The following guidelines apply for components:
+
+- The HTML should be leading, not the TS.
+- Do not use inheritance. Consider a transclude instead.
+- Components should have only one clear responsibility.
+- Components are either technical or business driven, not both.
+  - Follow the Smart component, dumb component principle.
+
+## Code quality
+
+Committed code must have a certain quality. The following guidelines must be considered:
+
+- Do not commit commented out code.
+  - Comments should only be used to:
+    - Document the Why of the code and not the What.
+    - Create documentation for the autocompletion mechanism.
+- Do not commit debug outputs.
+  - `console.log()` messages should be used to inform about errors or problems and to give some information of the application state (e.g., "Configuration loaded with values xyz").
+- Remove unused imports.
+- Format the code:
+  - Run `npm run format`
+  - If you need to format a specific file, you can use: `nx format:write --files <filepath>`
+
+## Project structure
+
+The following example shows a potential folder structure that might be extended based on the need.
+
+**NOTE:** Folders should only be created and used if they have content.
+
+```
+├── src
+│   ├── app
+│   │   ├── featuremodule1 // one of feature modules, might have many of them
+│   │   │    ├── components // optional - components shared between pages of this feature module
+│   │   │    │    ├── featurecomponent1
+│   │   │    │    │    ├── featurecomponent1.component.html
+│   │   │    │    │    ├── featurecomponent1.component.scss
+│   │   │    │    │    ├── featurecomponent1.component.spec.ts
+│   │   │    │    │    ├── featurecomponent1.component.ts
+│   │   │    ├── pages
+│   │   │    │    ├── page1 // one of pages, might have many of them
+│   │   │    │    │     ├── page1subcomponent1 // one of subcomponent for page, optional + might have many of them
+│   │   │    │    │     │     ├── page1subcomponent1.component.html
+│   │   │    │    │     │     ├── page1subcomponent1.component.scss
+│   │   │    │    │     │     ├── page1subcomponent1.component.spec.ts
+│   │   │    │    │     │     ├── page1subcomponent1.component.ts
+│   │   │    │    │     ├── page1.component.html
+│   │   │    │    │     ├── page1.component.scss
+│   │   │    │    │     ├── page1.component.spec.ts
+│   │   │    │    │     ├── page1.component.ts
+│   │   │    ├── utils // optional
+│   │   │    ├── featuremodule1.module.ts
+│   │   ├── shared // (technical) components and directives used in multiple feature modules
+│   │   │    ├── components
+│   │   │    │     ├── sharedcomponent1
+│   │   │    │     │     ├── sharedcomponent1.component.html
+│   │   │    │     │     ├── sharedcomponent1.component.scss
+│   │   │    │     │     ├── sharedcomponent1.component.spec.ts
+│   │   │    │     │     ├── sharedcomponent1.component.ts
+│   │   │    ├── directives
+│   │   │    │     ├── directive1.ts
+│   │   │    │     ├── directive1.spec.ts
+│   │   │    ├── generated // generated from openApi
+│   │   │    │    ├── models
+│   │   │    │    ├── services
+│   │   │    ├── models
+│   │   │    │    ├── model1.ts
+│   │   │    ├── services
+│   │   │    │    ├── service1.ts
+│   │   │    ├── shared.module.ts
+│   │   ├── app-routing.module.ts
+│   │   ├── app.component.html
+│   │   ├── app.component.scss
+│   │   ├── app.component.ts
+│   │   ├── app.module.ts
+│   ├── assets
+│   │   │   ├── i18n
+│   │   │   ├── fonts
+│   │   │   ├── images
+│   │   ├── scss
+│   │   │   ├── yamls
+│   ├── environments
+│   │   │   ├── dev
+│   │   │   ├── prod
+```
