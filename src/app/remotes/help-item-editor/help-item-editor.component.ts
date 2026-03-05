@@ -1,4 +1,12 @@
-import { APP_INITIALIZER, Component, CUSTOM_ELEMENTS_SCHEMA, EventEmitter, Inject, Input } from '@angular/core'
+import {
+  Component,
+  CUSTOM_ELEMENTS_SCHEMA,
+  EventEmitter,
+  Inject,
+  Input,
+  inject,
+  provideAppInitializer
+} from '@angular/core'
 import { CommonModule, Location } from '@angular/common'
 import { HttpClient } from '@angular/common/http'
 import { Router } from '@angular/router'
@@ -53,11 +61,13 @@ export function slotInitializer(slotService: SlotService) {
   selector: 'app-ocx-help-item-editor',
   templateUrl: './help-item-editor.component.html',
   styleUrls: ['./help-item-editor.component.scss'],
-  standalone: true,
   imports: [CommonModule, SharedModule, PortalCoreModule, AngularRemoteComponentsModule],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   providers: [
-    { provide: APP_INITIALIZER, useFactory: slotInitializer, deps: [SLOT_SERVICE], multi: true },
+    provideAppInitializer(() => {
+      const initializerFn = slotInitializer(inject(SLOT_SERVICE))
+      return initializerFn()
+    }),
     { provide: SLOT_SERVICE, useExisting: SlotService },
     HelpsInternalAPIService,
     PortalMessageService,

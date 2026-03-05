@@ -7,7 +7,6 @@ import { Observable } from 'rxjs'
 
 @Component({
   selector: 'app-ocx-no-help-item',
-  standalone: true,
   templateUrl: './no-help-item.component.html',
   styleUrls: ['./no-help-item.component.scss'],
   imports: [CommonModule, DynamicDialogModule, TranslateModule]

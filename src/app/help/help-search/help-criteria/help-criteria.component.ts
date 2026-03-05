@@ -14,7 +14,8 @@ export interface HelpCriteriaForm {
 @Component({
   selector: 'app-help-criteria',
   templateUrl: './help-criteria.component.html',
-  styleUrls: ['./help-criteria.component.scss']
+  styleUrls: ['./help-criteria.component.scss'],
+  standalone: false
 })
 export class HelpCriteriaComponent {
   @Input() public actions: Action[] = []
