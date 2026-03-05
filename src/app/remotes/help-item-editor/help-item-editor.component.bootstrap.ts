@@ -4,11 +4,13 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations'
 
 import { AngularAuthModule } from '@onecx/angular-auth'
 import { bootstrapRemoteComponent } from '@onecx/angular-webcomponents'
+import { provideThemeConfig } from '@onecx/angular-utils'
 
 import { environment } from 'src/environments/environment'
 import { OneCXHelpItemEditorComponent } from './help-item-editor.component'
 
 bootstrapRemoteComponent(OneCXHelpItemEditorComponent, 'ocx-help-item-editor-component', environment.production, [
   provideHttpClient(withInterceptorsFromDi()),
-  importProvidersFrom(AngularAuthModule, BrowserAnimationsModule)
+  importProvidersFrom(AngularAuthModule, BrowserAnimationsModule),
+  provideThemeConfig()
 ])

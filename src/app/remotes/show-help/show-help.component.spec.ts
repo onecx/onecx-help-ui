@@ -14,8 +14,8 @@ import { DynamicDialogModule } from 'primeng/dynamicdialog'
 import { IfPermissionDirective } from '@onecx/angular-accelerator'
 import { UserService } from '@onecx/angular-integration-interface'
 import { AppStateService, PortalMessageService } from '@onecx/angular-integration-interface'
-import { BASE_URL, RemoteComponentConfig } from '@onecx/angular-remote-components'
-import { PortalDialogService } from '@onecx/portal-integration-angular'
+import { REMOTE_COMPONENT_CONFIG, RemoteComponentConfig } from '@onecx/angular-utils'
+import { PortalDialogService } from '@onecx/angular-accelerator'
 
 import { Help, HelpsInternalAPIService } from 'src/app/shared/generated'
 import { OneCXShowHelpComponent } from './show-help.component'
@@ -63,7 +63,11 @@ describe('OneCXShowHelpComponent', () => {
           en: require('/src/assets/i18n/en.json')
         }).withDefaultLanguage('en')
       ],
-      providers: [provideHttpClient(), provideHttpClientTesting(), { provide: BASE_URL, useValue: baseUrlSubject }]
+      providers: [
+        provideHttpClient(),
+        provideHttpClientTesting(),
+        { provide: REMOTE_COMPONENT_CONFIG, useValue: baseUrlSubject }
+      ]
     })
       .overrideComponent(OneCXShowHelpComponent, {
         set: {

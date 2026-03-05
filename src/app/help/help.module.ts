@@ -3,8 +3,7 @@ import { CommonModule } from '@angular/common'
 import { FormsModule } from '@angular/forms'
 import { RouterModule, Routes } from '@angular/router'
 
-import { PortalCoreModule } from '@onecx/portal-integration-angular'
-import { addInitializeModuleGuard, InitializeModuleGuard } from '@onecx/angular-integration-interface'
+import { AngularAcceleratorModule } from '@onecx/angular-accelerator'
 import { SharedModule } from 'src/app/shared/shared.module'
 
 import { HelpSearchComponent } from './help-search/help-search.component'
@@ -20,14 +19,7 @@ const routes: Routes = [
 ]
 @NgModule({
   declarations: [HelpSearchComponent, HelpDetailComponent, HelpCriteriaComponent],
-  imports: [
-    CommonModule,
-    FormsModule,
-    PortalCoreModule.forMicroFrontend(),
-    [RouterModule.forChild(addInitializeModuleGuard(routes))],
-    SharedModule
-  ],
-  providers: [InitializeModuleGuard]
+  imports: [CommonModule, FormsModule, AngularAcceleratorModule, [RouterModule.forChild(routes)], SharedModule]
 })
 export class HelpModule {
   constructor() {
