@@ -24,14 +24,14 @@ import { TableModule } from 'primeng/table'
 import { ToastModule } from 'primeng/toast'
 import { TooltipModule } from 'primeng/tooltip'
 
-import { PortalCoreModule } from '@onecx/portal-integration-angular'
+import { AngularAcceleratorModule } from '@onecx/angular-accelerator'
 
 import { LabelResolver } from './label.resolver'
 
 @NgModule({
   declarations: [],
   imports: [
-    PortalCoreModule.forMicroFrontend(),
+    AngularAcceleratorModule,
     AutoCompleteModule,
     CommonModule,
     ConfirmDialogModule,

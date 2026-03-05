@@ -6,19 +6,19 @@ import { RouterModule, Routes, Router } from '@angular/router'
 import { TranslateLoader, TranslateModule, MissingTranslationHandler } from '@ngx-translate/core'
 
 import { AngularAuthModule } from '@onecx/angular-auth'
-import { createTranslateLoader, provideTranslationPathFromMeta } from '@onecx/angular-utils'
+import { createTranslateLoader, provideTranslationPathFromMeta, provideThemeConfig } from '@onecx/angular-utils'
 import { createAppEntrypoint, initializeRouter, startsWith } from '@onecx/angular-webcomponents'
-import { addInitializeModuleGuard, AppStateService, ConfigurationService } from '@onecx/angular-integration-interface'
+import { AppStateService, ConfigurationService } from '@onecx/angular-integration-interface'
 
-import { PortalCoreModule, PortalMissingTranslationHandler } from '@onecx/portal-integration-angular'
+import { AngularAcceleratorModule, PortalMissingTranslationHandler } from '@onecx/angular-accelerator'
 import { PortalApiConfiguration } from '@onecx/angular-utils'
 
 import { Configuration } from './shared/generated'
 import { environment } from 'src/environments/environment'
 import { AppEntrypointComponent } from './app-entrypoint.component'
 
-function apiConfigProvider(configService: ConfigurationService, appStateService: AppStateService) {
-  return new PortalApiConfiguration(Configuration, environment.apiPrefix, configService, appStateService)
+function apiConfigProvider() {
+  return new PortalApiConfiguration(Configuration, environment.apiPrefix)
 }
 
 const routes: Routes = [
@@ -33,8 +33,8 @@ const routes: Routes = [
     AngularAuthModule,
     BrowserModule,
     BrowserAnimationsModule,
-    PortalCoreModule.forMicroFrontend(),
-    RouterModule.forRoot(addInitializeModuleGuard(routes)),
+    AngularAcceleratorModule,
+    RouterModule.forRoot(routes),
     TranslateModule.forRoot({
       isolate: true,
       loader: { provide: TranslateLoader, useFactory: createTranslateLoader, deps: [HttpClient] },
@@ -43,13 +43,14 @@ const routes: Routes = [
   ],
   providers: [
     ConfigurationService,
-    { provide: Configuration, useFactory: apiConfigProvider, deps: [ConfigurationService, AppStateService] },
+    { provide: Configuration, useFactory: apiConfigProvider },
     provideAppInitializer(() => {
       const initializerFn = initializeRouter(inject(Router), inject(AppStateService))
       return initializerFn()
     }),
     provideTranslationPathFromMeta(import.meta.url, 'assets/i18n/'),
-    provideHttpClient(withInterceptorsFromDi())
+    provideHttpClient(withInterceptorsFromDi()),
+    provideThemeConfig()
   ]
 })
 export class OneCXHelpModule implements DoBootstrap {

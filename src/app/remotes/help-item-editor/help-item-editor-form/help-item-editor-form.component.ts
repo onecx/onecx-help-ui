@@ -7,12 +7,7 @@ import { TooltipModule } from 'primeng/tooltip'
 import { FieldsetModule } from 'primeng/fieldset'
 
 import { PortalMessageService } from '@onecx/angular-integration-interface'
-import {
-  DialogButtonClicked,
-  DialogPrimaryButtonDisabled,
-  DialogResult,
-  DialogState
-} from '@onecx/portal-integration-angular'
+import { DialogButtonClicked, DialogPrimaryButtonDisabled, DialogResult, DialogState } from '@onecx/angular-accelerator'
 
 import { Help } from 'src/app/shared/generated'
 

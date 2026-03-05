@@ -16,28 +16,6 @@ You are a **Pre-Migration Specialist** — a senior frontend engineer performing
 - Module Federation via `@angular-architects/module-federation` 18.0.6
 - Builder: `ngx-build-plus:browser`
 
-## Project-Specific Findings (from codebase scan)
-
-These patterns were found and must be addressed:
-
-| Pattern | Files |
-|---------|-------|
-| `@onecx/keycloak-auth` import | `src/app/app.module.ts` |
-| `KeycloakAuthModule` | `src/app/app.module.ts` (import + NgModule imports) |
-| `PortalCoreModule` | `app.module.ts`, `onecx-help-remote.module.ts`, `shared.module.ts`, `help.module.ts`, `show-help.component.ts`, `help-item-editor.component.ts` |
-| `PortalMissingTranslationHandler` | `app.module.ts`, `onecx-help-remote.module.ts` |
-| `translateServiceInitializer` | `app.module.ts` |
-| `PortalApiConfiguration` | `onecx-help-remote.module.ts` |
-| `addInitializeModuleGuard` | `help.module.ts`, `onecx-help-remote.module.ts` |
-| `InitializeModuleGuard` | `help.module.ts` |
-| `ConfigurationService` | `onecx-help-remote.module.ts` |
-| `BASE_URL` | `show-help.component.ts`, `help-item-editor.component.ts`, spec files |
-| `PortalDialogService` / `providePortalDialogService` | `show-help.component.ts`, `help-item-editor.component.ts` |
-| `DialogState` | `show-help.component.ts`, `help-item-editor.component.ts` |
-| `createRemoteComponentTranslateLoader` | `show-help.component.ts` (from `@onecx/angular-accelerator`), `help-item-editor.component.ts` (from `@onecx/portal-integration-angular`) |
-| `Column`, `DataViewControlTranslations` | `help-search.component.ts` (from `@onecx/portal-integration-angular`) |
-| `@onecx/portal-layout-styles` | `src/styles.scss`, `webpack.config.js`, `package.json` |
-
 **NOT found** (skip these steps): `MenuService`, `FilterType.EQUAL`/`FilterType.TRUTHY`, `ThemeService`.
 
 # Workflow — Execute Steps in Strict Order

@@ -9,20 +9,19 @@ import { PrimeIcons } from 'primeng/api'
 import { getLocation } from '@onecx/accelerator'
 import {
   AngularRemoteComponentsModule,
-  BASE_URL,
-  RemoteComponentConfig,
-  provideTranslateServiceForRoot,
   ocxRemoteComponent,
-  ocxRemoteWebcomponent
+  ocxRemoteWebcomponent,
+  provideTranslateServiceForRoot
 } from '@onecx/angular-remote-components'
+import { REMOTE_COMPONENT_CONFIG, RemoteComponentConfig } from '@onecx/angular-utils'
 import { AppStateService, PortalMessageService, UserService } from '@onecx/angular-integration-interface'
-import { createRemoteComponentTranslateLoader } from '@onecx/angular-accelerator'
 import {
-  DialogState,
-  PortalCoreModule,
+  createRemoteComponentTranslateLoader,
+  AngularAcceleratorModule,
   PortalDialogService,
-  providePortalDialogService
-} from '@onecx/portal-integration-angular'
+  providePortalDialogService,
+  DialogState
+} from '@onecx/angular-accelerator'
 
 import { Configuration, Help, HelpsInternalAPIService } from 'src/app/shared/generated'
 import { environment } from 'src/environments/environment'
@@ -34,18 +33,18 @@ import { NoHelpItemComponent } from './no-help-item/no-help-item.component'
   selector: 'app-ocx-show-help',
   templateUrl: './show-help.component.html',
   styleUrls: ['./show-help.component.scss'],
-  imports: [CommonModule, TranslateModule, SharedModule, PortalCoreModule, AngularRemoteComponentsModule],
+  imports: [CommonModule, TranslateModule, SharedModule, AngularAcceleratorModule, AngularRemoteComponentsModule],
   providers: [
     HelpsInternalAPIService,
     PortalMessageService,
-    { provide: BASE_URL, useValue: new ReplaySubject<string>(1) },
+    { provide: REMOTE_COMPONENT_CONFIG, useValue: new ReplaySubject<RemoteComponentConfig>(1) },
     providePortalDialogService(),
     provideTranslateServiceForRoot({
       isolate: true,
       loader: {
         provide: TranslateLoader,
         useFactory: createRemoteComponentTranslateLoader,
-        deps: [HttpClient, BASE_URL]
+        deps: [HttpClient, REMOTE_COMPONENT_CONFIG]
       }
     })
   ]
@@ -60,7 +59,7 @@ export class OneCXShowHelpComponent implements ocxRemoteComponent, ocxRemoteWebc
   permissions: string[] = []
 
   constructor(
-    @Inject(BASE_URL) private readonly baseUrl: ReplaySubject<string>,
+    @Inject(REMOTE_COMPONENT_CONFIG) private readonly remoteComponentConfig: ReplaySubject<RemoteComponentConfig>,
     private readonly appStateService: AppStateService,
     private readonly userService: UserService,
     private readonly router: Router,
@@ -99,7 +98,7 @@ export class OneCXShowHelpComponent implements ocxRemoteComponent, ocxRemoteWebc
   }
 
   ocxInitRemoteComponent(config: RemoteComponentConfig): void {
-    this.baseUrl.next(config.baseUrl)
+    this.remoteComponentConfig.next(config)
     this.permissions = config.permissions
     this.helpApi.configuration = new Configuration({
       basePath: Location.joinWithSlash(config.baseUrl, environment.apiPrefix)

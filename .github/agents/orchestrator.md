@@ -104,7 +104,7 @@ When Phase 1 is complete:
 
 ## Phase 3: Post-Migration
 
-1. IF some steps could not be completed in pre-migration phase due to Angular 19 upgrade issues, work with the **Pre-migration Agent** to complete them now.
+1. IF some steps could not be completed in pre-migration phase due to Angular 19 upgrade issues, invoke the **Pre-migration Agent** to complete them now.
 2. Invoke the **Post-Migration Agent**
 3. The agent will perform steps 3.1–3.10.
 4. After it completes, update `MIGRATION_PROGRESS.md`.

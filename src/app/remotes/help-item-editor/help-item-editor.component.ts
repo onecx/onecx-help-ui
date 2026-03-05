@@ -16,22 +16,21 @@ import { PrimeIcons } from 'primeng/api'
 
 import { AppStateService, PortalMessageService, UserService } from '@onecx/angular-integration-interface'
 import {
+  AngularAcceleratorModule,
   DialogState,
-  PortalCoreModule,
   PortalDialogService,
   createRemoteComponentTranslateLoader,
   providePortalDialogService
-} from '@onecx/portal-integration-angular'
+} from '@onecx/angular-accelerator'
 import {
   AngularRemoteComponentsModule,
-  BASE_URL,
   ocxRemoteComponent,
   ocxRemoteWebcomponent,
   provideTranslateServiceForRoot,
-  RemoteComponentConfig,
   SlotService,
   SLOT_SERVICE
 } from '@onecx/angular-remote-components'
+import { REMOTE_COMPONENT_CONFIG, RemoteComponentConfig } from '@onecx/angular-utils'
 
 import { Configuration, Help, HelpsInternalAPIService } from 'src/app/shared/generated'
 import { SharedModule } from 'src/app/shared/shared.module'
@@ -61,7 +60,7 @@ export function slotInitializer(slotService: SlotService) {
   selector: 'app-ocx-help-item-editor',
   templateUrl: './help-item-editor.component.html',
   styleUrls: ['./help-item-editor.component.scss'],
-  imports: [CommonModule, SharedModule, PortalCoreModule, AngularRemoteComponentsModule],
+  imports: [CommonModule, SharedModule, AngularAcceleratorModule, AngularRemoteComponentsModule],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   providers: [
     provideAppInitializer(() => {
@@ -72,13 +71,13 @@ export function slotInitializer(slotService: SlotService) {
     HelpsInternalAPIService,
     PortalMessageService,
     providePortalDialogService(),
-    { provide: BASE_URL, useValue: new ReplaySubject<string>(1) },
+    { provide: REMOTE_COMPONENT_CONFIG, useValue: new ReplaySubject<RemoteComponentConfig>(1) },
     provideTranslateServiceForRoot({
       isolate: true,
       loader: {
         provide: TranslateLoader,
         useFactory: createRemoteComponentTranslateLoader,
-        deps: [HttpClient, BASE_URL]
+        deps: [HttpClient, REMOTE_COMPONENT_CONFIG]
       }
     })
   ]
@@ -102,7 +101,7 @@ export class OneCXHelpItemEditorComponent implements ocxRemoteComponent, ocxRemo
   private products: Product[] = []
 
   constructor(
-    @Inject(BASE_URL) private readonly baseUrl: ReplaySubject<string>,
+    @Inject(REMOTE_COMPONENT_CONFIG) private readonly remoteComponentConfig: ReplaySubject<RemoteComponentConfig>,
     private readonly router: Router,
     private readonly userService: UserService,
     private readonly slotService: SlotService,
@@ -142,7 +141,7 @@ export class OneCXHelpItemEditorComponent implements ocxRemoteComponent, ocxRemo
   }
 
   public ocxInitRemoteComponent(config: RemoteComponentConfig): void {
-    this.baseUrl.next(config.baseUrl)
+    this.remoteComponentConfig.next(config)
     this.permissions = config.permissions
     this.helpApi.configuration = new Configuration({
       basePath: Location.joinWithSlash(config.baseUrl, environment.apiPrefix)
