@@ -97,7 +97,7 @@ describe('OneCXShowHelpComponent', () => {
   })
 
   describe('initialize', () => {
-    it('should call ocxInitRemoteComponent with the correct config', () => {
+    it('should call ocxInitRemoteComponent with the correct config', async () => {
       const mockConfig: RemoteComponentConfig = {
         appId: 'appId',
         productName: 'prodName',
@@ -194,7 +194,7 @@ describe('OneCXShowHelpComponent', () => {
   })
 
   describe('open help page', () => {
-    it('should open help page on enter click', () => {
+    it('should open help page on enter click', async () => {
       initTestComponent({ permissions: ['HELP#VIEW'], baseUrl: 'base_url' } as RemoteComponentConfig)
       spyOn(component, 'onOpenHelpPage')
 
