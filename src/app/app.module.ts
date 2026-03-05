@@ -6,7 +6,7 @@ import { BrowserModule } from '@angular/platform-browser'
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations'
 import { TranslateLoader, TranslateModule, TranslateService, MissingTranslationHandler } from '@ngx-translate/core'
 
-import { KeycloakAuthModule } from '@onecx/keycloak-auth'
+import { AngularAuthModule } from '@onecx/angular-auth'
 import { createTranslateLoader, provideTranslationPathFromMeta } from '@onecx/angular-utils'
 import { APP_CONFIG, UserService } from '@onecx/angular-integration-interface'
 import {
@@ -31,7 +31,7 @@ const routes: Routes = [
     CommonModule,
     BrowserModule,
     BrowserAnimationsModule,
-    KeycloakAuthModule,
+    AngularAuthModule,
     PortalCoreModule.forRoot('onecx-help-ui'),
     RouterModule.forRoot(routes, {
       initialNavigation: 'enabledBlocking',
