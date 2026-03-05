@@ -37,9 +37,11 @@ describe('HelpSearchComponent', () => {
   }
   const translateServiceSpy = jasmine.createSpyObj('TranslateService', ['get'])
 
-  function initTestComponent() {
+  async function initTestComponent() {
     fixture = TestBed.createComponent(HelpSearchComponent)
     component = fixture.componentInstance
+    fixture.detectChanges()
+    await fixture.whenStable()
     fixture.detectChanges()
   }
 
@@ -63,8 +65,8 @@ describe('HelpSearchComponent', () => {
     }).compileComponents()
   }))
 
-  beforeEach(() => {
-    initTestComponent()
+  beforeEach(async () => {
+    await initTestComponent()
   })
 
   afterEach(() => {
@@ -405,62 +407,58 @@ describe('HelpSearchComponent', () => {
         event = { files: fileList }
       })
 
-      it('should select a file to upload - valid JSON', (done) => {
+      it('should select a file to upload - valid JSON', async () => {
         const json = '{ "helps": { "product": { "itemId": { "baseUrl": "https://..." } } } }'
         spyOn(file, 'text').and.returnValue(Promise.resolve(json))
 
         component.onImportSelectFile(event as any as FileSelectEvent)
+        await fixture.whenStable()
+        fixture.detectChanges()
 
-        setTimeout(() => {
-          expect(file.text).toHaveBeenCalled()
-          expect(msgServiceSpy.info).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.IMPORT.VALIDATION.OK' })
-          expect(component.importError).toBeFalse()
-          done()
-        })
+        expect(file.text).toHaveBeenCalled()
+        expect(msgServiceSpy.info).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.IMPORT.VALIDATION.OK' })
+        expect(component.importError).toBeFalse()
       })
 
-      it('should select a file to upload - invalid JSON - handle error', (done) => {
+      it('should select a file to upload - invalid JSON - handle error', async () => {
         spyOn(file, 'text').and.returnValue(Promise.resolve('Invalid Json'))
         spyOn(console, 'error')
 
         component.onImportSelectFile(event)
+        await fixture.whenStable()
+        fixture.detectChanges()
 
-        setTimeout(() => {
-          expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.IMPORT.VALIDATION.NOK' })
-          expect(console.error).toHaveBeenCalled()
-          expect(component.importError).toBeTrue()
-          done()
-        })
+        expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.IMPORT.VALIDATION.NOK' })
+        expect(console.error).toHaveBeenCalled()
+        expect(component.importError).toBeTrue()
       })
     })
 
     describe('on import confirmation', () => {
-      it('should import help items', (done) => {
+      it('should import help items', async () => {
         apiServiceSpy.importHelps.and.returnValue(of({}))
         component['importObject'] = helpItem1
 
         component.onImportConfirmation()
+        await fixture.whenStable()
+        fixture.detectChanges()
 
-        setTimeout(() => {
-          expect(component.displayImportDialog).toBeFalse()
-          expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.IMPORT.MESSAGE.OK' })
-          done()
-        })
+        expect(component.displayImportDialog).toBeFalse()
+        expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.IMPORT.MESSAGE.OK' })
       })
 
-      it('should call importHelps and handle error', (done) => {
+      it('should call importHelps and handle error', async () => {
         const errorResponse = { status: 400, statusText: 'Cannot import ...' }
         apiServiceSpy.importHelps.and.returnValue(throwError(() => errorResponse))
         component['importObject'] = helpItem1
         spyOn(console, 'error')
 
         component.onImportConfirmation()
+        await fixture.whenStable()
+        fixture.detectChanges()
 
-        setTimeout(() => {
-          expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.IMPORT.MESSAGE.NOK' })
-          expect(console.error).toHaveBeenCalledWith('importHelps', errorResponse)
-          done()
-        }, 0)
+        expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.IMPORT.MESSAGE.NOK' })
+        expect(console.error).toHaveBeenCalledWith('importHelps', errorResponse)
       })
 
       it('should not call importHelps if importHelpItem is not defined', () => {
