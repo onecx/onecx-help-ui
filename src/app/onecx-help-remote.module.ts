@@ -10,11 +10,8 @@ import { createTranslateLoader, provideTranslationPathFromMeta } from '@onecx/an
 import { createAppEntrypoint, initializeRouter, startsWith } from '@onecx/angular-webcomponents'
 import { addInitializeModuleGuard, AppStateService, ConfigurationService } from '@onecx/angular-integration-interface'
 
-import {
-  PortalApiConfiguration,
-  PortalCoreModule,
-  PortalMissingTranslationHandler
-} from '@onecx/portal-integration-angular'
+import { PortalCoreModule, PortalMissingTranslationHandler } from '@onecx/portal-integration-angular'
+import { PortalApiConfiguration } from '@onecx/angular-utils'
 
 import { Configuration } from './shared/generated'
 import { environment } from 'src/environments/environment'
