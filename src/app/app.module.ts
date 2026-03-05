@@ -1,4 +1,4 @@
-import { APP_INITIALIZER, NgModule } from '@angular/core'
+import { NgModule, inject, provideAppInitializer } from '@angular/core'
 import { CommonModule } from '@angular/common'
 import { HttpClient, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http'
 import { RouterModule, Routes } from '@angular/router'
@@ -45,12 +45,10 @@ const routes: Routes = [
   ],
   providers: [
     { provide: APP_CONFIG, useValue: environment },
-    {
-      provide: APP_INITIALIZER,
-      useFactory: translateServiceInitializer,
-      multi: true,
-      deps: [UserService, TranslateService]
-    },
+    provideAppInitializer(() => {
+      const initializerFn = translateServiceInitializer(inject(UserService), inject(TranslateService))
+      return initializerFn()
+    }),
     provideTranslationPathFromMeta(import.meta.url, 'assets/i18n/'),
     provideHttpClient(withInterceptorsFromDi())
   ]

@@ -21,7 +21,8 @@ export interface HelpDetailForm {
 @Component({
   selector: 'app-help-detail',
   templateUrl: './help-detail.component.html',
-  styleUrls: ['./help-detail.component.scss']
+  styleUrls: ['./help-detail.component.scss'],
+  standalone: false
 })
 export class HelpDetailComponent implements OnChanges {
   @Input() public displayDialog = false

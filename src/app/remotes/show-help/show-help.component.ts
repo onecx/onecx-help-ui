@@ -34,7 +34,6 @@ import { NoHelpItemComponent } from './no-help-item/no-help-item.component'
   selector: 'app-ocx-show-help',
   templateUrl: './show-help.component.html',
   styleUrls: ['./show-help.component.scss'],
-  standalone: true,
   imports: [CommonModule, TranslateModule, SharedModule, PortalCoreModule, AngularRemoteComponentsModule],
   providers: [
     HelpsInternalAPIService,
