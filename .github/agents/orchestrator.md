@@ -80,6 +80,8 @@ Target versions: **Angular ^19.x, OneCX ^6.x, PrimeNG ^19.x**
 3. After it completes, update `MIGRATION_PROGRESS.md` — mark completed steps with `[x]`.
 4. If the build fails, work with the pre-migration agent to resolve issues before proceeding.
 
+**IMPORTANT**: Some steps may not be completable until post-migration (e.g., imports that only break after Angular 19 upgrade). In such cases, complete as much as possible and add comments in the progress file about what remains.
+
 ## Phase 2: Developer Handoff
 
 When Phase 1 is complete:
@@ -94,15 +96,18 @@ When Phase 1 is complete:
    > 3. Run `npm install` (if conflicts: `rm -rf node_modules package-lock.json .angular dist ~/.angular/cache && npm cache clean --force && npm install`)
    > 4. Tell me "go ahead with Phase 3" when done.
    >
+   > Note: you can work with the *angular-upgrade-assistant* agent for specific upgrade tasks, but the full upgrade process must be completed before Phase 3 can start.
+   >
    > **Important:** If "Component is standalone, and cannot be declared in an NgModule" errors appear after the upgrade, add `standalone: false` to the affected component decorators.
 
 2. **Wait** for the developer to confirm before proceeding.
 
 ## Phase 3: Post-Migration
 
-1. Invoke the **Post-Migration Agent**
-2. The agent will perform steps 3.1–3.10.
-3. After it completes, update `MIGRATION_PROGRESS.md`.
+1. IF some steps could not be completed in pre-migration phase due to Angular 19 upgrade issues, work with the **Pre-migration Agent** to complete them now.
+2. Invoke the **Post-Migration Agent**
+3. The agent will perform steps 3.1–3.10.
+4. After it completes, update `MIGRATION_PROGRESS.md`.
 
 ## Phase 4: Verification
 
