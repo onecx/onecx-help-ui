@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms'
 import { RouterModule, Routes } from '@angular/router'
 
 import { AngularAcceleratorModule } from '@onecx/angular-accelerator'
+import { PortalPageComponent, providePermissionService } from '@onecx/angular-utils'
 import { SharedModule } from 'src/app/shared/shared.module'
 
 import { HelpSearchComponent } from './help-search/help-search.component'
@@ -19,7 +20,15 @@ const routes: Routes = [
 ]
 @NgModule({
   declarations: [HelpSearchComponent, HelpDetailComponent, HelpCriteriaComponent],
-  imports: [CommonModule, FormsModule, AngularAcceleratorModule, [RouterModule.forChild(routes)], SharedModule]
+  imports: [
+    CommonModule,
+    FormsModule,
+    AngularAcceleratorModule,
+    PortalPageComponent,
+    [RouterModule.forChild(routes)],
+    SharedModule
+  ],
+  providers: [...providePermissionService()]
 })
 export class HelpModule {
   constructor() {

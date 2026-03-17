@@ -6,12 +6,17 @@ import { RouterModule, Routes, Router } from '@angular/router'
 import { TranslateLoader, TranslateModule, MissingTranslationHandler } from '@ngx-translate/core'
 
 import { AngularAuthModule } from '@onecx/angular-auth'
-import { createTranslateLoader, provideTranslationPathFromMeta, provideThemeConfig } from '@onecx/angular-utils'
+import {
+  createTranslateLoader,
+  MultiLanguageMissingTranslationHandler,
+  PortalApiConfiguration,
+  provideThemeConfig,
+  provideTranslationPathFromMeta
+} from '@onecx/angular-utils'
 import { createAppEntrypoint, initializeRouter, startsWith } from '@onecx/angular-webcomponents'
 import { AppStateService, ConfigurationService } from '@onecx/angular-integration-interface'
 
-import { AngularAcceleratorModule, PortalMissingTranslationHandler } from '@onecx/angular-accelerator'
-import { PortalApiConfiguration } from '@onecx/angular-utils'
+import { AngularAcceleratorModule } from '@onecx/angular-accelerator'
 
 import { Configuration } from './shared/generated'
 import { environment } from 'src/environments/environment'
@@ -38,7 +43,10 @@ const routes: Routes = [
     TranslateModule.forRoot({
       isolate: true,
       loader: { provide: TranslateLoader, useFactory: createTranslateLoader, deps: [HttpClient] },
-      missingTranslationHandler: { provide: MissingTranslationHandler, useClass: PortalMissingTranslationHandler }
+      missingTranslationHandler: {
+        provide: MissingTranslationHandler,
+        useClass: MultiLanguageMissingTranslationHandler
+      }
     })
   ],
   providers: [

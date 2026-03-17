@@ -40,4 +40,15 @@
   .text-ellipsis-2-lines {
     @include displaying-text-ellipsis(2);
   }
+
+  // Keep the current page report aligned with paginator controls in this view.
+  .p-paginator .p-paginator-current {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+    user-select: none;
+    overflow: hidden;
+    position: relative;
+  }
 }
