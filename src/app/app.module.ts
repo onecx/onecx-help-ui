@@ -1,19 +1,20 @@
-import { NgModule, inject, provideAppInitializer } from '@angular/core'
+import { CUSTOM_ELEMENTS_SCHEMA, NgModule } from '@angular/core'
 import { CommonModule } from '@angular/common'
 import { HttpClient, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http'
 import { RouterModule, Routes } from '@angular/router'
 import { BrowserModule } from '@angular/platform-browser'
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations'
-import { TranslateLoader, TranslateModule, TranslateService, MissingTranslationHandler } from '@ngx-translate/core'
+import { BrowserAnimationsModule, provideAnimations } from '@angular/platform-browser/animations'
+import { TranslateLoader, TranslateModule, MissingTranslationHandler } from '@ngx-translate/core'
 
 import { AngularAuthModule } from '@onecx/angular-auth'
-import { createTranslateLoader, provideTranslationPathFromMeta, provideThemeConfig } from '@onecx/angular-utils'
-import { APP_CONFIG, UserService } from '@onecx/angular-integration-interface'
 import {
-  translateServiceInitializer,
-  AngularAcceleratorModule,
-  PortalMissingTranslationHandler
-} from '@onecx/angular-accelerator'
+  createTranslateLoader,
+  provideThemeConfig,
+  provideTranslationConnectionService,
+  provideTranslationPathFromMeta
+} from '@onecx/angular-utils'
+import { APP_CONFIG } from '@onecx/angular-integration-interface'
+import { AngularAcceleratorMissingTranslationHandler, AngularAcceleratorModule } from '@onecx/angular-accelerator'
 
 import { environment } from 'src/environments/environment'
 import { AppComponent } from './app.component'
@@ -27,6 +28,7 @@ const routes: Routes = [
 @NgModule({
   bootstrap: [AppComponent],
   declarations: [AppComponent],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
   imports: [
     CommonModule,
     BrowserModule,
@@ -40,18 +42,19 @@ const routes: Routes = [
     TranslateModule.forRoot({
       isolate: true,
       loader: { provide: TranslateLoader, useFactory: createTranslateLoader, deps: [HttpClient] },
-      missingTranslationHandler: { provide: MissingTranslationHandler, useClass: PortalMissingTranslationHandler }
+      missingTranslationHandler: {
+        provide: MissingTranslationHandler,
+        useClass: AngularAcceleratorMissingTranslationHandler
+      }
     })
   ],
   providers: [
     { provide: APP_CONFIG, useValue: environment },
-    provideAppInitializer(() => {
-      const initializerFn = translateServiceInitializer(inject(UserService), inject(TranslateService))
-      return initializerFn()
-    }),
+    ...provideTranslationConnectionService(),
     provideTranslationPathFromMeta(import.meta.url, 'assets/i18n/'),
     provideHttpClient(withInterceptorsFromDi()),
-    provideThemeConfig()
+    provideThemeConfig(),
+    provideAnimations()
   ]
 })
 export class AppModule {
