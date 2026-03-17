@@ -1,16 +1,7 @@
-import {
-  Component,
-  CUSTOM_ELEMENTS_SCHEMA,
-  EventEmitter,
-  Inject,
-  Input,
-  inject,
-  provideAppInitializer
-} from '@angular/core'
+import { Component, CUSTOM_ELEMENTS_SCHEMA, EventEmitter, Inject, Input, APP_INITIALIZER } from '@angular/core'
 import { CommonModule, Location } from '@angular/common'
-import { HttpClient } from '@angular/common/http'
 import { Router } from '@angular/router'
-import { TranslateLoader, TranslateService } from '@ngx-translate/core'
+import { TranslateService } from '@ngx-translate/core'
 import { BehaviorSubject, Observable, ReplaySubject, catchError, combineLatest, first, map, mergeMap, of } from 'rxjs'
 import { PrimeIcons } from 'primeng/api'
 
@@ -19,14 +10,12 @@ import {
   AngularAcceleratorModule,
   DialogState,
   PortalDialogService,
-  createRemoteComponentTranslateLoader,
   providePortalDialogService
 } from '@onecx/angular-accelerator'
 import {
   AngularRemoteComponentsModule,
   ocxRemoteComponent,
   ocxRemoteWebcomponent,
-  provideTranslateServiceForRoot,
   SlotService,
   SLOT_SERVICE
 } from '@onecx/angular-remote-components'
@@ -63,23 +52,12 @@ export function slotInitializer(slotService: SlotService) {
   imports: [CommonModule, SharedModule, AngularAcceleratorModule, AngularRemoteComponentsModule],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   providers: [
-    provideAppInitializer(() => {
-      const initializerFn = slotInitializer(inject(SLOT_SERVICE))
-      return initializerFn()
-    }),
+    { provide: APP_INITIALIZER, useFactory: slotInitializer, deps: [SLOT_SERVICE], multi: true },
     { provide: SLOT_SERVICE, useExisting: SlotService },
     HelpsInternalAPIService,
     PortalMessageService,
     providePortalDialogService(),
-    { provide: REMOTE_COMPONENT_CONFIG, useValue: new ReplaySubject<RemoteComponentConfig>(1) },
-    provideTranslateServiceForRoot({
-      isolate: true,
-      loader: {
-        provide: TranslateLoader,
-        useFactory: createRemoteComponentTranslateLoader,
-        deps: [HttpClient, REMOTE_COMPONENT_CONFIG]
-      }
-    })
+    { provide: REMOTE_COMPONENT_CONFIG, useValue: new ReplaySubject<RemoteComponentConfig>(1) }
   ]
 })
 export class OneCXHelpItemEditorComponent implements ocxRemoteComponent, ocxRemoteWebcomponent {

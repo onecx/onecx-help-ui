@@ -5,6 +5,8 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core'
 import { provideErrorTailorConfig, errorTailorImports } from '@ngneat/error-tailor'
 
 import { AutoCompleteModule } from 'primeng/autocomplete'
+import { ButtonModule } from 'primeng/button'
+import { CheckboxModule } from 'primeng/checkbox'
 import { ConfirmDialogModule } from 'primeng/confirmdialog'
 import { ConfirmPopupModule } from 'primeng/confirmpopup'
 import { ConfirmationService } from 'primeng/api'
@@ -14,9 +16,10 @@ import { DropdownModule } from 'primeng/dropdown'
 import { FieldsetModule } from 'primeng/fieldset'
 import { FileUploadModule } from 'primeng/fileupload'
 import { InputTextModule } from 'primeng/inputtext'
-import { InputTextareaModule } from 'primeng/inputtextarea'
+import { TextareaModule } from 'primeng/textarea'
 import { KeyFilterModule } from 'primeng/keyfilter'
 import { ListboxModule } from 'primeng/listbox'
+import { MessageModule } from 'primeng/message'
 import { MultiSelectModule } from 'primeng/multiselect'
 import { RippleModule } from 'primeng/ripple'
 import { SelectButtonModule } from 'primeng/selectbutton'
@@ -33,6 +36,8 @@ import { LabelResolver } from './label.resolver'
   imports: [
     AngularAcceleratorModule,
     AutoCompleteModule,
+    ButtonModule,
+    CheckboxModule,
     CommonModule,
     ConfirmDialogModule,
     ConfirmPopupModule,
@@ -43,9 +48,10 @@ import { LabelResolver } from './label.resolver'
     FileUploadModule,
     FormsModule,
     InputTextModule,
-    InputTextareaModule,
+    TextareaModule,
     KeyFilterModule,
     ListboxModule,
+    MessageModule,
     MultiSelectModule,
     ReactiveFormsModule,
     RippleModule,
@@ -57,7 +63,10 @@ import { LabelResolver } from './label.resolver'
     errorTailorImports
   ],
   exports: [
+    AngularAcceleratorModule,
     AutoCompleteModule,
+    ButtonModule,
+    CheckboxModule,
     CommonModule,
     ConfirmDialogModule,
     ConfirmPopupModule,
@@ -68,9 +77,10 @@ import { LabelResolver } from './label.resolver'
     FileUploadModule,
     FormsModule,
     InputTextModule,
-    InputTextareaModule,
+    TextareaModule,
     KeyFilterModule,
     ListboxModule,
+    MessageModule,
     MultiSelectModule,
     ReactiveFormsModule,
     RippleModule,
