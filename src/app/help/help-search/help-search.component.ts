@@ -2,17 +2,15 @@ import { Component, EventEmitter, OnInit } from '@angular/core'
 import { Location } from '@angular/common'
 import { TranslateService } from '@ngx-translate/core'
 import { BehaviorSubject, catchError, combineLatest, finalize, map, Observable, of, switchMap, tap } from 'rxjs'
-import { Table } from 'primeng/table'
 import { FileSelectEvent } from 'primeng/fileupload'
 import FileSaver from 'file-saver'
 
 import { PortalMessageService, UserService } from '@onecx/angular-integration-interface'
-import { Action, Column, DataViewControlTranslations } from '@onecx/angular-accelerator'
+import { Action, ColumnType, DataAction, DataTableColumn, Filter, FilterType } from '@onecx/angular-accelerator'
 import { SlotService } from '@onecx/angular-remote-components'
 
 import { Help, HelpsInternalAPIService, HelpSearchCriteria, HelpProductNames } from 'src/app/shared/generated'
 
-type ExtendedColumn = Column & { css?: string; limit?: boolean }
 export type ChangeMode = 'VIEW' | 'CREATE' | 'COPY' | 'EDIT'
 export type AllMetaData = {
   allProducts: Product[]
@@ -47,11 +45,11 @@ export class HelpSearchComponent implements OnInit {
   public dateFormat: string
   public actions$: Observable<Action[]> | undefined
   public criteria: HelpSearchCriteria = {}
-  public dataViewControlsTranslations: DataViewControlTranslations = {}
   public displayDeleteDialog = false
   public displayDetailDialog = false
   public displayImportDialog = false
   public displayExportDialog = false
+  public tableFilter = ''
 
   // data
   public data$: Observable<Help[]> | undefined
@@ -65,30 +63,44 @@ export class HelpSearchComponent implements OnInit {
   public importError = false
   private importObject: object | undefined = undefined
 
-  public filteredColumns: Column[] = []
-  public columns: ExtendedColumn[] = [
+  public displayedColumnKeys: string[] = ['productName', 'itemId', 'url']
+  public filters$ = new BehaviorSubject<Filter[]>([])
+  public dataViewColumns: DataTableColumn[] = [
     {
-      field: 'productName',
-      header: 'PRODUCT_NAME',
-      active: true,
-      translationPrefix: 'HELP_ITEM',
-      css: 'px-2 py-1 sm:py-2'
+      id: 'productName',
+      nameKey: 'HELP_ITEM.PRODUCT_NAME',
+      columnType: ColumnType.STRING,
+      sortable: true,
+      filterable: true,
+      filterType: FilterType.EQUALS
     },
     {
-      field: 'itemId',
-      header: 'ID',
-      active: true,
-      translationPrefix: 'HELP_ITEM',
-      css: 'px-2 py-1 sm:py-2'
+      id: 'itemId',
+      nameKey: 'HELP_ITEM.ID',
+      columnType: ColumnType.STRING,
+      sortable: true,
+      filterable: true,
+      filterType: FilterType.EQUALS
     },
     {
-      field: 'url',
-      header: 'URL',
-      active: true,
-      translationPrefix: 'HELP_ITEM',
-      css: 'px-2 py-1 sm:py-2'
+      id: 'url',
+      nameKey: 'HELP_ITEM.URL',
+      columnType: ColumnType.STRING,
+      sortable: true,
+      filterable: true,
+      filterType: FilterType.EQUALS
     }
   ]
+  public dataViewAdditionalActions: DataAction[] = [
+    {
+      id: 'copy',
+      labelKey: 'ACTIONS.COPY.LABEL',
+      icon: 'pi pi-copy',
+      permission: 'HELP#EDIT',
+      callback: (item: Help) => this.onDetail(undefined, item, 'COPY')
+    }
+  ]
+
   // slot configuration: get product data via remote component
   public pdSlotName = 'onecx-product-data'
   public pdIsComponentDefined$: Observable<boolean> | undefined // check
@@ -104,13 +116,11 @@ export class HelpSearchComponent implements OnInit {
   ) {
     this.dateFormat = this.user.lang$.getValue() === 'de' ? 'dd.MM.yyyy HH:mm' : 'M/d/yy, h:mm a'
     this.pdIsComponentDefined$ = this.slotService.isSomeComponentDefinedForSlot(this.pdSlotName)
-    this.filteredColumns = this.columns.filter((a) => a.active === true)
   }
 
   public ngOnInit(): void {
     this.pdSlotEmitter.subscribe(this.productData$)
     this.prepareActionButtons()
-    this.prepareDialogTranslations()
     this.loadMetaData()
     this.onSearch({})
   }
@@ -118,20 +128,6 @@ export class HelpSearchComponent implements OnInit {
   /****************************************************************************
    * DIALOG
    */
-  private prepareDialogTranslations(): void {
-    this.translate
-      .get(['DIALOG.DATAVIEW.FILTER', 'DIALOG.DATAVIEW.FILTER_BY', 'HELP_ITEM.ID', 'HELP_ITEM.PRODUCT_NAME'])
-      .pipe(
-        map((data) => {
-          this.dataViewControlsTranslations = {
-            filterInputPlaceholder: data['DIALOG.DATAVIEW.FILTER'],
-            filterInputTooltip:
-              data['DIALOG.DATAVIEW.FILTER_BY'] + data['HELP_ITEM.ID'] + ', ' + data['HELP_ITEM.PRODUCT_NAME']
-          }
-        })
-      )
-      .subscribe()
-  }
   private prepareActionButtons(): void {
     this.actions$ = this.translate
       .get([
@@ -182,11 +178,33 @@ export class HelpSearchComponent implements OnInit {
   public onCriteriaReset(): void {
     this.criteria = {}
   }
-  public onColumnsChange(activeIds: string[]) {
-    this.filteredColumns = activeIds.map((id) => this.columns.find((col) => col.field === id)) as Column[]
+
+  public onFiltersChanged(filters: Filter[]): void {
+    this.filters$.next(filters)
   }
-  public onFilterChange(event: string, dataTable: Table): void {
-    dataTable?.filterGlobal(event, 'contains')
+
+  public applyGlobalFilter(data: Help[]): any[] {
+    const filterValue = this.tableFilter.trim().toUpperCase()
+    if (!filterValue) {
+      return data as any[]
+    }
+    return data.filter((item) => {
+      const displayName = this.getDisplayName(item.productName, this.productData$.getValue(), item.productName) ?? ''
+      const productName = item.productName ?? ''
+      const itemId = item.itemId ?? ''
+      const url = this.prepareUrl(item)
+      return [displayName, productName, itemId, url].some((value) => value.toUpperCase().includes(filterValue))
+    }) as any[]
+  }
+
+  public onViewItem(item: any): void {
+    this.onDetail(undefined, item as Help, 'VIEW')
+  }
+  public onEditItem(item: any): void {
+    this.onDetail(undefined, item as Help, 'EDIT')
+  }
+  public onDeleteItem(item: any): void {
+    this.onDelete(undefined, item as Help)
   }
 
   public getDisplayName(name: string | undefined, list: Product[] | undefined, defValue?: string): string | undefined {
@@ -215,8 +233,8 @@ export class HelpSearchComponent implements OnInit {
   /****************************************************************************
    *  DELETE => Ask for confirmation
    */
-  public onDelete(ev: Event, item: Help): void {
-    ev.stopPropagation()
+  public onDelete(ev: Event | undefined, item: Help): void {
+    ev?.stopPropagation()
     this.item4Delete = item
     this.displayDeleteDialog = true
   }
