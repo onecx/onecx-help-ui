@@ -28,13 +28,13 @@
       }
     }
   }
-  // hide unusable stuff
-  ocx-column-group-selection,
-  ocx-data-view-controls div div button {
-    display: none;
+  .help-search-caption-filter {
+    display: flex;
+    justify-content: center;
   }
-  ocx-data-view-controls div {
-    justify-content: center !important;
+
+  .help-search-caption-filter input {
+    width: min(100%, 24rem);
   }
 
   .text-ellipsis-2-lines {
