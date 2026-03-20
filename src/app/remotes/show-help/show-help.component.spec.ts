@@ -35,7 +35,7 @@ describe('OneCXShowHelpComponent', () => {
 
   const mockUserService = jasmine.createSpyObj<UserService>('UserService', ['hasPermission'])
   mockUserService.hasPermission.and.callFake((permission: string) => {
-    return ['HELP#EDIT', 'HELP#VIEW'].includes(permission)
+    return Promise.resolve(['HELP#EDIT', 'HELP#VIEW'].includes(permission))
   })
   const helpApiSpy = jasmine.createSpyObj<HelpsInternalAPIService>('HelpsInternalAPIService', [
     'getHelpByProductNameItemId'
@@ -85,7 +85,7 @@ describe('OneCXShowHelpComponent', () => {
   })
 
   afterEach(() => {
-    mockUserService.hasPermission.and.returnValue(true)
+    mockUserService.hasPermission.and.returnValue(Promise.resolve(true))
     // to spy data: reset
     messageServiceSpy.error.calls.reset()
     helpApiSpy.getHelpByProductNameItemId.calls.reset()
@@ -116,12 +116,13 @@ describe('OneCXShowHelpComponent', () => {
     })
 
     it('should init remote component', (done: DoneFn) => {
-      initTestComponent({ permissions: ['HELP#VIEW'], baseUrl: 'base_url' } as RemoteComponentConfig)
+      const config = { permissions: ['HELP#VIEW'], baseUrl: 'base_url' } as RemoteComponentConfig
+      initTestComponent(config)
 
       expect(component.permissions).toEqual(['HELP#VIEW'])
       expect(helpApiSpy.configuration.basePath).toEqual('base_url/bff')
       baseUrlSubject.asObservable().subscribe((item) => {
-        expect(item).toEqual('base_url')
+        expect(item).toEqual(config)
         done()
       })
     })
