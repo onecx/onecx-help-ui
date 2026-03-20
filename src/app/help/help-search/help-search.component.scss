@@ -28,16 +28,27 @@
       }
     }
   }
-  // hide unusable stuff
-  ocx-column-group-selection,
-  ocx-data-view-controls div div button {
-    display: none;
+  .help-search-caption-filter {
+    display: flex;
+    justify-content: center;
   }
-  ocx-data-view-controls div {
-    justify-content: center !important;
+
+  .help-search-caption-filter input {
+    width: min(100%, 24rem);
   }
 
   .text-ellipsis-2-lines {
     @include displaying-text-ellipsis(2);
+  }
+
+  // Keep the current page report aligned with paginator controls in this view.
+  .p-paginator .p-paginator-current {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+    user-select: none;
+    overflow: hidden;
+    position: relative;
   }
 }

@@ -11,7 +11,7 @@
       .ocx-float-label-textbox {
         font-family: var(--font-family);
         font-size: var(--input-text-font-size);
-        color: var(--emphasis-high);
+        color: var(--p-form-field-color);
         background: var(--input-bg);
         padding: var(--input-padding);
         border: var(--input-border);
@@ -29,11 +29,11 @@
         line-height: 1;
         font-size: 12px;
         pointer-events: none;
-        color: var(--emphasis-medium);
+        color: var(--p-form-field-float-label-color);
         background-color: var(--input-bg);
         transition-property: all;
         transition-timing-function: ease;
-        transition-duration: var(--transition-duration);
+        transition-duration: var(--p-transition-duration);
       }
     }
   }
@@ -173,7 +173,7 @@
 @mixin input-clear-icon {
   .p-input-icon-right > a:last-of-type {
     right: 0.75rem;
-    color: var(--emphasis-medium);
+    color: var(--p-form-field-icon-color);
   }
   .p-input-icon-left > a,
   .p-input-icon-right > a {
@@ -224,14 +224,14 @@
   :host ::ng-deep {
     .data-view-control,
     .data-view-control * {
-      color: var(--emphasis-medium);
+      color: var(--text-secondary-color);
     }
     // correction for data-view-control component
     .data-view-control-border {
       border: var(--toggle-button-border);
       &.p-dropdown {
         .p-inputtext {
-          color: var(--emphasis-medium);
+          color: var(--text-secondary-color);
           opacity: 0.9;
         }
         &:last-of-type {
@@ -328,13 +328,13 @@
       .p-selectbutton .p-button {
         text-align: center;
         display: inline-block;
-        color: var(--emphasis-medium);
+        color: var(--text-secondary-color);
         font-weight: var(--font-weight);
         padding: 0.3rem 0.8rem;
         border: var(--input-border);
       }
       .p-selectbutton-subtitle {
-        color: var(--emphasis-medium);
+        color: var(--text-secondary-color);
         font-size: 0.8rem;
       }
     }
@@ -346,6 +346,7 @@
       .p-selectbutton .p-button {
         opacity: 0.9 !important;
         border: var(--toggle-button-border);
+        // TODO: replace .p-highlight
         &.p-highlight {
           background: var(--toggle-button-active-bg);
           border-color: var(--toggle-button-active-border-color);

@@ -1,13 +1,12 @@
 import { CommonModule } from '@angular/common'
 import { Component, Input } from '@angular/core'
 import { TranslateModule } from '@ngx-translate/core'
-import { DialogButtonClicked, DialogResult, DialogState } from '@onecx/portal-integration-angular'
+import { DialogButtonClicked, DialogResult, DialogState } from '@onecx/angular-accelerator'
 import { DynamicDialogConfig, DynamicDialogModule, DynamicDialogRef } from 'primeng/dynamicdialog'
 import { Observable } from 'rxjs'
 
 @Component({
   selector: 'app-ocx-no-help-item',
-  standalone: true,
   templateUrl: './no-help-item.component.html',
   styleUrls: ['./no-help-item.component.scss'],
   imports: [CommonModule, DynamicDialogModule, TranslateModule]
