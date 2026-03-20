@@ -7,7 +7,7 @@ import { of, throwError } from 'rxjs'
 import { FileSelectEvent } from 'primeng/fileupload'
 
 import { PortalMessageService, UserService } from '@onecx/angular-integration-interface'
-import { Column } from '@onecx/angular-accelerator'
+import { Filter, FilterType } from '@onecx/angular-accelerator'
 
 import { HelpsInternalAPIService, Help } from 'src/app/shared/generated'
 import { HelpSearchComponent, Product } from './help-search.component'
@@ -95,17 +95,18 @@ describe('HelpSearchComponent', () => {
       expect(component).toBeTruthy()
     })
 
-    it('should call OnInit and populate filteredColumns/actions correctly', () => {
+    it('should call OnInit and keep default data view columns', () => {
       component.ngOnInit()
 
-      expect(component.filteredColumns[0]).toEqual(component.columns[0])
+      expect(component.dataViewColumns.length).toBe(3)
+      expect(component.displayedColumnKeys).toEqual(['productName', 'itemId', 'url'])
     })
 
     it('should create component and set columns for displaying results', () => {
       expect(component).toBeTruthy()
-      expect(component.filteredColumns[0].field).toBe('productName')
-      expect(component.filteredColumns[1].field).toBe('itemId')
-      expect(component.filteredColumns[2].field).toBe('url')
+      expect(component.dataViewColumns[0].id).toBe('productName')
+      expect(component.dataViewColumns[1].id).toBe('itemId')
+      expect(component.dataViewColumns[2].id).toBe('url')
     })
   })
 
@@ -141,30 +142,37 @@ describe('HelpSearchComponent', () => {
         action[0].actionCallback()
       })
 
-      expect(component.onDetail).toHaveBeenCalledWith(undefined, undefined, 'CREATE')
+      expect(component.onDetail).toHaveBeenCalledWith(undefined, 'CREATE')
     })
   })
 
   describe('UI actions', () => {
-    it('should update filteredColumns onColumnsChange', () => {
-      const columns: Column[] = [
-        { field: 'producName', header: 'PRODUCT_NAME' },
-        { field: 'context', header: 'CONTEXT' }
+    it('should update filters on onFiltersChanged', (done) => {
+      const filters: Filter[] = [
+        {
+          columnId: 'productName',
+          filterType: FilterType.EQUALS,
+          value: ['product1']
+        }
       ]
-      const expectedColumn = { field: 'productName', header: 'PRODUCT_NAME' }
-      component.filteredColumns = columns
-      component.onColumnsChange(['productName'])
 
-      expect(component.filteredColumns).not.toContain(columns[1])
-      expect(component.filteredColumns).toEqual([jasmine.objectContaining(expectedColumn)])
+      component.onFiltersChanged(filters)
+
+      component.filters$.subscribe((value) => {
+        expect(value).toEqual(filters)
+        done()
+      })
     })
 
-    it('should call filterGlobal onFilterChange', () => {
-      const table = jasmine.createSpyObj('table', ['filterGlobal'])
+    it('should filter data on applyGlobalFilter', () => {
+      component.tableFilter = 'itemId1'
+      component.productData$.next([product1, product2])
 
-      component.onFilterChange('test', table)
+      const filtered = component.applyGlobalFilter(itemData)
 
-      expect().nothing()
+      expect(filtered.length).toBe(2)
+      expect(filtered).toContain(helpItem1 as any)
+      expect(filtered).toContain(helpItem3 as any)
     })
   })
 
@@ -495,13 +503,10 @@ describe('HelpSearchComponent', () => {
 
   describe('detail actions', () => {
     it('should prepare the creation of a new item', () => {
-      const ev: Event = new Event('type')
-      spyOn(ev, 'stopPropagation')
       const mode = 'CREATE'
 
-      component.onDetail(ev, undefined, mode)
+      component.onDetail(undefined, mode)
 
-      expect(ev.stopPropagation).toHaveBeenCalled()
       expect(component.changeMode).toEqual(mode)
       expect(component.item4Detail).toBe(undefined)
       expect(component.displayDetailDialog).toBeTrue()
@@ -514,7 +519,7 @@ describe('HelpSearchComponent', () => {
     it('should show details of a item', () => {
       const mode = 'EDIT'
 
-      component.onDetail(undefined, itemData[0], mode)
+      component.onDetail(itemData[0], mode)
 
       expect(component.changeMode).toEqual(mode)
       expect(component.item4Detail).toBe(itemData[0])
@@ -524,7 +529,7 @@ describe('HelpSearchComponent', () => {
     it('should prepare the copy of a item', () => {
       const mode = 'COPY'
 
-      component.onDetail(undefined, itemData[0], mode)
+      component.onDetail(itemData[0], mode)
 
       expect(component.changeMode).toEqual(mode)
       expect(component.item4Detail).toBe(itemData[0])
@@ -544,37 +549,31 @@ describe('HelpSearchComponent', () => {
     })
 
     it('should prepare the deletion of a item - ok', () => {
-      const ev: Event = new Event('type')
-      spyOn(ev, 'stopPropagation')
+      component.onDelete(items4Deletion[0])
 
-      component.onDelete(ev, items4Deletion[0])
-
-      expect(ev.stopPropagation).toHaveBeenCalled()
       expect(component.item4Delete).toBe(items4Deletion[0])
       expect(component.displayDeleteDialog).toBeTrue()
     })
 
     it('should delete a item with confirmation', () => {
       apiServiceSpy.deleteHelp.and.returnValue(of(null))
-      const ev: Event = new Event('type')
 
-      component.onDelete(ev, items4Deletion[1])
+      component.onDelete(items4Deletion[1])
       component.onDeleteConfirmation(items4Deletion) // remove but not the last of the product
 
       expect(component.displayDeleteDialog).toBeFalse()
       expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.DELETE.MESSAGE.OK' })
 
-      component.onDelete(ev, items4Deletion[2])
+      component.onDelete(items4Deletion[2])
       component.onDeleteConfirmation(items4Deletion) // remove and this was the last of the product
     })
 
     it('should display error if deleting a item fails', () => {
       const errorResponse = { status: '400', statusText: 'Error on deletion' }
       apiServiceSpy.deleteHelp.and.returnValue(throwError(() => errorResponse))
-      const ev: Event = new Event('type')
       spyOn(console, 'error')
 
-      component.onDelete(ev, items4Deletion[0])
+      component.onDelete(items4Deletion[0])
       component.onDeleteConfirmation(items4Deletion)
 
       expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.DELETE.MESSAGE.NOK' })

@@ -87,8 +87,7 @@ export class HelpSearchComponent implements OnInit {
       nameKey: 'HELP_ITEM.URL',
       columnType: ColumnType.STRING,
       sortable: true,
-      filterable: true,
-      filterType: FilterType.EQUALS
+      filterable: false
     }
   ]
   public dataViewAdditionalActions: DataAction[] = [
@@ -97,7 +96,7 @@ export class HelpSearchComponent implements OnInit {
       labelKey: 'ACTIONS.COPY.LABEL',
       icon: 'pi pi-copy',
       permission: 'HELP#EDIT',
-      callback: (item: Help) => this.onDetail(undefined, item, 'COPY')
+      callback: (item: Help) => this.onDetail(item, 'COPY')
     }
   ]
 
@@ -144,7 +143,7 @@ export class HelpSearchComponent implements OnInit {
             {
               label: data['ACTIONS.CREATE.LABEL'],
               title: data['ACTIONS.CREATE.TOOLTIP'],
-              actionCallback: () => this.onDetail(undefined, undefined, 'CREATE'),
+              actionCallback: () => this.onDetail(undefined, 'CREATE'),
               icon: 'pi pi-plus',
               show: 'always',
               permission: 'HELP#EDIT'
@@ -198,13 +197,13 @@ export class HelpSearchComponent implements OnInit {
   }
 
   public onViewItem(item: any): void {
-    this.onDetail(undefined, item as Help, 'VIEW')
+    this.onDetail(item as Help, 'VIEW')
   }
   public onEditItem(item: any): void {
-    this.onDetail(undefined, item as Help, 'EDIT')
+    this.onDetail(item as Help, 'EDIT')
   }
   public onDeleteItem(item: any): void {
-    this.onDelete(undefined, item as Help)
+    this.onDelete(item as Help)
   }
 
   public getDisplayName(name: string | undefined, list: Product[] | undefined, defValue?: string): string | undefined {
@@ -215,8 +214,7 @@ export class HelpSearchComponent implements OnInit {
   /****************************************************************************
    *  DETAIL => CREATE, COPY, EDIT, VIEW
    */
-  public onDetail(ev: Event | undefined, item: Help | undefined, mode: ChangeMode): void {
-    ev?.stopPropagation()
+  public onDetail(item: Help | undefined, mode: ChangeMode): void {
     this.changeMode = mode
     this.item4Detail = item // do not manipulate the item here
     this.displayDetailDialog = true
@@ -233,8 +231,7 @@ export class HelpSearchComponent implements OnInit {
   /****************************************************************************
    *  DELETE => Ask for confirmation
    */
-  public onDelete(ev: Event | undefined, item: Help): void {
-    ev?.stopPropagation()
+  public onDelete(item: Help): void {
     this.item4Delete = item
     this.displayDeleteDialog = true
   }
