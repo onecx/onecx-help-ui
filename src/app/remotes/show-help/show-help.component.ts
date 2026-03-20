@@ -31,12 +31,7 @@ import { NoHelpItemComponent } from './no-help-item/no-help-item.component'
   templateUrl: './show-help.component.html',
   styleUrls: ['./show-help.component.scss'],
   imports: [CommonModule, TranslateModule, SharedModule, AngularAcceleratorModule, AngularRemoteComponentsModule],
-  providers: [
-    HelpsInternalAPIService,
-    PortalMessageService,
-    { provide: REMOTE_COMPONENT_CONFIG, useValue: new ReplaySubject<RemoteComponentConfig>(1) },
-    providePortalDialogService()
-  ]
+  providers: [HelpsInternalAPIService, PortalMessageService, providePortalDialogService()]
 })
 export class OneCXShowHelpComponent implements ocxRemoteComponent, ocxRemoteWebcomponent {
   @Input() set ocxRemoteComponentConfig(config: RemoteComponentConfig) {
