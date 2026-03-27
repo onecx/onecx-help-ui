@@ -70,6 +70,7 @@ export class HelpSearchComponent implements OnInit {
     {
       id: 'productName',
       nameKey: 'HELP_ITEM.PRODUCT_NAME',
+      tooltipKey: 'HELP_ITEM.TOOLTIPS.PRODUCT_NAME',
       columnType: ColumnType.STRING,
       sortable: true,
       filterable: true,
@@ -78,6 +79,7 @@ export class HelpSearchComponent implements OnInit {
     {
       id: 'itemId',
       nameKey: 'HELP_ITEM.ID',
+      tooltipKey: 'HELP_ITEM.TOOLTIPS.ID',
       columnType: ColumnType.STRING,
       sortable: true,
       filterable: true,
@@ -86,6 +88,7 @@ export class HelpSearchComponent implements OnInit {
     {
       id: 'baseUrl',
       nameKey: 'HELP_ITEM.URL',
+      tooltipKey: 'HELP_ITEM.TOOLTIPS.URL',
       columnType: ColumnType.STRING,
       sortable: true,
       filterable: true,
