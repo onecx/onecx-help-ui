@@ -13,30 +13,6 @@
 @include listbox-zebra-rows;
 
 :host ::ng-deep {
-  .p-datatable {
-    .p-sortable-column .p-sortable-column-icon {
-      margin-left: unset;
-    }
-    .p-datatable-thead > tr > th {
-      white-space: nowrap;
-      border-bottom-width: 2px;
-    }
-    .p-datatable-tbody > tr > td {
-      min-width: 10rem;
-      &:first-of-type {
-        min-width: unset;
-      }
-    }
-  }
-  .help-search-caption-filter {
-    display: flex;
-    justify-content: center;
-  }
-
-  .help-search-caption-filter input {
-    width: min(100%, 24rem);
-  }
-
   .text-ellipsis-2-lines {
     @include displaying-text-ellipsis(2);
   }
@@ -50,5 +26,21 @@
     user-select: none;
     overflow: hidden;
     position: relative;
+  }
+
+  // Position sort and filter buttons to the right in column headers
+  .flex.table-header-wrapper.align-items-start {
+    justify-content: flex-start !important;
+    flex-direction: row !important;
+  }
+
+  .flex.icon-button-header-wrapper {
+    margin-left: 0.75rem;
+  }
+
+  // Align action buttons
+  .icon-button-row-wrapper {
+    display: flex;
+    flex-direction: row;
   }
 }

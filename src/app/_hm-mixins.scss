@@ -346,12 +346,11 @@
       .p-selectbutton .p-button {
         opacity: 0.9 !important;
         border: var(--toggle-button-border);
-        // TODO: replace .p-highlight
-        &.p-highlight {
+        &.p-togglebutton-checked {
           background: var(--toggle-button-active-bg);
           border-color: var(--toggle-button-active-border-color);
         }
-        &:not(.p-disabled):not(.p-highlight):hover {
+        &:not(.p-disabled):not(.p-togglebutton-checked):hover {
           color: var(--text-color);
           border-color: var(--toggle-button-hover-border-color);
           background-color: var(--toggle-button-hover-bg);
@@ -368,12 +367,12 @@
     }
     .search-criteria-selectbutton {
       .p-selectbutton .p-button {
-        &.p-highlight {
+        &.p-togglebutton-checked {
           color: var(--primary-text-color);
           border-color: var(--toggle-button-hover-border-color);
           background-color: var(--primary-color);
         }
-        &:not(.p-disabled):not(.p-highlight):hover {
+        &:not(.p-disabled):not(.p-togglebutton-checked):hover {
           color: var(--primary-text-color);
           border-color: var(--toggle-button-hover-border-color);
           background-color: var(--button-hover-bg);
@@ -418,7 +417,7 @@
 }
 @mixin listbox-zebra-rows {
   :host ::ng-deep {
-    .p-listbox:not(.p-disabled) .p-listbox-item:not(.p-highlight):not(.p-disabled) {
+    .p-listbox:not(.p-disabled) .p-listbox-option:not(.p-listbox-option-selected):not(.p-disabled) {
       &:nth-child(even) {
         background-color: var(--table-body-row-even-bg);
       }
@@ -523,7 +522,7 @@
 @mixin tabview-fix-color-selected-tab {
   :host ::ng-deep {
     // correct the background color on inital selected tab
-    .p-tabview .p-tabview-nav li.p-highlight .p-tabview-nav-link[aria-selected='true'] {
+    .p-tabview .p-tabview-nav li.p-tab-active .p-tabview-nav-link[aria-selected='true'] {
       background-color: rgba(var(--primary-color-rgb), 0.12);
     }
   }
@@ -538,7 +537,7 @@
     th button.p-button,
     td button.p-button {
       &.p-button-icon-only {
-        padding: 0.5rem;
+        padding: 0.2rem;
         width: unset !important;
       }
       &.p-button-rounded {
@@ -573,5 +572,57 @@
         display: table-cell !important;
       }
     }
+  }
+}
+
+@mixin p-float-label-styles {
+  .p-float-label > label {
+    left: var(--onecx-help-onecx-help-ui-floatlabel-left, 0.75rem);
+    color: var(--onecx-help-onecx-help-ui-floatlabel-color, var(--p-form-field-float-label-color));
+    transition-duration: var(--onecx-help-onecx-help-ui-floatlabel-transition-duration, var(--p-transition-duration));
+  }
+  .p-float-label {
+    display: block;
+    position: relative;
+  }
+  .p-float-label label {
+    position: absolute;
+    pointer-events: none;
+    top: var(--onecx-help-onecx-help-ui-floatlabel-in-input-padding-top, 50%);
+    margin-top: -0.5rem;
+    transition-property: all;
+    transition-timing-function: ease;
+    line-height: 1;
+  }
+  .p-float-label input:focus ~ label,
+  .p-float-label input.p-filled ~ label,
+  .p-float-label textarea:focus ~ label,
+  .p-float-label textarea.p-filled ~ label,
+  .p-float-label .p-inputwrapper-focus ~ label,
+  .p-float-label .p-inputwrapper-filled ~ label,
+  .p-float-label p-autocomplete:focus-within ~ label,
+  .p-float-label p-autocomplete.p-inputwrapper-focus ~ label,
+  .p-float-label p-autocomplete.p-inputwrapper-filled ~ label {
+    top: 0rem;
+    font-size: 0.75rem;
+    background: var(--onecx-help-onecx-help-ui-select-background);
+  }
+  .p-float-label .input:-webkit-autofill ~ label {
+    top: -20px;
+    font-size: 12px;
+  }
+  .p-float-label .p-placeholder,
+  .p-float-label input::placeholder,
+  .p-float-label .p-inputtext::placeholder {
+    opacity: 0;
+    transition-property: all;
+    transition-timing-function: ease;
+  }
+  .p-float-label .p-focus .p-placeholder,
+  .p-float-label input:focus::placeholder,
+  .p-float-label .p-inputtext:focus::placeholder {
+    opacity: 1;
+    transition-property: all;
+    transition-timing-function: ease;
   }
 }

@@ -59,6 +59,7 @@
           (filtered)="onFiltersChanged($event)"
           [clientSideSorting]="true"
           [clientSideFiltering]="true"
+          [actionColumnPosition]="'left'"
           [pageSize]="10"
           [pageSizes]="[10, 30, 100]"
           [tablePaginator]="true"
@@ -96,7 +97,7 @@
                   {{ displayName ?? ('HELP_ITEM.NOT_FOUND' | translate) }}
                 </div>
               }
-              @case ('url') {
+              @case ('baseUrl') {
                 <div class="text-ellipsis-2-lines word-break-all">
                   {{ prepareUrl(rowObject) }}
                 </div>

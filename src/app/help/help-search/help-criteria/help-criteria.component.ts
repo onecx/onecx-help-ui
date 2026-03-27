@@ -15,6 +15,7 @@ export interface HelpCriteriaForm {
   selector: 'app-help-criteria',
   templateUrl: './help-criteria.component.html',
   styleUrls: ['./help-criteria.component.scss'],
+  // eslint-disable-next-line @angular-eslint/prefer-standalone
   standalone: false
 })
 export class HelpCriteriaComponent {
