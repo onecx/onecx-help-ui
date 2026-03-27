@@ -19,7 +19,7 @@
     &:focus {
       color: var(--topbar-item-text-hover-color);
       background-color: var(--topbar-item-text-hover-bg-color);
-      transition: background-color var(--transition-duration);
+      transition: background-color var(--p-transition-duration);
     }
   }
 

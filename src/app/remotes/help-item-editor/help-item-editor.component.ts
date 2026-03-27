@@ -1,29 +1,25 @@
-import { APP_INITIALIZER, Component, CUSTOM_ELEMENTS_SCHEMA, EventEmitter, Inject, Input } from '@angular/core'
+import { Component, CUSTOM_ELEMENTS_SCHEMA, EventEmitter, Inject, Input, APP_INITIALIZER } from '@angular/core'
 import { CommonModule, Location } from '@angular/common'
-import { HttpClient } from '@angular/common/http'
 import { Router } from '@angular/router'
-import { TranslateLoader, TranslateService } from '@ngx-translate/core'
+import { TranslateService } from '@ngx-translate/core'
 import { BehaviorSubject, Observable, ReplaySubject, catchError, combineLatest, first, map, mergeMap, of } from 'rxjs'
 import { PrimeIcons } from 'primeng/api'
 
 import { AppStateService, PortalMessageService, UserService } from '@onecx/angular-integration-interface'
 import {
+  AngularAcceleratorModule,
   DialogState,
-  PortalCoreModule,
   PortalDialogService,
-  createRemoteComponentTranslateLoader,
   providePortalDialogService
-} from '@onecx/portal-integration-angular'
+} from '@onecx/angular-accelerator'
 import {
   AngularRemoteComponentsModule,
-  BASE_URL,
   ocxRemoteComponent,
   ocxRemoteWebcomponent,
-  provideTranslateServiceForRoot,
-  RemoteComponentConfig,
   SlotService,
   SLOT_SERVICE
 } from '@onecx/angular-remote-components'
+import { REMOTE_COMPONENT_CONFIG, RemoteComponentConfig } from '@onecx/angular-utils'
 
 import { Configuration, Help, HelpsInternalAPIService } from 'src/app/shared/generated'
 import { SharedModule } from 'src/app/shared/shared.module'
@@ -53,24 +49,14 @@ export function slotInitializer(slotService: SlotService) {
   selector: 'app-ocx-help-item-editor',
   templateUrl: './help-item-editor.component.html',
   styleUrls: ['./help-item-editor.component.scss'],
-  standalone: true,
-  imports: [CommonModule, SharedModule, PortalCoreModule, AngularRemoteComponentsModule],
+  imports: [CommonModule, SharedModule, AngularAcceleratorModule, AngularRemoteComponentsModule],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   providers: [
     { provide: APP_INITIALIZER, useFactory: slotInitializer, deps: [SLOT_SERVICE], multi: true },
     { provide: SLOT_SERVICE, useExisting: SlotService },
     HelpsInternalAPIService,
     PortalMessageService,
-    providePortalDialogService(),
-    { provide: BASE_URL, useValue: new ReplaySubject<string>(1) },
-    provideTranslateServiceForRoot({
-      isolate: true,
-      loader: {
-        provide: TranslateLoader,
-        useFactory: createRemoteComponentTranslateLoader,
-        deps: [HttpClient, BASE_URL]
-      }
-    })
+    providePortalDialogService()
   ]
 })
 export class OneCXHelpItemEditorComponent implements ocxRemoteComponent, ocxRemoteWebcomponent {
@@ -92,7 +78,7 @@ export class OneCXHelpItemEditorComponent implements ocxRemoteComponent, ocxRemo
   private products: Product[] = []
 
   constructor(
-    @Inject(BASE_URL) private readonly baseUrl: ReplaySubject<string>,
+    @Inject(REMOTE_COMPONENT_CONFIG) private readonly remoteComponentConfig: ReplaySubject<RemoteComponentConfig>,
     private readonly router: Router,
     private readonly userService: UserService,
     private readonly slotService: SlotService,
@@ -132,7 +118,7 @@ export class OneCXHelpItemEditorComponent implements ocxRemoteComponent, ocxRemo
   }
 
   public ocxInitRemoteComponent(config: RemoteComponentConfig): void {
-    this.baseUrl.next(config.baseUrl)
+    this.remoteComponentConfig.next(config)
     this.permissions = config.permissions
     this.helpApi.configuration = new Configuration({
       basePath: Location.joinWithSlash(config.baseUrl, environment.apiPrefix)

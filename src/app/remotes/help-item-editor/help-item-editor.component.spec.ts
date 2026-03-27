@@ -13,9 +13,10 @@ import { RippleModule } from 'primeng/ripple'
 import { PrimeIcons } from 'primeng/api'
 
 import { IfPermissionDirective } from '@onecx/angular-accelerator'
-import { BASE_URL, RemoteComponentConfig, SlotService } from '@onecx/angular-remote-components'
+import { REMOTE_COMPONENT_CONFIG, RemoteComponentConfig } from '@onecx/angular-utils'
+import { SlotService } from '@onecx/angular-remote-components'
 import { AppStateService, PortalMessageService, UserService } from '@onecx/angular-integration-interface'
-import { PortalDialogService, providePortalDialogService } from '@onecx/portal-integration-angular'
+import { PortalDialogService, providePortalDialogService } from '@onecx/angular-accelerator'
 
 import { Help, HelpsInternalAPIService } from 'src/app/shared/generated'
 import { OneCXHelpItemEditorComponent, Product, slotInitializer } from './help-item-editor.component'
@@ -41,7 +42,7 @@ describe('OneCXHelpItemEditorComponent', () => {
 
   const mockUserService = jasmine.createSpyObj<UserService>('UserService', ['hasPermission'])
   mockUserService.hasPermission.and.callFake((permission: string) => {
-    return ['HELP#EDIT', 'HELP#VIEW'].includes(permission)
+    return Promise.resolve(['HELP#EDIT', 'HELP#VIEW'].includes(permission))
   })
   const helpApiServiceSpy = jasmine.createSpyObj<HelpsInternalAPIService>('HelpsInternalAPIService', [
     'searchHelps',
@@ -80,7 +81,7 @@ describe('OneCXHelpItemEditorComponent', () => {
         provideHttpClient(),
         provideHttpClientTesting(),
         providePortalDialogService(),
-        { provide: BASE_URL, useValue: baseUrlSubject }
+        { provide: REMOTE_COMPONENT_CONFIG, useValue: baseUrlSubject }
       ]
     })
       .overrideComponent(OneCXHelpItemEditorComponent, {
@@ -101,7 +102,7 @@ describe('OneCXHelpItemEditorComponent', () => {
   }))
 
   afterEach(() => {
-    mockUserService.hasPermission.and.returnValue(true)
+    mockUserService.hasPermission.and.returnValue(Promise.resolve(true))
     // to spy data: reset
     // eslint-disable-next-line deprecation/deprecation
     dialogServiceSpy.openDialog.calls.reset()
@@ -140,13 +141,14 @@ describe('OneCXHelpItemEditorComponent', () => {
     })
 
     it('should init remote component', (done: DoneFn) => {
-      initTestComponent({ permissions: ['HELP#EDIT'], baseUrl: 'base_url' } as RemoteComponentConfig)
-      component.ocxInitRemoteComponent({ permissions: ['HELP#EDIT'], baseUrl: 'base_url' } as RemoteComponentConfig)
+      const config = { permissions: ['HELP#EDIT'], baseUrl: 'base_url' } as RemoteComponentConfig
+      initTestComponent(config)
+      component.ocxInitRemoteComponent(config)
 
       expect(component.permissions).toEqual(['HELP#EDIT'])
       expect(helpApiServiceSpy.configuration.basePath).toEqual('base_url/bff')
       baseUrlSubject.asObservable().subscribe((item) => {
-        expect(item).toEqual('base_url')
+        expect(item).toEqual(config)
         done()
       })
     })

@@ -16,7 +16,7 @@
       (resetSearchEmitter)="onCriteriaReset()"
     ></app-help-criteria>
 
-    <ocx-page-content>
+    <ocx-content>
       <p-message
         *ngIf="loadingMetaData"
         id="am_search_message_loading"
@@ -41,169 +41,75 @@
           styleClass="m-3 p-2"
           [text]="'ACTIONS.SEARCH.IN_PROGRESS' | translate"
         ></p-message>
-        <p-table
+        <ocx-interactive-data-view
           *ngIf="!(searching || exceptionKey)"
-          #dataTable
           id="hm_search_table"
-          styleClass="mx-3 mb-2"
-          [value]="data"
-          [columns]="filteredColumns"
-          stateStorage="local"
-          dataKey="id"
-          [reorderableColumns]="false"
-          [scrollable]="true"
-          scrollHeight="590px"
-          [rows]="10"
-          [rowsPerPageOptions]="[10, 30, 100]"
-          [paginator]="true"
-          [alwaysShowPaginator]="true"
-          paginatorPosition="bottom"
-          [showCurrentPageReport]="true"
-          currentPageReportTemplate="{first} - {last} {{ 'ACTIONS.SEARCH.OF' | translate }} {totalRecords}"
+          [name]="'help-search'"
+          [data]="applyGlobalFilter(data)"
+          [supportedViewLayouts]="['table']"
+          [layout]="'table'"
+          [columns]="dataViewColumns"
+          [displayedColumnKeys]="displayedColumnKeys"
+          (displayedColumnKeysChange)="displayedColumnKeys = $event"
+          [viewPermission]="'HELP#VIEW'"
+          [editPermission]="'HELP#EDIT'"
+          [deletePermission]="'HELP#DELETE'"
+          [additionalActions]="dataViewAdditionalActions"
+          [filters]="(filters$ | async) ?? []"
+          (filtered)="onFiltersChanged($event)"
+          [clientSideSorting]="true"
+          [clientSideFiltering]="true"
+          [actionColumnPosition]="'left'"
+          [pageSize]="10"
+          [pageSizes]="[10, 30, 100]"
+          [tablePaginator]="true"
+          [listGridPaginator]="false"
+          [contentStyleClass]="'mx-3 mb-2'"
+          [emptyResultsMessage]="'ACTIONS.SEARCH.NO_DATA' | translate"
+          (viewItem)="onViewItem($event)"
+          (editItem)="onEditItem($event)"
+          (deleteItem)="onDeleteItem($event)"
         >
-          <ng-template pTemplate="caption">
-            <ocx-data-view-controls
-              [supportedViews]="['table']"
-              [enableFiltering]="true"
-              [enableSorting]="false"
-              (columnsChange)="onColumnsChange($event)"
-              (filterChange)="onFilterChange($event, dataTable)"
-              [translations]="dataViewControlsTranslations"
-            ></ocx-data-view-controls>
-          </ng-template>
-
-          <ng-template pTemplate="emptymessage">
-            <tr>
-              <td id="hm_search_table_no_data" colspan="16">{{ 'ACTIONS.SEARCH.NO_DATA' | translate }}</td>
-            </tr>
-          </ng-template>
-          <ng-template pTemplate="header" let-columns>
-            <tr id="hm_search_table_header">
-              <th
-                pFrozenColumn
-                id="hm_search_table_header_action"
-                class="px-2 py-1 sm:py-2 border-right-1 text-center white-space-nowrap"
-                [pTooltip]="'ACTIONS.TOOLTIP' | translate"
+          <ng-template pTemplate="topCenter">
+            <div class="help-search-caption-filter">
+              <input
+                pInputText
+                id="hm_search_table_filter"
+                type="text"
+                [(ngModel)]="tableFilter"
+                [placeholder]="'DIALOG.DATAVIEW.FILTER' | translate"
+                [pTooltip]="'DIALOG.DATAVIEW.FILTER_BY' | translate"
                 tooltipPosition="top"
                 tooltipEvent="hover"
-              >
-                {{ 'ACTIONS.LABEL' | translate }}
-              </th>
-              <th
-                *ngFor="let col of columns"
-                [id]="'hm_search_table_header_' + col.field"
-                [class]="col.css"
-                [pSortableColumn]="col.field"
-                [pTooltip]="col.translationPrefix + '.TOOLTIPS.' + col.header | translate"
-                tooltipPosition="top"
-                tooltipEvent="hover"
-              >
-                {{ col.translationPrefix + '.' + col.header | translate }}
-                <p-sortIcon [field]="col.field"></p-sortIcon>
-              </th>
-            </tr>
+              />
+            </div>
           </ng-template>
-
-          <ng-template pTemplate="body" let-row="rowIndex" let-rowData let-columns="columns">
-            <tr [id]="'hm_search_table_row_' + row">
-              <!-- actions -->
-              <td pFrozenColumn class="py-1 border-right-1 text-center white-space-nowrap">
-                <ng-container *ocxIfNotPermission="'HELP#EDIT'">
-                  <p-button
-                    *ocxIfPermission="'HELP#VIEW'"
-                    [id]="'hm_search_table_row_' + row + '_action_view'"
-                    type="button"
-                    pRipple
-                    [text]="true"
-                    [plain]="true"
-                    [rounded]="true"
-                    [icon]="'pi pi-eye'"
-                    (onClick)="onDetail($event, rowData, 'VIEW')"
-                    [ariaLabel]="'ACTIONS.VIEW.LABEL' | translate"
-                    [pTooltip]="'ACTIONS.VIEW.LABEL' | translate"
-                    tooltipPosition="top"
-                    tooltipEvent="hover"
-                  />
-                </ng-container>
-                <p-button
-                  *ocxIfPermission="'HELP#EDIT'"
-                  [id]="'hm_search_table_row_' + row + '_action_edit'"
-                  type="button"
-                  pRipple
-                  [text]="true"
-                  [plain]="true"
-                  [rounded]="true"
-                  [icon]="'pi pi-pencil'"
-                  (onClick)="onDetail($event, rowData, 'EDIT')"
-                  [ariaLabel]="'ACTIONS.EDIT.LABEL' | translate"
-                  [pTooltip]="'ACTIONS.EDIT.LABEL' | translate"
+          <ng-template pTemplate="tableCell" let-rowObject="rowObject" let-column="column">
+            @switch (column.id) {
+              @case ('productName') {
+                @let displayName = getDisplayName(rowObject.productName, metaData.allProducts);
+                <div
+                  class="text-ellipsis-2-lines"
+                  [pTooltip]="displayName ? '' : rowObject.productName"
                   tooltipPosition="top"
                   tooltipEvent="hover"
-                />
-                <p-button
-                  *ocxIfPermission="'HELP#EDIT'"
-                  [id]="'hm_search_table_row_' + row + '_action_copy'"
-                  type="button"
-                  pRipple
-                  [text]="true"
-                  [plain]="true"
-                  [rounded]="true"
-                  [icon]="'pi pi-copy'"
-                  (onClick)="onDetail($event, rowData, 'COPY')"
-                  (keydown.enter)="onDetail($event, rowData, 'COPY')"
-                  (keydown.space)="onDetail($event, rowData, 'COPY')"
-                  [ariaLabel]="'ACTIONS.COPY.LABEL' | translate"
-                  [pTooltip]="'ACTIONS.COPY.LABEL' | translate"
-                  tooltipPosition="top"
-                  tooltipEvent="hover"
-                />
-                <p-button
-                  *ocxIfPermission="'HELP#DELETE'"
-                  [id]="'hm_search_table_row_' + row + '_action_delete'"
-                  type="button"
-                  pRipple
-                  [text]="true"
-                  [plain]="true"
-                  [rounded]="true"
-                  [icon]="'pi pi-trash'"
-                  severity="danger"
-                  (onClick)="onDelete($event, rowData)"
-                  (keydown.enter)="onDelete($event, rowData)"
-                  (keydown.space)="onDelete($event, rowData)"
-                  [ariaLabel]="'ACTIONS.DELETE.LABEL' | translate"
-                  [pTooltip]="'ACTIONS.DELETE.LABEL' | translate"
-                  tooltipPosition="top"
-                  tooltipEvent="hover"
-                />
-              </td>
-              <td *ngFor="let col of columns" [id]="'hm_search_table_row_' + row + '_' + col.field" [class]="col.css">
-                @switch (col.field) {
-                  @case ('productName') {
-                    @let displayName = getDisplayName(rowData.productName, metaData.allProducts);
-                    <div
-                      class="text-ellipsis-2-lines"
-                      [pTooltip]="displayName ? '' : rowData.productName"
-                      tooltipPosition="top"
-                      tooltipEvent="hover"
-                    >
-                      {{ displayName ?? ('HELP_ITEM.NOT_FOUND' | translate) }}
-                    </div>
-                  }
-                  @case ('url') {
-                    <div class="text-ellipsis-2-lines word-break-all">
-                      {{ prepareUrl(rowData) }}
-                    </div>
-                  }
-                  @default {
-                    <div class="text-ellipsis-2-lines word-break-all">
-                      {{ rowData[col.field] }}
-                    </div>
-                  }
-                }
-              </td>
-            </tr>
+                >
+                  {{ displayName ?? ('HELP_ITEM.NOT_FOUND' | translate) }}
+                </div>
+              }
+              @case ('baseUrl') {
+                <div class="text-ellipsis-2-lines word-break-all">
+                  {{ prepareUrl(rowObject) }}
+                </div>
+              }
+              @default {
+                <div class="text-ellipsis-2-lines word-break-all">
+                  {{ rowObject[column.id] }}
+                </div>
+              }
+            }
           </ng-template>
-        </p-table>
+        </ocx-interactive-data-view>
 
         <!-- DELETE -->
         <p-dialog
@@ -268,7 +174,7 @@
           </ng-template>
         </p-dialog>
       </ng-container>
-    </ocx-page-content>
+    </ocx-content>
 
     <!-- DETAIL -->
     <app-help-detail
@@ -373,7 +279,7 @@
       (onImportClear)="onImportClear()"
       (onRemove)="onImportClear()"
       (onSelect)="onImportSelectFile($event)"
-      [showUploadButton]="!this.importError"
+      [showUploadButton]="!importError"
       [chooseLabel]="'ACTIONS.IMPORT.CHOOSE' | translate"
       [uploadLabel]="'ACTIONS.IMPORT.UPLOAD' | translate"
       [cancelLabel]="'ACTIONS.CANCEL' | translate"
