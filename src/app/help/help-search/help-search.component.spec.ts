@@ -99,14 +99,14 @@ describe('HelpSearchComponent', () => {
       component.ngOnInit()
 
       expect(component.dataViewColumns.length).toBe(3)
-      expect(component.displayedColumnKeys).toEqual(['productName', 'itemId', 'url'])
+      expect(component.displayedColumnKeys).toEqual(['productName', 'itemId', 'baseUrl'])
     })
 
     it('should create component and set columns for displaying results', () => {
       expect(component).toBeTruthy()
       expect(component.dataViewColumns[0].id).toBe('productName')
       expect(component.dataViewColumns[1].id).toBe('itemId')
-      expect(component.dataViewColumns[2].id).toBe('url')
+      expect(component.dataViewColumns[2].id).toBe('baseUrl')
     })
   })
 

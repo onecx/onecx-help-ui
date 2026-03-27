@@ -34,6 +34,7 @@ export type Product = {
   selector: 'app-help-search',
   templateUrl: './help-search.component.html',
   styleUrls: ['./help-search.component.scss'],
+  // eslint-disable-next-line @angular-eslint/prefer-standalone
   standalone: false
 })
 export class HelpSearchComponent implements OnInit {
@@ -63,7 +64,7 @@ export class HelpSearchComponent implements OnInit {
   public importError = false
   private importObject: object | undefined = undefined
 
-  public displayedColumnKeys: string[] = ['productName', 'itemId', 'url']
+  public displayedColumnKeys: string[] = ['productName', 'itemId', 'baseUrl']
   public filters$ = new BehaviorSubject<Filter[]>([])
   public dataViewColumns: DataTableColumn[] = [
     {
@@ -83,22 +84,15 @@ export class HelpSearchComponent implements OnInit {
       filterType: FilterType.EQUALS
     },
     {
-      id: 'url',
+      id: 'baseUrl',
       nameKey: 'HELP_ITEM.URL',
       columnType: ColumnType.STRING,
       sortable: true,
-      filterable: false
+      filterable: true,
+      filterType: FilterType.EQUALS
     }
   ]
-  public dataViewAdditionalActions: DataAction[] = [
-    {
-      id: 'copy',
-      labelKey: 'ACTIONS.COPY.LABEL',
-      icon: 'pi pi-copy',
-      permission: 'HELP#EDIT',
-      callback: (item: Help) => this.onDetail(item, 'COPY')
-    }
-  ]
+  public dataViewAdditionalActions: DataAction[] = []
 
   // slot configuration: get product data via remote component
   public pdSlotName = 'onecx-product-data'
@@ -146,7 +140,7 @@ export class HelpSearchComponent implements OnInit {
               actionCallback: () => this.onDetail(undefined, 'CREATE'),
               icon: 'pi pi-plus',
               show: 'always',
-              permission: 'HELP#EDIT'
+              permission: 'HELP#CREATE'
             },
             {
               label: data['ACTIONS.EXPORT.LABEL'],
@@ -154,7 +148,7 @@ export class HelpSearchComponent implements OnInit {
               actionCallback: () => this.onExport(),
               icon: 'pi pi-download',
               show: 'always',
-              permission: 'HELP#EDIT',
+              permission: 'HELP#EXPORT',
               conditional: true,
               showCondition: this.dataAvailable
             },
@@ -164,7 +158,7 @@ export class HelpSearchComponent implements OnInit {
               actionCallback: () => this.onImport(),
               icon: 'pi pi-upload',
               show: 'always',
-              permission: 'HELP#EDIT'
+              permission: 'HELP#IMPORT'
             }
           ]
         })
@@ -212,7 +206,7 @@ export class HelpSearchComponent implements OnInit {
   }
 
   /****************************************************************************
-   *  DETAIL => CREATE, COPY, EDIT, VIEW
+   *  DETAIL => CREATE, EDIT, VIEW
    */
   public onDetail(item: Help | undefined, mode: ChangeMode): void {
     this.changeMode = mode
