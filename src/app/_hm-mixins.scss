@@ -602,7 +602,8 @@
   .p-float-label .p-inputwrapper-filled ~ label,
   .p-float-label p-autocomplete:focus-within ~ label,
   .p-float-label p-autocomplete.p-inputwrapper-focus ~ label,
-  .p-float-label p-autocomplete.p-inputwrapper-filled ~ label {
+  .p-float-label p-autocomplete.p-inputwrapper-filled ~ label,
+  .p-float-label > p-autocomplete:has(.p-inputwrapper-filled) ~ label {
     top: 0rem;
     font-size: 0.75rem;
     background: var(--onecx-help-onecx-help-ui-select-background);

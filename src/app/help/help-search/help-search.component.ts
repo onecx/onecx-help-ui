@@ -38,6 +38,8 @@ export type Product = {
   standalone: false
 })
 export class HelpSearchComponent implements OnInit {
+  private readonly deniedPermission = '__NO_PERMISSION__'
+
   // dialog
   public loadingMetaData = false
   public searching = false
@@ -51,6 +53,8 @@ export class HelpSearchComponent implements OnInit {
   public displayImportDialog = false
   public displayExportDialog = false
   public tableFilter = ''
+  public dataViewViewPermission = 'HELP#VIEW'
+  public dataViewEditPermission = 'HELP#EDIT'
 
   // data
   public data$: Observable<Help[]> | undefined
@@ -116,9 +120,24 @@ export class HelpSearchComponent implements OnInit {
 
   public ngOnInit(): void {
     this.pdSlotEmitter.subscribe(this.productData$)
+    this.configureDataViewActionPermissions()
     this.prepareActionButtons()
     this.loadMetaData()
     this.onSearch({})
+  }
+
+  private configureDataViewActionPermissions(): void {
+    this.user
+      .hasPermission('HELP#EDIT')
+      .then((hasEditPermission) => {
+        this.dataViewEditPermission = hasEditPermission ? 'HELP#EDIT' : this.deniedPermission
+        this.dataViewViewPermission = hasEditPermission ? this.deniedPermission : 'HELP#VIEW'
+      })
+      .catch((err) => {
+        this.dataViewEditPermission = this.deniedPermission
+        this.dataViewViewPermission = 'HELP#VIEW'
+        console.error('configureDataViewActionPermissions', err)
+      })
   }
 
   /****************************************************************************

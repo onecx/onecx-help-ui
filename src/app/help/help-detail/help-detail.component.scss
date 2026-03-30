@@ -5,6 +5,7 @@
 @include displaying-text-responsive;
 @include readable-disabled-form-controls;
 @include correct-autocomplete;
+@include p-float-label-styles;
 
 :host ::ng-deep {
   .p-fieldset {
