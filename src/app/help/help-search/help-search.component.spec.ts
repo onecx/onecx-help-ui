@@ -25,7 +25,10 @@ describe('HelpSearchComponent', () => {
   let fixture: ComponentFixture<HelpSearchComponent>
 
   const defaultLang = 'en'
-  const mockUserService = { lang$: { getValue: jasmine.createSpy('getValue') } }
+  const mockUserService = {
+    lang$: { getValue: jasmine.createSpy('getValue') },
+    hasPermission: jasmine.createSpy('hasPermission').and.returnValue(Promise.resolve(false))
+  }
   const msgServiceSpy = jasmine.createSpyObj<PortalMessageService>('PortalMessageService', ['success', 'error', 'info'])
   const apiServiceSpy = {
     getAllProductsWithHelpItems: jasmine.createSpy('getAllProductsWithHelpItems').and.returnValue(of({})),
@@ -71,6 +74,8 @@ describe('HelpSearchComponent', () => {
 
   afterEach(() => {
     mockUserService.lang$.getValue.and.returnValue(defaultLang)
+    mockUserService.hasPermission.and.returnValue(Promise.resolve(false))
+    mockUserService.hasPermission.calls.reset()
     // to spy data: reset
     msgServiceSpy.success.calls.reset()
     msgServiceSpy.error.calls.reset()
@@ -100,6 +105,28 @@ describe('HelpSearchComponent', () => {
 
       expect(component.dataViewColumns.length).toBe(3)
       expect(component.displayedColumnKeys).toEqual(['productName', 'itemId', 'baseUrl'])
+    })
+
+    it('should hide view action when edit permission exists', async () => {
+      mockUserService.hasPermission.and.returnValue(Promise.resolve(true))
+
+      component.ngOnInit()
+      await fixture.whenStable()
+
+      expect(mockUserService.hasPermission).toHaveBeenCalledWith('HELP#EDIT')
+      expect(component.dataViewEditPermission).toBe('HELP#EDIT')
+      expect(component.dataViewViewPermission).toBe('__NO_PERMISSION__')
+    })
+
+    it('should show view action when edit permission does not exist', async () => {
+      mockUserService.hasPermission.and.returnValue(Promise.resolve(false))
+
+      component.ngOnInit()
+      await fixture.whenStable()
+
+      expect(mockUserService.hasPermission).toHaveBeenCalledWith('HELP#EDIT')
+      expect(component.dataViewEditPermission).toBe('__NO_PERMISSION__')
+      expect(component.dataViewViewPermission).toBe('HELP#VIEW')
     })
 
     it('should create component and set columns for displaying results', () => {
