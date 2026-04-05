@@ -7,7 +7,7 @@ import { of, throwError } from 'rxjs'
 import { FileSelectEvent } from 'primeng/fileupload'
 
 import { PortalMessageService, UserService } from '@onecx/angular-integration-interface'
-import { Column } from '@onecx/portal-integration-angular'
+import { Filter, FilterType } from '@onecx/angular-accelerator'
 
 import { HelpsInternalAPIService, Help } from 'src/app/shared/generated'
 import { HelpSearchComponent, Product } from './help-search.component'
@@ -25,7 +25,10 @@ describe('HelpSearchComponent', () => {
   let fixture: ComponentFixture<HelpSearchComponent>
 
   const defaultLang = 'en'
-  const mockUserService = { lang$: { getValue: jasmine.createSpy('getValue') } }
+  const mockUserService = {
+    lang$: { getValue: jasmine.createSpy('getValue') },
+    hasPermission: jasmine.createSpy('hasPermission').and.returnValue(Promise.resolve(false))
+  }
   const msgServiceSpy = jasmine.createSpyObj<PortalMessageService>('PortalMessageService', ['success', 'error', 'info'])
   const apiServiceSpy = {
     getAllProductsWithHelpItems: jasmine.createSpy('getAllProductsWithHelpItems').and.returnValue(of({})),
@@ -37,9 +40,11 @@ describe('HelpSearchComponent', () => {
   }
   const translateServiceSpy = jasmine.createSpyObj('TranslateService', ['get'])
 
-  function initTestComponent() {
+  async function initTestComponent() {
     fixture = TestBed.createComponent(HelpSearchComponent)
     component = fixture.componentInstance
+    fixture.detectChanges()
+    await fixture.whenStable()
     fixture.detectChanges()
   }
 
@@ -63,12 +68,14 @@ describe('HelpSearchComponent', () => {
     }).compileComponents()
   }))
 
-  beforeEach(() => {
-    initTestComponent()
+  beforeEach(async () => {
+    await initTestComponent()
   })
 
   afterEach(() => {
     mockUserService.lang$.getValue.and.returnValue(defaultLang)
+    mockUserService.hasPermission.and.returnValue(Promise.resolve(false))
+    mockUserService.hasPermission.calls.reset()
     // to spy data: reset
     msgServiceSpy.success.calls.reset()
     msgServiceSpy.error.calls.reset()
@@ -93,17 +100,40 @@ describe('HelpSearchComponent', () => {
       expect(component).toBeTruthy()
     })
 
-    it('should call OnInit and populate filteredColumns/actions correctly', () => {
+    it('should call OnInit and keep default data view columns', () => {
       component.ngOnInit()
 
-      expect(component.filteredColumns[0]).toEqual(component.columns[0])
+      expect(component.dataViewColumns.length).toBe(3)
+      expect(component.displayedColumnKeys).toEqual(['productName', 'itemId', 'baseUrl'])
+    })
+
+    it('should hide view action when edit permission exists', async () => {
+      mockUserService.hasPermission.and.returnValue(Promise.resolve(true))
+
+      component.ngOnInit()
+      await fixture.whenStable()
+
+      expect(mockUserService.hasPermission).toHaveBeenCalledWith('HELP#EDIT')
+      expect(component.dataViewEditPermission).toBe('HELP#EDIT')
+      expect(component.dataViewViewPermission).toBe('__NO_PERMISSION__')
+    })
+
+    it('should show view action when edit permission does not exist', async () => {
+      mockUserService.hasPermission.and.returnValue(Promise.resolve(false))
+
+      component.ngOnInit()
+      await fixture.whenStable()
+
+      expect(mockUserService.hasPermission).toHaveBeenCalledWith('HELP#EDIT')
+      expect(component.dataViewEditPermission).toBe('__NO_PERMISSION__')
+      expect(component.dataViewViewPermission).toBe('HELP#VIEW')
     })
 
     it('should create component and set columns for displaying results', () => {
       expect(component).toBeTruthy()
-      expect(component.filteredColumns[0].field).toBe('productName')
-      expect(component.filteredColumns[1].field).toBe('itemId')
-      expect(component.filteredColumns[2].field).toBe('url')
+      expect(component.dataViewColumns[0].id).toBe('productName')
+      expect(component.dataViewColumns[1].id).toBe('itemId')
+      expect(component.dataViewColumns[2].id).toBe('baseUrl')
     })
   })
 
@@ -139,30 +169,37 @@ describe('HelpSearchComponent', () => {
         action[0].actionCallback()
       })
 
-      expect(component.onDetail).toHaveBeenCalledWith(undefined, undefined, 'CREATE')
+      expect(component.onDetail).toHaveBeenCalledWith(undefined, 'CREATE')
     })
   })
 
   describe('UI actions', () => {
-    it('should update filteredColumns onColumnsChange', () => {
-      const columns: Column[] = [
-        { field: 'producName', header: 'PRODUCT_NAME' },
-        { field: 'context', header: 'CONTEXT' }
+    it('should update filters on onFiltersChanged', (done) => {
+      const filters: Filter[] = [
+        {
+          columnId: 'productName',
+          filterType: FilterType.EQUALS,
+          value: ['product1']
+        }
       ]
-      const expectedColumn = { field: 'productName', header: 'PRODUCT_NAME' }
-      component.filteredColumns = columns
-      component.onColumnsChange(['productName'])
 
-      expect(component.filteredColumns).not.toContain(columns[1])
-      expect(component.filteredColumns).toEqual([jasmine.objectContaining(expectedColumn)])
+      component.onFiltersChanged(filters)
+
+      component.filters$.subscribe((value) => {
+        expect(value).toEqual(filters)
+        done()
+      })
     })
 
-    it('should call filterGlobal onFilterChange', () => {
-      const table = jasmine.createSpyObj('table', ['filterGlobal'])
+    it('should filter data on applyGlobalFilter', () => {
+      component.tableFilter = 'itemId1'
+      component.productData$.next([product1, product2])
 
-      component.onFilterChange('test', table)
+      const filtered = component.applyGlobalFilter(itemData)
 
-      expect().nothing()
+      expect(filtered.length).toBe(2)
+      expect(filtered).toContain(helpItem1 as any)
+      expect(filtered).toContain(helpItem3 as any)
     })
   })
 
@@ -405,62 +442,58 @@ describe('HelpSearchComponent', () => {
         event = { files: fileList }
       })
 
-      it('should select a file to upload - valid JSON', (done) => {
+      it('should select a file to upload - valid JSON', async () => {
         const json = '{ "helps": { "product": { "itemId": { "baseUrl": "https://..." } } } }'
         spyOn(file, 'text').and.returnValue(Promise.resolve(json))
 
         component.onImportSelectFile(event as any as FileSelectEvent)
+        await fixture.whenStable()
+        fixture.detectChanges()
 
-        setTimeout(() => {
-          expect(file.text).toHaveBeenCalled()
-          expect(msgServiceSpy.info).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.IMPORT.VALIDATION.OK' })
-          expect(component.importError).toBeFalse()
-          done()
-        })
+        expect(file.text).toHaveBeenCalled()
+        expect(msgServiceSpy.info).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.IMPORT.VALIDATION.OK' })
+        expect(component.importError).toBeFalse()
       })
 
-      it('should select a file to upload - invalid JSON - handle error', (done) => {
+      it('should select a file to upload - invalid JSON - handle error', async () => {
         spyOn(file, 'text').and.returnValue(Promise.resolve('Invalid Json'))
         spyOn(console, 'error')
 
         component.onImportSelectFile(event)
+        await fixture.whenStable()
+        fixture.detectChanges()
 
-        setTimeout(() => {
-          expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.IMPORT.VALIDATION.NOK' })
-          expect(console.error).toHaveBeenCalled()
-          expect(component.importError).toBeTrue()
-          done()
-        })
+        expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.IMPORT.VALIDATION.NOK' })
+        expect(console.error).toHaveBeenCalled()
+        expect(component.importError).toBeTrue()
       })
     })
 
     describe('on import confirmation', () => {
-      it('should import help items', (done) => {
+      it('should import help items', async () => {
         apiServiceSpy.importHelps.and.returnValue(of({}))
         component['importObject'] = helpItem1
 
         component.onImportConfirmation()
+        await fixture.whenStable()
+        fixture.detectChanges()
 
-        setTimeout(() => {
-          expect(component.displayImportDialog).toBeFalse()
-          expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.IMPORT.MESSAGE.OK' })
-          done()
-        })
+        expect(component.displayImportDialog).toBeFalse()
+        expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.IMPORT.MESSAGE.OK' })
       })
 
-      it('should call importHelps and handle error', (done) => {
+      it('should call importHelps and handle error', async () => {
         const errorResponse = { status: 400, statusText: 'Cannot import ...' }
         apiServiceSpy.importHelps.and.returnValue(throwError(() => errorResponse))
         component['importObject'] = helpItem1
         spyOn(console, 'error')
 
         component.onImportConfirmation()
+        await fixture.whenStable()
+        fixture.detectChanges()
 
-        setTimeout(() => {
-          expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.IMPORT.MESSAGE.NOK' })
-          expect(console.error).toHaveBeenCalledWith('importHelps', errorResponse)
-          done()
-        }, 0)
+        expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.IMPORT.MESSAGE.NOK' })
+        expect(console.error).toHaveBeenCalledWith('importHelps', errorResponse)
       })
 
       it('should not call importHelps if importHelpItem is not defined', () => {
@@ -497,13 +530,10 @@ describe('HelpSearchComponent', () => {
 
   describe('detail actions', () => {
     it('should prepare the creation of a new item', () => {
-      const ev: Event = new Event('type')
-      spyOn(ev, 'stopPropagation')
       const mode = 'CREATE'
 
-      component.onDetail(ev, undefined, mode)
+      component.onDetail(undefined, mode)
 
-      expect(ev.stopPropagation).toHaveBeenCalled()
       expect(component.changeMode).toEqual(mode)
       expect(component.item4Detail).toBe(undefined)
       expect(component.displayDetailDialog).toBeTrue()
@@ -516,7 +546,7 @@ describe('HelpSearchComponent', () => {
     it('should show details of a item', () => {
       const mode = 'EDIT'
 
-      component.onDetail(undefined, itemData[0], mode)
+      component.onDetail(itemData[0], mode)
 
       expect(component.changeMode).toEqual(mode)
       expect(component.item4Detail).toBe(itemData[0])
@@ -526,7 +556,7 @@ describe('HelpSearchComponent', () => {
     it('should prepare the copy of a item', () => {
       const mode = 'COPY'
 
-      component.onDetail(undefined, itemData[0], mode)
+      component.onDetail(itemData[0], mode)
 
       expect(component.changeMode).toEqual(mode)
       expect(component.item4Detail).toBe(itemData[0])
@@ -546,37 +576,31 @@ describe('HelpSearchComponent', () => {
     })
 
     it('should prepare the deletion of a item - ok', () => {
-      const ev: Event = new Event('type')
-      spyOn(ev, 'stopPropagation')
+      component.onDelete(items4Deletion[0])
 
-      component.onDelete(ev, items4Deletion[0])
-
-      expect(ev.stopPropagation).toHaveBeenCalled()
       expect(component.item4Delete).toBe(items4Deletion[0])
       expect(component.displayDeleteDialog).toBeTrue()
     })
 
     it('should delete a item with confirmation', () => {
       apiServiceSpy.deleteHelp.and.returnValue(of(null))
-      const ev: Event = new Event('type')
 
-      component.onDelete(ev, items4Deletion[1])
+      component.onDelete(items4Deletion[1])
       component.onDeleteConfirmation(items4Deletion) // remove but not the last of the product
 
       expect(component.displayDeleteDialog).toBeFalse()
       expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.DELETE.MESSAGE.OK' })
 
-      component.onDelete(ev, items4Deletion[2])
+      component.onDelete(items4Deletion[2])
       component.onDeleteConfirmation(items4Deletion) // remove and this was the last of the product
     })
 
     it('should display error if deleting a item fails', () => {
       const errorResponse = { status: '400', statusText: 'Error on deletion' }
       apiServiceSpy.deleteHelp.and.returnValue(throwError(() => errorResponse))
-      const ev: Event = new Event('type')
       spyOn(console, 'error')
 
-      component.onDelete(ev, items4Deletion[0])
+      component.onDelete(items4Deletion[0])
       component.onDeleteConfirmation(items4Deletion)
 
       expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.DELETE.MESSAGE.NOK' })
