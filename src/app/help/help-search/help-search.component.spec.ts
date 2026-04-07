@@ -174,6 +174,20 @@ describe('HelpSearchComponent', () => {
   })
 
   describe('UI actions', () => {
+    it('should provide copy additional action', () => {
+      expect(component.dataViewAdditionalActions.length).toBe(1)
+      expect(component.dataViewAdditionalActions[0].id).toBe('copy')
+      expect(component.dataViewAdditionalActions[0].permission).toBe('HELP#EDIT')
+    })
+
+    it('should call detail in COPY mode from copy additional action', () => {
+      spyOn(component, 'onDetail')
+
+      component.dataViewAdditionalActions[0].callback(itemData[0])
+
+      expect(component.onDetail).toHaveBeenCalledWith(itemData[0], 'COPY')
+    })
+
     it('should update filters on onFiltersChanged', (done) => {
       const filters: Filter[] = [
         {

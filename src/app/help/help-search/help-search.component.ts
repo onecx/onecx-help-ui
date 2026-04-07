@@ -99,7 +99,16 @@ export class HelpSearchComponent implements OnInit {
       filterType: FilterType.EQUALS
     }
   ]
-  public dataViewAdditionalActions: DataAction[] = []
+  public dataViewAdditionalActions: DataAction[] = [
+    {
+      id: 'copy',
+      labelKey: 'ACTIONS.COPY.LABEL',
+      icon: 'pi pi-copy',
+      permission: 'HELP#EDIT',
+      classes: ['copyTableRowButton'],
+      callback: (item: Help) => this.onDetail(item, 'COPY')
+    }
+  ]
 
   // slot configuration: get product data via remote component
   public pdSlotName = 'onecx-product-data'

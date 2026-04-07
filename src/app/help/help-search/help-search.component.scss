@@ -5,6 +5,7 @@
 @include table-inline-buttons;
 @include table-zebra-rows;
 @include table-responsive-columns;
+@include table-sticky-header;
 @include dialog-footer-buttons;
 @include dialog-non-full-size-modal;
 @include correct-file-upload;
@@ -13,6 +14,22 @@
 @include listbox-zebra-rows;
 
 :host ::ng-deep {
+  .hm-search-table-scroll-host {
+    .p-datatable {
+      max-height: 600px;
+    }
+
+    .p-datatable-wrapper,
+    .p-datatable-table-container {
+      max-height: 600px !important;
+      overflow-y: auto !important;
+    }
+
+    .p-datatable-thead > tr > th {
+      position: sticky;
+    }
+  }
+
   .text-ellipsis-2-lines {
     @include displaying-text-ellipsis(2);
   }
@@ -42,5 +59,17 @@
   .icon-button-row-wrapper {
     display: flex;
     flex-direction: row;
+
+    .editTableRowButton {
+      order: 2;
+    }
+
+    .copyTableRowButton {
+      order: 3;
+    }
+
+    .deleteTableRowButton {
+      order: 4;
+    }
   }
 }
