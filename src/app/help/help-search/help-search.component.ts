@@ -221,6 +221,24 @@ export class HelpSearchComponent implements OnInit {
     }) as any[]
   }
 
+  public formatUploadFileSize(bytes: number): string {
+    if (bytes < 1024) {
+      return `${bytes}B`
+    }
+
+    const units = ['KB', 'MB', 'GB', 'TB']
+    let size = bytes / 1024
+    let unitIndex = 0
+
+    while (size >= 1024 && unitIndex < units.length - 1) {
+      size /= 1024
+      unitIndex++
+    }
+
+    const formatted = size < 10 ? Math.round(size * 10) / 10 : Math.round(size)
+    return `${formatted}${units[unitIndex]}`
+  }
+
   public onViewItem(item: any): void {
     this.onDetail(item as Help, 'VIEW')
   }

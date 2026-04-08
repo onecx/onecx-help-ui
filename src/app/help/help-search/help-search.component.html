@@ -284,7 +284,30 @@
       [chooseLabel]="'ACTIONS.IMPORT.CHOOSE' | translate"
       [uploadLabel]="'ACTIONS.IMPORT.UPLOAD' | translate"
       [cancelLabel]="'ACTIONS.CANCEL' | translate"
-    />
+    >
+      <ng-template pTemplate="file" let-file let-i="index">
+        <div class="p-fileupload-file">
+          <div class="p-fileupload-file-info">
+            <div class="p-fileupload-file-name">{{ file.name }}</div>
+            <span class="p-fileupload-file-size">{{ formatUploadFileSize(file.size) }}</span>
+          </div>
+          <div class="p-fileupload-file-actions">
+            <p-button
+              (onClick)="fileUploader.remove($event, i)"
+              [disabled]="fileUploader.uploading"
+              text
+              rounded
+              severity="danger"
+              styleClass="p-fileupload-file-remove-button"
+            >
+              <ng-template #icon>
+                <i class="pi pi-times"></i>
+              </ng-template>
+            </p-button>
+          </div>
+        </div>
+      </ng-template>
+    </p-fileUpload>
   </div>
   <ng-template pTemplate="footer">
     <div class="flex flex-wrap justify-content-end column-gap-2 row-gap-1">
