@@ -21,7 +21,9 @@ export interface HelpDetailForm {
 @Component({
   selector: 'app-help-detail',
   templateUrl: './help-detail.component.html',
-  styleUrls: ['./help-detail.component.scss']
+  styleUrls: ['./help-detail.component.scss'],
+  // eslint-disable-next-line @angular-eslint/prefer-standalone
+  standalone: false
 })
 export class HelpDetailComponent implements OnChanges {
   @Input() public displayDialog = false

@@ -5,39 +5,74 @@
 @include table-inline-buttons;
 @include table-zebra-rows;
 @include table-responsive-columns;
+@include table-sticky-header;
 @include dialog-footer-buttons;
 @include dialog-non-full-size-modal;
 @include correct-file-upload;
+@include file-upload-disabled-buttons;
 @include displaying-text-responsive;
 @include listbox-layout;
 @include listbox-zebra-rows;
 
 :host ::ng-deep {
-  .p-datatable {
-    .p-sortable-column .p-sortable-column-icon {
-      margin-left: unset;
+  .hm-search-table-scroll-host {
+    .p-datatable {
+      max-height: 600px;
     }
+
+    .p-datatable-wrapper,
+    .p-datatable-table-container {
+      max-height: 600px !important;
+      overflow-y: auto !important;
+    }
+
     .p-datatable-thead > tr > th {
-      white-space: nowrap;
-      border-bottom-width: 2px;
+      position: sticky;
     }
-    .p-datatable-tbody > tr > td {
-      min-width: 10rem;
-      &:first-of-type {
-        min-width: unset;
-      }
-    }
-  }
-  // hide unusable stuff
-  ocx-column-group-selection,
-  ocx-data-view-controls div div button {
-    display: none;
-  }
-  ocx-data-view-controls div {
-    justify-content: center !important;
   }
 
   .text-ellipsis-2-lines {
     @include displaying-text-ellipsis(2);
+  }
+
+  // Keep the current page report aligned with paginator controls in this view.
+  .p-paginator .p-paginator-current {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+    user-select: none;
+    overflow: hidden;
+    position: relative;
+  }
+
+  // Position sort and filter buttons to the right in column headers
+  .flex.table-header-wrapper.align-items-start {
+    justify-content: flex-start !important;
+    flex-direction: row !important;
+  }
+
+  .flex.icon-button-header-wrapper {
+    margin-left: 0.75rem;
+  }
+
+  // Align action buttons
+  .icon-button-row-wrapper {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+
+    .editTableRowButton {
+      order: 2;
+    }
+
+    .copyTableRowButton {
+      order: 3;
+    }
+
+    .deleteTableRowButton {
+      order: 4;
+    }
   }
 }
