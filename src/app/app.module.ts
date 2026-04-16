@@ -1,4 +1,4 @@
-import { CUSTOM_ELEMENTS_SCHEMA, NgModule } from '@angular/core'
+import { NgModule } from '@angular/core'
 import { CommonModule } from '@angular/common'
 import { HttpClient, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http'
 import { RouterModule, Routes } from '@angular/router'
@@ -7,6 +7,7 @@ import { BrowserAnimationsModule, provideAnimations } from '@angular/platform-br
 import { TranslateLoader, TranslateModule, MissingTranslationHandler } from '@ngx-translate/core'
 
 import { AngularAuthModule } from '@onecx/angular-auth'
+import { StandaloneShellModule, provideStandaloneProviders } from '@onecx/angular-standalone-shell'
 import {
   createTranslateLoader,
   provideThemeConfig,
@@ -28,13 +29,13 @@ const routes: Routes = [
 @NgModule({
   bootstrap: [AppComponent],
   declarations: [AppComponent],
-  schemas: [CUSTOM_ELEMENTS_SCHEMA],
   imports: [
     CommonModule,
     BrowserModule,
     BrowserAnimationsModule,
     AngularAuthModule,
     AngularAcceleratorModule,
+    StandaloneShellModule,
     RouterModule.forRoot(routes, {
       initialNavigation: 'enabledBlocking',
       enableTracing: true
@@ -49,6 +50,7 @@ const routes: Routes = [
     })
   ],
   providers: [
+    provideStandaloneProviders(),
     { provide: APP_CONFIG, useValue: environment },
     ...provideTranslationConnectionService(),
     provideTranslationPathFromMeta(import.meta.url, 'assets/i18n/'),

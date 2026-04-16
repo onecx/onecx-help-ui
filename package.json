@@ -61,6 +61,7 @@
     "@onecx/angular-testing": "^6.18.0",
     "@onecx/angular-utils": "^6.18.0",
     "@onecx/angular-webcomponents": "^6.18.0",
+    "@onecx/angular-standalone-shell": "^6.19.0",
     "@onecx/integration-interface": "^6.18.0",
     "@webcomponents/webcomponentsjs": "^2.8.0",
     "file-saver": "^2.0.5",
