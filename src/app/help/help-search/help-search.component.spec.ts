@@ -7,7 +7,6 @@ import { of, throwError } from 'rxjs'
 import { FileSelectEvent } from 'primeng/fileupload'
 
 import { PortalMessageService, UserService } from '@onecx/angular-integration-interface'
-import { Filter, FilterType } from '@onecx/angular-accelerator'
 
 import { HelpsInternalAPIService, Help } from 'src/app/shared/generated'
 import { HelpSearchComponent, Product } from './help-search.component'
@@ -188,32 +187,37 @@ describe('HelpSearchComponent', () => {
       expect(component.onDetail).toHaveBeenCalledWith(itemData[0], 'COPY')
     })
 
-    it('should update filters on onFiltersChanged', (done) => {
-      const filters: Filter[] = [
-        {
-          columnId: 'productName',
-          filterType: FilterType.EQUALS,
-          value: ['product1']
-        }
-      ]
+    it('should set tableFilter on onGlobalFilter', () => {
+      component.onGlobalFilter('itemId1')
 
-      component.onFiltersChanged(filters)
+      expect(component.tableFilter).toBe('itemId1')
+    })
 
-      component.filters$.subscribe((value) => {
-        expect(value).toEqual(filters)
+    it('should filter data by global filter value', (done) => {
+      component['rawSearchResults'] = [...itemData]
+      component.productData$.next([product1, product2])
+
+      component.onGlobalFilter('itemId1')
+
+      component.data$.subscribe((data) => {
+        expect(data.length).toBe(2)
+        expect(data).toContain(helpItem1 as any)
+        expect(data).toContain(helpItem3 as any)
         done()
       })
     })
 
-    it('should filter data on applyGlobalFilter', () => {
+    it('should clear tableFilter and restore all results on onClearGlobalFilter', (done) => {
+      component['rawSearchResults'] = [...itemData]
       component.tableFilter = 'itemId1'
-      component.productData$.next([product1, product2])
 
-      const filtered = component.applyGlobalFilter(itemData)
+      component.onClearGlobalFilter()
 
-      expect(filtered.length).toBe(2)
-      expect(filtered).toContain(helpItem1 as any)
-      expect(filtered).toContain(helpItem3 as any)
+      expect(component.tableFilter).toBe('')
+      component.data$.subscribe((data) => {
+        expect(data).toEqual(itemData)
+        done()
+      })
     })
   })
 
@@ -238,18 +242,19 @@ describe('HelpSearchComponent', () => {
 
       component.onSearch(component.criteria, true)
 
-      component.data$!.subscribe({
+      let sub: any
+      sub = component.data$!.subscribe({
         next: (data) => {
           expect(data.length).toBe(1)
           expect(data[0]).toEqual(itemData[1])
+          sub.unsubscribe()
+
+          component.onCriteriaReset()
+          expect(component.criteria).toEqual({})
           done()
         },
         error: done.fail
       })
-
-      component.onCriteriaReset()
-
-      expect(component.criteria).toEqual({})
     })
 
     it('should display an error message if the search fails', (done) => {

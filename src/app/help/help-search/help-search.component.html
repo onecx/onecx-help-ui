@@ -45,7 +45,7 @@
           *ngIf="!(searching || exceptionKey)"
           id="hm_search_table"
           [name]="'help-search'"
-          [data]="applyGlobalFilter(data)"
+          [data]="$any(data)"
           [supportedViewLayouts]="['table']"
           [layout]="'table'"
           [columns]="dataViewColumns"
@@ -55,10 +55,9 @@
           [editPermission]="dataViewEditPermission"
           [deletePermission]="'HELP#DELETE'"
           [additionalActions]="dataViewAdditionalActions"
-          [filters]="(filters$ | async) ?? []"
-          (filtered)="onFiltersChanged($event)"
           [clientSideSorting]="true"
-          [clientSideFiltering]="true"
+          [clientSideFiltering]="false"
+          [disableFilterView]="true"
           [frozenActionColumn]="true"
           [actionColumnPosition]="'left'"
           [pageSize]="10"
@@ -71,18 +70,41 @@
           (editItem)="onEditItem($event)"
           (deleteItem)="onDeleteItem($event)"
         >
-          <ng-template pTemplate="topCenter">
-            <div class="help-search-caption-filter">
-              <input
-                pInputText
-                id="hm_search_table_filter"
-                type="text"
-                [(ngModel)]="tableFilter"
-                [placeholder]="'DIALOG.DATAVIEW.FILTER' | translate"
-                [pTooltip]="'DIALOG.DATAVIEW.FILTER_BY' | translate"
+          <ng-template #topCenter>
+            <div class="p-inputgroup w-auto hm-filter-group">
+              <span class="p-inputgroup-addon hm-filter-border">
+                <i class="pi pi-filter"></i>
+              </span>
+              <p-floatlabel class="hm-filter-float">
+                <input
+                  #filterInput
+                  id="hm_search_table_filter"
+                  type="text"
+                  class="hm-filter-input hm-filter-border"
+                  pInputText
+                  [value]="tableFilter"
+                  [pTooltip]="'DIALOG.DATAVIEW.FILTER_BY' | translate"
+                  tooltipPosition="top"
+                  tooltipEvent="hover"
+                  (input)="onGlobalFilter(filterInput.value)"
+                />
+                <label for="hm_search_table_filter" aria-hidden="true">
+                  {{ 'DIALOG.DATAVIEW.FILTER_PLACEHOLDER' | translate }}
+                </label>
+              </p-floatlabel>
+              <button
+                type="button"
+                id="hm_search_table_filter_clear"
+                class="p-inputgroup-addon hm-filter-clear hm-filter-border cursor-pointer"
+                [disabled]="!tableFilter"
+                [attr.aria-label]="'DIALOG.DATAVIEW.FILTER_CLEAR' | translate"
+                [pTooltip]="'DIALOG.DATAVIEW.FILTER_CLEAR' | translate"
                 tooltipPosition="top"
                 tooltipEvent="hover"
-              />
+                (click)="onClearGlobalFilter(filterInput)"
+              >
+                <i class="pi pi-filter-slash" aria-hidden="true"></i>
+              </button>
             </div>
           </ng-template>
           <ng-template pTemplate="tableCell" let-rowObject="rowObject" let-column="column">

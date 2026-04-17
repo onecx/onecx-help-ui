@@ -6,7 +6,7 @@ import { FileSelectEvent } from 'primeng/fileupload'
 import FileSaver from 'file-saver'
 
 import { PortalMessageService, UserService } from '@onecx/angular-integration-interface'
-import { Action, ColumnType, DataAction, DataTableColumn, Filter, FilterType } from '@onecx/angular-accelerator'
+import { Action, ColumnType, DataAction, DataTableColumn } from '@onecx/angular-accelerator'
 import { SlotService } from '@onecx/angular-remote-components'
 
 import { Help, HelpsInternalAPIService, HelpSearchCriteria, HelpProductNames } from 'src/app/shared/generated'
@@ -57,7 +57,7 @@ export class HelpSearchComponent implements OnInit {
   public dataViewEditPermission = 'HELP#EDIT'
 
   // data
-  public data$: Observable<Help[]> | undefined
+  public data$: Observable<Help[]>
   public dataAvailable = false
   public metaData$!: Observable<AllMetaData>
   public usedLists$!: Observable<Product[]> // getting data from bff endpoint
@@ -69,7 +69,8 @@ export class HelpSearchComponent implements OnInit {
   private importObject: object | undefined = undefined
 
   public displayedColumnKeys: string[] = ['productName', 'itemId', 'baseUrl']
-  public filters$ = new BehaviorSubject<Filter[]>([])
+  private rawSearchResults: Help[] = []
+  private filteredSearchResults$ = new BehaviorSubject<Help[]>([])
   public dataViewColumns: DataTableColumn[] = [
     {
       id: 'productName',
@@ -77,8 +78,7 @@ export class HelpSearchComponent implements OnInit {
       tooltipKey: 'HELP_ITEM.TOOLTIPS.PRODUCT_NAME',
       columnType: ColumnType.STRING,
       sortable: true,
-      filterable: true,
-      filterType: FilterType.EQUALS
+      filterable: false
     },
     {
       id: 'itemId',
@@ -86,8 +86,7 @@ export class HelpSearchComponent implements OnInit {
       tooltipKey: 'HELP_ITEM.TOOLTIPS.ID',
       columnType: ColumnType.STRING,
       sortable: true,
-      filterable: true,
-      filterType: FilterType.EQUALS
+      filterable: false
     },
     {
       id: 'baseUrl',
@@ -95,8 +94,7 @@ export class HelpSearchComponent implements OnInit {
       tooltipKey: 'HELP_ITEM.TOOLTIPS.URL',
       columnType: ColumnType.STRING,
       sortable: true,
-      filterable: true,
-      filterType: FilterType.EQUALS
+      filterable: false
     }
   ]
   public dataViewAdditionalActions: DataAction[] = [
@@ -123,6 +121,7 @@ export class HelpSearchComponent implements OnInit {
     private readonly msgService: PortalMessageService,
     private readonly helpApi: HelpsInternalAPIService
   ) {
+    this.data$ = this.filteredSearchResults$.asObservable()
     this.dateFormat = this.user.lang$.getValue() === 'de' ? 'dd.MM.yyyy HH:mm' : 'M/d/yy, h:mm a'
     this.pdIsComponentDefined$ = this.slotService.isSomeComponentDefinedForSlot(this.pdSlotName)
   }
@@ -201,24 +200,39 @@ export class HelpSearchComponent implements OnInit {
    */
   public onCriteriaReset(): void {
     this.criteria = {}
+    this.tableFilter = ''
+    this.rawSearchResults = []
+    this.filteredSearchResults$.next([])
+    this.dataAvailable = false
   }
 
-  public onFiltersChanged(filters: Filter[]): void {
-    this.filters$.next(filters)
+  public onGlobalFilter(value: string): void {
+    this.tableFilter = value ?? ''
+    this.applyGlobalFilterToResults()
   }
 
-  public applyGlobalFilter(data: Help[]): any[] {
-    const filterValue = this.tableFilter.trim().toUpperCase()
-    if (!filterValue) {
-      return data as any[]
+  public onClearGlobalFilter(input?: HTMLInputElement): void {
+    this.tableFilter = ''
+    if (input) {
+      input.value = ''
     }
-    return data.filter((item) => {
-      const displayName = this.getDisplayName(item.productName, this.productData$.getValue(), item.productName) ?? ''
+    this.filteredSearchResults$.next([...this.rawSearchResults])
+  }
+
+  private applyGlobalFilterToResults(): void {
+    const filterValue = this.tableFilter.trim().toLowerCase()
+    if (!filterValue) {
+      this.filteredSearchResults$.next([...this.rawSearchResults])
+      return
+    }
+    const allProducts = this.productData$.getValue()
+    const filtered = this.rawSearchResults.filter((item) => {
+      const displayName = this.getDisplayName(item.productName, allProducts, item.productName) ?? ''
       const productName = item.productName ?? ''
       const itemId = item.itemId ?? ''
-      const url = this.prepareUrl(item)
-      return [displayName, productName, itemId, url].some((value) => value.toUpperCase().includes(filterValue))
-    }) as any[]
+      return [displayName, productName, itemId].some((value) => value.toLowerCase().includes(filterValue))
+    })
+    this.filteredSearchResults$.next(filtered)
   }
 
   public formatUploadFileSize(bytes: number): string {
@@ -283,10 +297,11 @@ export class HelpSearchComponent implements OnInit {
       this.helpApi.deleteHelp({ id: this.item4Delete.id }).subscribe({
         next: () => {
           this.msgService.success({ summaryKey: 'ACTIONS.DELETE.MESSAGE.OK' })
-          data = data?.filter((d) => d.id !== this.item4Delete?.id)
-          this.data$ = of(data)
+          this.rawSearchResults = this.rawSearchResults.filter((d) => d.id !== this.item4Delete?.id)
+          this.applyGlobalFilterToResults()
+          this.dataAvailable = this.rawSearchResults.length > 0
           // check remaining data: if product still exists - if not then trigger reload
-          if (!data?.find((d) => d.productName === this.item4Delete?.productName)) {
+          if (!this.rawSearchResults.find((d) => d.productName === this.item4Delete?.productName)) {
             this.usedListsTrigger$.next() // trigger getting data
           }
           this.displayDeleteDialog = false
@@ -354,21 +369,28 @@ export class HelpSearchComponent implements OnInit {
     if (!reuseCriteria) this.criteria = criteria
     this.searching = true
     this.exceptionKey = undefined
-    this.data$ = this.helpApi.searchHelps({ helpSearchCriteria: this.criteria }).pipe(
-      tap((data) => {
-        this.dataAvailable = (data.stream && data.stream.length > 0) ?? false
-        if (!this.dataAvailable) this.msgService.info({ summaryKey: 'ACTIONS.SEARCH.MESSAGE.NO_RESULTS' })
-        this.prepareActionButtons()
-      }),
-      map((data) => data.stream?.sort(this.sortHelpItemByDefault) ?? []),
-      catchError((err) => {
-        this.exceptionKey = 'EXCEPTIONS.HTTP_STATUS_' + err.status + '.HELP_ITEM'
-        this.msgService.error({ summaryKey: 'ACTIONS.SEARCH.MESSAGE.NOK' })
-        console.error('searchHelps', err)
-        return of([])
-      }),
-      finalize(() => (this.searching = false))
-    )
+    this.tableFilter = ''
+    this.helpApi
+      .searchHelps({ helpSearchCriteria: this.criteria })
+      .pipe(
+        tap((data) => {
+          this.dataAvailable = (data.stream && data.stream.length > 0) ?? false
+          if (!this.dataAvailable) this.msgService.info({ summaryKey: 'ACTIONS.SEARCH.MESSAGE.NO_RESULTS' })
+          this.prepareActionButtons()
+        }),
+        map((data) => data.stream?.sort(this.sortHelpItemByDefault) ?? []),
+        catchError((err) => {
+          this.exceptionKey = 'EXCEPTIONS.HTTP_STATUS_' + err.status + '.HELP_ITEM'
+          this.msgService.error({ summaryKey: 'ACTIONS.SEARCH.MESSAGE.NOK' })
+          console.error('searchHelps', err)
+          return of([])
+        }),
+        finalize(() => (this.searching = false))
+      )
+      .subscribe((results) => {
+        this.rawSearchResults = results
+        this.filteredSearchResults$.next([...results])
+      })
   }
 
   // default sorting: 1.productName, 2.itemId

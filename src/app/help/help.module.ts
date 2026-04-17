@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core'
 import { CommonModule } from '@angular/common'
 import { FormsModule } from '@angular/forms'
 import { RouterModule, Routes } from '@angular/router'
+import { FloatLabelModule } from 'primeng/floatlabel'
 
 import { AngularAcceleratorModule } from '@onecx/angular-accelerator'
 import { PortalPageComponent, providePermissionService } from '@onecx/angular-utils'
@@ -23,6 +24,7 @@ const routes: Routes = [
   imports: [
     CommonModule,
     FormsModule,
+    FloatLabelModule,
     AngularAcceleratorModule,
     PortalPageComponent,
     [RouterModule.forChild(routes)],
