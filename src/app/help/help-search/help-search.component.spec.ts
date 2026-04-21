@@ -4,6 +4,7 @@ import { provideHttpClient } from '@angular/common/http'
 import { provideHttpClientTesting } from '@angular/common/http/testing'
 import { TranslateTestingModule } from 'ngx-translate-testing'
 import { of, throwError } from 'rxjs'
+import { take } from 'rxjs/operators'
 import { FileSelectEvent } from 'primeng/fileupload'
 
 import { PortalMessageService, UserService } from '@onecx/angular-integration-interface'
@@ -242,11 +243,10 @@ describe('HelpSearchComponent', () => {
 
       component.onSearch(component.criteria, true)
 
-      const sub: any = component.data$!.subscribe({
+      component.data$!.pipe(take(1)).subscribe({
         next: (data) => {
           expect(data.length).toBe(1)
           expect(data[0]).toEqual(itemData[1])
-          sub.unsubscribe()
 
           component.onCriteriaReset()
           expect(component.criteria).toEqual({})
