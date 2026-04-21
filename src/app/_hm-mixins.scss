@@ -296,6 +296,15 @@
         color: var(--onecx-help-onecx-help-ui-onecx-topbar-menu-button-text-color);
         opacity: var(--onecx-help-onecx-help-ui-enabled-opacity, 1);
       }
+      .p-button.p-fileupload-upload-button:enabled:hover,
+      .p-button.p-fileupload-upload-button:enabled:focus-visible,
+      .p-button.p-fileupload-cancel-button:enabled:hover,
+      .p-button.p-fileupload-cancel-button:enabled:focus-visible {
+        background-color: var(
+          --onecx-help-onecx-help-ui-button-primary-hover-background,
+          color-mix(in srgb, var(--onecx-help-onecx-help-ui-onecx-primary-color) 85%, black)
+        );
+      }
     }
   }
 }
@@ -463,7 +472,10 @@
   :host ::ng-deep {
     /* this works only on non-frozen columns (table.p-datatable-striped does not work) */
     .p-datatable .p-datatable-tbody > tr:nth-child(even) > td:not(.p-frozen-column) {
-      background-color: var(--onecx-help-onecx-help-ui-datatable-row-background);
+      background-color: var(
+        --onecx-help-onecx-help-ui-datatable-row-even-background,
+        color-mix(in srgb, var(--onecx-help-onecx-help-ui-datatable-row-background, #ffffff) 94%, #000000)
+      );
     }
   }
 }

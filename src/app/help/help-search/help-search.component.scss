@@ -24,10 +24,22 @@
     .p-datatable-table-container {
       max-height: 600px !important;
       overflow-y: auto !important;
+      overflow-x: auto !important;
     }
 
     .p-datatable-thead > tr > th {
       position: sticky;
+      white-space: nowrap;
+    }
+
+    @media only screen and (max-width: 768px) {
+      .p-datatable-thead > tr > th:has(.table-header-wrapper) {
+        min-width: 11rem;
+      }
+
+      .p-datatable-tbody > tr > td:not(.actions):not(.p-frozen-column) {
+        min-width: 11rem;
+      }
     }
   }
 

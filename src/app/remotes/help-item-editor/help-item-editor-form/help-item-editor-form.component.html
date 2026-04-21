@@ -3,7 +3,7 @@
   class="flex flex-wrap flex-column gap-4 justify-content-between mt-2"
   [attr.aria-label]="'DIALOG.DETAIL.TAB.PROPS' | translate"
 >
-  <span class="p-float-label">
+  <p-floatlabel variant="on">
     <input
       id="hm_item_editor_form_product_name"
       class="w-full pt-3 pb-2 text-responsive"
@@ -18,9 +18,9 @@
     <label class="ocx-required-label" for="hm_item_editor_form_product_name" aria-hidden="true">
       {{ 'HELP_ITEM.PRODUCT_NAME' | translate }}
     </label>
-  </span>
+  </p-floatlabel>
 
-  <span class="p-float-label">
+  <p-floatlabel variant="on">
     <input
       id="hm_item_editor_form_helpitem_id"
       class="w-full pt-3 pb-2 text-responsive"
@@ -35,7 +35,7 @@
     <label class="ocx-required-label" for="hm_item_editor_form_helpitem_id" aria-hidden="true">
       {{ 'HELP_ITEM.ID' | translate }}
     </label>
-  </span>
+  </p-floatlabel>
 
   <p-fieldset [toggleable]="false" [collapsed]="false" styleClass="surface-100 pb-3 px-2">
     <ng-template pTemplate="header">
@@ -44,7 +44,7 @@
       </span>
     </ng-template>
     <div class="flex flex-wrap flex-column gap-4 justify-content-between mt-2">
-      <span class="p-float-label">
+      <p-floatlabel variant="on">
         <input
           #baseURL
           id="hm_item_editor_form_base_url"
@@ -61,8 +61,8 @@
         <label class="ocx-required-label" for="hm_item_editor_form_base_url" aria-hidden="true">
           {{ 'HELP_ITEM.BASE_URL' | translate }}
         </label>
-      </span>
-      <span class="p-float-label">
+      </p-floatlabel>
+      <p-floatlabel variant="on">
         <input
           id="hm_item_editor_form_resource_url"
           class="w-full pt-3 pb-2 text-responsive"
@@ -77,8 +77,8 @@
         <label for="hm_item_editor_form_resource_url" aria-hidden="true">
           {{ 'HELP_ITEM.RESOURCE_URL' | translate }}
         </label>
-      </span>
-      <span class="p-float-label">
+      </p-floatlabel>
+      <p-floatlabel variant="on">
         <input
           pInputText
           type="text"
@@ -93,7 +93,7 @@
         <label class="" for="hm_item_editor_form_context" aria-hidden="true">
           {{ 'HELP_ITEM.CONTEXT' | translate }}
         </label>
-      </span>
+      </p-floatlabel>
     </div>
   </p-fieldset>
 </form>

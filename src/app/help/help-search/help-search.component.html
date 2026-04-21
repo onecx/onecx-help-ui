@@ -71,19 +71,23 @@
           (deleteItem)="onDeleteItem($event)"
         >
           <ng-template #topCenter>
-            <div class="p-inputgroup w-auto hm-filter-group">
-              <span class="p-inputgroup-addon hm-filter-border">
+            <p-inputgroup class="w-auto">
+              <p-inputgroup-addon>
                 <i class="pi pi-filter"></i>
-              </span>
-              <p-floatlabel class="hm-filter-float">
+              </p-inputgroup-addon>
+              <p-floatlabel variant="on">
                 <input
                   #filterInput
                   id="hm_search_table_filter"
                   type="text"
-                  class="hm-filter-input hm-filter-border"
                   pInputText
                   [value]="tableFilter"
-                  [pTooltip]="'DIALOG.DATAVIEW.FILTER_BY' | translate"
+                  [pTooltip]="
+                    ('DIALOG.DATAVIEW.FILTER_BY' | translate) +
+                    ('HELP_ITEM.PRODUCT_NAME' | translate) +
+                    ', ' +
+                    ('HELP_ITEM.ID' | translate)
+                  "
                   tooltipPosition="top"
                   tooltipEvent="hover"
                   (input)="onGlobalFilter(filterInput.value)"
@@ -92,20 +96,17 @@
                   {{ 'DIALOG.DATAVIEW.FILTER_PLACEHOLDER' | translate }}
                 </label>
               </p-floatlabel>
-              <button
-                type="button"
+              <p-button
                 id="hm_search_table_filter_clear"
-                class="p-inputgroup-addon hm-filter-clear hm-filter-border cursor-pointer"
+                icon="pi pi-filter-slash"
                 [disabled]="!tableFilter"
                 [attr.aria-label]="'DIALOG.DATAVIEW.FILTER_CLEAR' | translate"
                 [pTooltip]="'DIALOG.DATAVIEW.FILTER_CLEAR' | translate"
                 tooltipPosition="top"
                 tooltipEvent="hover"
                 (click)="onClearGlobalFilter(filterInput)"
-              >
-                <i class="pi pi-filter-slash" aria-hidden="true"></i>
-              </button>
-            </div>
+              />
+            </p-inputgroup>
           </ng-template>
           <ng-template pTemplate="tableCell" let-rowObject="rowObject" let-column="column">
             @switch (column.id) {

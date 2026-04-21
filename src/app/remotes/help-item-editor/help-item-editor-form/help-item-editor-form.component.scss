@@ -3,7 +3,6 @@
 @include correct-modal-dialog;
 @include displaying-text-responsive;
 @include readable-disabled-form-controls;
-@include p-float-label-styles;
 
 :host ::ng-deep {
   .p-fieldset {

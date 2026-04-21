@@ -5,6 +5,7 @@ import { Observable } from 'rxjs'
 import { InputTextModule } from 'primeng/inputtext'
 import { TooltipModule } from 'primeng/tooltip'
 import { FieldsetModule } from 'primeng/fieldset'
+import { FloatLabelModule } from 'primeng/floatlabel'
 
 import { PortalMessageService } from '@onecx/angular-integration-interface'
 import { DialogButtonClicked, DialogPrimaryButtonDisabled, DialogResult, DialogState } from '@onecx/angular-accelerator'
@@ -15,7 +16,7 @@ import { Help } from 'src/app/shared/generated'
   selector: 'app-ocx-help-item-editor',
   styleUrls: ['./help-item-editor-form.component.scss'],
   templateUrl: './help-item-editor-form.component.html',
-  imports: [InputTextModule, ReactiveFormsModule, TranslateModule, TooltipModule, FieldsetModule],
+  imports: [InputTextModule, ReactiveFormsModule, TranslateModule, TooltipModule, FieldsetModule, FloatLabelModule],
   providers: [PortalMessageService, FormBuilder]
 })
 export class HelpItemEditorFormComponent
