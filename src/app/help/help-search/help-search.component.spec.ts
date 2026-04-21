@@ -455,10 +455,7 @@ describe('HelpSearchComponent', () => {
         const fileList: FileList = {
           0: file,
           length: 1,
-          item: (index: number) => file,
-          [Symbol.iterator]: function (): ArrayIterator<File> {
-            throw new Error('Function not implemented.')
-          }
+          item: (index: number) => file
         }
         event = { files: fileList }
       })
