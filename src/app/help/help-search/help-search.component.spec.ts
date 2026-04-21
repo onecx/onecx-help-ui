@@ -242,8 +242,7 @@ describe('HelpSearchComponent', () => {
 
       component.onSearch(component.criteria, true)
 
-      let sub: any
-      sub = component.data$!.subscribe({
+      const sub: any = component.data$!.subscribe({
         next: (data) => {
           expect(data.length).toBe(1)
           expect(data[0]).toEqual(itemData[1])
@@ -456,7 +455,10 @@ describe('HelpSearchComponent', () => {
         const fileList: FileList = {
           0: file,
           length: 1,
-          item: (index: number) => file
+          item: (index: number) => file,
+          [Symbol.iterator]: function (): ArrayIterator<File> {
+            throw new Error('Function not implemented.')
+          }
         }
         event = { files: fileList }
       })
