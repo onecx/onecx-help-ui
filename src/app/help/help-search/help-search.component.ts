@@ -70,7 +70,7 @@ export class HelpSearchComponent implements OnInit {
 
   public displayedColumnKeys: string[] = ['productName', 'itemId', 'baseUrl']
   private rawSearchResults: Help[] = []
-  private filteredSearchResults$ = new BehaviorSubject<Help[]>([])
+  private readonly filteredSearchResults$ = new BehaviorSubject<Help[]>([])
   public dataViewColumns: DataTableColumn[] = [
     {
       id: 'productName',
@@ -301,7 +301,7 @@ export class HelpSearchComponent implements OnInit {
           this.applyGlobalFilterToResults()
           this.dataAvailable = this.rawSearchResults.length > 0
           // check remaining data: if product still exists - if not then trigger reload
-          if (!this.rawSearchResults.find((d) => d.productName === this.item4Delete?.productName)) {
+          if (!this.rawSearchResults.some((d) => d.productName === this.item4Delete?.productName)) {
             this.usedListsTrigger$.next() // trigger getting data
           }
           this.displayDeleteDialog = false

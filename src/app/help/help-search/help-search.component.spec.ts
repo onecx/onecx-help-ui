@@ -129,6 +129,18 @@ describe('HelpSearchComponent', () => {
       expect(component.dataViewViewPermission).toBe('HELP#VIEW')
     })
 
+    it('should fall back to view permission when hasPermission throws', async () => {
+      mockUserService.hasPermission.and.returnValue(Promise.reject(new Error('unexpected')))
+      spyOn(console, 'error')
+
+      component.ngOnInit()
+      await fixture.whenStable()
+
+      expect(component.dataViewEditPermission).toBe('__NO_PERMISSION__')
+      expect(component.dataViewViewPermission).toBe('HELP#VIEW')
+      expect(console.error).toHaveBeenCalledWith('configureDataViewActionPermissions', jasmine.any(Error))
+    })
+
     it('should create component and set columns for displaying results', () => {
       expect(component).toBeTruthy()
       expect(component.dataViewColumns[0].id).toBe('productName')
@@ -217,6 +229,48 @@ describe('HelpSearchComponent', () => {
       expect(component.tableFilter).toBe('')
       component.data$.subscribe((data) => {
         expect(data).toEqual(itemData)
+        done()
+      })
+    })
+
+    it('should clear input element value on onClearGlobalFilter with input', (done) => {
+      component['rawSearchResults'] = [...itemData]
+      const input = document.createElement('input')
+      input.value = 'itemId1'
+      component.tableFilter = 'itemId1'
+
+      component.onClearGlobalFilter(input)
+
+      expect(input.value).toBe('')
+      expect(component.tableFilter).toBe('')
+      component.data$.subscribe((data) => {
+        expect(data).toEqual(itemData)
+        done()
+      })
+    })
+
+    it('should restore all results when filter is cleared to empty string', (done) => {
+      component['rawSearchResults'] = [...itemData]
+      component.tableFilter = ''
+
+      component.onGlobalFilter('')
+
+      component.data$.subscribe((data) => {
+        expect(data).toEqual(itemData)
+        done()
+      })
+    })
+
+    it('should filter by productName when no productData is available', (done) => {
+      component['rawSearchResults'] = [...itemData]
+      component.productData$.next(undefined)
+
+      component.onGlobalFilter('product1')
+
+      component.data$.subscribe((data) => {
+        expect(data.length).toBe(2)
+        expect(data).toContain(helpItem1 as any)
+        expect(data).toContain(helpItem4 as any)
         done()
       })
     })
@@ -694,6 +748,38 @@ describe('HelpSearchComponent', () => {
       const url = component.prepareUrl(help)
 
       expect(url).toEqual(help.baseUrl! + help.resourceUrl + help.context)
+    })
+  })
+
+  describe('formatUploadFileSize', () => {
+    it('should format bytes below 1024 as B', () => {
+      expect(component.formatUploadFileSize(0)).toBe('0B')
+      expect(component.formatUploadFileSize(512)).toBe('512B')
+      expect(component.formatUploadFileSize(1023)).toBe('1023B')
+    })
+
+    it('should format exactly 1 KB', () => {
+      expect(component.formatUploadFileSize(1024)).toBe('1KB')
+    })
+
+    it('should format KB with one decimal when size < 10', () => {
+      expect(component.formatUploadFileSize(1024 * 5)).toBe('5KB')
+      expect(component.formatUploadFileSize(1024 * 9.5)).toBe('9.5KB')
+    })
+
+    it('should format large KB without decimal', () => {
+      expect(component.formatUploadFileSize(1024 * 512)).toBe('512KB')
+    })
+
+    it('should format MB', () => {
+      expect(component.formatUploadFileSize(1024 * 1024)).toBe('1MB')
+      expect(component.formatUploadFileSize(1024 * 1024 * 5)).toBe('5MB')
+      expect(component.formatUploadFileSize(1024 * 1024 * 500)).toBe('500MB')
+    })
+
+    it('should format GB', () => {
+      expect(component.formatUploadFileSize(1024 * 1024 * 1024)).toBe('1GB')
+      expect(component.formatUploadFileSize(1024 * 1024 * 1024 * 2)).toBe('2GB')
     })
   })
 
