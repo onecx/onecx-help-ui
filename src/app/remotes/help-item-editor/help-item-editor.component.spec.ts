@@ -666,7 +666,7 @@ describe('OneCXHelpItemEditorComponent', () => {
       await oneCXHelpItemEditorHarness.clickHelpEditorButton()
 
       expect(messageServiceSpy.success).toHaveBeenCalledOnceWith({
-        summaryKey: 'OCX_PORTAL_VIEWPORT.UPDATE_HELP_ARTICLE_INFO'
+        summaryKey: 'HELP_ITEM_EDITOR.UPDATE_HELP_ARTICLE_INFO'
       })
       expect(helpApiServiceSpy.searchHelps).toHaveBeenCalledWith({
         helpSearchCriteria: {
@@ -712,7 +712,7 @@ describe('OneCXHelpItemEditorComponent', () => {
       await oneCXHelpItemEditorHarness.clickHelpEditorButton()
 
       expect(messageServiceSpy.success).toHaveBeenCalledOnceWith({
-        summaryKey: 'OCX_PORTAL_VIEWPORT.UPDATE_HELP_ARTICLE_INFO'
+        summaryKey: 'HELP_ITEM_EDITOR.UPDATE_HELP_ARTICLE_INFO'
       })
       expect(helpApiServiceSpy.searchHelps).toHaveBeenCalledWith({
         helpSearchCriteria: {

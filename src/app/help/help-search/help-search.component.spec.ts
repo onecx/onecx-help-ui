@@ -200,6 +200,30 @@ describe('HelpSearchComponent', () => {
       expect(component.onDetail).toHaveBeenCalledWith(itemData[0], 'COPY')
     })
 
+    it('should call onDetail in VIEW mode from onViewItem', () => {
+      spyOn(component, 'onDetail')
+
+      component.onViewItem(itemData[0])
+
+      expect(component.onDetail).toHaveBeenCalledWith(itemData[0], 'VIEW')
+    })
+
+    it('should call onDetail in EDIT mode from onEditItem', () => {
+      spyOn(component, 'onDetail')
+
+      component.onEditItem(itemData[1])
+
+      expect(component.onDetail).toHaveBeenCalledWith(itemData[1], 'EDIT')
+    })
+
+    it('should call onDelete from onDeleteItem', () => {
+      spyOn(component, 'onDelete')
+
+      component.onDeleteItem(itemData[2])
+
+      expect(component.onDelete).toHaveBeenCalledWith(itemData[2])
+    })
+
     it('should set tableFilter on onGlobalFilter', () => {
       component.onGlobalFilter('itemId1')
 
@@ -271,6 +295,25 @@ describe('HelpSearchComponent', () => {
         expect(data.length).toBe(2)
         expect(data).toContain(helpItem1 as any)
         expect(data).toContain(helpItem4 as any)
+        done()
+      })
+    })
+
+    it('should default tableFilter to empty string when onGlobalFilter is called with null', () => {
+      component.onGlobalFilter(null as any)
+
+      expect(component.tableFilter).toBe('')
+    })
+
+    it('should treat undefined productName and itemId as empty string when filtering', (done) => {
+      const itemWithoutFields: Help = { id: 'id5', itemId: undefined as any, productName: undefined, baseUrl: '' }
+      component['rawSearchResults'] = [itemWithoutFields]
+      component.productData$.next(undefined)
+
+      component.onGlobalFilter('nomatch')
+
+      component.data$.subscribe((data) => {
+        expect(data.length).toBe(0)
         done()
       })
     })
@@ -656,15 +699,29 @@ describe('HelpSearchComponent', () => {
 
     it('should delete a item with confirmation', () => {
       apiServiceSpy.deleteHelp.and.returnValue(of(null))
+      component['rawSearchResults'] = [...itemData]
 
-      component.onDelete(items4Deletion[1])
-      component.onDeleteConfirmation(items4Deletion) // remove but not the last of the product
+      component.onDelete(items4Deletion[1]) // helpItem2: productName 'product2' — helpItem4 also has 'product1', not 'product2', so this is last of product2
+      component.onDeleteConfirmation(items4Deletion) // remove and this was the last of the product
 
       expect(component.displayDeleteDialog).toBeFalse()
       expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.DELETE.MESSAGE.OK' })
 
-      component.onDelete(items4Deletion[2])
-      component.onDeleteConfirmation(items4Deletion) // remove and this was the last of the product
+      component['rawSearchResults'] = [...itemData]
+      component.onDelete(items4Deletion[0]) // helpItem1: productName 'product1' — helpItem4 also has 'product1', so not last
+      component.onDeleteConfirmation(items4Deletion) // remove but not the last of the product
+    })
+
+    it('should trigger usedListsTrigger$ when last item of product is deleted', () => {
+      apiServiceSpy.deleteHelp.and.returnValue(of(null))
+      // only one item with productName 'product2' so deleting it makes it the last
+      component['rawSearchResults'] = [helpItem2]
+      const triggerSpy = spyOn(component['usedListsTrigger$'], 'next')
+
+      component.onDelete(helpItem2)
+      component.onDeleteConfirmation([])
+
+      expect(triggerSpy).toHaveBeenCalled()
     })
 
     it('should display error if deleting a item fails', () => {

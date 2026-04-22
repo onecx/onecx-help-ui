@@ -219,7 +219,7 @@ export class OneCXHelpItemEditorComponent implements ocxRemoteComponent, ocxRemo
         next: ([itemId, productName]) => {
           if (itemId && productName) {
             this.portalMessageService.success({
-              summaryKey: 'OCX_PORTAL_VIEWPORT.UPDATE_HELP_ARTICLE_INFO'
+              summaryKey: 'HELP_ITEM_EDITOR.UPDATE_HELP_ARTICLE_INFO'
             })
             this.loadHelpArticle(productName, itemId)
           }
