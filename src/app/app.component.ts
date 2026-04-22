@@ -1,10 +1,10 @@
 import { Component } from '@angular/core'
+import { StandaloneShellModule } from '@onecx/angular-standalone-shell'
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
-  // eslint-disable-next-line @angular-eslint/prefer-standalone
-  standalone: false
+  imports: [StandaloneShellModule]
 })
 export class AppComponent {
   title = 'onecx-ui'

@@ -1,6 +1,18 @@
 import { Component, EventEmitter, Input, Output, OnChanges } from '@angular/core'
-import { FormControl, FormGroup, Validators } from '@angular/forms'
+import { CommonModule } from '@angular/common'
+import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms'
 import { finalize } from 'rxjs'
+import { TranslateModule } from '@ngx-translate/core'
+import { errorTailorImports } from '@ngneat/error-tailor'
+
+import { AutoCompleteModule } from 'primeng/autocomplete'
+import { ButtonModule } from 'primeng/button'
+import { CheckboxModule } from 'primeng/checkbox'
+import { DialogModule } from 'primeng/dialog'
+import { FieldsetModule } from 'primeng/fieldset'
+import { FloatLabelModule } from 'primeng/floatlabel'
+import { InputTextModule } from 'primeng/inputtext'
+import { TooltipModule } from 'primeng/tooltip'
 
 import { PortalMessageService } from '@onecx/angular-integration-interface'
 
@@ -22,8 +34,20 @@ export interface HelpDetailForm {
   selector: 'app-help-detail',
   templateUrl: './help-detail.component.html',
   styleUrls: ['./help-detail.component.scss'],
-  // eslint-disable-next-line @angular-eslint/prefer-standalone
-  standalone: false
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    TranslateModule,
+    errorTailorImports,
+    AutoCompleteModule,
+    ButtonModule,
+    CheckboxModule,
+    DialogModule,
+    FieldsetModule,
+    FloatLabelModule,
+    InputTextModule,
+    TooltipModule
+  ]
 })
 export class HelpDetailComponent implements OnChanges {
   @Input() public displayDialog = false

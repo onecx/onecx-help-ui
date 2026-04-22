@@ -1,7 +1,9 @@
 import { NO_ERRORS_SCHEMA } from '@angular/core'
+import { CommonModule } from '@angular/common'
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing'
 import { provideHttpClient } from '@angular/common/http'
 import { provideHttpClientTesting } from '@angular/common/http/testing'
+import { TranslateModule } from '@ngx-translate/core'
 import { TranslateTestingModule } from 'ngx-translate-testing'
 import { of, throwError } from 'rxjs'
 import { take } from 'rxjs/operators'
@@ -50,22 +52,27 @@ describe('HelpSearchComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [HelpSearchComponent],
       imports: [
+        HelpSearchComponent,
         TranslateTestingModule.withTranslations({
           de: require('src/assets/i18n/de.json'),
           en: require('src/assets/i18n/en.json')
         }).withDefaultLanguage(defaultLang)
       ],
       schemas: [NO_ERRORS_SCHEMA],
-      providers: [
-        provideHttpClient(),
-        provideHttpClientTesting(),
-        { provide: UserService, useValue: mockUserService },
-        { provide: HelpsInternalAPIService, useValue: apiServiceSpy },
-        { provide: PortalMessageService, useValue: msgServiceSpy }
-      ]
-    }).compileComponents()
+      providers: [provideHttpClient(), provideHttpClientTesting(), { provide: UserService, useValue: mockUserService }]
+    })
+      .overrideComponent(HelpSearchComponent, {
+        set: {
+          imports: [CommonModule, TranslateModule],
+          schemas: [NO_ERRORS_SCHEMA],
+          providers: [
+            { provide: HelpsInternalAPIService, useValue: apiServiceSpy },
+            { provide: PortalMessageService, useValue: msgServiceSpy }
+          ]
+        }
+      })
+      .compileComponents()
   }))
 
   beforeEach(async () => {

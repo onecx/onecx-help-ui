@@ -1,9 +1,9 @@
 import { Component } from '@angular/core'
+import { RouterModule } from '@angular/router'
 
 @Component({
   selector: 'app-root',
   templateUrl: './app-entrypoint.component.html',
-  // eslint-disable-next-line @angular-eslint/prefer-standalone
-  standalone: false
+  imports: [RouterModule]
 })
 export class AppEntrypointComponent {}

@@ -1,15 +1,29 @@
 import { Component, EventEmitter, OnInit } from '@angular/core'
-import { Location } from '@angular/common'
-import { TranslateService } from '@ngx-translate/core'
+import { CommonModule, Location } from '@angular/common'
+import { FormsModule } from '@angular/forms'
+import { TranslateModule, TranslateService } from '@ngx-translate/core'
 import { BehaviorSubject, catchError, combineLatest, finalize, map, Observable, of, switchMap, tap } from 'rxjs'
-import { FileSelectEvent } from 'primeng/fileupload'
 import FileSaver from 'file-saver'
 
+import { ButtonModule } from 'primeng/button'
+import { DialogModule } from 'primeng/dialog'
+import { FileSelectEvent, FileUploadModule } from 'primeng/fileupload'
+import { FloatLabelModule } from 'primeng/floatlabel'
+import { InputGroupModule } from 'primeng/inputgroup'
+import { InputGroupAddonModule } from 'primeng/inputgroupaddon'
+import { InputTextModule } from 'primeng/inputtext'
+import { ListboxModule } from 'primeng/listbox'
+import { MessageModule } from 'primeng/message'
+import { TooltipModule } from 'primeng/tooltip'
+
 import { PortalMessageService, UserService } from '@onecx/angular-integration-interface'
-import { Action, ColumnType, DataAction, DataTableColumn } from '@onecx/angular-accelerator'
-import { SlotService } from '@onecx/angular-remote-components'
+import { Action, AngularAcceleratorModule, ColumnType, DataAction, DataTableColumn } from '@onecx/angular-accelerator'
+import { AngularRemoteComponentsModule, SlotService } from '@onecx/angular-remote-components'
+import { PortalPageComponent } from '@onecx/angular-utils'
 
 import { Help, HelpsInternalAPIService, HelpSearchCriteria, HelpProductNames } from 'src/app/shared/generated'
+import { HelpCriteriaComponent } from './help-criteria/help-criteria.component'
+import { HelpDetailComponent } from '../help-detail/help-detail.component'
 
 export type ChangeMode = 'VIEW' | 'CREATE' | 'COPY' | 'EDIT'
 export type AllMetaData = {
@@ -34,8 +48,26 @@ export type Product = {
   selector: 'app-help-search',
   templateUrl: './help-search.component.html',
   styleUrls: ['./help-search.component.scss'],
-  // eslint-disable-next-line @angular-eslint/prefer-standalone
-  standalone: false
+  imports: [
+    CommonModule,
+    FormsModule,
+    TranslateModule,
+    AngularAcceleratorModule,
+    AngularRemoteComponentsModule,
+    PortalPageComponent,
+    HelpCriteriaComponent,
+    HelpDetailComponent,
+    ButtonModule,
+    DialogModule,
+    FileUploadModule,
+    FloatLabelModule,
+    InputGroupModule,
+    InputGroupAddonModule,
+    InputTextModule,
+    ListboxModule,
+    MessageModule,
+    TooltipModule
+  ]
 })
 export class HelpSearchComponent implements OnInit {
   private readonly deniedPermission = '__NO_PERMISSION__'
