@@ -1,19 +1,30 @@
 import { Component, EventEmitter, OnInit } from '@angular/core'
-import { Location } from '@angular/common'
-import { TranslateService } from '@ngx-translate/core'
+import { CommonModule, Location } from '@angular/common'
+import { FormsModule } from '@angular/forms'
+import { TranslateModule, TranslateService } from '@ngx-translate/core'
 import { BehaviorSubject, catchError, combineLatest, finalize, map, Observable, of, switchMap, tap } from 'rxjs'
-import { Table } from 'primeng/table'
-import { FileSelectEvent } from 'primeng/fileupload'
 import FileSaver from 'file-saver'
 
+import { ButtonModule } from 'primeng/button'
+import { DialogModule } from 'primeng/dialog'
+import { FileSelectEvent, FileUploadModule } from 'primeng/fileupload'
+import { FloatLabelModule } from 'primeng/floatlabel'
+import { InputGroupModule } from 'primeng/inputgroup'
+import { InputGroupAddonModule } from 'primeng/inputgroupaddon'
+import { InputTextModule } from 'primeng/inputtext'
+import { ListboxModule } from 'primeng/listbox'
+import { MessageModule } from 'primeng/message'
+import { TooltipModule } from 'primeng/tooltip'
+
 import { PortalMessageService, UserService } from '@onecx/angular-integration-interface'
-import { Action } from '@onecx/angular-accelerator'
-import { Column, DataViewControlTranslations } from '@onecx/portal-integration-angular'
-import { SlotService } from '@onecx/angular-remote-components'
+import { Action, AngularAcceleratorModule, ColumnType, DataAction, DataTableColumn } from '@onecx/angular-accelerator'
+import { AngularRemoteComponentsModule, SlotService } from '@onecx/angular-remote-components'
+import { PortalPageComponent } from '@onecx/angular-utils'
 
 import { Help, HelpsInternalAPIService, HelpSearchCriteria, HelpProductNames } from 'src/app/shared/generated'
+import { HelpCriteriaComponent } from './help-criteria/help-criteria.component'
+import { HelpDetailComponent } from '../help-detail/help-detail.component'
 
-type ExtendedColumn = Column & { css?: string; limit?: boolean }
 export type ChangeMode = 'VIEW' | 'CREATE' | 'COPY' | 'EDIT'
 export type AllMetaData = {
   allProducts: Product[]
@@ -36,9 +47,31 @@ export type Product = {
 @Component({
   selector: 'app-help-search',
   templateUrl: './help-search.component.html',
-  styleUrls: ['./help-search.component.scss']
+  styleUrls: ['./help-search.component.scss'],
+  imports: [
+    CommonModule,
+    FormsModule,
+    TranslateModule,
+    AngularAcceleratorModule,
+    AngularRemoteComponentsModule,
+    PortalPageComponent,
+    HelpCriteriaComponent,
+    HelpDetailComponent,
+    ButtonModule,
+    DialogModule,
+    FileUploadModule,
+    FloatLabelModule,
+    InputGroupModule,
+    InputGroupAddonModule,
+    InputTextModule,
+    ListboxModule,
+    MessageModule,
+    TooltipModule
+  ]
 })
 export class HelpSearchComponent implements OnInit {
+  private readonly deniedPermission = '__NO_PERMISSION__'
+
   // dialog
   public loadingMetaData = false
   public searching = false
@@ -47,14 +80,16 @@ export class HelpSearchComponent implements OnInit {
   public dateFormat: string
   public actions$: Observable<Action[]> | undefined
   public criteria: HelpSearchCriteria = {}
-  public dataViewControlsTranslations: DataViewControlTranslations = {}
   public displayDeleteDialog = false
   public displayDetailDialog = false
   public displayImportDialog = false
   public displayExportDialog = false
+  public tableFilter = ''
+  public dataViewViewPermission = 'HELP#VIEW'
+  public dataViewEditPermission = 'HELP#EDIT'
 
   // data
-  public data$: Observable<Help[]> | undefined
+  public data$: Observable<Help[]>
   public dataAvailable = false
   public metaData$!: Observable<AllMetaData>
   public usedLists$!: Observable<Product[]> // getting data from bff endpoint
@@ -65,30 +100,46 @@ export class HelpSearchComponent implements OnInit {
   public importError = false
   private importObject: object | undefined = undefined
 
-  public filteredColumns: Column[] = []
-  public columns: ExtendedColumn[] = [
+  public displayedColumnKeys: string[] = ['productName', 'itemId', 'baseUrl']
+  private rawSearchResults: Help[] = []
+  private readonly filteredSearchResults$ = new BehaviorSubject<Help[]>([])
+  public dataViewColumns: DataTableColumn[] = [
     {
-      field: 'productName',
-      header: 'PRODUCT_NAME',
-      active: true,
-      translationPrefix: 'HELP_ITEM',
-      css: 'px-2 py-1 sm:py-2'
+      id: 'productName',
+      nameKey: 'HELP_ITEM.PRODUCT_NAME',
+      tooltipKey: 'HELP_ITEM.TOOLTIPS.PRODUCT_NAME',
+      columnType: ColumnType.STRING,
+      sortable: true,
+      filterable: false
     },
     {
-      field: 'itemId',
-      header: 'ID',
-      active: true,
-      translationPrefix: 'HELP_ITEM',
-      css: 'px-2 py-1 sm:py-2'
+      id: 'itemId',
+      nameKey: 'HELP_ITEM.ID',
+      tooltipKey: 'HELP_ITEM.TOOLTIPS.ID',
+      columnType: ColumnType.STRING,
+      sortable: true,
+      filterable: false
     },
     {
-      field: 'url',
-      header: 'URL',
-      active: true,
-      translationPrefix: 'HELP_ITEM',
-      css: 'px-2 py-1 sm:py-2'
+      id: 'baseUrl',
+      nameKey: 'HELP_ITEM.URL',
+      tooltipKey: 'HELP_ITEM.TOOLTIPS.URL',
+      columnType: ColumnType.STRING,
+      sortable: true,
+      filterable: false
     }
   ]
+  public dataViewAdditionalActions: DataAction[] = [
+    {
+      id: 'copy',
+      labelKey: 'ACTIONS.COPY.LABEL',
+      icon: 'pi pi-copy',
+      permission: 'HELP#EDIT',
+      classes: ['copyTableRowButton'],
+      callback: (item: Help) => this.onDetail(item, 'COPY')
+    }
+  ]
+
   // slot configuration: get product data via remote component
   public pdSlotName = 'onecx-product-data'
   public pdIsComponentDefined$: Observable<boolean> | undefined // check
@@ -102,36 +153,36 @@ export class HelpSearchComponent implements OnInit {
     private readonly msgService: PortalMessageService,
     private readonly helpApi: HelpsInternalAPIService
   ) {
+    this.data$ = this.filteredSearchResults$.asObservable()
     this.dateFormat = this.user.lang$.getValue() === 'de' ? 'dd.MM.yyyy HH:mm' : 'M/d/yy, h:mm a'
     this.pdIsComponentDefined$ = this.slotService.isSomeComponentDefinedForSlot(this.pdSlotName)
-    this.filteredColumns = this.columns.filter((a) => a.active === true)
   }
 
   public ngOnInit(): void {
     this.pdSlotEmitter.subscribe(this.productData$)
+    this.configureDataViewActionPermissions()
     this.prepareActionButtons()
-    this.prepareDialogTranslations()
     this.loadMetaData()
     this.onSearch({})
+  }
+
+  private configureDataViewActionPermissions(): void {
+    this.user
+      .hasPermission('HELP#EDIT')
+      .then((hasEditPermission) => {
+        this.dataViewEditPermission = hasEditPermission ? 'HELP#EDIT' : this.deniedPermission
+        this.dataViewViewPermission = hasEditPermission ? this.deniedPermission : 'HELP#VIEW'
+      })
+      .catch((err) => {
+        this.dataViewEditPermission = this.deniedPermission
+        this.dataViewViewPermission = 'HELP#VIEW'
+        console.error('configureDataViewActionPermissions', err)
+      })
   }
 
   /****************************************************************************
    * DIALOG
    */
-  private prepareDialogTranslations(): void {
-    this.translate
-      .get(['DIALOG.DATAVIEW.FILTER', 'DIALOG.DATAVIEW.FILTER_BY', 'HELP_ITEM.ID', 'HELP_ITEM.PRODUCT_NAME'])
-      .pipe(
-        map((data) => {
-          this.dataViewControlsTranslations = {
-            filterInputPlaceholder: data['DIALOG.DATAVIEW.FILTER'],
-            filterInputTooltip:
-              data['DIALOG.DATAVIEW.FILTER_BY'] + data['HELP_ITEM.ID'] + ', ' + data['HELP_ITEM.PRODUCT_NAME']
-          }
-        })
-      )
-      .subscribe()
-  }
   private prepareActionButtons(): void {
     this.actions$ = this.translate
       .get([
@@ -148,10 +199,10 @@ export class HelpSearchComponent implements OnInit {
             {
               label: data['ACTIONS.CREATE.LABEL'],
               title: data['ACTIONS.CREATE.TOOLTIP'],
-              actionCallback: () => this.onDetail(undefined, undefined, 'CREATE'),
+              actionCallback: () => this.onDetail(undefined, 'CREATE'),
               icon: 'pi pi-plus',
               show: 'always',
-              permission: 'HELP#EDIT'
+              permission: 'HELP#CREATE'
             },
             {
               label: data['ACTIONS.EXPORT.LABEL'],
@@ -159,7 +210,7 @@ export class HelpSearchComponent implements OnInit {
               actionCallback: () => this.onExport(),
               icon: 'pi pi-download',
               show: 'always',
-              permission: 'HELP#EDIT',
+              permission: 'HELP#EXPORT',
               conditional: true,
               showCondition: this.dataAvailable
             },
@@ -169,7 +220,7 @@ export class HelpSearchComponent implements OnInit {
               actionCallback: () => this.onImport(),
               icon: 'pi pi-upload',
               show: 'always',
-              permission: 'HELP#EDIT'
+              permission: 'HELP#IMPORT'
             }
           ]
         })
@@ -181,12 +232,67 @@ export class HelpSearchComponent implements OnInit {
    */
   public onCriteriaReset(): void {
     this.criteria = {}
+    this.tableFilter = ''
+    this.rawSearchResults = []
+    this.filteredSearchResults$.next([])
+    this.dataAvailable = false
   }
-  public onColumnsChange(activeIds: string[]) {
-    this.filteredColumns = activeIds.map((id) => this.columns.find((col) => col.field === id)) as Column[]
+
+  public onGlobalFilter(value: string): void {
+    this.tableFilter = value ?? ''
+    this.applyGlobalFilterToResults()
   }
-  public onFilterChange(event: string, dataTable: Table): void {
-    dataTable?.filterGlobal(event, 'contains')
+
+  public onClearGlobalFilter(input?: HTMLInputElement): void {
+    this.tableFilter = ''
+    if (input) {
+      input.value = ''
+    }
+    this.filteredSearchResults$.next([...this.rawSearchResults])
+  }
+
+  private applyGlobalFilterToResults(): void {
+    const filterValue = this.tableFilter.trim().toLowerCase()
+    if (!filterValue) {
+      this.filteredSearchResults$.next([...this.rawSearchResults])
+      return
+    }
+    const allProducts = this.productData$.getValue()
+    const filtered = this.rawSearchResults.filter((item) => {
+      const displayName = this.getDisplayName(item.productName, allProducts, item.productName) ?? ''
+      const productName = item.productName ?? ''
+      const itemId = item.itemId ?? ''
+      return [displayName, productName, itemId].some((value) => value.toLowerCase().includes(filterValue))
+    })
+    this.filteredSearchResults$.next(filtered)
+  }
+
+  public formatUploadFileSize(bytes: number): string {
+    if (bytes < 1024) {
+      return `${bytes}B`
+    }
+
+    const units = ['KB', 'MB', 'GB', 'TB']
+    let size = bytes / 1024
+    let unitIndex = 0
+
+    while (size >= 1024 && unitIndex < units.length - 1) {
+      size /= 1024
+      unitIndex++
+    }
+
+    const formatted = size < 10 ? Math.round(size * 10) / 10 : Math.round(size)
+    return `${formatted}${units[unitIndex]}`
+  }
+
+  public onViewItem(item: any): void {
+    this.onDetail(item as Help, 'VIEW')
+  }
+  public onEditItem(item: any): void {
+    this.onDetail(item as Help, 'EDIT')
+  }
+  public onDeleteItem(item: any): void {
+    this.onDelete(item as Help)
   }
 
   public getDisplayName(name: string | undefined, list: Product[] | undefined, defValue?: string): string | undefined {
@@ -195,10 +301,9 @@ export class HelpSearchComponent implements OnInit {
   }
 
   /****************************************************************************
-   *  DETAIL => CREATE, COPY, EDIT, VIEW
+   *  DETAIL => CREATE, EDIT, VIEW
    */
-  public onDetail(ev: Event | undefined, item: Help | undefined, mode: ChangeMode): void {
-    ev?.stopPropagation()
+  public onDetail(item: Help | undefined, mode: ChangeMode): void {
     this.changeMode = mode
     this.item4Detail = item // do not manipulate the item here
     this.displayDetailDialog = true
@@ -215,8 +320,7 @@ export class HelpSearchComponent implements OnInit {
   /****************************************************************************
    *  DELETE => Ask for confirmation
    */
-  public onDelete(ev: Event, item: Help): void {
-    ev.stopPropagation()
+  public onDelete(item: Help): void {
     this.item4Delete = item
     this.displayDeleteDialog = true
   }
@@ -225,10 +329,11 @@ export class HelpSearchComponent implements OnInit {
       this.helpApi.deleteHelp({ id: this.item4Delete.id }).subscribe({
         next: () => {
           this.msgService.success({ summaryKey: 'ACTIONS.DELETE.MESSAGE.OK' })
-          data = data?.filter((d) => d.id !== this.item4Delete?.id)
-          this.data$ = of(data)
+          this.rawSearchResults = this.rawSearchResults.filter((d) => d.id !== this.item4Delete?.id)
+          this.applyGlobalFilterToResults()
+          this.dataAvailable = this.rawSearchResults.length > 0
           // check remaining data: if product still exists - if not then trigger reload
-          if (!data?.find((d) => d.productName === this.item4Delete?.productName)) {
+          if (!this.rawSearchResults.some((d) => d.productName === this.item4Delete?.productName)) {
             this.usedListsTrigger$.next() // trigger getting data
           }
           this.displayDeleteDialog = false
@@ -296,21 +401,28 @@ export class HelpSearchComponent implements OnInit {
     if (!reuseCriteria) this.criteria = criteria
     this.searching = true
     this.exceptionKey = undefined
-    this.data$ = this.helpApi.searchHelps({ helpSearchCriteria: this.criteria }).pipe(
-      tap((data) => {
-        this.dataAvailable = (data.stream && data.stream.length > 0) ?? false
-        if (!this.dataAvailable) this.msgService.info({ summaryKey: 'ACTIONS.SEARCH.MESSAGE.NO_RESULTS' })
-        this.prepareActionButtons()
-      }),
-      map((data) => data.stream?.sort(this.sortHelpItemByDefault) ?? []),
-      catchError((err) => {
-        this.exceptionKey = 'EXCEPTIONS.HTTP_STATUS_' + err.status + '.HELP_ITEM'
-        this.msgService.error({ summaryKey: 'ACTIONS.SEARCH.MESSAGE.NOK' })
-        console.error('searchHelps', err)
-        return of([])
-      }),
-      finalize(() => (this.searching = false))
-    )
+    this.tableFilter = ''
+    this.helpApi
+      .searchHelps({ helpSearchCriteria: this.criteria })
+      .pipe(
+        tap((data) => {
+          this.dataAvailable = (data.stream && data.stream.length > 0) ?? false
+          if (!this.dataAvailable) this.msgService.info({ summaryKey: 'ACTIONS.SEARCH.MESSAGE.NO_RESULTS' })
+          this.prepareActionButtons()
+        }),
+        map((data) => data.stream?.sort(this.sortHelpItemByDefault) ?? []),
+        catchError((err) => {
+          this.exceptionKey = 'EXCEPTIONS.HTTP_STATUS_' + err.status + '.HELP_ITEM'
+          this.msgService.error({ summaryKey: 'ACTIONS.SEARCH.MESSAGE.NOK' })
+          console.error('searchHelps', err)
+          return of([])
+        }),
+        finalize(() => (this.searching = false))
+      )
+      .subscribe((results) => {
+        this.rawSearchResults = results
+        this.filteredSearchResults$.next([...results])
+      })
   }
 
   // default sorting: 1.productName, 2.itemId

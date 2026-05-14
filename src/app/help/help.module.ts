@@ -1,15 +1,17 @@
 import { NgModule } from '@angular/core'
-import { CommonModule } from '@angular/common'
-import { FormsModule } from '@angular/forms'
 import { RouterModule, Routes } from '@angular/router'
 
-import { PortalCoreModule } from '@onecx/portal-integration-angular'
-import { addInitializeModuleGuard, InitializeModuleGuard } from '@onecx/angular-integration-interface'
-import { SharedModule } from 'src/app/shared/shared.module'
+import { providePermissionService, PortalApiConfiguration } from '@onecx/angular-utils'
+import { AppStateService, ConfigurationService } from '@onecx/angular-integration-interface'
 
+import { Configuration } from 'src/app/shared/generated'
+import { SharedModule } from 'src/app/shared/shared.module'
+import { environment } from 'src/environments/environment'
 import { HelpSearchComponent } from './help-search/help-search.component'
-import { HelpCriteriaComponent } from './help-search/help-criteria/help-criteria.component'
-import { HelpDetailComponent } from './help-detail/help-detail.component'
+
+function apiConfigProvider() {
+  return new PortalApiConfiguration(Configuration, environment.apiPrefix)
+}
 
 const routes: Routes = [
   {
@@ -19,15 +21,12 @@ const routes: Routes = [
   }
 ]
 @NgModule({
-  declarations: [HelpSearchComponent, HelpDetailComponent, HelpCriteriaComponent],
-  imports: [
-    CommonModule,
-    FormsModule,
-    PortalCoreModule.forMicroFrontend(),
-    [RouterModule.forChild(addInitializeModuleGuard(routes))],
-    SharedModule
-  ],
-  providers: [InitializeModuleGuard]
+  declarations: [],
+  imports: [HelpSearchComponent, SharedModule, RouterModule.forChild(routes)],
+  providers: [
+    ...providePermissionService(),
+    { provide: Configuration, useFactory: apiConfigProvider, deps: [ConfigurationService, AppStateService] }
+  ]
 })
 export class HelpModule {
   constructor() {

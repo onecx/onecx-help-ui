@@ -14,8 +14,8 @@ import { DynamicDialogModule } from 'primeng/dynamicdialog'
 import { IfPermissionDirective } from '@onecx/angular-accelerator'
 import { UserService } from '@onecx/angular-integration-interface'
 import { AppStateService, PortalMessageService } from '@onecx/angular-integration-interface'
-import { BASE_URL, RemoteComponentConfig } from '@onecx/angular-remote-components'
-import { PortalDialogService } from '@onecx/portal-integration-angular'
+import { REMOTE_COMPONENT_CONFIG, RemoteComponentConfig } from '@onecx/angular-utils'
+import { PortalDialogService } from '@onecx/angular-accelerator'
 
 import { Help, HelpsInternalAPIService } from 'src/app/shared/generated'
 import { OneCXShowHelpComponent } from './show-help.component'
@@ -35,7 +35,7 @@ describe('OneCXShowHelpComponent', () => {
 
   const mockUserService = jasmine.createSpyObj<UserService>('UserService', ['hasPermission'])
   mockUserService.hasPermission.and.callFake((permission: string) => {
-    return ['HELP#EDIT', 'HELP#VIEW'].includes(permission)
+    return Promise.resolve(['HELP#EDIT', 'HELP#VIEW'].includes(permission))
   })
   const helpApiSpy = jasmine.createSpyObj<HelpsInternalAPIService>('HelpsInternalAPIService', [
     'getHelpByProductNameItemId'
@@ -63,7 +63,11 @@ describe('OneCXShowHelpComponent', () => {
           en: require('/src/assets/i18n/en.json')
         }).withDefaultLanguage('en')
       ],
-      providers: [provideHttpClient(), provideHttpClientTesting(), { provide: BASE_URL, useValue: baseUrlSubject }]
+      providers: [
+        provideHttpClient(),
+        provideHttpClientTesting(),
+        { provide: REMOTE_COMPONENT_CONFIG, useValue: baseUrlSubject }
+      ]
     })
       .overrideComponent(OneCXShowHelpComponent, {
         set: {
@@ -81,7 +85,7 @@ describe('OneCXShowHelpComponent', () => {
   })
 
   afterEach(() => {
-    mockUserService.hasPermission.and.returnValue(true)
+    mockUserService.hasPermission.and.returnValue(Promise.resolve(true))
     // to spy data: reset
     messageServiceSpy.error.calls.reset()
     helpApiSpy.getHelpByProductNameItemId.calls.reset()
@@ -97,7 +101,7 @@ describe('OneCXShowHelpComponent', () => {
   })
 
   describe('initialize', () => {
-    it('should call ocxInitRemoteComponent with the correct config', () => {
+    it('should call ocxInitRemoteComponent with the correct config', async () => {
       const mockConfig: RemoteComponentConfig = {
         appId: 'appId',
         productName: 'prodName',
@@ -112,12 +116,13 @@ describe('OneCXShowHelpComponent', () => {
     })
 
     it('should init remote component', (done: DoneFn) => {
-      initTestComponent({ permissions: ['HELP#VIEW'], baseUrl: 'base_url' } as RemoteComponentConfig)
+      const config = { permissions: ['HELP#VIEW'], baseUrl: 'base_url' } as RemoteComponentConfig
+      initTestComponent(config)
 
       expect(component.permissions).toEqual(['HELP#VIEW'])
       expect(helpApiSpy.configuration.basePath).toEqual('base_url/bff')
       baseUrlSubject.asObservable().subscribe((item) => {
-        expect(item).toEqual('base_url')
+        expect(item).toEqual(config)
         done()
       })
     })
@@ -194,7 +199,7 @@ describe('OneCXShowHelpComponent', () => {
   })
 
   describe('open help page', () => {
-    it('should open help page on enter click', () => {
+    it('should open help page on enter click', async () => {
       initTestComponent({ permissions: ['HELP#VIEW'], baseUrl: 'base_url' } as RemoteComponentConfig)
       spyOn(component, 'onOpenHelpPage')
 

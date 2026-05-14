@@ -11,7 +11,7 @@
       .ocx-float-label-textbox {
         font-family: var(--font-family);
         font-size: var(--input-text-font-size);
-        color: var(--emphasis-high);
+        color: var(--p-form-field-color);
         background: var(--input-bg);
         padding: var(--input-padding);
         border: var(--input-border);
@@ -29,11 +29,11 @@
         line-height: 1;
         font-size: 12px;
         pointer-events: none;
-        color: var(--emphasis-medium);
+        color: var(--p-form-field-float-label-color);
         background-color: var(--input-bg);
         transition-property: all;
         transition-timing-function: ease;
-        transition-duration: var(--transition-duration);
+        transition-duration: var(--p-transition-duration);
       }
     }
   }
@@ -173,7 +173,7 @@
 @mixin input-clear-icon {
   .p-input-icon-right > a:last-of-type {
     right: 0.75rem;
-    color: var(--emphasis-medium);
+    color: var(--p-form-field-icon-color);
   }
   .p-input-icon-left > a,
   .p-input-icon-right > a {
@@ -195,6 +195,7 @@
     .p-autocomplete-clear-icon {
       /* fix for bug in PrimeNG */
       right: 3.5rem;
+      color: black;
     }
     .p-autocomplete .p-autocomplete-loader {
       /* fix for bug in PrimeNG */
@@ -224,14 +225,14 @@
   :host ::ng-deep {
     .data-view-control,
     .data-view-control * {
-      color: var(--emphasis-medium);
+      color: var(--text-secondary-color);
     }
     // correction for data-view-control component
     .data-view-control-border {
       border: var(--toggle-button-border);
       &.p-dropdown {
         .p-inputtext {
-          color: var(--emphasis-medium);
+          color: var(--text-secondary-color);
           opacity: 0.9;
         }
         &:last-of-type {
@@ -269,6 +270,40 @@
             }
           }
         }
+      }
+    }
+    .p-fileupload-file-info {
+      flex-direction: row;
+    }
+  }
+}
+
+@mixin file-upload-disabled-buttons {
+  :host ::ng-deep {
+    // PrimeNG v19: p-button no longer adds p-disabled class when [disabled]=true,
+    // only the inner <button> gets the native disabled attribute.
+    // Apply disabled visual treatment via :has() to match the p-disabled styles.
+    .p-fileupload p-button:has(button:disabled) {
+      .p-button {
+        opacity: var(--onecx-help-onecx-help-ui-disabled-opacity);
+        background-color: var(--onecx-help-onecx-help-ui-button-secondary-background);
+      }
+    }
+    .p-fileupload p-button:has(button:not(:disabled)) {
+      .p-button.p-fileupload-upload-button,
+      .p-button.p-fileupload-cancel-button {
+        background-color: var(--onecx-help-onecx-help-ui-onecx-primary-color);
+        color: var(--onecx-help-onecx-help-ui-onecx-topbar-menu-button-text-color);
+        opacity: var(--onecx-help-onecx-help-ui-enabled-opacity, 1);
+      }
+      .p-button.p-fileupload-upload-button:enabled:hover,
+      .p-button.p-fileupload-upload-button:enabled:focus-visible,
+      .p-button.p-fileupload-cancel-button:enabled:hover,
+      .p-button.p-fileupload-cancel-button:enabled:focus-visible {
+        background-color: var(
+          --onecx-help-onecx-help-ui-button-primary-hover-background,
+          color-mix(in srgb, var(--onecx-help-onecx-help-ui-onecx-primary-color) 85%, black)
+        );
       }
     }
   }
@@ -328,13 +363,13 @@
       .p-selectbutton .p-button {
         text-align: center;
         display: inline-block;
-        color: var(--emphasis-medium);
+        color: var(--text-secondary-color);
         font-weight: var(--font-weight);
         padding: 0.3rem 0.8rem;
         border: var(--input-border);
       }
       .p-selectbutton-subtitle {
-        color: var(--emphasis-medium);
+        color: var(--text-secondary-color);
         font-size: 0.8rem;
       }
     }
@@ -346,11 +381,11 @@
       .p-selectbutton .p-button {
         opacity: 0.9 !important;
         border: var(--toggle-button-border);
-        &.p-highlight {
+        &.p-togglebutton-checked {
           background: var(--toggle-button-active-bg);
           border-color: var(--toggle-button-active-border-color);
         }
-        &:not(.p-disabled):not(.p-highlight):hover {
+        &:not(.p-disabled):not(.p-togglebutton-checked):hover {
           color: var(--text-color);
           border-color: var(--toggle-button-hover-border-color);
           background-color: var(--toggle-button-hover-bg);
@@ -367,12 +402,12 @@
     }
     .search-criteria-selectbutton {
       .p-selectbutton .p-button {
-        &.p-highlight {
+        &.p-togglebutton-checked {
           color: var(--primary-text-color);
           border-color: var(--toggle-button-hover-border-color);
           background-color: var(--primary-color);
         }
-        &:not(.p-disabled):not(.p-highlight):hover {
+        &:not(.p-disabled):not(.p-togglebutton-checked):hover {
           color: var(--primary-text-color);
           border-color: var(--toggle-button-hover-border-color);
           background-color: var(--button-hover-bg);
@@ -417,7 +452,7 @@
 }
 @mixin listbox-zebra-rows {
   :host ::ng-deep {
-    .p-listbox:not(.p-disabled) .p-listbox-item:not(.p-highlight):not(.p-disabled) {
+    .p-listbox:not(.p-disabled) .p-listbox-option:not(.p-listbox-option-selected):not(.p-disabled) {
       &:nth-child(even) {
         background-color: var(--table-body-row-even-bg);
       }
@@ -437,7 +472,10 @@
   :host ::ng-deep {
     /* this works only on non-frozen columns (table.p-datatable-striped does not work) */
     .p-datatable .p-datatable-tbody > tr:nth-child(even) > td:not(.p-frozen-column) {
-      background-color: var(--table-body-row-even-bg);
+      background-color: var(
+        --onecx-help-onecx-help-ui-datatable-row-even-background,
+        color-mix(in srgb, var(--onecx-help-onecx-help-ui-datatable-row-background, #ffffff) 94%, #000000)
+      );
     }
   }
 }
@@ -534,7 +572,7 @@
     th button.p-button,
     td button.p-button {
       &.p-button-icon-only {
-        padding: 0.5rem;
+        padding: 0.2rem;
         width: unset !important;
       }
       &.p-button-rounded {
@@ -568,6 +606,20 @@
       .xl\:table-cell {
         display: table-cell !important;
       }
+    }
+  }
+}
+
+@mixin table-sticky-header {
+  :host ::ng-deep {
+    /* keep header sticky while using normal page scroll */
+    .p-datatable-thead > tr > th {
+      position: sticky;
+      top: 0;
+      text-align: center;
+    }
+    .p-datatable-thead > tr > th > div {
+      align-items: center !important;
     }
   }
 }
