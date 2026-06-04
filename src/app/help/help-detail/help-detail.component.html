@@ -21,7 +21,7 @@
     class="flex flex-wrap flex-column gap-4 justify-content-between mt-2"
     [attr.aria-label]="'DIALOG.DETAIL.TAB.PROPS' | translate"
   >
-    <span class="p-float-label">
+    <p-floatlabel variant="on">
       <p-autoComplete
         id="hm_detail_form_product_name_autocomplete"
         styleClass="w-full"
@@ -45,8 +45,8 @@
       <label class="ocx-required-label" for="hm_detail_form_product_name_autocomplete" aria-hidden="true">
         {{ 'HELP_ITEM.PRODUCT_NAME' | translate }}
       </label>
-    </span>
-    <span class="p-float-label" controlErrorAnchor>
+    </p-floatlabel>
+    <p-floatlabel variant="on" controlErrorAnchor>
       <input
         pInputText
         type="text"
@@ -61,7 +61,7 @@
       <label class="ocx-required-label" for="hm_detail_form_item_id" aria-hidden="true">
         {{ 'HELP_ITEM.ID' | translate }}
       </label>
-    </span>
+    </p-floatlabel>
 
     <div
       *ngIf="!['CREATE', 'COPY'].includes(changeMode) && helpItem?.operator === true"
@@ -73,11 +73,11 @@
         formControlName="operator"
         styleClass="cursor-auto shadow-none"
         [binary]="true"
-        [label]="'HELP_ITEM.OPERATOR' | translate"
         [pTooltip]="'HELP_ITEM.TOOLTIPS.OPERATOR' | translate"
         tooltipPosition="right"
         tooltipEvent="hover"
       ></p-checkbox>
+      <label for="hm_detail_form_operator">{{ 'HELP_ITEM.OPERATOR' | translate }}</label>
     </div>
 
     <p-fieldset [toggleable]="false" [collapsed]="false" styleClass="surface-100 pb-3 px-2">
@@ -87,7 +87,7 @@
         </span>
       </ng-template>
       <div class="flex flex-wrap flex-column gap-4 justify-content-between mt-2">
-        <span class="p-float-label">
+        <p-floatlabel variant="on">
           <input
             pInputText
             type="text"
@@ -102,8 +102,8 @@
           <label class="ocx-required-label" for="hm_detail_form_base_url" aria-hidden="true">
             {{ 'HELP_ITEM.BASE_URL' | translate }}
           </label>
-        </span>
-        <span class="p-float-label">
+        </p-floatlabel>
+        <p-floatlabel variant="on">
           <input
             pInputText
             type="text"
@@ -118,8 +118,8 @@
           <label class="" for="hm_detail_form_resource_url" aria-hidden="true">
             {{ 'HELP_ITEM.RESOURCE_URL' | translate }}
           </label>
-        </span>
-        <span class="p-float-label">
+        </p-floatlabel>
+        <p-floatlabel variant="on">
           <input
             pInputText
             type="text"
@@ -134,7 +134,7 @@
           <label class="" for="hm_detail_form_context" aria-hidden="true">
             {{ 'HELP_ITEM.CONTEXT' | translate }}
           </label>
-        </span>
+        </p-floatlabel>
       </div>
     </p-fieldset>
   </form>

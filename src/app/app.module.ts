@@ -1,19 +1,21 @@
-import { APP_INITIALIZER, NgModule } from '@angular/core'
+import { NgModule } from '@angular/core'
 import { CommonModule } from '@angular/common'
 import { HttpClient, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http'
 import { RouterModule, Routes } from '@angular/router'
 import { BrowserModule } from '@angular/platform-browser'
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations'
-import { TranslateLoader, TranslateModule, TranslateService, MissingTranslationHandler } from '@ngx-translate/core'
+import { BrowserAnimationsModule, provideAnimations } from '@angular/platform-browser/animations'
+import { TranslateLoader, TranslateModule, MissingTranslationHandler } from '@ngx-translate/core'
 
-import { KeycloakAuthModule } from '@onecx/keycloak-auth'
-import { createTranslateLoader, provideTranslationPathFromMeta } from '@onecx/angular-utils'
-import { APP_CONFIG, UserService } from '@onecx/angular-integration-interface'
+import { AngularAuthModule } from '@onecx/angular-auth'
+import { StandaloneShellModule, provideStandaloneProviders } from '@onecx/angular-standalone-shell'
 import {
-  translateServiceInitializer,
-  PortalCoreModule,
-  PortalMissingTranslationHandler
-} from '@onecx/portal-integration-angular'
+  createTranslateLoader,
+  provideThemeConfig,
+  provideTranslationConnectionService,
+  provideTranslationPathFromMeta
+} from '@onecx/angular-utils'
+import { APP_CONFIG } from '@onecx/angular-integration-interface'
+import { AngularAcceleratorMissingTranslationHandler, AngularAcceleratorModule } from '@onecx/angular-accelerator'
 
 import { environment } from 'src/environments/environment'
 import { AppComponent } from './app.component'
@@ -26,13 +28,15 @@ const routes: Routes = [
 ]
 @NgModule({
   bootstrap: [AppComponent],
-  declarations: [AppComponent],
+  declarations: [],
   imports: [
+    AppComponent,
     CommonModule,
     BrowserModule,
     BrowserAnimationsModule,
-    KeycloakAuthModule,
-    PortalCoreModule.forRoot('onecx-help-ui'),
+    AngularAuthModule,
+    AngularAcceleratorModule,
+    StandaloneShellModule,
     RouterModule.forRoot(routes, {
       initialNavigation: 'enabledBlocking',
       enableTracing: true
@@ -40,19 +44,20 @@ const routes: Routes = [
     TranslateModule.forRoot({
       isolate: true,
       loader: { provide: TranslateLoader, useFactory: createTranslateLoader, deps: [HttpClient] },
-      missingTranslationHandler: { provide: MissingTranslationHandler, useClass: PortalMissingTranslationHandler }
+      missingTranslationHandler: {
+        provide: MissingTranslationHandler,
+        useClass: AngularAcceleratorMissingTranslationHandler
+      }
     })
   ],
   providers: [
+    provideStandaloneProviders(),
     { provide: APP_CONFIG, useValue: environment },
-    {
-      provide: APP_INITIALIZER,
-      useFactory: translateServiceInitializer,
-      multi: true,
-      deps: [UserService, TranslateService]
-    },
+    ...provideTranslationConnectionService(),
     provideTranslationPathFromMeta(import.meta.url, 'assets/i18n/'),
-    provideHttpClient(withInterceptorsFromDi())
+    provideHttpClient(withInterceptorsFromDi()),
+    provideThemeConfig(),
+    provideAnimations()
   ]
 })
 export class AppModule {

@@ -1,8 +1,10 @@
 import { NO_ERRORS_SCHEMA } from '@angular/core'
+import { CommonModule } from '@angular/common'
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing'
 import { provideHttpClient } from '@angular/common/http'
 import { provideHttpClientTesting } from '@angular/common/http/testing'
 import { FormControl, FormGroup } from '@angular/forms'
+import { TranslateModule } from '@ngx-translate/core'
 import { TranslateTestingModule } from 'ngx-translate-testing'
 import { of, throwError } from 'rxjs'
 
@@ -49,22 +51,27 @@ describe('HelpDetailComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [HelpDetailComponent],
       imports: [
+        HelpDetailComponent,
         TranslateTestingModule.withTranslations({
           de: require('src/assets/i18n/de.json'),
           en: require('src/assets/i18n/en.json')
         }).withDefaultLanguage(defaultLang)
       ],
       schemas: [NO_ERRORS_SCHEMA],
-      providers: [
-        provideHttpClient(),
-        provideHttpClientTesting(),
-        { provide: UserService, useValue: mockUserService },
-        { provide: HelpsInternalAPIService, useValue: apiServiceSpy },
-        { provide: PortalMessageService, useValue: msgServiceSpy }
-      ]
-    }).compileComponents()
+      providers: [provideHttpClient(), provideHttpClientTesting(), { provide: UserService, useValue: mockUserService }]
+    })
+      .overrideComponent(HelpDetailComponent, {
+        set: {
+          imports: [CommonModule, TranslateModule],
+          schemas: [NO_ERRORS_SCHEMA],
+          providers: [
+            { provide: HelpsInternalAPIService, useValue: apiServiceSpy },
+            { provide: PortalMessageService, useValue: msgServiceSpy }
+          ]
+        }
+      })
+      .compileComponents()
   }))
 
   beforeEach(() => {

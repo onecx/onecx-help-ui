@@ -1,7 +1,13 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core'
-import { FormControl, FormGroup } from '@angular/forms'
+import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms'
+import { TranslateModule } from '@ngx-translate/core'
 
-import { Action } from '@onecx/angular-accelerator'
+import { AutoCompleteModule } from 'primeng/autocomplete'
+import { FloatLabelModule } from 'primeng/floatlabel'
+import { InputTextModule } from 'primeng/inputtext'
+import { TooltipModule } from 'primeng/tooltip'
+
+import { Action, AngularAcceleratorModule } from '@onecx/angular-accelerator'
 
 import { HelpSearchCriteria } from 'src/app/shared/generated'
 import { Product } from '../help-search.component'
@@ -14,7 +20,16 @@ export interface HelpCriteriaForm {
 @Component({
   selector: 'app-help-criteria',
   templateUrl: './help-criteria.component.html',
-  styleUrls: ['./help-criteria.component.scss']
+  styleUrls: ['./help-criteria.component.scss'],
+  imports: [
+    ReactiveFormsModule,
+    TranslateModule,
+    AutoCompleteModule,
+    FloatLabelModule,
+    InputTextModule,
+    TooltipModule,
+    AngularAcceleratorModule
+  ]
 })
 export class HelpCriteriaComponent {
   @Input() public actions: Action[] = []
