@@ -309,7 +309,6 @@ export class HelpSearchComponent implements OnInit {
     if (deleted) {
       const productName = this.item4Delete?.productName
       const data = this.dataSubject$.getValue().filter((d) => d['id'] !== this.item4Delete?.id)
-      console.log('Data after deletion', data)
       this.dataSubject$.next(data)
       this.onGlobalFilter(this.globalFilterValue, data) // update filtered data if filter is active
       if (productName && !data.some((d) => d?.['productName'] === productName)) {
