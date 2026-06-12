@@ -122,7 +122,7 @@
             let-sortTemplate="sortTemplate"
             let-filterTemplate="filterTemplate"
           >
-            <div [class]="col.cssHeader + ' white-space-nowrap'">
+            <div [class]="col.cssHeader">
               <ng-container
                 [ngTemplateOutlet]="labelTemplate"
                 [ngTemplateOutletContext]="{ column: col }"
