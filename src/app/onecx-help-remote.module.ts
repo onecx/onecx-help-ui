@@ -15,7 +15,6 @@ import {
 } from '@onecx/angular-utils'
 import { createAppEntrypoint, initializeRouter, startsWith } from '@onecx/angular-webcomponents'
 import { AppStateService, ConfigurationService } from '@onecx/angular-integration-interface'
-
 import { AngularAcceleratorModule } from '@onecx/angular-accelerator'
 
 import { Configuration } from './shared/generated'
@@ -33,7 +32,6 @@ const routes: Routes = [
   }
 ]
 @NgModule({
-  declarations: [],
   imports: [
     AppEntrypointComponent,
     AngularAuthModule,

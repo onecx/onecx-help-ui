@@ -1,7 +1,7 @@
 @import '../../../_hm-mixins.scss';
 
 @include word-break-all;
-@include displaying-text-responsive;
+@include ocx-text-responsive;
 
 .info-button-text-color {
   color: var(--info-button-bg);

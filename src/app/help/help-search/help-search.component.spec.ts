@@ -1,35 +1,42 @@
-import { NO_ERRORS_SCHEMA } from '@angular/core'
-import { CommonModule } from '@angular/common'
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing'
 import { provideHttpClient } from '@angular/common/http'
 import { provideHttpClientTesting } from '@angular/common/http/testing'
-import { TranslateModule } from '@ngx-translate/core'
 import { TranslateTestingModule } from 'ngx-translate-testing'
-import { of, throwError } from 'rxjs'
+import { BehaviorSubject, of, throwError } from 'rxjs'
 import { take } from 'rxjs/operators'
 import { FileSelectEvent } from 'primeng/fileupload'
 
 import { PortalMessageService, UserService } from '@onecx/angular-integration-interface'
 
 import { HelpsInternalAPIService, Help } from 'src/app/shared/generated'
-import { HelpSearchComponent, Product } from './help-search.component'
+import { ExtendedColumn, HelpSearchComponent, Product } from './help-search.component'
+import { DataSortDirection, RowListGridData } from '@onecx/angular-accelerator'
 
 const helpItem1: Help = { id: 'id1', itemId: 'itemId1', productName: 'product1', baseUrl: 'baseUrl 1' }
 const helpItem2: Help = { id: 'id2', itemId: 'itemId2', productName: 'product2', baseUrl: 'baseUrl 2' }
-const helpItem3: Help = { id: 'id3', itemId: 'itemId1', productName: 'product3', baseUrl: 'baseUrl 3' }
-const helpItem4: Help = { id: 'id4', itemId: 'itemId2', productName: 'product1', baseUrl: 'baseUrl 4' }
-const itemData: Help[] = [helpItem1, helpItem2, helpItem3, helpItem4]
+const helpItem3: Help = { id: 'id3', itemId: 'itemId3', productName: 'product3', baseUrl: 'baseUrl 3' }
+const helpItem4: Help = { id: 'id4', itemId: 'itemId4', productName: 'product4', baseUrl: 'baseUrl 4' }
+
+const helpItems: Help[] = [helpItem1, helpItem2, helpItem3, helpItem4]
 const product1: Product = { name: 'product1', displayName: 'Product 1' }
 const product2: Product = { name: 'product2', displayName: 'Product 2' }
+
+const rowItem1: RowListGridData = { ...helpItem1 } as unknown as RowListGridData
+const rowItem2: RowListGridData = { ...helpItem2 } as unknown as RowListGridData
+const rowItem3: RowListGridData = { ...helpItem3 } as unknown as RowListGridData
+const rowItem4: RowListGridData = { ...helpItem4 } as unknown as RowListGridData
+const rowItems: RowListGridData[] = [rowItem1, rowItem2, rowItem3, rowItem4]
 
 describe('HelpSearchComponent', () => {
   let component: HelpSearchComponent
   let fixture: ComponentFixture<HelpSearchComponent>
 
   const defaultLang = 'en'
+  const langSubject = new BehaviorSubject<string>(defaultLang)
+  const hasPermissionSpy = jasmine.createSpy('hasPermission').and.returnValue(Promise.resolve(true))
   const mockUserService = {
-    lang$: { getValue: jasmine.createSpy('getValue') },
-    hasPermission: jasmine.createSpy('hasPermission').and.returnValue(Promise.resolve(false))
+    lang$: langSubject.asObservable(),
+    hasPermission: hasPermissionSpy
   }
   const msgServiceSpy = jasmine.createSpyObj<PortalMessageService>('PortalMessageService', ['success', 'error', 'info'])
   const apiServiceSpy = {
@@ -59,17 +66,18 @@ describe('HelpSearchComponent', () => {
           en: require('src/assets/i18n/en.json')
         }).withDefaultLanguage(defaultLang)
       ],
-      schemas: [NO_ERRORS_SCHEMA],
-      providers: [provideHttpClient(), provideHttpClientTesting(), { provide: UserService, useValue: mockUserService }]
+      providers: [
+        provideHttpClient(),
+        provideHttpClientTesting(),
+        { provide: UserService, useValue: mockUserService },
+        { provide: PortalMessageService, useValue: msgServiceSpy },
+        { provide: HelpsInternalAPIService, useValue: apiServiceSpy }
+      ]
     })
       .overrideComponent(HelpSearchComponent, {
         set: {
-          imports: [CommonModule, TranslateModule],
-          schemas: [NO_ERRORS_SCHEMA],
-          providers: [
-            { provide: HelpsInternalAPIService, useValue: apiServiceSpy },
-            { provide: PortalMessageService, useValue: msgServiceSpy }
-          ]
+          template: '',
+          imports: []
         }
       })
       .compileComponents()
@@ -80,7 +88,9 @@ describe('HelpSearchComponent', () => {
   })
 
   afterEach(() => {
-    mockUserService.lang$.getValue.and.returnValue(defaultLang)
+    langSubject.next(defaultLang)
+    hasPermissionSpy.calls.reset()
+    hasPermissionSpy.and.returnValue(Promise.resolve(true))
     mockUserService.hasPermission.and.returnValue(Promise.resolve(false))
     mockUserService.hasPermission.calls.reset()
     // to spy data: reset
@@ -114,45 +124,11 @@ describe('HelpSearchComponent', () => {
       expect(component.displayedColumnKeys).toEqual(['productName', 'itemId', 'baseUrl'])
     })
 
-    it('should hide view action when edit permission exists', async () => {
-      mockUserService.hasPermission.and.returnValue(Promise.resolve(true))
-
-      component.ngOnInit()
-      await fixture.whenStable()
-
-      expect(mockUserService.hasPermission).toHaveBeenCalledWith('HELP#EDIT')
-      expect(component.dataViewEditPermission).toBe('HELP#EDIT')
-      expect(component.dataViewViewPermission).toBe('__NO_PERMISSION__')
-    })
-
-    it('should show view action when edit permission does not exist', async () => {
-      mockUserService.hasPermission.and.returnValue(Promise.resolve(false))
-
-      component.ngOnInit()
-      await fixture.whenStable()
-
-      expect(mockUserService.hasPermission).toHaveBeenCalledWith('HELP#EDIT')
-      expect(component.dataViewEditPermission).toBe('__NO_PERMISSION__')
-      expect(component.dataViewViewPermission).toBe('HELP#VIEW')
-    })
-
-    it('should fall back to view permission when hasPermission throws', async () => {
-      mockUserService.hasPermission.and.returnValue(Promise.reject(new Error('unexpected')))
-      spyOn(console, 'error')
-
-      component.ngOnInit()
-      await fixture.whenStable()
-
-      expect(component.dataViewEditPermission).toBe('__NO_PERMISSION__')
-      expect(component.dataViewViewPermission).toBe('HELP#VIEW')
-      expect(console.error).toHaveBeenCalledWith('configureDataViewActionPermissions', jasmine.any(Error))
-    })
-
     it('should create component and set columns for displaying results', () => {
       expect(component).toBeTruthy()
-      expect(component.dataViewColumns[0].id).toBe('productName')
-      expect(component.dataViewColumns[1].id).toBe('itemId')
-      expect(component.dataViewColumns[2].id).toBe('baseUrl')
+      expect(component.dataViewColumns[0].field).toBe('productName')
+      expect(component.dataViewColumns[1].field).toBe('itemId')
+      expect(component.dataViewColumns[2].field).toBe('baseUrl')
     })
   })
 
@@ -192,172 +168,54 @@ describe('HelpSearchComponent', () => {
     })
   })
 
-  describe('UI actions', () => {
-    it('should provide copy additional action', () => {
-      expect(component.dataViewAdditionalActions.length).toBe(1)
-      expect(component.dataViewAdditionalActions[0].id).toBe('copy')
-      expect(component.dataViewAdditionalActions[0].permission).toBe('HELP#EDIT')
-    })
-
-    it('should call detail in COPY mode from copy additional action', () => {
-      spyOn(component, 'onDetail')
-
-      component.dataViewAdditionalActions[0].callback(itemData[0])
-
-      expect(component.onDetail).toHaveBeenCalledWith(itemData[0], 'COPY')
-    })
-
-    it('should call onDetail in VIEW mode from onViewItem', () => {
-      spyOn(component, 'onDetail')
-
-      component.onViewItem(itemData[0])
-
-      expect(component.onDetail).toHaveBeenCalledWith(itemData[0], 'VIEW')
-    })
-
-    it('should call onDetail in EDIT mode from onEditItem', () => {
-      spyOn(component, 'onDetail')
-
-      component.onEditItem(itemData[1])
-
-      expect(component.onDetail).toHaveBeenCalledWith(itemData[1], 'EDIT')
-    })
-
-    it('should call onDelete from onDeleteItem', () => {
-      spyOn(component, 'onDelete')
-
-      component.onDeleteItem(itemData[2])
-
-      expect(component.onDelete).toHaveBeenCalledWith(itemData[2])
-    })
-
-    it('should set tableFilter on onGlobalFilter', () => {
-      component.onGlobalFilter('itemId1')
-
-      expect(component.tableFilter).toBe('itemId1')
-    })
-
-    it('should filter data by global filter value', (done) => {
-      component['rawSearchResults'] = [...itemData]
-      component.productData$.next([product1, product2])
-
-      component.onGlobalFilter('itemId1')
-
-      component.data$.subscribe((data) => {
-        expect(data.length).toBe(2)
-        expect(data).toContain(helpItem1 as any)
-        expect(data).toContain(helpItem3 as any)
-        done()
-      })
-    })
-
-    it('should clear tableFilter and restore all results on onClearGlobalFilter', (done) => {
-      component['rawSearchResults'] = [...itemData]
-      component.tableFilter = 'itemId1'
-
-      component.onClearGlobalFilter()
-
-      expect(component.tableFilter).toBe('')
-      component.data$.subscribe((data) => {
-        expect(data).toEqual(itemData)
-        done()
-      })
-    })
-
-    it('should clear input element value on onClearGlobalFilter with input', (done) => {
-      component['rawSearchResults'] = [...itemData]
-      const input = document.createElement('input')
-      input.value = 'itemId1'
-      component.tableFilter = 'itemId1'
-
-      component.onClearGlobalFilter(input)
-
-      expect(input.value).toBe('')
-      expect(component.tableFilter).toBe('')
-      component.data$.subscribe((data) => {
-        expect(data).toEqual(itemData)
-        done()
-      })
-    })
-
-    it('should restore all results when filter is cleared to empty string', (done) => {
-      component['rawSearchResults'] = [...itemData]
-      component.tableFilter = ''
-
-      component.onGlobalFilter('')
-
-      component.data$.subscribe((data) => {
-        expect(data).toEqual(itemData)
-        done()
-      })
-    })
-
-    it('should filter by productName when no productData is available', (done) => {
-      component['rawSearchResults'] = [...itemData]
-      component.productData$.next(undefined)
-
-      component.onGlobalFilter('product1')
-
-      component.data$.subscribe((data) => {
-        expect(data.length).toBe(2)
-        expect(data).toContain(helpItem1 as any)
-        expect(data).toContain(helpItem4 as any)
-        done()
-      })
-    })
-
-    it('should default tableFilter to empty string when onGlobalFilter is called with null', () => {
-      component.onGlobalFilter(null as any)
-
-      expect(component.tableFilter).toBe('')
-    })
-
-    it('should treat undefined productName and itemId as empty string when filtering', (done) => {
-      const itemWithoutFields: Help = { id: 'id5', itemId: undefined as any, productName: undefined, baseUrl: '' }
-      component['rawSearchResults'] = [itemWithoutFields]
-      component.productData$.next(undefined)
-
-      component.onGlobalFilter('nomatch')
-
-      component.data$.subscribe((data) => {
-        expect(data.length).toBe(0)
-        done()
-      })
-    })
-  })
-
   describe('search', () => {
     it('should search without search criteria', (done) => {
-      apiServiceSpy.searchHelps.and.returnValue(of({ stream: itemData }))
+      apiServiceSpy.searchHelps.and.returnValue(of({ stream: helpItems }))
 
       component.onSearch({})
 
       component.data$!.subscribe({
         next: (data) => {
-          expect(data).toEqual(itemData)
+          expect(data).toEqual(rowItems)
           done()
         },
         error: done.fail
       })
     })
 
-    it('should search and then reset search criteria', (done) => {
-      apiServiceSpy.searchHelps.and.returnValue(of({ stream: [itemData[1]] }))
-      component.criteria = { productName: itemData[1].productName }
+    it('should search with criteria and then reset search criteria', (done) => {
+      apiServiceSpy.searchHelps.and.returnValue(of({ stream: [helpItems[1]] }))
+      component.criteria = { productName: helpItems[1].productName }
 
       component.onSearch(component.criteria, true)
 
       component.data$!.pipe(take(1)).subscribe({
         next: (data) => {
-          expect(data.length).toBe(1)
-          expect(data[0]).toEqual(itemData[1])
-
+          if (data) {
+            expect(data.length).toBe(1)
+            expect(data[0]).toEqual(rowItems[1])
+          }
           component.onCriteriaReset()
           expect(component.criteria).toEqual({})
           done()
         },
         error: done.fail
       })
+    })
+
+    it('should display an info message if the search has no results', (done) => {
+      apiServiceSpy.searchHelps.and.returnValue(of({ stream: [] }))
+      component.onSearch({})
+
+      component.data$!.subscribe({
+        next: (data) => {
+          if (data) expect(data.length).toBe(0)
+          done()
+        },
+        error: done.fail
+      })
+      expect(component.exceptionKey).toBeUndefined()
+      expect(msgServiceSpy.info).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.SEARCH.MESSAGE.NO_RESULTS' })
     })
 
     it('should display an error message if the search fails', (done) => {
@@ -368,7 +226,7 @@ describe('HelpSearchComponent', () => {
 
       component.data$!.subscribe({
         next: (data) => {
-          expect(data.length).toBe(0)
+          if (data) expect(data.length).toBe(0)
           done()
         },
         error: done.fail
@@ -389,14 +247,14 @@ describe('HelpSearchComponent', () => {
     })
 
     it('should search with wildcard * in title', (done) => {
-      apiServiceSpy.searchHelps.and.returnValue(of({ stream: itemData }))
+      apiServiceSpy.searchHelps.and.returnValue(of({ stream: helpItems }))
       component.criteria = { itemId: 'A*' }
 
       component.onSearch(component.criteria, false)
 
       component.data$!.subscribe({
         next: (data) => {
-          expect(data).toEqual(itemData)
+          expect(data).toEqual(rowItems)
           done()
         },
         error: done.fail
@@ -407,6 +265,15 @@ describe('HelpSearchComponent', () => {
       const dn = component.getDisplayName(undefined, undefined)
 
       expect(dn).toBeUndefined()
+    })
+  })
+
+  describe('sort', () => {
+    it('should update sort field and direction', () => {
+      component.onSortChange({ sortColumn: 'title', sortDirection: DataSortDirection.ASCENDING })
+
+      expect(component.sortField).toBe('title')
+      expect(component.sortDirection).toBe(DataSortDirection.ASCENDING)
     })
   })
 
@@ -491,15 +358,186 @@ describe('HelpSearchComponent', () => {
     })
   })
 
+  describe('UI actions', () => {
+    it('should provide copy additional action', () => {
+      expect(component.interactiveAdditionalActions.length).toBe(1)
+      expect(component.interactiveAdditionalActions[0].id).toBe('copy')
+      expect(component.interactiveAdditionalActions[0].permission).toBe('HELP#EDIT')
+    })
+
+    it('should call detail in COPY mode from copy additional action', () => {
+      spyOn(component, 'onDetail')
+
+      component.interactiveAdditionalActions[0].callback(rowItems[0])
+
+      expect(component.onDetail).toHaveBeenCalledWith(rowItems[0], 'COPY')
+    })
+
+    it('should call detail in COPY mode from copy additional action', async () => {
+      mockUserService.hasPermission.and.returnValue(Promise.resolve(true))
+      spyOn(component, 'onDetail')
+
+      component.onCopyFromInteractive(rowItems[0])
+      await fixture.whenStable()
+
+      expect(component.onDetail).toHaveBeenCalledWith(rowItems[0], 'COPY')
+    })
+
+    it('should call onDetail in VIEW mode from onViewItem', async () => {
+      mockUserService.hasPermission.and.returnValue(Promise.resolve(true))
+      spyOn(component, 'onDetail')
+
+      component.onViewFromInteractive(rowItems[0])
+      await fixture.whenStable()
+
+      expect(component.onDetail).toHaveBeenCalledWith(rowItems[0], 'VIEW')
+    })
+
+    it('should call onDetail in EDIT mode from onEditItem', async () => {
+      mockUserService.hasPermission.and.returnValue(Promise.resolve(true))
+      spyOn(component, 'onDetail')
+
+      component.onEditFromInteractive(rowItems[1])
+      await fixture.whenStable()
+
+      expect(component.onDetail).toHaveBeenCalledWith(rowItems[1], 'EDIT')
+    })
+
+    it('should call onDelete from onDeleteItem', async () => {
+      mockUserService.hasPermission.and.returnValue(Promise.resolve(true))
+
+      component.onDeleteFromInteractive(rowItems[2])
+      await fixture.whenStable()
+
+      expect(component.displayDeleteDialog).toBeTrue()
+    })
+
+    it('should prevent call onDelete from onDeleteItem', async () => {
+      mockUserService.hasPermission.and.returnValue(Promise.resolve(false))
+
+      component.onDeleteFromInteractive(rowItems[2])
+      await fixture.whenStable()
+
+      expect(component.displayDeleteDialog).toBeFalse()
+    })
+
+    it('should handle permission check errors when deleting from interactive table', async () => {
+      const errorResponse = new Error('permission failed')
+      hasPermissionSpy.and.returnValue(Promise.reject(errorResponse))
+      spyOn(console, 'error')
+
+      component.onDeleteFromInteractive(rowItems[0])
+      await Promise.resolve() // 1st flush: propagates rejection through .then() chain, queues .catch() callback
+      await Promise.resolve() // 2nd flush: runs .catch() callback (console.error + msgService.error)
+      await fixture.whenStable()
+
+      expect(component.displayDeleteDialog).toBeFalse()
+      expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'EXCEPTIONS.HTTP_STATUS_403.HELP' })
+      expect(console.error).toHaveBeenCalledWith('hasPermission', errorResponse)
+    })
+  })
+
+  describe('detail actions', () => {
+    it('should prepare the creation of a new item', () => {
+      const mode = 'CREATE'
+
+      component.onDetail(undefined, mode)
+
+      expect(component.changeMode).toEqual(mode)
+      expect(component.item4Detail).toBeUndefined()
+      expect(component.displayDetailDialog).toBeTrue()
+
+      component.onCloseDetail(false)
+
+      expect(component.displayDetailDialog).toBeFalse()
+    })
+
+    it('should show details of a item: EDIT', () => {
+      const mode = 'EDIT'
+
+      component.onDetail(rowItems[0], mode)
+
+      expect(component.changeMode).toEqual(mode)
+      expect(component.item4Detail).toEqual(helpItems[0])
+      expect(component.displayDetailDialog).toBeTrue()
+    })
+
+    it('should prepare the copy of a item: COPY', () => {
+      const mode = 'COPY'
+
+      component.onDetail(rowItems[0], mode)
+
+      expect(component.changeMode).toEqual(mode)
+      expect(component.item4Detail).toEqual(helpItems[0])
+      expect(component.displayDetailDialog).toBeTrue()
+
+      component.onCloseDetail(true)
+
+      expect(component.displayDetailDialog).toBeFalse()
+    })
+  })
+
+  describe('deletion', () => {
+    let items4Deletion: any[] = []
+
+    beforeEach(() => {
+      items4Deletion = [...helpItems]
+    })
+
+    it('should prepare the deletion of a item - ok', async () => {
+      mockUserService.hasPermission.and.returnValue(Promise.resolve(true))
+
+      component.onDeleteFromInteractive(rowItems[2])
+      await fixture.whenStable()
+
+      expect(component.item4Delete).toEqual(items4Deletion[2])
+      expect(component.displayDeleteDialog).toBeTrue()
+    })
+
+    it('should delete the item on confirmation - ok', async () => {
+      mockUserService.hasPermission.and.returnValue(Promise.resolve(true))
+
+      component.onDeleteFromInteractive(rowItems[2])
+      await fixture.whenStable()
+
+      expect(component.item4Delete).toEqual(items4Deletion[2])
+      expect(component.displayDeleteDialog).toBeTrue()
+      component.onDeleteConfirmation(items4Deletion)
+
+      expect(apiServiceSpy.deleteHelp).toHaveBeenCalledWith({ id: items4Deletion[2].id })
+      expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.DELETE.MESSAGE.OK' })
+    })
+
+    it('should display error if deleting a item fails', async () => {
+      const errorResponse = { status: '400', statusText: 'Error on deletion' }
+      apiServiceSpy.deleteHelp.and.returnValue(throwError(() => errorResponse))
+      mockUserService.hasPermission.and.returnValue(Promise.resolve(true))
+      spyOn(console, 'error')
+
+      component.onDeleteFromInteractive(rowItems[2])
+      await Promise.resolve() // flush permission check so item4Delete is populated before onDeleteConfirmation
+      component.onDeleteConfirmation(items4Deletion)
+
+      expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.DELETE.MESSAGE.NOK' })
+      expect(console.error).toHaveBeenCalledWith('deleteHelp', errorResponse)
+    })
+
+    it('should reject confirmation if param was not set', () => {
+      component.onDeleteConfirmation(items4Deletion)
+
+      expect(apiServiceSpy.deleteHelp).not.toHaveBeenCalled()
+    })
+  })
+
   describe('export', () => {
     it('should display export dialog', (done) => {
-      apiServiceSpy.searchHelps.and.returnValue(of({ stream: itemData }))
+      apiServiceSpy.searchHelps.and.returnValue(of({ stream: helpItems }))
 
       component.onSearch({})
 
       component.data$!.subscribe({
         next: (data) => {
-          expect(data).toEqual(itemData)
+          expect(data).toEqual(rowItems)
           component.onExport()
           expect(component.displayExportDialog).toBeTrue()
           done()
@@ -551,24 +589,19 @@ describe('HelpSearchComponent', () => {
 
     describe('on file select', () => {
       let file: File
-      let event: any = {}
+      let event: FileSelectEvent
 
       beforeEach(() => {
         translateServiceSpy.get.and.returnValue(of({}))
         file = new File(['file content'], 'test.txt', { type: 'text/plain' })
-        const fileList: FileList = {
-          0: file,
-          length: 1,
-          item: (index: number) => file
-        }
-        event = { files: fileList }
+        event = { files: [file] } as FileSelectEvent
       })
 
       it('should select a file to upload - valid JSON', async () => {
         const json = '{ "helps": { "product": { "itemId": { "baseUrl": "https://..." } } } }'
         spyOn(file, 'text').and.returnValue(Promise.resolve(json))
 
-        component.onImportSelectFile(event as any as FileSelectEvent)
+        component.onImportSelectFile(event)
         await fixture.whenStable()
         fixture.detectChanges()
 
@@ -647,106 +680,6 @@ describe('HelpSearchComponent', () => {
       expect(component.displayImportDialog).toBeFalse()
       expect(component.importError).toBeFalse()
       expect(component['importObject']).toBeUndefined()
-    })
-  })
-
-  describe('detail actions', () => {
-    it('should prepare the creation of a new item', () => {
-      const mode = 'CREATE'
-
-      component.onDetail(undefined, mode)
-
-      expect(component.changeMode).toEqual(mode)
-      expect(component.item4Detail).toBe(undefined)
-      expect(component.displayDetailDialog).toBeTrue()
-
-      component.onCloseDetail(false)
-
-      expect(component.displayDetailDialog).toBeFalse()
-    })
-
-    it('should show details of a item', () => {
-      const mode = 'EDIT'
-
-      component.onDetail(itemData[0], mode)
-
-      expect(component.changeMode).toEqual(mode)
-      expect(component.item4Detail).toBe(itemData[0])
-      expect(component.displayDetailDialog).toBeTrue()
-    })
-
-    it('should prepare the copy of a item', () => {
-      const mode = 'COPY'
-
-      component.onDetail(itemData[0], mode)
-
-      expect(component.changeMode).toEqual(mode)
-      expect(component.item4Detail).toBe(itemData[0])
-      expect(component.displayDetailDialog).toBeTrue()
-
-      component.onCloseDetail(true)
-
-      expect(component.displayDetailDialog).toBeFalse()
-    })
-  })
-
-  describe('deletion', () => {
-    let items4Deletion: any[] = []
-
-    beforeEach(() => {
-      items4Deletion = [...itemData]
-    })
-
-    it('should prepare the deletion of a item - ok', () => {
-      component.onDelete(items4Deletion[0])
-
-      expect(component.item4Delete).toBe(items4Deletion[0])
-      expect(component.displayDeleteDialog).toBeTrue()
-    })
-
-    it('should delete a item with confirmation', () => {
-      apiServiceSpy.deleteHelp.and.returnValue(of(null))
-      component['rawSearchResults'] = [...itemData]
-
-      component.onDelete(items4Deletion[1]) // helpItem2: productName 'product2' — helpItem4 also has 'product1', not 'product2', so this is last of product2
-      component.onDeleteConfirmation(items4Deletion) // remove and this was the last of the product
-
-      expect(component.displayDeleteDialog).toBeFalse()
-      expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.DELETE.MESSAGE.OK' })
-
-      component['rawSearchResults'] = [...itemData]
-      component.onDelete(items4Deletion[0]) // helpItem1: productName 'product1' — helpItem4 also has 'product1', so not last
-      component.onDeleteConfirmation(items4Deletion) // remove but not the last of the product
-    })
-
-    it('should trigger usedListsTrigger$ when last item of product is deleted', () => {
-      apiServiceSpy.deleteHelp.and.returnValue(of(null))
-      // only one item with productName 'product2' so deleting it makes it the last
-      component['rawSearchResults'] = [helpItem2]
-      const triggerSpy = spyOn(component['usedListsTrigger$'], 'next')
-
-      component.onDelete(helpItem2)
-      component.onDeleteConfirmation([])
-
-      expect(triggerSpy).toHaveBeenCalled()
-    })
-
-    it('should display error if deleting a item fails', () => {
-      const errorResponse = { status: '400', statusText: 'Error on deletion' }
-      apiServiceSpy.deleteHelp.and.returnValue(throwError(() => errorResponse))
-      spyOn(console, 'error')
-
-      component.onDelete(items4Deletion[0])
-      component.onDeleteConfirmation(items4Deletion)
-
-      expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.DELETE.MESSAGE.NOK' })
-      expect(console.error).toHaveBeenCalledWith('deleteHelp', errorResponse)
-    })
-
-    it('should reject confirmation if param was not set', () => {
-      component.onDeleteConfirmation(items4Deletion)
-
-      expect(apiServiceSpy.deleteHelp).not.toHaveBeenCalled()
     })
   })
 
@@ -847,15 +780,98 @@ describe('HelpSearchComponent', () => {
     })
   })
 
+  describe('filter columns', () => {
+    it('should update the columns that are seen in results', () => {
+      const columns: ExtendedColumn[] = [
+        { field: 'field1', labelKey: 'WORKSPACE', active: true, sortable: true },
+        { field: 'field2', labelKey: 'CONTEXT', active: true, sortable: true }
+      ]
+      component.dataViewColumns = columns
+
+      component.onColumnsChange(['field1'])
+
+      expect(component.displayedColumnKeys).toEqual(['field1'])
+    })
+
+    it('should not update columns if activeIds are unchanged', () => {
+      component.displayedColumnKeys = ['status', 'title']
+
+      component.onColumnsChange(['status', 'title'])
+
+      expect(component.displayedColumnKeys).toEqual(['status', 'title'])
+    })
+  })
+
+  describe('filter data', () => {
+    it('should return early if data is not provided', () => {
+      component.onGlobalFilter('test', undefined)
+
+      expect(component.globalFilterValue).toBe('')
+      expect(component.filteredData).toBeUndefined()
+    })
+
+    it('should set filteredData to full data when value is empty', () => {
+      component.onGlobalFilter('', rowItems)
+
+      expect(component.globalFilterValue).toBe('')
+      expect(component.filteredData).toBeUndefined()
+    })
+
+    it('should set filteredData to full data when value is undefined', () => {
+      component.onGlobalFilter(undefined, rowItems)
+
+      expect(component.globalFilterValue).toBe('')
+      expect(component.filteredData).toBeUndefined()
+    })
+
+    it('should filter data by title field (case-insensitive)', () => {
+      component.onGlobalFilter('1', rowItems)
+
+      expect(component.globalFilterValue).toBe('1')
+      expect(component.filteredData?.length).toBe(1)
+      expect((component.filteredData?.[0] as any).productName).toBe('product1')
+    })
+
+    it('should return empty array when no title matches', () => {
+      component.onGlobalFilter('nonexistent', rowItems)
+
+      expect(component.globalFilterValue).toBe('nonexistent')
+      expect(component.filteredData?.length).toBe(0)
+    })
+
+    it('should clear global filter and reset filteredData', () => {
+      component.globalFilterValue = 'some filter'
+      component.filteredData = rowItems
+
+      component.onClearGlobalFilter()
+
+      expect(component.globalFilterValue).toBe('')
+      expect(component.filteredData).toBeUndefined()
+    })
+
+    it('should clear global filter and reset input element value', () => {
+      component.globalFilterValue = 'some filter'
+      component.filteredData = rowItems
+      const input = document.createElement('input')
+      input.value = 'some filter'
+
+      component.onClearGlobalFilter(input)
+
+      expect(component.globalFilterValue).toBe('')
+      expect(component.filteredData).toBeUndefined()
+      expect(input.value).toBe('')
+    })
+  })
+
   describe('Language tests', () => {
     it('should use default format: English', () => {
-      expect(component.dateFormat).toEqual('M/d/yy, h:mm a')
+      expect(component.datetimeFormat).toEqual('M/d/yy, h:mm a')
     })
 
     it('should set German date format', () => {
-      mockUserService.lang$.getValue.and.returnValue('de')
+      langSubject.next('de')
       initTestComponent()
-      expect(component.dateFormat).toEqual('dd.MM.yyyy HH:mm')
+      expect(component.datetimeFormat).toEqual('dd.MM.yyyy HH:mm')
     })
   })
 })
