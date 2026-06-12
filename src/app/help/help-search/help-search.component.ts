@@ -123,7 +123,7 @@ export class HelpSearchComponent implements OnInit {
       tooltipKey: 'HELP_ITEM.TOOLTIPS.PRODUCT_NAME',
       sortable: true,
       filterable: false,
-      cssHeader: 'flex flex-row flex-nowrap align-items-center column-gap-2 px-2 sm:px-3',
+      cssHeader: 'flex flex-row flex-nowrap align-items-center column-gap-2 px-2 sm:px-3 white-space-nowrap',
       cssBody: 'py-0 px-2 sm:px-3'
     },
     {
@@ -133,7 +133,7 @@ export class HelpSearchComponent implements OnInit {
       tooltipKey: 'HELP_ITEM.TOOLTIPS.ID',
       sortable: true,
       filterable: false,
-      cssHeader: 'flex flex-row flex-nowrap align-items-center column-gap-2 px-2 sm:px-3',
+      cssHeader: 'flex flex-row flex-nowrap align-items-center column-gap-2 px-2 sm:px-3 white-space-nowrap',
       cssBody: 'py-0 px-2 sm:px-3'
     },
     {
@@ -143,8 +143,8 @@ export class HelpSearchComponent implements OnInit {
       tooltipKey: 'HELP_ITEM.TOOLTIPS.URL',
       sortable: true,
       filterable: false,
-      cssHeader: 'flex flex-row flex-nowrap align-items-center column-gap-2 px-2 sm:px-3',
-      cssBody: 'py-0 px-2 sm:px-3'
+      cssHeader: 'hidden md:flex flex-row flex-nowrap align-items-center column-gap-2 px-3 white-space-nowrap',
+      cssBody: 'hidden md:table-cell py-0 px-3'
     }
   ]
   public interactiveColumns: DataTableColumn[] = []

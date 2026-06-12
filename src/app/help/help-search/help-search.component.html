@@ -123,12 +123,10 @@
             let-filterTemplate="filterTemplate"
           >
             <div [class]="col.cssHeader">
-              <div>
-                <ng-container
-                  [ngTemplateOutlet]="labelTemplate"
-                  [ngTemplateOutletContext]="{ column: col }"
-                ></ng-container>
-              </div>
+              <ng-container
+                [ngTemplateOutlet]="labelTemplate"
+                [ngTemplateOutletContext]="{ column: col }"
+              ></ng-container>
               <ng-container
                 [ngTemplateOutlet]="filterTemplate"
                 [ngTemplateOutletContext]="{ column: col }"

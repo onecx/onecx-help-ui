@@ -1,4 +1,4 @@
-@import '../../../_hm-mixins.scss';
+@use 'src/app/hm-mixins.scss' as *;
 
 @include word-break-all;
 @include ocx-text-responsive;
