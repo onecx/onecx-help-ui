@@ -4,6 +4,8 @@ import { Router } from '@angular/router'
 import { TranslateModule, TranslateService } from '@ngx-translate/core'
 import { Observable, ReplaySubject, catchError, combineLatest, first, map, mergeMap, of, withLatestFrom } from 'rxjs'
 import { PrimeIcons } from 'primeng/api'
+import { ButtonModule } from 'primeng/button'
+import { TooltipModule } from 'primeng/tooltip'
 
 import { getLocation } from '@onecx/accelerator'
 import {
@@ -22,7 +24,6 @@ import {
 
 import { Configuration, Help, HelpsInternalAPIService } from 'src/app/shared/generated'
 import { environment } from 'src/environments/environment'
-import { SharedModule } from 'src/app/shared/shared.module'
 
 import { NoHelpItemComponent } from './no-help-item/no-help-item.component'
 
@@ -30,7 +31,15 @@ import { NoHelpItemComponent } from './no-help-item/no-help-item.component'
   selector: 'app-ocx-show-help',
   templateUrl: './show-help.component.html',
   styleUrls: ['./show-help.component.scss'],
-  imports: [CommonModule, TranslateModule, SharedModule, AngularAcceleratorModule, AngularRemoteComponentsModule],
+  standalone: true,
+  imports: [
+    AngularAcceleratorModule,
+    AngularRemoteComponentsModule,
+    CommonModule,
+    ButtonModule,
+    TooltipModule,
+    TranslateModule
+  ],
   providers: [HelpsInternalAPIService, PortalMessageService, providePortalDialogService()]
 })
 export class OneCXShowHelpComponent implements ocxRemoteComponent, ocxRemoteWebcomponent {

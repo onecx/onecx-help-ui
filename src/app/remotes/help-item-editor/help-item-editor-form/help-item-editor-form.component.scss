@@ -2,6 +2,7 @@
 
 @include word-break-all;
 @include ocx-text-responsive;
+@include ocx-required-label;
 @include ocx-modal-dialog;
 
 :host ::ng-deep {

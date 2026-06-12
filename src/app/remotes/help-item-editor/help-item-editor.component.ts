@@ -1,9 +1,11 @@
-import { Component, CUSTOM_ELEMENTS_SCHEMA, EventEmitter, Inject, Input, APP_INITIALIZER } from '@angular/core'
+import { Component, EventEmitter, Inject, Input } from '@angular/core'
 import { CommonModule, Location } from '@angular/common'
 import { Router } from '@angular/router'
-import { TranslateService } from '@ngx-translate/core'
+import { TranslateModule, TranslateService } from '@ngx-translate/core'
 import { BehaviorSubject, Observable, ReplaySubject, catchError, combineLatest, first, map, mergeMap, of } from 'rxjs'
 import { PrimeIcons } from 'primeng/api'
+import { ButtonModule } from 'primeng/button'
+import { TooltipModule } from 'primeng/tooltip'
 
 import { AppStateService, PortalMessageService, UserService } from '@onecx/angular-integration-interface'
 import {
@@ -22,7 +24,6 @@ import {
 import { REMOTE_COMPONENT_CONFIG, RemoteComponentConfig } from '@onecx/angular-utils'
 
 import { Configuration, Help, HelpsInternalAPIService } from 'src/app/shared/generated'
-import { SharedModule } from 'src/app/shared/shared.module'
 import { environment } from 'src/environments/environment'
 
 import { HelpItemEditorFormComponent } from './help-item-editor-form/help-item-editor-form.component'
@@ -49,10 +50,16 @@ export function slotInitializer(slotService: SlotService) {
   selector: 'app-ocx-help-item-editor',
   templateUrl: './help-item-editor.component.html',
   styleUrls: ['./help-item-editor.component.scss'],
-  imports: [CommonModule, SharedModule, AngularAcceleratorModule, AngularRemoteComponentsModule],
-  schemas: [CUSTOM_ELEMENTS_SCHEMA],
+  standalone: true,
+  imports: [
+    AngularAcceleratorModule,
+    AngularRemoteComponentsModule,
+    CommonModule,
+    ButtonModule,
+    TooltipModule,
+    TranslateModule
+  ],
   providers: [
-    { provide: APP_INITIALIZER, useFactory: slotInitializer, deps: [SLOT_SERVICE], multi: true },
     { provide: SLOT_SERVICE, useExisting: SlotService },
     HelpsInternalAPIService,
     PortalMessageService,

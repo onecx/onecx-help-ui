@@ -1,16 +1,18 @@
-<div class="layout-topbar-item" *ocxIfPermission="'HELP#VIEW'; permissions: permissions">
-  <button
+<div
+  class="relative flex align-items-center justify-content-center"
+  *ocxIfPermission="'HELP#VIEW'; permissions: permissions"
+>
+  <p-button
     id="ocx_topbar_action_show_help_item"
     class="layout-topbar-action"
     pRipple
-    pButton
+    [rounded]="true"
+    icon="pi pi-question-circle"
     (click)="onOpenHelpPage($event)"
     (keydown.enter)="onOpenHelpPage($event)"
     [attr.aria-label]="'SHOW_HELP.LABEL' | translate"
     [pTooltip]="'SHOW_HELP.TOOLTIP' | translate"
     tooltipPosition="bottom"
     tooltipEvent="hover"
-  >
-    <i class="pi pi-question-circle fs-xlarge" aria-hidden="true"></i>
-  </button>
+  />
 </div>
