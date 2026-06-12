@@ -4,13 +4,12 @@ import { provideHttpClientTesting } from '@angular/common/http/testing'
 import { TranslateTestingModule } from 'ngx-translate-testing'
 import { BehaviorSubject, of, throwError } from 'rxjs'
 import { take } from 'rxjs/operators'
-import { FileSelectEvent } from 'primeng/fileupload'
 
 import { PortalMessageService, UserService } from '@onecx/angular-integration-interface'
+import { DataSortDirection, RowListGridData } from '@onecx/angular-accelerator'
 
 import { HelpsInternalAPIService, Help } from 'src/app/shared/generated'
-import { ExtendedColumn, HelpSearchComponent, Product } from './help-search.component'
-import { DataSortDirection, RowListGridData } from '@onecx/angular-accelerator'
+import { ExtendedColumn, HelpSearchComponent } from './help-search.component'
 
 const helpItem1: Help = { id: 'id1', itemId: 'itemId1', productName: 'product1', baseUrl: 'baseUrl 1' }
 const helpItem2: Help = { id: 'id2', itemId: 'itemId2', productName: 'product2', baseUrl: 'baseUrl 2' }
@@ -18,8 +17,6 @@ const helpItem3: Help = { id: 'id3', itemId: 'itemId3', productName: 'product3',
 const helpItem4: Help = { id: 'id4', itemId: 'itemId4', productName: 'product4', baseUrl: 'baseUrl 4' }
 
 const helpItems: Help[] = [helpItem1, helpItem2, helpItem3, helpItem4]
-const product1: Product = { name: 'product1', displayName: 'Product 1' }
-const product2: Product = { name: 'product2', displayName: 'Product 2' }
 
 const rowItem1: RowListGridData = { ...helpItem1 } as unknown as RowListGridData
 const rowItem2: RowListGridData = { ...helpItem2 } as unknown as RowListGridData
@@ -41,13 +38,8 @@ describe('HelpSearchComponent', () => {
   const msgServiceSpy = jasmine.createSpyObj<PortalMessageService>('PortalMessageService', ['success', 'error', 'info'])
   const apiServiceSpy = {
     getAllProductsWithHelpItems: jasmine.createSpy('getAllProductsWithHelpItems').and.returnValue(of({})),
-    searchHelps: jasmine.createSpy('searchHelps').and.returnValue(of({})),
-    addHelpItem: jasmine.createSpy('addHelpItem').and.returnValue(of({})),
-    deleteHelp: jasmine.createSpy('deleteHelp').and.returnValue(of({})),
-    importHelps: jasmine.createSpy('importHelps').and.returnValue(of({})),
-    exportHelps: jasmine.createSpy('exportHelps').and.returnValue(of({}))
+    searchHelps: jasmine.createSpy('searchHelps').and.returnValue(of({}))
   }
-  const translateServiceSpy = jasmine.createSpyObj('TranslateService', ['get'])
 
   async function initTestComponent() {
     fixture = TestBed.createComponent(HelpSearchComponent)
@@ -99,17 +91,9 @@ describe('HelpSearchComponent', () => {
     msgServiceSpy.info.calls.reset()
     apiServiceSpy.getAllProductsWithHelpItems.calls.reset()
     apiServiceSpy.searchHelps.calls.reset()
-    apiServiceSpy.addHelpItem.calls.reset()
-    apiServiceSpy.deleteHelp.calls.reset()
-    apiServiceSpy.importHelps.calls.reset()
-    apiServiceSpy.exportHelps.calls.reset()
     // to spy data: refill with neutral data
     apiServiceSpy.getAllProductsWithHelpItems.and.returnValue(of({}))
     apiServiceSpy.searchHelps.and.returnValue(of({}))
-    apiServiceSpy.addHelpItem.and.returnValue(of({}))
-    apiServiceSpy.deleteHelp.and.returnValue(of({}))
-    apiServiceSpy.importHelps.and.returnValue(of({}))
-    apiServiceSpy.exportHelps.and.returnValue(of({}))
   })
 
   describe('construction', () => {
@@ -494,38 +478,50 @@ describe('HelpSearchComponent', () => {
       expect(component.displayDeleteDialog).toBeTrue()
     })
 
-    it('should delete the item on confirmation - ok', async () => {
-      mockUserService.hasPermission.and.returnValue(Promise.resolve(true))
+    it('should close delete dialog and clear item on false emit', () => {
+      component.item4Delete = helpItem1 as unknown as Help
+      component.displayDeleteDialog = true
 
-      component.onDeleteFromInteractive(rowItems[2])
-      await fixture.whenStable()
+      component.onDeleteConfirmed(false)
 
-      expect(component.item4Delete).toEqual(items4Deletion[2])
-      expect(component.displayDeleteDialog).toBeTrue()
-      component.onDeleteConfirmation(items4Deletion)
-
-      expect(apiServiceSpy.deleteHelp).toHaveBeenCalledWith({ id: items4Deletion[2].id })
-      expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.DELETE.MESSAGE.OK' })
+      expect(component.displayDeleteDialog).toBeFalse()
+      expect(component.item4Delete).toBeUndefined()
     })
 
-    it('should display error if deleting a item fails', async () => {
-      const errorResponse = { status: '400', statusText: 'Error on deletion' }
-      apiServiceSpy.deleteHelp.and.returnValue(throwError(() => errorResponse))
-      mockUserService.hasPermission.and.returnValue(Promise.resolve(true))
-      spyOn(console, 'error')
+    it('should handle deletion confirmed - remove last item from data', (done) => {
+      component.item4Delete = helpItem1
+      component['dataSubject$'].next([rowItem1])
 
-      component.onDeleteFromInteractive(rowItems[2])
-      await Promise.resolve() // flush permission check so item4Delete is populated before onDeleteConfirmation
-      component.onDeleteConfirmation(items4Deletion)
+      component.onDeleteConfirmed(true)
 
-      expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.DELETE.MESSAGE.NOK' })
-      expect(console.error).toHaveBeenCalledWith('deleteHelp', errorResponse)
+      expect(component.displayDeleteDialog).toBeFalse()
+      expect(component.item4Delete).toBeUndefined()
+      component.data$!.subscribe({
+        next: (data) => {
+          expect(data!.length).toBe(0)
+          done()
+        },
+        error: done.fail
+      })
     })
 
-    it('should reject confirmation if param was not set', () => {
-      component.onDeleteConfirmation(items4Deletion)
+    it('should handle deletion confirmed - trigger usedLists reload when last of product removed', (done) => {
+      component.item4Delete = helpItem1 as unknown as Help
+      component['dataSubject$'].next(rowItems)
+      spyOn(component.usedListsTrigger$, 'next')
 
-      expect(apiServiceSpy.deleteHelp).not.toHaveBeenCalled()
+      component.onDeleteConfirmed(true)
+
+      expect(component.usedListsTrigger$.next).toHaveBeenCalled()
+      expect(component.displayDeleteDialog).toBeFalse()
+      expect(component.item4Delete).toBeUndefined()
+      component.data$!.subscribe({
+        next: (data) => {
+          expect(data!.length).toBe(3)
+          done()
+        },
+        error: done.fail
+      })
     })
   })
 
@@ -546,35 +542,12 @@ describe('HelpSearchComponent', () => {
       })
     })
 
-    it('should export help items', () => {
-      apiServiceSpy.exportHelps.and.returnValue(of(product1))
-      component.exportProductList = [product1.name]
-
-      component.onExportConfirmation()
-
-      expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.EXPORT.MESSAGE.OK' })
-    })
-
-    it('should display error message when export fails', () => {
-      const errorResponse = { status: 400, statusText: 'Cannot export ...' }
-      apiServiceSpy.exportHelps.and.returnValue(throwError(() => errorResponse))
-      component.exportProductList = [product1.name, product2.name]
-      spyOn(console, 'error')
-
-      component.onExportConfirmation()
-
-      expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.EXPORT.MESSAGE.NOK' })
-      expect(console.error).toHaveBeenCalledWith('exportHelps', errorResponse)
-    })
-
-    it('should reset displayExportDialog, selectedResults, and selectedproductNames', () => {
+    it('should close export dialog on visibleChange emit', () => {
       component.displayExportDialog = true
-      component.exportProductList = [product1.name, product2.name]
 
-      component.onExportCloseDialog()
+      component.onExportDialogVisibleChange()
 
       expect(component.displayExportDialog).toBeFalse()
-      expect(component.exportProductList).toEqual([])
     })
   })
 
@@ -587,99 +560,24 @@ describe('HelpSearchComponent', () => {
       expect(component.displayImportDialog).toBeTrue()
     })
 
-    describe('on file select', () => {
-      let file: File
-      let event: FileSelectEvent
-
-      beforeEach(() => {
-        translateServiceSpy.get.and.returnValue(of({}))
-        file = new File(['file content'], 'test.txt', { type: 'text/plain' })
-        event = { files: [file] } as FileSelectEvent
-      })
-
-      it('should select a file to upload - valid JSON', async () => {
-        const json = '{ "helps": { "product": { "itemId": { "baseUrl": "https://..." } } } }'
-        spyOn(file, 'text').and.returnValue(Promise.resolve(json))
-
-        component.onImportSelectFile(event)
-        await fixture.whenStable()
-        fixture.detectChanges()
-
-        expect(file.text).toHaveBeenCalled()
-        expect(msgServiceSpy.info).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.IMPORT.VALIDATION.OK' })
-        expect(component.importError).toBeFalse()
-      })
-
-      it('should select a file to upload - invalid JSON - handle error', async () => {
-        spyOn(file, 'text').and.returnValue(Promise.resolve('Invalid Json'))
-        spyOn(console, 'error')
-
-        component.onImportSelectFile(event)
-        await fixture.whenStable()
-        fixture.detectChanges()
-
-        expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.IMPORT.VALIDATION.NOK' })
-        expect(console.error).toHaveBeenCalled()
-        expect(component.importError).toBeTrue()
-      })
-    })
-
-    describe('on import confirmation', () => {
-      it('should import help items', async () => {
-        apiServiceSpy.importHelps.and.returnValue(of({}))
-        component['importObject'] = helpItem1
-
-        component.onImportConfirmation()
-        await fixture.whenStable()
-        fixture.detectChanges()
-
-        expect(component.displayImportDialog).toBeFalse()
-        expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.IMPORT.MESSAGE.OK' })
-      })
-
-      it('should call importHelps and handle error', async () => {
-        const errorResponse = { status: 400, statusText: 'Cannot import ...' }
-        apiServiceSpy.importHelps.and.returnValue(throwError(() => errorResponse))
-        component['importObject'] = helpItem1
-        spyOn(console, 'error')
-
-        component.onImportConfirmation()
-        await fixture.whenStable()
-        fixture.detectChanges()
-
-        expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.IMPORT.MESSAGE.NOK' })
-        expect(console.error).toHaveBeenCalledWith('importHelps', errorResponse)
-      })
-
-      it('should not call importHelps if importHelpItem is not defined', () => {
-        component['importObject'] = undefined
-
-        component.onImportConfirmation()
-
-        expect(apiServiceSpy.importHelps).not.toHaveBeenCalled()
-      })
-    })
-
-    it('should reset import objects when clear button is clicked', () => {
-      component.importError = true
-      component['importObject'] = helpItem1
-
-      component.onImportClear()
-
-      expect(component.importError).toBeFalse()
-      expect(component['importObject']).toBeUndefined()
-    })
-
-    it('should close displayImportDialog', () => {
-      component.importError = true
-      component['importObject'] = helpItem1
+    it('should close import dialog on false emit and not re-search', () => {
       component.displayImportDialog = true
+      spyOn(component, 'onSearch')
 
-      component.onImportCloseDialog()
+      component.onImportDialogVisibleChange(false)
 
       expect(component.displayImportDialog).toBeFalse()
-      expect(component.importError).toBeFalse()
-      expect(component['importObject']).toBeUndefined()
+      expect(component.onSearch).not.toHaveBeenCalled()
+    })
+
+    it('should close import dialog on true emit and trigger re-search', () => {
+      component.displayImportDialog = true
+      spyOn(component, 'onSearch')
+
+      component.onImportDialogVisibleChange(true)
+
+      expect(component.displayImportDialog).toBeFalse()
+      expect(component.onSearch).toHaveBeenCalledWith({}, true)
     })
   })
 
@@ -745,38 +643,6 @@ describe('HelpSearchComponent', () => {
       const url = component.prepareUrl(help)
 
       expect(url).toEqual(help.baseUrl! + help.resourceUrl + help.context)
-    })
-  })
-
-  describe('formatUploadFileSize', () => {
-    it('should format bytes below 1024 as B', () => {
-      expect(component.formatUploadFileSize(0)).toBe('0B')
-      expect(component.formatUploadFileSize(512)).toBe('512B')
-      expect(component.formatUploadFileSize(1023)).toBe('1023B')
-    })
-
-    it('should format exactly 1 KB', () => {
-      expect(component.formatUploadFileSize(1024)).toBe('1KB')
-    })
-
-    it('should format KB with one decimal when size < 10', () => {
-      expect(component.formatUploadFileSize(1024 * 5)).toBe('5KB')
-      expect(component.formatUploadFileSize(1024 * 9.5)).toBe('9.5KB')
-    })
-
-    it('should format large KB without decimal', () => {
-      expect(component.formatUploadFileSize(1024 * 512)).toBe('512KB')
-    })
-
-    it('should format MB', () => {
-      expect(component.formatUploadFileSize(1024 * 1024)).toBe('1MB')
-      expect(component.formatUploadFileSize(1024 * 1024 * 5)).toBe('5MB')
-      expect(component.formatUploadFileSize(1024 * 1024 * 500)).toBe('500MB')
-    })
-
-    it('should format GB', () => {
-      expect(component.formatUploadFileSize(1024 * 1024 * 1024)).toBe('1GB')
-      expect(component.formatUploadFileSize(1024 * 1024 * 1024 * 2)).toBe('2GB')
     })
   })
 
