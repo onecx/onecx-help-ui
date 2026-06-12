@@ -361,8 +361,8 @@
   }
 }
 @mixin autocomplete-zebra-rows {
-  .p-autocomplete-panel .p-autocomplete-items {
-    .p-autocomplete-item:nth-child(even) {
+  :host ::ng-deep {
+    .p-autocomplete-list > .p-autocomplete-option:nth-child(even) {
       background-color: var(--table-body-row-even-bg);
     }
   }
