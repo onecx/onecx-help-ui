@@ -169,67 +169,11 @@
         </ocx-interactive-data-view>
 
         <!-- DELETE -->
-        <p-dialog
-          *ngIf="item4Delete"
-          [header]="'ACTIONS.DELETE.HEADER' | translate"
-          [(visible)]="displayDeleteDialog"
-          [modal]="true"
-          [closable]="true"
-          [draggable]="true"
-          [resizable]="false"
-          [dismissableMask]="true"
-          [style]="{ 'max-width': '500px' }"
-        >
-          <div class="flex column-gap-3 row-gap-1 justify-content-start align-items-center">
-            <div class="pi pi-question-circle text-3xl danger-action-text"></div>
-            <section class="w-11 flex flex-column row-gap-3 justify-content-start">
-              <div
-                id="hm_delete_message_text"
-                class="mr-3 font-bold"
-                [attr.aria-label]="'ACTIONS.CONFIRMATION.QUESTION' | translate"
-                role="note"
-              >
-                {{ 'ACTIONS.DELETE.TEXT' | translate }}
-              </div>
-              <div
-                id="hm_delete_menu_item_name"
-                class="text-center danger-action-text"
-                [attr.aria-label]="'HELP_ITEM.ID' | translate"
-                role="note"
-              >
-                {{ item4Delete.itemId }}
-              </div>
-              <div *ngIf="item4Delete.operator">{{ 'ACTIONS.DELETE.OPERATOR_TEXT' | translate }}</div>
-
-              <div class="white-space-nowrap">{{ 'ACTIONS.DELETE.NO_UNDO' | translate }}</div>
-            </section>
-          </div>
-
-          <ng-template pTemplate="footer">
-            <footer class="flex flex-wrap justify-content-end column-gap-2 row-gap-1">
-              <p-button
-                id="hm_delete_action_no"
-                icon="pi pi-times"
-                (onClick)="displayDeleteDialog = false"
-                [label]="'ACTIONS.CONFIRMATION.NO' | translate"
-                [ariaLabel]="'ACTIONS.CONFIRMATION.NO.TOOLTIP' | translate"
-                [pTooltip]="'ACTIONS.CONFIRMATION.NO.TOOLTIP' | translate"
-                tooltipPosition="top"
-                tooltipEvent="hover"
-              ></p-button>
-              <p-button
-                id="hm_delete_action_yes"
-                icon="pi pi-check"
-                (onClick)="onDeleteConfirmation(data)"
-                [label]="'ACTIONS.CONFIRMATION.YES' | translate"
-                [ariaLabel]="'ACTIONS.CONFIRMATION.YES.TOOLTIP' | translate"
-                [pTooltip]="'ACTIONS.CONFIRMATION.YES.TOOLTIP' | translate"
-                tooltipPosition="top"
-                tooltipEvent="hover"
-              ></p-button>
-            </footer>
-          </ng-template>
-        </p-dialog>
+        <app-help-delete
+          [helpItem]="item4Delete"
+          [visible]="displayDeleteDialog"
+          (visibleChange)="onDeleteConfirmed($event)"
+        ></app-help-delete>
       }
     </ocx-content>
 
@@ -243,140 +187,16 @@
     ></app-help-detail>
 
     <!-- EXPORT -->
-    <p-dialog
-      [header]="'ACTIONS.EXPORT.HEADER' | translate"
-      [(visible)]="displayExportDialog"
-      [modal]="true"
-      [closable]="true"
-      [draggable]="true"
-      [resizable]="true"
-      [dismissableMask]="true"
-      [style]="{ width: '350px' }"
-      [breakpoints]="{
-        '992px': '40vw',
-        '800px': '50vw',
-        '700px': '60vw',
-        '600px': '70vw',
-        '500px': '80vw',
-        '400px': '100vw'
-      }"
-    >
-      <div class="flex flex-column row-gap-1">
-        <div>{{ 'HELP_ITEM.PRODUCT_LIST' | translate }}</div>
-        <p-listbox
-          id="hm_export_product_list"
-          optionLabel="displayName"
-          optionValue="name"
-          [options]="metaData.usedProducts"
-          [(ngModel)]="exportProductList"
-          [filter]="true"
-          [checkbox]="true"
-          [multiple]="true"
-          [metaKeySelection]="false"
-          [showToggleAll]="true"
-          [emptyMessage]="'ACTIONS.SEARCH.NO_DATA' | translate"
-          [listStyle]="{ 'max-height': '300px' }"
-        >
-          <ng-template let-product pTemplate="item">
-            <div class="text-responsive">
-              {{ product.displayName }}
-            </div>
-          </ng-template>
-        </p-listbox>
-      </div>
-      <ng-template pTemplate="footer">
-        <div class="flex flex-wrap justify-content-end column-gap-2 row-gap-1">
-          <p-button
-            id="hm_export_action_cancel"
-            icon="pi pi-times"
-            (onClick)="onExportCloseDialog()"
-            [label]="'ACTIONS.CANCEL' | translate"
-            [ariaLabel]="'ACTIONS.TOOLTIPS.CANCEL' | translate"
-            [pTooltip]="'ACTIONS.TOOLTIPS.CANCEL' | translate"
-            tooltipPosition="top"
-            tooltipEvent="hover"
-          ></p-button>
-          <p-button
-            id="hm_export_action_export"
-            icon="pi pi-download"
-            (onClick)="onExportConfirmation()"
-            [disabled]="exportProductList.length === 0"
-            [label]="'ACTIONS.EXPORT.LABEL' | translate"
-            [ariaLabel]="'ACTIONS.EXPORT.ITEMS_SELECTED.TOOLTIP' | translate"
-            [pTooltip]="'ACTIONS.EXPORT.ITEMS_SELECTED.TOOLTIP' | translate"
-            tooltipPosition="top"
-            tooltipEvent="hover"
-          ></p-button>
-        </div>
-      </ng-template>
-    </p-dialog>
+    <app-help-export
+      [visible]="displayExportDialog"
+      [usedProducts]="metaData.usedProducts"
+      (visibleChange)="onExportDialogVisibleChange()"
+    ></app-help-export>
   }
 </ocx-portal-page>
 
 <!-- IMPORT -->
-<p-dialog
-  [(visible)]="displayImportDialog"
-  [header]="'ACTIONS.IMPORT.HEADER' | translate"
-  [modal]="true"
-  [closable]="true"
-  [draggable]="true"
-  [resizable]="true"
-  [dismissableMask]="true"
->
-  <div class="flex flex-wrap column-gap-2 row-gap-1 justify-content-end">
-    <p-fileUpload
-      #fileUploader
-      id="hm_import_file_upload"
-      mode="advanced"
-      name="file"
-      accept=".json"
-      [maxFileSize]="1000000"
-      [customUpload]="true"
-      (uploadHandler)="onImportConfirmation()"
-      (onImportClear)="onImportClear()"
-      (onRemove)="onImportClear()"
-      (onSelect)="onImportSelectFile($event)"
-      [showUploadButton]="!importError"
-      [chooseLabel]="'ACTIONS.IMPORT.CHOOSE' | translate"
-      [uploadLabel]="'ACTIONS.IMPORT.UPLOAD' | translate"
-      [cancelLabel]="'ACTIONS.CANCEL' | translate"
-    >
-      <ng-template pTemplate="file" let-file let-i="index">
-        <div class="p-fileupload-file">
-          <div class="p-fileupload-file-info">
-            <div class="p-fileupload-file-name">{{ file.name }}</div>
-            <span class="p-fileupload-file-size">{{ formatUploadFileSize(file.size) }}</span>
-          </div>
-          <div class="p-fileupload-file-actions">
-            <p-button
-              (onClick)="fileUploader.remove($event, i)"
-              [disabled]="fileUploader.uploading"
-              text
-              rounded
-              severity="danger"
-              styleClass="p-fileupload-file-remove-button"
-            >
-              <ng-template #icon>
-                <i class="pi pi-times"></i>
-              </ng-template>
-            </p-button>
-          </div>
-        </div>
-      </ng-template>
-    </p-fileUpload>
-  </div>
-  <ng-template pTemplate="footer">
-    <div class="flex flex-wrap justify-content-end column-gap-2 row-gap-1">
-      <p-button
-        id="hm_import_action_close"
-        icon="pi pi-times"
-        (onClick)="onImportCloseDialog()"
-        [label]="'ACTIONS.NAVIGATION.CLOSE' | translate"
-        [ariaLabel]="'ACTIONS.NAVIGATION.CLOSE' | translate"
-        [pTooltip]="'ACTIONS.NAVIGATION.CLOSE.TOOLTIP' | translate"
-        tooltipPosition="top"
-        tooltipEvent="hover"
-      ></p-button>
-    </div>
-  </ng-template>
-</p-dialog>
+<app-help-import
+  [visible]="displayImportDialog"
+  (visibleChange)="onImportDialogVisibleChange($event)"
+></app-help-import>

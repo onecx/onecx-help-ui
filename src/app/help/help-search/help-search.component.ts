@@ -14,8 +14,6 @@ import {
   switchMap,
   tap
 } from 'rxjs'
-import FileSaver from 'file-saver'
-import { FileSelectEvent } from 'primeng/fileupload'
 
 import { PortalMessageService, UserService } from '@onecx/angular-integration-interface'
 import {
@@ -33,6 +31,9 @@ import { SharedModule } from 'src/app/shared/shared.module'
 import { Help, HelpsInternalAPIService, HelpSearchCriteria, HelpProductNames } from 'src/app/shared/generated'
 import { HelpCriteriaComponent } from './help-criteria/help-criteria.component'
 import { HelpDetailComponent } from '../help-detail/help-detail.component'
+import { HelpDeleteComponent } from '../help-delete/help-delete.component'
+import { HelpExportComponent } from '../help-export/help-export.component'
+import { HelpImportComponent } from '../help-import/help-import.component'
 
 export type ChangeMode = 'VIEW' | 'CREATE' | 'COPY' | 'EDIT'
 export type ExtendedColumn = {
@@ -71,7 +72,15 @@ export type Product = {
   templateUrl: './help-search.component.html',
   styleUrls: ['./help-search.component.scss'],
   standalone: true,
-  imports: [SharedModule, PortalPageComponent, HelpCriteriaComponent, HelpDetailComponent]
+  imports: [
+    SharedModule,
+    PortalPageComponent,
+    HelpCriteriaComponent,
+    HelpDetailComponent,
+    HelpDeleteComponent,
+    HelpExportComponent,
+    HelpImportComponent
+  ]
 })
 export class HelpSearchComponent implements OnInit {
   // dialog
@@ -86,12 +95,13 @@ export class HelpSearchComponent implements OnInit {
   public displayDetailDialog = false
   public displayImportDialog = false
   public displayExportDialog = false
+  public usedProducts: Product[] = []
   public sortField = 'startDate'
   public sortDirection = DataSortDirection.DESCENDING
 
   // data
   private readonly destroyRef = inject(DestroyRef)
-  private readonly dataSubject$ = new BehaviorSubject<RowListGridData[] | null>(null)
+  private readonly dataSubject$ = new BehaviorSubject<RowListGridData[]>([])
   public data$: Observable<RowListGridData[] | null> = this.dataSubject$.asObservable()
   private searchSubscription?: Subscription // to cancel ongoing search if new search is triggered
   public filteredData: RowListGridData[] | undefined = undefined
@@ -102,9 +112,6 @@ export class HelpSearchComponent implements OnInit {
   public usedListsTrigger$ = new BehaviorSubject<void>(undefined) // trigger for refresh data
   public item4Detail: Help | undefined // used on detail
   public item4Delete: Help | undefined // used on deletion
-  public exportProductList: string[] = []
-  public importError = false
-  private importObject: object | undefined = undefined
 
   public displayedColumnKeys: string[] = ['productName', 'itemId', 'baseUrl']
   private readonly filteredSearchResults$ = new BehaviorSubject<Help[]>([])
@@ -278,22 +285,6 @@ export class HelpSearchComponent implements OnInit {
   }
 
   /****************************************************************************
-   *  FILE
-   */
-  public formatUploadFileSize(bytes: number): string {
-    if (bytes < 1024) return `${bytes}B`
-    const units = ['KB', 'MB', 'GB', 'TB']
-    let size = bytes / 1024
-    let unitIndex = 0
-    while (size >= 1024 && unitIndex < units.length - 1) {
-      size /= 1024
-      unitIndex++
-    }
-    const formatted = size < 10 ? Math.round(size * 10) / 10 : Math.round(size)
-    return `${formatted}${units[unitIndex]}`
-  }
-
-  /****************************************************************************
    *  DETAIL => CREATE, EDIT, VIEW
    */
   public onDetail(item: RowListGridData | undefined, mode: ChangeMode): void {
@@ -310,23 +301,22 @@ export class HelpSearchComponent implements OnInit {
     }
   }
 
-  /****************************************************************************
-   *  DELETE => Ask for confirmation
+  /*
+   * DELETION confirmed
    */
-  public onDeleteConfirmation(data: RowListGridData[]): void {
-    if (this.item4Delete?.id && typeof this.item4Delete.productName === 'string') {
-      this.helpApi.deleteHelp({ id: this.item4Delete.id }).subscribe({
-        next: () => {
-          this.msgService.success({ summaryKey: 'ACTIONS.DELETE.MESSAGE.OK' })
-          this.displayDeleteDialog = false
-          this.item4Delete = undefined
-        },
-        error: (err) => {
-          this.msgService.error({ summaryKey: 'ACTIONS.DELETE.MESSAGE.NOK' })
-          console.error('deleteHelp', err)
-        }
-      })
+  // called after successful deletion from AnnouncementDeleteComponent
+  public onDeleteConfirmed(deleted: boolean): void {
+    if (deleted) {
+      const productName = this.item4Delete?.productName
+      const data = this.dataSubject$.getValue().filter((d) => d['id'] !== this.item4Delete?.id)
+      this.dataSubject$.next(data)
+      this.onGlobalFilter(this.globalFilterValue, data) // update filtered data if filter is active
+      if (productName && !data.some((d) => d?.['productName'] === productName)) {
+        this.usedListsTrigger$.next()
+      }
     }
+    this.displayDeleteDialog = false
+    this.item4Delete = undefined
   }
 
   /****************************************************************************
@@ -391,7 +381,7 @@ export class HelpSearchComponent implements OnInit {
           if (data.stream?.length === 0) {
             this.msgService.info({ summaryKey: 'ACTIONS.SEARCH.MESSAGE.NO_RESULTS' })
             this.dataAvailable = false
-          }
+          } else this.dataAvailable = true
           this.prepareActionButtons()
         }),
         map((data) => (data.stream as unknown[] as RowListGridData[]) ?? []),
@@ -466,43 +456,12 @@ export class HelpSearchComponent implements OnInit {
   public onImport(): void {
     this.displayImportDialog = true
   }
-  public onImportSelectFile(event: FileSelectEvent): void {
-    event.files[0].text().then((text) => {
-      this.importError = false
-      this.importObject = undefined
-      try {
-        this.importObject = JSON.parse(text)
-        this.msgService.info({ summaryKey: 'ACTIONS.IMPORT.VALIDATION.OK' })
-      } catch (err: any) {
-        this.msgService.error({ summaryKey: 'ACTIONS.IMPORT.VALIDATION.NOK' })
-        console.error('Import parse error', err)
-        this.importError = true
-      }
-    })
-  }
-  public onImportConfirmation(): void {
-    if (this.importObject) {
-      this.helpApi.importHelps({ body: this.importObject }).subscribe({
-        next: () => {
-          this.msgService.success({ summaryKey: 'ACTIONS.IMPORT.MESSAGE.OK' })
-          this.usedListsTrigger$.next() // trigger getting data
-          this.onImportCloseDialog()
-        },
-        error: (err) => {
-          this.msgService.error({ summaryKey: 'ACTIONS.IMPORT.MESSAGE.NOK' })
-          console.error('importHelps', err)
-        }
-      })
+  public onImportDialogVisibleChange(refresh: boolean): void {
+    this.displayImportDialog = false
+    if (refresh) {
+      this.usedListsTrigger$.next()
       this.onSearch({}, true)
     }
-  }
-  public onImportCloseDialog(): void {
-    this.displayImportDialog = false
-    this.onImportClear()
-  }
-  public onImportClear(): void {
-    this.importError = false
-    this.importObject = undefined
   }
 
   /****************************************************************************
@@ -511,41 +470,8 @@ export class HelpSearchComponent implements OnInit {
   public onExport(): void {
     this.displayExportDialog = true
   }
-  public onExportConfirmation(): void {
-    if (this.exportProductList.length > 0) {
-      this.helpApi.exportHelps({ exportHelpsRequest: { productNames: this.exportProductList } }).subscribe({
-        next: (obj) => {
-          const helpsJson = JSON.stringify(obj, null, 2)
-          FileSaver.saveAs(
-            new Blob([helpsJson], { type: 'text/json' }),
-            'onecx-help-items_' + this.getCurrentDateTime() + '.json'
-          )
-          this.msgService.success({ summaryKey: 'ACTIONS.EXPORT.MESSAGE.OK' })
-          this.displayExportDialog = false
-          this.exportProductList = []
-        },
-        error: (err) => {
-          this.msgService.error({ summaryKey: 'ACTIONS.EXPORT.MESSAGE.NOK' })
-          console.error('exportHelps', err)
-        }
-      })
-    }
-  }
-  public onExportCloseDialog(): void {
+  public onExportDialogVisibleChange(): void {
     this.displayExportDialog = false
-    this.exportProductList = []
-  }
-
-  private getCurrentDateTime(): string {
-    const now = new Date()
-    const year = now.getFullYear()
-    const month = String(now.getMonth() + 1).padStart(2, '0')
-    const day = String(now.getDate()).padStart(2, '0')
-    const hours = String(now.getHours()).padStart(2, '0')
-    const minutes = String(now.getMinutes()).padStart(2, '0')
-    const seconds = String(now.getSeconds()).padStart(2, '0')
-
-    return `${year}-${month}-${day}_${hours}${minutes}${seconds}`
   }
 
   /* Prepare the final URL as follow (#) = optional:
