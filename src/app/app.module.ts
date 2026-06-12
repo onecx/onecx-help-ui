@@ -1,21 +1,16 @@
 import { NgModule } from '@angular/core'
 import { CommonModule } from '@angular/common'
 import { HttpClient, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http'
-import { RouterModule, Routes } from '@angular/router'
 import { BrowserModule } from '@angular/platform-browser'
 import { BrowserAnimationsModule, provideAnimations } from '@angular/platform-browser/animations'
-import { TranslateLoader, TranslateModule, MissingTranslationHandler } from '@ngx-translate/core'
+import { RouterModule, Routes } from '@angular/router'
+import { MissingTranslationHandler, TranslateLoader, TranslateModule } from '@ngx-translate/core'
 
 import { AngularAuthModule } from '@onecx/angular-auth'
-import { StandaloneShellModule, provideStandaloneProviders } from '@onecx/angular-standalone-shell'
-import {
-  createTranslateLoader,
-  provideThemeConfig,
-  provideTranslationConnectionService,
-  provideTranslationPathFromMeta
-} from '@onecx/angular-utils'
 import { APP_CONFIG } from '@onecx/angular-integration-interface'
 import { AngularAcceleratorMissingTranslationHandler, AngularAcceleratorModule } from '@onecx/angular-accelerator'
+import { StandaloneShellModule, provideStandaloneProviders } from '@onecx/angular-standalone-shell'
+import { createTranslateLoader, provideThemeConfig, provideTranslationPathFromMeta } from '@onecx/angular-utils'
 
 import { environment } from 'src/environments/environment'
 import { AppComponent } from './app.component'
@@ -27,8 +22,6 @@ const routes: Routes = [
   }
 ]
 @NgModule({
-  bootstrap: [AppComponent],
-  declarations: [],
   imports: [
     AppComponent,
     CommonModule,
@@ -36,11 +29,11 @@ const routes: Routes = [
     BrowserAnimationsModule,
     AngularAuthModule,
     AngularAcceleratorModule,
-    StandaloneShellModule,
     RouterModule.forRoot(routes, {
       initialNavigation: 'enabledBlocking',
       enableTracing: true
     }),
+    StandaloneShellModule,
     TranslateModule.forRoot({
       isolate: true,
       loader: { provide: TranslateLoader, useFactory: createTranslateLoader, deps: [HttpClient] },
@@ -51,11 +44,10 @@ const routes: Routes = [
     })
   ],
   providers: [
-    provideStandaloneProviders(),
     { provide: APP_CONFIG, useValue: environment },
-    ...provideTranslationConnectionService(),
     provideTranslationPathFromMeta(import.meta.url, 'assets/i18n/'),
     provideHttpClient(withInterceptorsFromDi()),
+    provideStandaloneProviders(),
     provideThemeConfig(),
     provideAnimations()
   ]

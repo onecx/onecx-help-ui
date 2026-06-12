@@ -1,14 +1,17 @@
 <ocx-portal-page permission="HELP#SEARCH" helpArticleId="PAGE_HELP_SEARCH">
-  <!-- slot getting data from product store -->
-  <ocx-slot
-    *ngIf="pdIsComponentDefined$ | async"
-    [name]="pdSlotName"
-    [inputs]="{ dataType: 'products', logEnabled: false, logPrefix: 'help' }"
-    [outputs]="{ products: pdSlotEmitter }"
-  >
-  </ocx-slot>
+  <!-- Getting data from product store -->
+  @let compDefined = pdIsComponentDefined$ | async;
+  @if (compDefined) {
+    <ocx-slot
+      [name]="pdSlotName"
+      [inputs]="{ dataType: 'products', logEnabled: false, logPrefix: 'help' }"
+      [outputs]="{ products: pdSlotEmitter }"
+    >
+    </ocx-slot>
+  }
 
-  <ng-container *ngIf="metaData$ | async as metaData">
+  @let metaData = metaData$ | async;
+  @if (metaData) {
     <app-help-criteria
       [actions]="(actions$ | async) ?? []"
       [usedProducts]="metaData.usedProducts"
@@ -16,72 +19,72 @@
       (resetSearchEmitter)="onCriteriaReset()"
     ></app-help-criteria>
 
-    <ocx-content>
-      <p-message
-        *ngIf="loadingMetaData"
-        id="am_search_message_loading"
-        severity="info"
-        styleClass="m-3 p-2"
-        [text]="'ACTIONS.LOADING' | translate"
-      ></p-message>
-      <p-message
-        *ngIf="exceptionKey"
-        id="hm_search_error_message"
-        severity="error"
-        styleClass="m-3 p-2"
-        [text]="exceptionKey! | translate"
-      ></p-message>
+    <ocx-content class="ocx-content">
+      @if (loadingMetaData) {
+        <p-message id="hm_search_message_loading" severity="info" [text]="'ACTIONS.LOADING' | translate"></p-message>
+      } @else if (exceptionKey) {
+        <p-message id="hm_search_message_error" severity="error" [text]="exceptionKey | translate"></p-message>
+      }
 
-      <ng-container *ngIf="data$ | async as data">
+      @let data = data$ | async;
+      @if (data) {
         <!-- placed here to avoid https://angular.dev/errors/NG0100 -->
-        <p-message
-          *ngIf="searching"
-          id="am_search_message_searching"
-          severity="info"
-          styleClass="m-3 p-2"
-          [text]="'ACTIONS.SEARCH.IN_PROGRESS' | translate"
-        ></p-message>
+        @if (searching) {
+          <p-message
+            id="hm_search_message_searching"
+            severity="info"
+            [text]="'ACTIONS.SEARCH.IN_PROGRESS' | translate"
+          ></p-message>
+        }
         <ocx-interactive-data-view
           *ngIf="!(searching || exceptionKey)"
           id="hm_search_table"
-          [name]="'help-search'"
-          [data]="$any(data)"
+          styleClass="p-0"
+          [data]="filteredData ?? data"
           [supportedViewLayouts]="['table']"
           [layout]="'table'"
-          [columns]="dataViewColumns"
+          [columns]="interactiveColumns"
           [displayedColumnKeys]="displayedColumnKeys"
-          (displayedColumnKeysChange)="displayedColumnKeys = $event"
-          [viewPermission]="dataViewViewPermission"
-          [editPermission]="dataViewEditPermission"
-          [deletePermission]="'HELP#DELETE'"
-          [additionalActions]="dataViewAdditionalActions"
-          [clientSideSorting]="true"
           [clientSideFiltering]="false"
-          [disableFilterView]="true"
-          [frozenActionColumn]="true"
-          [actionColumnPosition]="'left'"
+          [clientSideSorting]="true"
+          [sortField]="sortField"
+          [sortDirection]="sortDirection"
+          [tablePaginator]="true"
           [pageSize]="10"
           [pageSizes]="[10, 30, 100]"
-          [tablePaginator]="true"
-          [listGridPaginator]="false"
-          [contentStyleClass]="'mx-3 mb-2 hm-search-table-scroll-host'"
           [emptyResultsMessage]="'ACTIONS.SEARCH.NO_DATA' | translate"
-          (viewItem)="onViewItem($event)"
-          (editItem)="onEditItem($event)"
-          (deleteItem)="onDeleteItem($event)"
+          [viewPermission]="'HELP#VIEW'"
+          [editPermission]="'HELP#EDIT'"
+          [deletePermission]="'HELP#DELETE'"
+          [additionalActions]="interactiveAdditionalActions"
+          [actionColumnPosition]="'left'"
+          (displayedColumnKeysChange)="onColumnsChange($event)"
+          (sorted)="onSortChange($event)"
+          (editItem)="onEditFromInteractive($event)"
+          (deleteItem)="onDeleteFromInteractive($event)"
         >
+          <!-- TABLE HEADER -->
           <ng-template #topCenter>
-            <p-inputgroup class="w-auto">
+            <p-inputgroup>
               <p-inputgroup-addon>
                 <i class="pi pi-filter"></i>
               </p-inputgroup-addon>
               <p-floatlabel variant="on">
                 <input
-                  #filterInput
-                  id="hm_search_table_filter"
-                  type="text"
+                  #globalFilterInput
                   pInputText
-                  [value]="tableFilter"
+                  type="text"
+                  id="hm_search_table_global_filter"
+                  [value]="globalFilterValue"
+                  (input)="onGlobalFilter(globalFilterInput.value, data)"
+                  (focus)="globalFilterInput.classList.add('p-focus')"
+                  (blur)="globalFilterInput.classList.remove('p-focus')"
+                  [attr.aria-label]="
+                    ('DIALOG.DATAVIEW.FILTER_BY' | translate) +
+                    ('HELP_ITEM.PRODUCT_NAME' | translate) +
+                    ', ' +
+                    ('HELP_ITEM.ID' | translate)
+                  "
                   [pTooltip]="
                     ('DIALOG.DATAVIEW.FILTER_BY' | translate) +
                     ('HELP_ITEM.PRODUCT_NAME' | translate) +
@@ -90,32 +93,61 @@
                   "
                   tooltipPosition="top"
                   tooltipEvent="hover"
-                  (input)="onGlobalFilter(filterInput.value)"
                 />
                 <label for="hm_search_table_filter" aria-hidden="true">
                   {{ 'DIALOG.DATAVIEW.FILTER_PLACEHOLDER' | translate }}
                 </label>
               </p-floatlabel>
-              <p-button
-                id="hm_search_table_filter_clear"
-                icon="pi pi-filter-slash"
-                [disabled]="!tableFilter"
-                [attr.aria-label]="'DIALOG.DATAVIEW.FILTER_CLEAR' | translate"
-                [pTooltip]="'DIALOG.DATAVIEW.FILTER_CLEAR' | translate"
-                tooltipPosition="top"
-                tooltipEvent="hover"
-                (click)="onClearGlobalFilter(filterInput)"
-                (keydown)="onClearGlobalFilter(filterInput)"
-              />
+              <p-inputgroup-addon>
+                <p-button
+                  id="hm_search_table_global_filter_clear"
+                  icon="pi pi-filter-slash"
+                  (onClick)="onClearGlobalFilter(globalFilterInput)"
+                  (onKeydown.enter)="onClearGlobalFilter(globalFilterInput)"
+                  [severity]="globalFilterInput.value !== '' ? 'primary' : 'secondary'"
+                  [disabled]="!globalFilterValue"
+                  [ariaLabel]="'DIALOG.DATAVIEW.FILTER_CLEAR' | translate"
+                  [pTooltip]="'DIALOG.DATAVIEW.FILTER_CLEAR' | translate"
+                  tooltipPosition="top"
+                  tooltipEvent="hover"
+                />
+              </p-inputgroup-addon>
             </p-inputgroup>
           </ng-template>
-          <ng-template pTemplate="tableCell" let-rowObject="rowObject" let-column="column">
-            @switch (column.id) {
+          <!-- TABLE COLUMN HEADER -->
+          <ng-template
+            pTemplate="columnHeader"
+            let-col="column"
+            let-labelTemplate="labelTemplate"
+            let-sortTemplate="sortTemplate"
+            let-filterTemplate="filterTemplate"
+          >
+            <div [class]="col.cssHeader">
+              <div>
+                <ng-container
+                  [ngTemplateOutlet]="labelTemplate"
+                  [ngTemplateOutletContext]="{ column: col }"
+                ></ng-container>
+              </div>
+              <ng-container
+                [ngTemplateOutlet]="filterTemplate"
+                [ngTemplateOutletContext]="{ column: col }"
+              ></ng-container>
+              <ng-container
+                [ngTemplateOutlet]="sortTemplate"
+                [ngTemplateOutletContext]="{ column: col }"
+              ></ng-container>
+            </div>
+          </ng-template>
+          <!-- TABLE BODY -->
+          <ng-template pTemplate="tableCell" let-item="rowObject" let-col="column">
+            @let colBodyCss = col.cssBody ?? '';
+            @switch (col.id) {
               @case ('productName') {
-                @let displayName = getDisplayName(rowObject.productName, metaData.allProducts);
+                @let displayName = getDisplayName(item.productName, metaData.allProducts);
                 <div
-                  class="text-ellipsis-2-lines"
-                  [pTooltip]="displayName ? '' : rowObject.productName"
+                  [class]="colBodyCss + ' text-ellipsis-2-lines'"
+                  [pTooltip]="displayName ? '' : item.productName"
                   tooltipPosition="top"
                   tooltipEvent="hover"
                 >
@@ -123,13 +155,13 @@
                 </div>
               }
               @case ('baseUrl') {
-                <div class="text-ellipsis-2-lines word-break-all">
-                  {{ prepareUrl(rowObject) }}
+                <div [class]="colBodyCss + ' text-ellipsis-2-lines word-break-all'">
+                  {{ prepareUrl(item) }}
                 </div>
               }
               @default {
-                <div class="text-ellipsis-2-lines word-break-all">
-                  {{ rowObject[column.id] }}
+                <div [class]="colBodyCss + ' text-ellipsis-2-lines word-break-all'">
+                  {{ item[col.id] }}
                 </div>
               }
             }
@@ -146,7 +178,7 @@
           [draggable]="true"
           [resizable]="false"
           [dismissableMask]="true"
-          [style]="{ width: '500px' }"
+          [style]="{ 'max-width': '500px' }"
         >
           <div class="flex column-gap-3 row-gap-1 justify-content-start align-items-center">
             <div class="pi pi-question-circle text-3xl danger-action-text"></div>
@@ -169,7 +201,7 @@
               </div>
               <div *ngIf="item4Delete.operator">{{ 'ACTIONS.DELETE.OPERATOR_TEXT' | translate }}</div>
 
-              <div>{{ 'ACTIONS.DELETE.NO_UNDO' | translate }}</div>
+              <div class="white-space-nowrap">{{ 'ACTIONS.DELETE.NO_UNDO' | translate }}</div>
             </section>
           </div>
 
@@ -198,7 +230,7 @@
             </footer>
           </ng-template>
         </p-dialog>
-      </ng-container>
+      }
     </ocx-content>
 
     <!-- DETAIL -->
@@ -278,7 +310,7 @@
         </div>
       </ng-template>
     </p-dialog>
-  </ng-container>
+  }
 </ocx-portal-page>
 
 <!-- IMPORT -->

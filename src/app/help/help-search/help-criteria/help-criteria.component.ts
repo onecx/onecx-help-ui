@@ -37,7 +37,6 @@ export class HelpCriteriaComponent {
   @Output() public searchEmitter = new EventEmitter<HelpSearchCriteria>()
   @Output() public resetSearchEmitter = new EventEmitter<boolean>()
 
-  public displayDetailDialog = false
   public criteriaForm: FormGroup<HelpCriteriaForm>
   public productsFiltered: Product[] = []
 

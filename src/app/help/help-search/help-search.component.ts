@@ -1,31 +1,53 @@
-import { Component, EventEmitter, OnInit } from '@angular/core'
-import { CommonModule, Location } from '@angular/common'
-import { FormsModule } from '@angular/forms'
-import { TranslateModule, TranslateService } from '@ngx-translate/core'
-import { BehaviorSubject, catchError, combineLatest, finalize, map, Observable, of, switchMap, tap } from 'rxjs'
+import { Component, DestroyRef, EventEmitter, inject, OnInit } from '@angular/core'
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
+import { Location } from '@angular/common'
+import { TranslateService } from '@ngx-translate/core'
+import {
+  BehaviorSubject,
+  catchError,
+  combineLatest,
+  finalize,
+  map,
+  Observable,
+  of,
+  Subscription,
+  switchMap,
+  tap
+} from 'rxjs'
 import FileSaver from 'file-saver'
-
-import { ButtonModule } from 'primeng/button'
-import { DialogModule } from 'primeng/dialog'
-import { FileSelectEvent, FileUploadModule } from 'primeng/fileupload'
-import { FloatLabelModule } from 'primeng/floatlabel'
-import { InputGroupModule } from 'primeng/inputgroup'
-import { InputGroupAddonModule } from 'primeng/inputgroupaddon'
-import { InputTextModule } from 'primeng/inputtext'
-import { ListboxModule } from 'primeng/listbox'
-import { MessageModule } from 'primeng/message'
-import { TooltipModule } from 'primeng/tooltip'
+import { FileSelectEvent } from 'primeng/fileupload'
 
 import { PortalMessageService, UserService } from '@onecx/angular-integration-interface'
-import { Action, AngularAcceleratorModule, ColumnType, DataAction, DataTableColumn } from '@onecx/angular-accelerator'
-import { AngularRemoteComponentsModule, SlotService } from '@onecx/angular-remote-components'
+import {
+  Action,
+  ColumnType,
+  DataAction,
+  DataSortDirection,
+  DataTableColumn,
+  RowListGridData
+} from '@onecx/angular-accelerator'
 import { PortalPageComponent } from '@onecx/angular-utils'
+import { SlotService } from '@onecx/angular-remote-components'
 
+import { SharedModule } from 'src/app/shared/shared.module'
 import { Help, HelpsInternalAPIService, HelpSearchCriteria, HelpProductNames } from 'src/app/shared/generated'
 import { HelpCriteriaComponent } from './help-criteria/help-criteria.component'
 import { HelpDetailComponent } from '../help-detail/help-detail.component'
 
 export type ChangeMode = 'VIEW' | 'CREATE' | 'COPY' | 'EDIT'
+export type ExtendedColumn = {
+  field: string
+  labelKey: string
+  active?: boolean
+  tooltipKey?: string
+  sortable?: boolean
+  filterable?: boolean
+  isDate?: boolean
+  isDropdown?: boolean
+  limit?: boolean
+  cssHeader?: string
+  cssBody?: string
+}
 export type AllMetaData = {
   allProducts: Product[]
   usedProducts: Product[]
@@ -48,48 +70,32 @@ export type Product = {
   selector: 'app-help-search',
   templateUrl: './help-search.component.html',
   styleUrls: ['./help-search.component.scss'],
-  imports: [
-    CommonModule,
-    FormsModule,
-    TranslateModule,
-    AngularAcceleratorModule,
-    AngularRemoteComponentsModule,
-    PortalPageComponent,
-    HelpCriteriaComponent,
-    HelpDetailComponent,
-    ButtonModule,
-    DialogModule,
-    FileUploadModule,
-    FloatLabelModule,
-    InputGroupModule,
-    InputGroupAddonModule,
-    InputTextModule,
-    ListboxModule,
-    MessageModule,
-    TooltipModule
-  ]
+  standalone: true,
+  imports: [SharedModule, PortalPageComponent, HelpCriteriaComponent, HelpDetailComponent]
 })
 export class HelpSearchComponent implements OnInit {
-  private readonly deniedPermission = '__NO_PERMISSION__'
-
   // dialog
-  public loadingMetaData = false
   public searching = false
   public exceptionKey: string | undefined
+  public loadingMetaData = false
   public changeMode: ChangeMode = 'VIEW'
-  public dateFormat: string
+  public datetimeFormat: string = 'M/d/yy, h:mm a'
   public actions$: Observable<Action[]> | undefined
   public criteria: HelpSearchCriteria = {}
   public displayDeleteDialog = false
   public displayDetailDialog = false
   public displayImportDialog = false
   public displayExportDialog = false
-  public tableFilter = ''
-  public dataViewViewPermission = 'HELP#VIEW'
-  public dataViewEditPermission = 'HELP#EDIT'
+  public sortField = 'startDate'
+  public sortDirection = DataSortDirection.DESCENDING
 
   // data
-  public data$: Observable<Help[]>
+  private readonly destroyRef = inject(DestroyRef)
+  private readonly dataSubject$ = new BehaviorSubject<RowListGridData[] | null>(null)
+  public data$: Observable<RowListGridData[] | null> = this.dataSubject$.asObservable()
+  private searchSubscription?: Subscription // to cancel ongoing search if new search is triggered
+  public filteredData: RowListGridData[] | undefined = undefined
+  public globalFilterValue = ''
   public dataAvailable = false
   public metaData$!: Observable<AllMetaData>
   public usedLists$!: Observable<Product[]> // getting data from bff endpoint
@@ -101,42 +107,48 @@ export class HelpSearchComponent implements OnInit {
   private importObject: object | undefined = undefined
 
   public displayedColumnKeys: string[] = ['productName', 'itemId', 'baseUrl']
-  private rawSearchResults: Help[] = []
   private readonly filteredSearchResults$ = new BehaviorSubject<Help[]>([])
-  public dataViewColumns: DataTableColumn[] = [
+  public dataViewColumns: ExtendedColumn[] = [
     {
-      id: 'productName',
-      nameKey: 'HELP_ITEM.PRODUCT_NAME',
+      field: 'productName',
+      active: true,
+      labelKey: 'HELP_ITEM.PRODUCT_NAME',
       tooltipKey: 'HELP_ITEM.TOOLTIPS.PRODUCT_NAME',
-      columnType: ColumnType.STRING,
       sortable: true,
-      filterable: false
+      filterable: false,
+      cssHeader: 'flex flex-row flex-nowrap align-items-center column-gap-2 px-2 sm:px-3',
+      cssBody: 'py-0 px-2 sm:px-3'
     },
     {
-      id: 'itemId',
-      nameKey: 'HELP_ITEM.ID',
+      field: 'itemId',
+      active: true,
+      labelKey: 'HELP_ITEM.ID',
       tooltipKey: 'HELP_ITEM.TOOLTIPS.ID',
-      columnType: ColumnType.STRING,
       sortable: true,
-      filterable: false
+      filterable: false,
+      cssHeader: 'flex flex-row flex-nowrap align-items-center column-gap-2 px-2 sm:px-3',
+      cssBody: 'py-0 px-2 sm:px-3'
     },
     {
-      id: 'baseUrl',
-      nameKey: 'HELP_ITEM.URL',
+      field: 'baseUrl',
+      active: true,
+      labelKey: 'HELP_ITEM.URL',
       tooltipKey: 'HELP_ITEM.TOOLTIPS.URL',
-      columnType: ColumnType.STRING,
       sortable: true,
-      filterable: false
+      filterable: false,
+      cssHeader: 'flex flex-row flex-nowrap align-items-center column-gap-2 px-2 sm:px-3',
+      cssBody: 'py-0 px-2 sm:px-3'
     }
   ]
-  public dataViewAdditionalActions: DataAction[] = [
+  public interactiveColumns: DataTableColumn[] = []
+  public interactiveAdditionalActions: DataAction[] = [
     {
       id: 'copy',
       labelKey: 'ACTIONS.COPY.LABEL',
       icon: 'pi pi-copy',
       permission: 'HELP#EDIT',
       classes: ['copyTableRowButton'],
-      callback: (item: Help) => this.onDetail(item, 'COPY')
+      callback: (item: RowListGridData) => this.onDetail(item, 'COPY')
     }
   ]
 
@@ -153,31 +165,21 @@ export class HelpSearchComponent implements OnInit {
     private readonly msgService: PortalMessageService,
     private readonly helpApi: HelpsInternalAPIService
   ) {
-    this.data$ = this.filteredSearchResults$.asObservable()
-    this.dateFormat = this.user.lang$.getValue() === 'de' ? 'dd.MM.yyyy HH:mm' : 'M/d/yy, h:mm a'
+    this.interactiveColumns = this.createInteractiveColumns()
     this.pdIsComponentDefined$ = this.slotService.isSomeComponentDefinedForSlot(this.pdSlotName)
+    this.displayedColumnKeys = this.dataViewColumns.filter((a) => a.active === true).map((col) => col.field)
   }
 
   public ngOnInit(): void {
-    this.pdSlotEmitter.subscribe(this.productData$)
-    this.configureDataViewActionPermissions()
+    this.user.lang$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      next: (lang: string) => {
+        this.datetimeFormat = lang === 'de' ? 'dd.MM.yyyy HH:mm' : this.datetimeFormat
+      }
+    })
+    this.pdSlotEmitter.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(this.productData$)
     this.prepareActionButtons()
     this.loadMetaData()
     this.onSearch({})
-  }
-
-  private configureDataViewActionPermissions(): void {
-    this.user
-      .hasPermission('HELP#EDIT')
-      .then((hasEditPermission) => {
-        this.dataViewEditPermission = hasEditPermission ? 'HELP#EDIT' : this.deniedPermission
-        this.dataViewViewPermission = hasEditPermission ? this.deniedPermission : 'HELP#VIEW'
-      })
-      .catch((err) => {
-        this.dataViewEditPermission = this.deniedPermission
-        this.dataViewViewPermission = 'HELP#VIEW'
-        console.error('configureDataViewActionPermissions', err)
-      })
   }
 
   /****************************************************************************
@@ -232,67 +234,42 @@ export class HelpSearchComponent implements OnInit {
    */
   public onCriteriaReset(): void {
     this.criteria = {}
-    this.tableFilter = ''
-    this.rawSearchResults = []
     this.filteredSearchResults$.next([])
     this.dataAvailable = false
   }
 
-  public onGlobalFilter(value: string): void {
-    this.tableFilter = value ?? ''
-    this.applyGlobalFilterToResults()
+  public onColumnsChange(activeIds: string[]) {
+    if (
+      activeIds.length === this.displayedColumnKeys.length &&
+      activeIds.every((value, index) => value === this.displayedColumnKeys[index])
+    ) {
+      return
+    }
+    this.displayedColumnKeys = activeIds
+  }
+
+  public onGlobalFilter(value?: string, data?: RowListGridData[]): void {
+    if (!data) return
+    this.globalFilterValue = value ?? ''
+    if (this.globalFilterValue === '') this.filteredData = undefined
+    else
+      this.filteredData = data?.filter(
+        (row) =>
+          row['itemId']?.toString().toLowerCase().includes(this.globalFilterValue.toLowerCase()) ||
+          row['productName']?.toString().toLowerCase().includes(this.globalFilterValue.toLowerCase()) ||
+          row['displayName']?.toString().toLowerCase().includes(this.globalFilterValue.toLowerCase())
+      )
   }
 
   public onClearGlobalFilter(input?: HTMLInputElement): void {
-    this.tableFilter = ''
-    if (input) {
-      input.value = ''
-    }
-    this.filteredSearchResults$.next([...this.rawSearchResults])
+    this.globalFilterValue = ''
+    this.filteredData = undefined
+    if (input) input.value = ''
   }
 
-  private applyGlobalFilterToResults(): void {
-    const filterValue = this.tableFilter.trim().toLowerCase()
-    if (!filterValue) {
-      this.filteredSearchResults$.next([...this.rawSearchResults])
-      return
-    }
-    const allProducts = this.productData$.getValue()
-    const filtered = this.rawSearchResults.filter((item) => {
-      const displayName = this.getDisplayName(item.productName, allProducts, item.productName) ?? ''
-      const productName = item.productName ?? ''
-      const itemId = item.itemId ?? ''
-      return [displayName, productName, itemId].some((value) => value.toLowerCase().includes(filterValue))
-    })
-    this.filteredSearchResults$.next(filtered)
-  }
-
-  public formatUploadFileSize(bytes: number): string {
-    if (bytes < 1024) {
-      return `${bytes}B`
-    }
-
-    const units = ['KB', 'MB', 'GB', 'TB']
-    let size = bytes / 1024
-    let unitIndex = 0
-
-    while (size >= 1024 && unitIndex < units.length - 1) {
-      size /= 1024
-      unitIndex++
-    }
-
-    const formatted = size < 10 ? Math.round(size * 10) / 10 : Math.round(size)
-    return `${formatted}${units[unitIndex]}`
-  }
-
-  public onViewItem(item: any): void {
-    this.onDetail(item as Help, 'VIEW')
-  }
-  public onEditItem(item: any): void {
-    this.onDetail(item as Help, 'EDIT')
-  }
-  public onDeleteItem(item: any): void {
-    this.onDelete(item as Help)
+  public onSortChange(event: { sortColumn: string; sortDirection: DataSortDirection }): void {
+    this.sortField = event.sortColumn
+    this.sortDirection = event.sortDirection
   }
 
   public getDisplayName(name: string | undefined, list: Product[] | undefined, defValue?: string): string | undefined {
@@ -301,11 +278,27 @@ export class HelpSearchComponent implements OnInit {
   }
 
   /****************************************************************************
+   *  FILE
+   */
+  public formatUploadFileSize(bytes: number): string {
+    if (bytes < 1024) return `${bytes}B`
+    const units = ['KB', 'MB', 'GB', 'TB']
+    let size = bytes / 1024
+    let unitIndex = 0
+    while (size >= 1024 && unitIndex < units.length - 1) {
+      size /= 1024
+      unitIndex++
+    }
+    const formatted = size < 10 ? Math.round(size * 10) / 10 : Math.round(size)
+    return `${formatted}${units[unitIndex]}`
+  }
+
+  /****************************************************************************
    *  DETAIL => CREATE, EDIT, VIEW
    */
-  public onDetail(item: Help | undefined, mode: ChangeMode): void {
+  public onDetail(item: RowListGridData | undefined, mode: ChangeMode): void {
     this.changeMode = mode
-    this.item4Detail = item // do not manipulate the item here
+    this.item4Detail = item as unknown as Help // do not manipulate the item here
     this.displayDetailDialog = true
   }
   public onCloseDetail(refresh: boolean): void {
@@ -320,22 +313,11 @@ export class HelpSearchComponent implements OnInit {
   /****************************************************************************
    *  DELETE => Ask for confirmation
    */
-  public onDelete(item: Help): void {
-    this.item4Delete = item
-    this.displayDeleteDialog = true
-  }
-  public onDeleteConfirmation(data: Help[]): void {
+  public onDeleteConfirmation(data: RowListGridData[]): void {
     if (this.item4Delete?.id && typeof this.item4Delete.productName === 'string') {
       this.helpApi.deleteHelp({ id: this.item4Delete.id }).subscribe({
         next: () => {
           this.msgService.success({ summaryKey: 'ACTIONS.DELETE.MESSAGE.OK' })
-          this.rawSearchResults = this.rawSearchResults.filter((d) => d.id !== this.item4Delete?.id)
-          this.applyGlobalFilterToResults()
-          this.dataAvailable = this.rawSearchResults.length > 0
-          // check remaining data: if product still exists - if not then trigger reload
-          if (!this.rawSearchResults.some((d) => d.productName === this.item4Delete?.productName)) {
-            this.usedListsTrigger$.next() // trigger getting data
-          }
           this.displayDeleteDialog = false
           this.item4Delete = undefined
         },
@@ -401,39 +383,81 @@ export class HelpSearchComponent implements OnInit {
     if (!reuseCriteria) this.criteria = criteria
     this.searching = true
     this.exceptionKey = undefined
-    this.tableFilter = ''
-    this.helpApi
+    this.searchSubscription?.unsubscribe()
+    this.searchSubscription = this.helpApi
       .searchHelps({ helpSearchCriteria: this.criteria })
       .pipe(
         tap((data) => {
-          this.dataAvailable = (data.stream && data.stream.length > 0) ?? false
-          if (!this.dataAvailable) this.msgService.info({ summaryKey: 'ACTIONS.SEARCH.MESSAGE.NO_RESULTS' })
+          if (data.stream?.length === 0) {
+            this.msgService.info({ summaryKey: 'ACTIONS.SEARCH.MESSAGE.NO_RESULTS' })
+            this.dataAvailable = false
+          }
           this.prepareActionButtons()
         }),
-        map((data) => data.stream?.sort(this.sortHelpItemByDefault) ?? []),
+        map((data) => (data.stream as unknown[] as RowListGridData[]) ?? []),
         catchError((err) => {
           this.exceptionKey = 'EXCEPTIONS.HTTP_STATUS_' + err.status + '.HELP_ITEM'
           this.msgService.error({ summaryKey: 'ACTIONS.SEARCH.MESSAGE.NOK' })
           console.error('searchHelps', err)
           return of([])
         }),
-        finalize(() => (this.searching = false))
+        finalize(() => (this.searching = false)),
+        takeUntilDestroyed(this.destroyRef)
       )
-      .subscribe((results) => {
-        this.rawSearchResults = results
-        this.filteredSearchResults$.next([...results])
+      .subscribe((data) => this.dataSubject$.next(data))
+  }
+
+  private sortProductsByName(a: Product, b: Product): number {
+    return a.displayName!.toUpperCase().localeCompare(b.displayName!.toUpperCase())
+  }
+
+  private ensureHasPermission(permission: string, onGranted: () => void): void {
+    this.user
+      .hasPermission(permission)
+      .then((granted) => {
+        if (!granted) {
+          this.msgService.error({ summaryKey: 'EXCEPTIONS.HTTP_STATUS_403.HELP' })
+          return
+        }
+        onGranted()
+      })
+      .catch((err) => {
+        console.error('hasPermission', err)
+        this.msgService.error({ summaryKey: 'EXCEPTIONS.HTTP_STATUS_403.HELP' })
       })
   }
 
-  // default sorting: 1.productName, 2.itemId
-  private sortHelpItemByDefault(a: Help, b: Help): number {
-    return (
-      a.productName!.toUpperCase().localeCompare(b.productName!.toUpperCase()) ||
-      a.itemId.toUpperCase().localeCompare(b.itemId.toUpperCase())
-    )
+  public onViewFromInteractive(item: RowListGridData): void {
+    this.ensureHasPermission('HELP#VIEW', () => this.onDetail(item, 'VIEW'))
   }
-  private sortProductsByName(a: Product, b: Product): number {
-    return a.displayName!.toUpperCase().localeCompare(b.displayName!.toUpperCase())
+  public onCopyFromInteractive(item: RowListGridData): void {
+    this.ensureHasPermission('HELP#CREATE', () => this.onDetail(item, 'COPY'))
+  }
+  public onEditFromInteractive(item: RowListGridData): void {
+    this.ensureHasPermission('HELP#EDIT', () => this.onDetail(item, 'EDIT'))
+  }
+  public onDeleteFromInteractive(item: RowListGridData): void {
+    this.ensureHasPermission('HELP#DELETE', () => {
+      this.item4Delete = { ...item } as unknown as Help
+      this.displayDeleteDialog = true
+    })
+  }
+
+  // Extend the columns with information for interactive table and special rendering
+  private createInteractiveColumns(): DataTableColumn[] {
+    return this.dataViewColumns.map((col) => {
+      return {
+        id: col.field,
+        nameKey: col.labelKey,
+        tooltipKey: col.tooltipKey,
+        columnType: ColumnType.STRING,
+        sortable: col.sortable === true,
+        filterable: col.filterable === true,
+        // extensions for custom rendering:
+        cssHeader: col.cssHeader,
+        cssBody: col.cssBody
+      }
+    })
   }
 
   /****************************************************************************

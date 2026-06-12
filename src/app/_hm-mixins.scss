@@ -2,45 +2,32 @@
  *  FORM - Control Improvements
  * **********************************************/
 
-// displaying text like an input field with floating label
-@mixin float-label-textbox {
-  :host {
-    .p-float-label {
-      display: block;
-      position: relative;
-      .ocx-float-label-textbox {
-        font-family: var(--font-family);
-        font-size: var(--input-text-font-size);
-        color: var(--p-form-field-color);
-        background: var(--input-bg);
-        padding: var(--input-padding);
-        border: var(--input-border);
-        transition: var(--form-element-transition);
-        appearance: none;
-        border-radius: var(--border-radius);
-      }
-      .ocx-float-label {
-        position: absolute;
-        left: 0.75rem;
-        top: -0.5rem !important;
-        padding: 2px 4px;
-        margin-left: -4px;
-        margin-top: 0;
-        line-height: 1;
-        font-size: 12px;
-        pointer-events: none;
-        color: var(--p-form-field-float-label-color);
-        background-color: var(--input-bg);
-        transition-property: all;
-        transition-timing-function: ease;
-        transition-duration: var(--p-transition-duration);
+// Manipulate PrimeNG p-floatlabel
+@mixin ocx-floatlabel {
+  .p-floatlabel {
+    // Move the label only if embedded input control (input, textarea etc.) is filled or focussed
+    &.p-floatlabel-over {
+      &:has(.p-filled) label,
+      &:has(.p-focus) label {
+        top: -5px !important;
+        background-color: white;
+        padding: 0 0.5rem;
       }
     }
   }
 }
+@mixin ocx-required-label {
+  // Keep a visible required marker even when external theme styles are missing.
+  .p-floatlabel > label.ocx-required-label::after {
+    content: ' *';
+    color: var(--red-500, #ef4444);
+    font-weight: 600;
+  }
+}
 
-@mixin displaying-text-responsive {
+@mixin ocx-text-responsive {
   :host ::ng-deep {
+    --disabled-opacity: 0.7;
     .text-responsive {
       white-space: nowrap;
       overflow: hidden;
@@ -58,13 +45,6 @@
     -webkit-box-orient: vertical;
   } @else {
     white-space: nowrap;
-  }
-}
-
-// disable preset of opacity in form: not readable
-@mixin readable-disabled-form-controls {
-  :host ::ng-deep {
-    --disabled-opacity: 0.7;
   }
 }
 
@@ -97,22 +77,20 @@
   }
 }
 
-@mixin prepare-inputgroup {
+@mixin ocx-p-inputgroup {
   :host ::ng-deep {
-    .inputgroup-dropdown-with-link {
-      border-right: none;
-      border-top-right-radius: 0;
-      border-bottom-right-radius: 0;
-    }
-    .input-field-correction .p-inputtext {
-      padding-top: 1rem !important;
-      padding-bottom: 0.5rem !important;
-    }
-    .pseudo-button:hover {
-      background: var(--button-hover-bg) !important;
-      cursor: pointer;
-      * {
-        background: var(--button-hover-bg) !important;
+    .p-inputgroupaddon {
+      > p-button {
+        display: flex;
+        height: 100%;
+        width: 100%;
+        > .p-button {
+          flex-grow: 1;
+        }
+      }
+      /* Manipulate the addon wrapper depends on button state inside */
+      &:has(.p-button.p-button-primary) {
+        border: none;
       }
     }
   }
@@ -170,19 +148,6 @@
 /* **********************************************
  *  PrimeNG - Layout Corrections
  * **********************************************/
-@mixin input-clear-icon {
-  .p-input-icon-right > a:last-of-type {
-    right: 0.75rem;
-    color: var(--p-form-field-icon-color);
-  }
-  .p-input-icon-left > a,
-  .p-input-icon-right > a {
-    position: absolute;
-    top: 50%;
-    margin-top: -0.5rem;
-  }
-}
-
 @mixin correct-autocomplete {
   :host ::ng-deep {
     .p-autocomplete-panel .p-autocomplete-items .p-autocomplete-item {
@@ -195,7 +160,6 @@
     .p-autocomplete-clear-icon {
       /* fix for bug in PrimeNG */
       right: 3.5rem;
-      color: black;
     }
     .p-autocomplete .p-autocomplete-loader {
       /* fix for bug in PrimeNG */
@@ -208,42 +172,6 @@
     .p-autocomplete-dropdown.p-button-icon-only.p-button {
       border-bottom-left-radius: unset;
       border-top-left-radius: unset;
-    }
-  }
-}
-
-@mixin correct-data-view-header-for-tabpanel {
-  :host ::ng-deep {
-    .p-dataview .p-dataview-header,
-    .p-datatable .p-datatable-header {
-      padding: 0.2rem 0.2rem 0.9rem 0.2rem;
-    }
-  }
-}
-
-@mixin correct-data-view-control {
-  :host ::ng-deep {
-    .data-view-control,
-    .data-view-control * {
-      color: var(--text-secondary-color);
-    }
-    // correction for data-view-control component
-    .data-view-control-border {
-      border: var(--toggle-button-border);
-      &.p-dropdown {
-        .p-inputtext {
-          color: var(--text-secondary-color);
-          opacity: 0.9;
-        }
-        &:last-of-type {
-          border-top-left-radius: var(--border-radius);
-          border-bottom-left-radius: var(--border-radius);
-        }
-      }
-      &.p-inputtext:hover,
-      &.p-dropdown:hover {
-        border-color: rgb(0 0 0 / 30%) !important;
-      }
     }
   }
 }
@@ -272,40 +200,6 @@
         }
       }
     }
-    .p-fileupload-file-info {
-      flex-direction: row;
-    }
-  }
-}
-
-@mixin file-upload-disabled-buttons {
-  :host ::ng-deep {
-    // PrimeNG v19: p-button no longer adds p-disabled class when [disabled]=true,
-    // only the inner <button> gets the native disabled attribute.
-    // Apply disabled visual treatment via :has() to match the p-disabled styles.
-    .p-fileupload p-button:has(button:disabled) {
-      .p-button {
-        opacity: var(--onecx-help-onecx-help-ui-disabled-opacity);
-        background-color: var(--onecx-help-onecx-help-ui-button-secondary-background);
-      }
-    }
-    .p-fileupload p-button:has(button:not(:disabled)) {
-      .p-button.p-fileupload-upload-button,
-      .p-button.p-fileupload-cancel-button {
-        background-color: var(--onecx-help-onecx-help-ui-onecx-primary-color);
-        color: var(--onecx-help-onecx-help-ui-onecx-topbar-menu-button-text-color);
-        opacity: var(--onecx-help-onecx-help-ui-enabled-opacity, 1);
-      }
-      .p-button.p-fileupload-upload-button:enabled:hover,
-      .p-button.p-fileupload-upload-button:enabled:focus-visible,
-      .p-button.p-fileupload-cancel-button:enabled:hover,
-      .p-button.p-fileupload-cancel-button:enabled:focus-visible {
-        background-color: var(
-          --onecx-help-onecx-help-ui-button-primary-hover-background,
-          color-mix(in srgb, var(--onecx-help-onecx-help-ui-onecx-primary-color) 85%, black)
-        );
-      }
-    }
   }
 }
 
@@ -332,9 +226,32 @@
 }
 
 /* **********************************************
- *  OneCX Widget - Layout Corrections
+ *  OCX Widgets
  * **********************************************/
-@mixin correct-search-criteria {
+@mixin ocx-interactive-data-view-fixes {
+  :host ::ng-deep {
+    /* fix base layout of interactive data view */
+    ocx-interactive-data-view > {
+      :first-child {
+        padding-top: 0 !important;
+      }
+      :not(:first-child) {
+        padding: 0.5rem 0 0 0 !important;
+      }
+    }
+    /* correct header layouting by lib */
+    .table-header-wrapper {
+      flex-direction: row !important;
+      justify-content: flex-start !important;
+      flex-wrap: nowrap !important;
+    }
+    .table-header-wrapper span:first-child {
+      margin-right: 10px !important;
+    }
+  }
+}
+
+@mixin ocx-search-criteria-fixes {
   :host ::ng-deep {
     .search-criteria-container > div {
       display: flex;
@@ -363,13 +280,13 @@
       .p-selectbutton .p-button {
         text-align: center;
         display: inline-block;
-        color: var(--text-secondary-color);
+        color: var(--emphasis-medium);
         font-weight: var(--font-weight);
         padding: 0.3rem 0.8rem;
         border: var(--input-border);
       }
       .p-selectbutton-subtitle {
-        color: var(--text-secondary-color);
+        color: var(--emphasis-medium);
         font-size: 0.8rem;
       }
     }
@@ -381,11 +298,11 @@
       .p-selectbutton .p-button {
         opacity: 0.9 !important;
         border: var(--toggle-button-border);
-        &.p-togglebutton-checked {
+        &.p-highlight {
           background: var(--toggle-button-active-bg);
           border-color: var(--toggle-button-active-border-color);
         }
-        &:not(.p-disabled):not(.p-togglebutton-checked):hover {
+        &:not(.p-disabled):not(.p-highlight):hover {
           color: var(--text-color);
           border-color: var(--toggle-button-hover-border-color);
           background-color: var(--toggle-button-hover-bg);
@@ -402,12 +319,12 @@
     }
     .search-criteria-selectbutton {
       .p-selectbutton .p-button {
-        &.p-togglebutton-checked {
+        &.p-highlight {
           color: var(--primary-text-color);
           border-color: var(--toggle-button-hover-border-color);
           background-color: var(--primary-color);
         }
-        &:not(.p-disabled):not(.p-togglebutton-checked):hover {
+        &:not(.p-disabled):not(.p-highlight):hover {
           color: var(--primary-text-color);
           border-color: var(--toggle-button-hover-border-color);
           background-color: var(--button-hover-bg);
@@ -452,7 +369,7 @@
 }
 @mixin listbox-zebra-rows {
   :host ::ng-deep {
-    .p-listbox:not(.p-disabled) .p-listbox-option:not(.p-listbox-option-selected):not(.p-disabled) {
+    .p-listbox:not(.p-disabled) .p-listbox-item:not(.p-highlight):not(.p-disabled) {
       &:nth-child(even) {
         background-color: var(--table-body-row-even-bg);
       }
@@ -468,19 +385,27 @@
     }
   }
 }
-@mixin table-zebra-rows {
+@mixin p-table-zebra-rows {
   :host ::ng-deep {
+    .p-datatable {
+      --table-zebra-even-bg: var(
+        --onecx-help-onecx-help-ui-datatable-row-even-background,
+        var(--table-body-row-even-bg, rgba(0, 0, 0, 0.02))
+      );
+    }
+
     /* this works only on non-frozen columns (table.p-datatable-striped does not work) */
     .p-datatable .p-datatable-tbody > tr:nth-child(even) > td:not(.p-frozen-column) {
-      background-color: var(
-        --onecx-help-onecx-help-ui-datatable-row-even-background,
-        color-mix(in srgb, var(--onecx-help-onecx-help-ui-datatable-row-background, #ffffff) 94%, #000000)
-      );
+      background-color: var(--table-zebra-even-bg);
+    }
+
+    .p-datatable .p-datatable-tbody > tr:nth-child(even) > td:first-child:not(.p-frozen-column) {
+      background-color: var(--table-zebra-first-column-even-bg, var(--table-zebra-even-bg));
     }
   }
 }
 
-/* LISTBOX*/
+/* LISTBOX */
 @mixin listbox-layout {
   :host ::ng-deep {
     .p-listbox {
@@ -515,14 +440,36 @@
   }
 }
 
+@mixin ocx-p-message {
+  :host ::ng-deep {
+    .p-message {
+      display: inline-grid;
+      min-width: 20rem;
+    }
+  }
+}
+
 /* **********************************************
  *  DIALOG
  * **********************************************/
-@mixin correct-modal-dialog {
+@mixin ocx-content {
   :host ::ng-deep {
+    .ocx-content > div {
+      margin-bottom: 0 !important;
+      padding-top: 0.5rem;
+    }
+  }
+}
+
+@mixin ocx-modal-dialog {
+  :host ::ng-deep {
+    .p-dialog .p-dialog-header {
+      padding-top: 1rem;
+      padding-bottom: 1rem;
+    }
     .p-dialog .p-dialog-content {
-      border-bottom-left-radius: var(--border-radius);
-      border-bottom-right-radius: var(--border-radius);
+      padding-top: 0.2rem;
+      padding-bottom: 1rem;
     }
   }
 }
@@ -550,29 +497,38 @@
   }
 }
 
-@mixin tabview-reduce-padding {
+/* **********************************************
+ *  TABs
+ * **********************************************/
+@mixin ocx-tabs {
   :host ::ng-deep {
-    .p-tabview .p-tabview-panels {
-      padding: 1.4rem 0 0 0;
+    .p-tabs {
+      .p-tablist {
+        border-bottom: 1px solid var(--surface-300);
+      }
+      .p-tab {
+        padding: 0.75rem 1rem;
+        &.p-tab-active {
+          background-color: rgb(from var(--primary-color) r g b / 0.12);
+        }
+      }
+      .p-tabpanels {
+        padding: 0.5rem 0 0 0;
+      }
     }
-  }
-}
-@mixin tabview-fix-color-selected-tab {
-  :host ::ng-deep {
-    --tabview-header-active-bg: rgb(from var(--primary-color) r g b / 0.12) !important;
   }
 }
 
 /* **********************************************
  *  TABLE
  * **********************************************/
-@mixin table-inline-buttons {
+@mixin table-inline-p-buttons {
   :host ::ng-deep {
     // reduce the size of buttons used inside a table row
     th button.p-button,
     td button.p-button {
       &.p-button-icon-only {
-        padding: 0.2rem;
+        padding: 0.5rem;
         width: unset !important;
       }
       &.p-button-rounded {
@@ -584,7 +540,7 @@
     }
   }
 }
-@mixin table-responsive-columns {
+@mixin table-responsive-table-cell {
   :host ::ng-deep {
     // responsive table result view
     @media screen and (min-width: 576px) {
@@ -606,20 +562,6 @@
       .xl\:table-cell {
         display: table-cell !important;
       }
-    }
-  }
-}
-
-@mixin table-sticky-header {
-  :host ::ng-deep {
-    /* keep header sticky while using normal page scroll */
-    .p-datatable-thead > tr > th {
-      position: sticky;
-      top: 0;
-      text-align: center;
-    }
-    .p-datatable-thead > tr > th > div {
-      align-items: center !important;
     }
   }
 }
