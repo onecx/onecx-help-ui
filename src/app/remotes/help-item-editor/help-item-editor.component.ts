@@ -77,7 +77,6 @@ export class OneCXHelpItemEditorComponent implements ocxRemoteComponent, ocxRemo
   permissions: string[] = []
   // slot configuration: get product data via remote component
   public pdSlotName = 'onecx-product-data'
-  public pdIsComponentDefined = false
   public pdIsComponentDefined$: Observable<boolean> | undefined // check
   public productData$ = new BehaviorSubject<Product[] | undefined>(undefined) // product infos
   public pdSlotEmitter = new EventEmitter<Product[]>()
@@ -119,9 +118,7 @@ export class OneCXHelpItemEditorComponent implements ocxRemoteComponent, ocxRemo
       })
     )
     this.pdSlotEmitter.subscribe((products: Product[]) => (this.products = products))
-    this.slotService
-      .isSomeComponentDefinedForSlot(this.pdSlotName)
-      .subscribe((defined) => (this.pdIsComponentDefined = defined === true))
+    this.pdIsComponentDefined$ = this.slotService.isSomeComponentDefinedForSlot(this.pdSlotName)
   }
 
   public ocxInitRemoteComponent(config: RemoteComponentConfig): void {

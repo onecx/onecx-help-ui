@@ -7,10 +7,6 @@ import { Router } from '@angular/router'
 import { TranslateTestingModule } from 'ngx-translate-testing'
 import { ReplaySubject, of, throwError } from 'rxjs'
 
-import { TooltipModule } from 'primeng/tooltip'
-import { RippleModule } from 'primeng/ripple'
-import { DynamicDialogModule } from 'primeng/dynamicdialog'
-
 import { IfPermissionDirective } from '@onecx/angular-accelerator'
 import { UserService } from '@onecx/angular-integration-interface'
 import { AppStateService, PortalMessageService } from '@onecx/angular-integration-interface'
@@ -72,7 +68,6 @@ describe('OneCXShowHelpComponent', () => {
     })
       .overrideComponent(OneCXShowHelpComponent, {
         set: {
-          imports: [PortalDependencyModule, TranslateTestingModule, TooltipModule, RippleModule, DynamicDialogModule],
           providers: [
             //{ provide: UserService, useValue: mockUserService },
             { provide: HelpsInternalAPIService, useValue: helpApiSpy },

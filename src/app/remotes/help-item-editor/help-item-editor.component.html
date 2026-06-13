@@ -1,10 +1,7 @@
 <!-- TOPBAR ITEM -->
-<div
-  class="relative flex align-items-center justify-content-center"
-  *ocxIfPermission="'HELP#EDIT'; permissions: permissions"
->
+<div *ocxIfPermission="'HELP#EDIT'; permissions: permissions">
   <!-- slot getting data from product store: one time only -->
-  @if (pdIsComponentDefined) {
+  @if (pdIsComponentDefined$ | async) {
     <ocx-slot
       id="ocx_topbar_action_edit_help_item_slot_products"
       [name]="pdSlotName"
@@ -15,7 +12,7 @@
   }
   <p-button
     id="ocx_topbar_action_edit_help_item"
-    class="layout-topbar-action"
+    class="ocx-topbar-action"
     pRipple
     [rounded]="true"
     icon="pi pi-pencil"

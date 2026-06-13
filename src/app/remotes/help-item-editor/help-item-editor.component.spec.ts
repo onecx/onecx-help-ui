@@ -1,4 +1,4 @@
-import { NgModule, NO_ERRORS_SCHEMA, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core'
+import { NgModule } from '@angular/core'
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing'
 import { HttpErrorResponse, provideHttpClient } from '@angular/common/http'
 import { provideHttpClientTesting } from '@angular/common/http/testing'
@@ -7,22 +7,15 @@ import { Router } from '@angular/router'
 import { ReplaySubject, of, throwError } from 'rxjs'
 import { TranslateTestingModule } from 'ngx-translate-testing'
 
-import { DynamicDialogModule } from 'primeng/dynamicdialog'
-import { TooltipModule } from 'primeng/tooltip'
-import { RippleModule } from 'primeng/ripple'
-import { PrimeIcons } from 'primeng/api'
-
 import { IfPermissionDirective } from '@onecx/angular-accelerator'
 import { REMOTE_COMPONENT_CONFIG, RemoteComponentConfig } from '@onecx/angular-utils'
 import { SlotService } from '@onecx/angular-remote-components'
-import { AppStateService, PortalMessageService, UserService } from '@onecx/angular-integration-interface'
+import { AppStateService, PortalMessageService } from '@onecx/angular-integration-interface'
 import { PortalDialogService, providePortalDialogService } from '@onecx/angular-accelerator'
 
 import { Help, HelpsInternalAPIService } from 'src/app/shared/generated'
 import { OneCXHelpItemEditorComponent, Product, slotInitializer } from './help-item-editor.component'
 import { OneCXHelpItemEditorHarness } from './help-item-editor.harness'
-
-import { HelpItemEditorFormComponent } from './help-item-editor-form/help-item-editor-form.component'
 
 @NgModule({
   imports: [],
@@ -40,10 +33,6 @@ describe('OneCXHelpItemEditorComponent', () => {
   let fixture: ComponentFixture<OneCXHelpItemEditorComponent>
   let oneCXHelpItemEditorHarness: OneCXHelpItemEditorHarness
 
-  const mockUserService = jasmine.createSpyObj<UserService>('UserService', ['hasPermission'])
-  mockUserService.hasPermission.and.callFake((permission: string) => {
-    return Promise.resolve(['HELP#EDIT', 'HELP#VIEW'].includes(permission))
-  })
   const helpApiServiceSpy = jasmine.createSpyObj<HelpsInternalAPIService>('HelpsInternalAPIService', [
     'searchHelps',
     'createNewHelp',
@@ -73,10 +62,10 @@ describe('OneCXHelpItemEditorComponent', () => {
       declarations: [],
       imports: [
         TranslateTestingModule.withTranslations({
+          de: require('src/assets/i18n/de.json'),
           en: require('src/assets/i18n/en.json')
         }).withDefaultLanguage('en')
       ],
-      schemas: [CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA],
       providers: [
         provideHttpClient(),
         provideHttpClientTesting(),
@@ -86,9 +75,7 @@ describe('OneCXHelpItemEditorComponent', () => {
     })
       .overrideComponent(OneCXHelpItemEditorComponent, {
         set: {
-          imports: [PortalDependencyModule, TranslateTestingModule, TooltipModule, RippleModule, DynamicDialogModule],
           providers: [
-            // { provide: UserService, useValue: mockUserService }
             { provide: SlotService, useValue: slotServiceSpy },
             { provide: HelpsInternalAPIService, useValue: helpApiServiceSpy },
             { provide: PortalDialogService, useValue: dialogServiceSpy },
@@ -102,7 +89,6 @@ describe('OneCXHelpItemEditorComponent', () => {
   }))
 
   afterEach(() => {
-    mockUserService.hasPermission.and.returnValue(Promise.resolve(true))
     // to spy data: reset
     // eslint-disable-next-line deprecation/deprecation
     dialogServiceSpy.openDialog.calls.reset()
@@ -133,6 +119,7 @@ describe('OneCXHelpItemEditorComponent', () => {
         permissions: ['HELP#VIEW'],
         baseUrl: 'base'
       }
+      initTestComponent()
       spyOn(component, 'ocxInitRemoteComponent')
 
       component.ocxRemoteComponentConfig = rcc
@@ -360,129 +347,6 @@ describe('OneCXHelpItemEditorComponent', () => {
         expect(helpApiServiceSpy.searchHelps).toHaveBeenCalledTimes(0)
         done()
       })
-    })
-  })
-
-  xdescribe('open dialog', () => {
-    // Reason: Seems a duplication
-    xit('should open help item editor dialog when article and application defined', async () => {
-      const appStateService = TestBed.inject(AppStateService)
-      spyOn(appStateService.currentPage$, 'asObservable').and.returnValue(of({ helpArticleId: 'article_id' }) as any)
-      spyOn(appStateService.currentMfe$, 'asObservable').and.returnValue(
-        of({ remoteBaseUrl: '', productName: 'mfe_product_name' }) as any
-      )
-      helpApiServiceSpy.searchHelps.calls.reset()
-      helpApiServiceSpy.searchHelps.and.returnValue(
-        of({
-          stream: [{ name: 'mfe_product_name', displayName: 'mfe_display_product_name' }]
-        } as any)
-      )
-      helpApiServiceSpy.searchHelps.and.returnValue(of({ totalElements: 0, stream: [] } as any))
-
-      initTestComponent({ permissions: ['HELP#EDIT'], baseUrl: 'base_url' } as RemoteComponentConfig)
-      await initHarness
-      await oneCXHelpItemEditorHarness.clickHelpEditorButton()
-
-      // eslint-disable-next-line deprecation/deprecation
-      expect(dialogServiceSpy.openDialog<Help>).toHaveBeenCalledOnceWith(
-        'HELP_ITEM_EDITOR.HEADER',
-        {
-          type: HelpItemEditorFormComponent,
-          inputs: {
-            helpItem: { productName: 'mfe_product_name', itemId: 'article_id' },
-            productDisplayName: 'mfe_display_product_name'
-          }
-        },
-        { key: 'HELP_ITEM_EDITOR.SAVE', icon: PrimeIcons.CHECK },
-        { key: 'HELP_ITEM_EDITOR.CANCEL', icon: PrimeIcons.TIMES },
-        false
-        //{ showXButton: true, draggable: true, resizable: true, width: '550px' }
-      )
-    })
-
-    // Reason: Seems a duplication
-    xit('should open help item editor dialog for new item', async () => {
-      const appStateService = TestBed.inject(AppStateService)
-      spyOn(appStateService.currentPage$, 'asObservable').and.returnValue(of({ helpArticleId: 'article_id' }) as any)
-      spyOn(appStateService.currentMfe$, 'asObservable').and.returnValue(
-        of({ remoteBaseUrl: '', productName: 'mfe_product_name' }) as any
-      )
-      helpApiServiceSpy.searchHelps.calls.reset()
-      helpApiServiceSpy.searchHelps.and.returnValue(
-        of({
-          stream: [
-            {
-              name: 'mfe_product_name',
-              displayName: 'mfe_display_product_name'
-            }
-          ]
-        } as any)
-      )
-      helpApiServiceSpy.searchHelps.and.returnValue(of({ totalElements: 0, stream: [] } as any))
-
-      initTestComponent({ permissions: ['HELP#EDIT'], baseUrl: 'base_url' } as RemoteComponentConfig)
-      await initHarness
-      await oneCXHelpItemEditorHarness.clickHelpEditorButton()
-
-      // eslint-disable-next-line deprecation/deprecation
-      expect(dialogServiceSpy.openDialog<Help>).toHaveBeenCalledOnceWith(
-        'HELP_ITEM_EDITOR.HEADER',
-        {
-          type: HelpItemEditorFormComponent,
-          inputs: {
-            helpItem: { productName: 'mfe_product_name', itemId: 'article_id' },
-            productDisplayName: 'mfe_display_product_name'
-          }
-        },
-        { key: 'HELP_ITEM_EDITOR.SAVE', icon: PrimeIcons.CHECK },
-        { key: 'HELP_ITEM_EDITOR.CANCEL', icon: PrimeIcons.TIMES },
-        false
-        //dialogStyle
-      )
-    })
-
-    // Reason: Seems a duplication
-    xit('should open help item editor dialog for existing item', async () => {
-      const appStateService = TestBed.inject(AppStateService)
-      spyOn(appStateService.currentPage$, 'asObservable').and.returnValue(of({ helpArticleId: 'article_id' }) as any)
-      spyOn(appStateService.currentMfe$, 'asObservable').and.returnValue(
-        of({ remoteBaseUrl: '', productName: 'mfe_product_name' }) as any
-      )
-      helpApiServiceSpy.searchHelps.calls.reset()
-      helpApiServiceSpy.searchHelps.and.returnValue(
-        of({
-          stream: [
-            {
-              name: 'mfe_product_name',
-              displayName: 'mfe_display_product_name'
-            },
-            {
-              name: 'product_name_1',
-              displayName: 'product_name_1_display'
-            }
-          ]
-        } as any)
-      )
-      // itemId and productName different only for testing purposes
-      const helpItem = { id: 'id_1', itemId: 'item_1', productName: 'product_name_1' }
-      helpApiServiceSpy.searchHelps.and.returnValue(of({ totalElements: 1, stream: [helpItem] } as any))
-
-      initTestComponent({ permissions: ['HELP#EDIT'], baseUrl: 'base_url' } as RemoteComponentConfig)
-      await initHarness()
-      await oneCXHelpItemEditorHarness.clickHelpEditorButton()
-
-      // eslint-disable-next-line deprecation/deprecation
-      expect(dialogServiceSpy.openDialog<Help>).toHaveBeenCalledOnceWith(
-        'HELP_ITEM_EDITOR.HEADER',
-        {
-          type: HelpItemEditorFormComponent,
-          inputs: { helpItem: helpItem, productDisplayName: 'product_name_1_display' }
-        },
-        { key: 'HELP_ITEM_EDITOR.SAVE', icon: PrimeIcons.CHECK },
-        { key: 'HELP_ITEM_EDITOR.CANCEL', icon: PrimeIcons.TIMES },
-        false
-        //dialogStyle
-      )
     })
   })
 
