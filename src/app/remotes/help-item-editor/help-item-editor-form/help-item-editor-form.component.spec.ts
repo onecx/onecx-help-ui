@@ -141,8 +141,8 @@ describe('HelpItemEditorFormComponent', () => {
     })
 
     it('should not allow to close dialog display if helpitem was not provided', () => {
-      component.formGroup.controls['helpItemId'].setValue('valid')
       component.formGroup.controls['productName'].setValue('valid')
+      component.formGroup.controls['itemId'].setValue('valid')
       component.formGroup.controls['baseUrl'].setValue('valid')
 
       const result = component.ocxDialogButtonClicked({ button: 'primary' } as any)

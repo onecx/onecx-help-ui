@@ -16,29 +16,29 @@ import { Help } from 'src/app/shared/generated'
   selector: 'app-ocx-help-item-editor',
   styleUrls: ['./help-item-editor-form.component.scss'],
   templateUrl: './help-item-editor-form.component.html',
-  imports: [InputTextModule, ReactiveFormsModule, TranslateModule, TooltipModule, FieldsetModule, FloatLabelModule],
-  providers: [PortalMessageService, FormBuilder]
+  standalone: true,
+  imports: [FieldsetModule, FloatLabelModule, InputTextModule, ReactiveFormsModule, TranslateModule, TooltipModule]
 })
 export class HelpItemEditorFormComponent
   implements DialogResult<Help>, DialogPrimaryButtonDisabled, DialogButtonClicked, OnChanges
 {
-  @Input() helpItem!: Help
-  @Input() productDisplayName!: string
+  @Input() helpItem: Help | undefined
+  @Input() productDisplayName: string | undefined
   @Output() primaryButtonEnabled: EventEmitter<boolean> = new EventEmitter()
 
-  dialogResult!: Help
-  public formGroup!: FormGroup
+  public dialogResult!: Help // same type as used in 'DialogResult<Help>'
+  public formGroup: FormGroup
 
   constructor(
     private readonly fb: FormBuilder,
     private readonly portalMessageService: PortalMessageService
   ) {
     this.formGroup = this.fb.group({
-      helpItemId: new FormControl({ value: null, disabled: true }, [Validators.required]),
       productName: new FormControl({ value: null, disabled: true }, [Validators.required]),
-      baseUrl: new FormControl(null, Validators.required),
-      resourceUrl: new FormControl(null),
-      context: new FormControl(null)
+      itemId: new FormControl(null, [Validators.required, Validators.minLength(2), Validators.maxLength(255)]),
+      baseUrl: new FormControl(null, [Validators.required, Validators.maxLength(255)]),
+      resourceUrl: new FormControl(null, [Validators.maxLength(255)]),
+      context: new FormControl(null, [Validators.maxLength(255)])
     })
   }
 
@@ -48,7 +48,7 @@ export class HelpItemEditorFormComponent
         ...this.helpItem
       }
       this.formGroup.patchValue({
-        helpItemId: this.dialogResult.itemId,
+        itemId: this.dialogResult.itemId,
         baseUrl: this.dialogResult.baseUrl,
         resourceUrl: this.dialogResult.resourceUrl,
         context: this.dialogResult.context
