@@ -6,8 +6,8 @@ import { Router } from '@angular/router'
 import { ReplaySubject, delay, of, throwError } from 'rxjs'
 import { TranslateTestingModule } from 'ngx-translate-testing'
 
-import { REMOTE_COMPONENT_CONFIG, RemoteComponentConfig } from '@onecx/angular-utils'
 import { SlotService } from '@onecx/angular-remote-components'
+import { REMOTE_COMPONENT_CONFIG, RemoteComponentConfig } from '@onecx/angular-utils'
 import { AppStateService, PortalMessageService } from '@onecx/angular-integration-interface'
 import { PortalDialogService, providePortalDialogService } from '@onecx/angular-accelerator'
 
