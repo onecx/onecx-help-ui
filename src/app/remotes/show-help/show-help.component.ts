@@ -74,10 +74,7 @@ export class OneCXShowHelpComponent implements ocxRemoteComponent, ocxRemoteWebc
       })
     )
     this.productName$ = combineLatest([this.appStateService.currentMfe$.asObservable()]).pipe(
-      map(([mfe]) => {
-        if (mfe.productName) return mfe.productName
-        return ''
-      })
+      map(([mfe]) => mfe.productName ?? '')
     )
     this.helpItem$ = combineLatest([this.productName$, this.helpArticleId$]).pipe(
       mergeMap(([productName, helpArticleId]) => {
@@ -88,9 +85,7 @@ export class OneCXShowHelpComponent implements ocxRemoteComponent, ocxRemoteWebc
           })
         } else return of({} as Help)
       }),
-      catchError(() => {
-        return of({} as Help)
-      })
+      catchError(() => of({} as Help))
     )
   }
 
