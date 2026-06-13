@@ -1,9 +1,9 @@
-import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing'
+import { ComponentFixture, TestBed, fakeAsync, tick, waitForAsync } from '@angular/core/testing'
 import { HttpErrorResponse, provideHttpClient } from '@angular/common/http'
 import { provideHttpClientTesting } from '@angular/common/http/testing'
 import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed'
 import { Router } from '@angular/router'
-import { ReplaySubject, of, throwError } from 'rxjs'
+import { ReplaySubject, delay, of, throwError } from 'rxjs'
 import { TranslateTestingModule } from 'ngx-translate-testing'
 
 import { REMOTE_COMPONENT_CONFIG, RemoteComponentConfig } from '@onecx/angular-utils'
@@ -81,7 +81,6 @@ describe('OneCXHelpItemEditorComponent', () => {
 
   afterEach(() => {
     // to spy data: reset
-    // eslint-disable-next-line deprecation/deprecation
     dialogServiceSpy.openDialog.calls.reset()
     slotServiceSpy.isSomeComponentDefinedForSlot.calls.reset()
 
@@ -255,7 +254,7 @@ describe('OneCXHelpItemEditorComponent', () => {
     })
   })
 
-  describe('data', () => {
+  describe('load data', () => {
     it('should load help article when application and help item data are valid', (done: DoneFn) => {
       const helpItem: Help = { id: 'id', itemId: 'itemId', productName: 'product_name' }
       helpApiServiceSpy.searchHelps.and.returnValue(of({ totalElements: 1, stream: [helpItem] } as any))
@@ -341,7 +340,7 @@ describe('OneCXHelpItemEditorComponent', () => {
     })
   })
 
-  describe('create', () => {
+  describe('create item', () => {
     it('should be unable to create help item when article not defined', async () => {
       const appStateService = TestBed.inject(AppStateService)
       spyOn(appStateService.currentPage$, 'asObservable').and.returnValue(of({ helpArticleId: '' }) as any)
@@ -391,7 +390,6 @@ describe('OneCXHelpItemEditorComponent', () => {
         itemId: 'result_item_id',
         resourceUrl: 'result_resource_url'
       }
-      // eslint-disable-next-line deprecation/deprecation
       dialogServiceSpy.openDialog.and.returnValue(of({ button: 'primary', result: dialogResult }) as any)
 
       initTestComponent({ permissions: ['HELP#EDIT'], baseUrl: 'base_url' } as RemoteComponentConfig)
@@ -411,7 +409,6 @@ describe('OneCXHelpItemEditorComponent', () => {
         of({ remoteBaseUrl: '', productName: 'mfe_product_name' }) as any
       )
       helpApiServiceSpy.searchHelps.and.returnValue(of({ totalElements: 0, stream: [] } as any))
-      // eslint-disable-next-line deprecation/deprecation
       dialogServiceSpy.openDialog.and.returnValue(of({ button: 'secondary' }) as any)
 
       initTestComponent({ permissions: ['HELP#EDIT'], baseUrl: 'base_url' } as RemoteComponentConfig)
@@ -437,7 +434,6 @@ describe('OneCXHelpItemEditorComponent', () => {
         resourceUrl: 'result_resource_url',
         modificationCount: 1
       }
-      // eslint-disable-next-line deprecation/deprecation
       dialogServiceSpy.openDialog.and.returnValue(of({ button: 'primary', result: dialogResult }) as any)
 
       helpApiServiceSpy.createNewHelp.and.returnValue(throwError(() => new HttpErrorResponse({ status: 404 })))
@@ -453,7 +449,7 @@ describe('OneCXHelpItemEditorComponent', () => {
     })
   })
 
-  describe('update', () => {
+  describe('update item', () => {
     it('should update help item on primary button click', async () => {
       const appStateService = TestBed.inject(AppStateService)
       spyOn(appStateService.currentPage$, 'asObservable').and.returnValue(of({ helpArticleId: 'article_id' }) as any)
@@ -470,7 +466,6 @@ describe('OneCXHelpItemEditorComponent', () => {
         resourceUrl: 'result_resource_url',
         modificationCount: 1
       }
-      // eslint-disable-next-line deprecation/deprecation
       dialogServiceSpy.openDialog.and.returnValue(of({ button: 'primary', result: dialogResult }) as any)
 
       initTestComponent({ permissions: ['HELP#EDIT'], baseUrl: 'base_url' } as RemoteComponentConfig)
@@ -506,7 +501,6 @@ describe('OneCXHelpItemEditorComponent', () => {
         resourceUrl: 'result_resource_url',
         modificationCount: 1
       }
-      // eslint-disable-next-line deprecation/deprecation
       dialogServiceSpy.openDialog.and.returnValue(
         of({
           button: 'primary',
@@ -552,7 +546,6 @@ describe('OneCXHelpItemEditorComponent', () => {
         resourceUrl: 'result_resource_url',
         modificationCount: 1
       }
-      // eslint-disable-next-line deprecation/deprecation
       dialogServiceSpy.openDialog.and.returnValue(of({ button: 'primary', result: dialogResult }) as any)
 
       helpApiServiceSpy.createNewHelp.and.returnValue(
@@ -583,6 +576,60 @@ describe('OneCXHelpItemEditorComponent', () => {
       })
     })
 
+    it('should use product displayName when matching product is in the emitted list', fakeAsync(() => {
+      const appStateService = TestBed.inject(AppStateService)
+      spyOn(appStateService.currentPage$, 'asObservable').and.returnValue(of({ helpArticleId: 'article_id' }) as any)
+      spyOn(appStateService.currentMfe$, 'asObservable').and.returnValue(
+        of({ remoteBaseUrl: '', productName: 'mfe_product_name' }) as any
+      )
+      // Delay searchHelps so helpDataItem$ won't emit until after we call tick(0)
+      // This allows us to emit products via pdSlotEmitter before combineLatest fires
+      helpApiServiceSpy.searchHelps.and.returnValue(of({ totalElements: 0, stream: [] } as any).pipe(delay(0)))
+      dialogServiceSpy.openDialog.and.returnValue(of({ button: 'secondary' }) as any)
+
+      initTestComponent({ permissions: ['HELP#EDIT'], baseUrl: 'base_url' } as RemoteComponentConfig)
+      component.onEditHelpItem()
+      // Emit a matching product after combineLatest has subscribed but before helpDataItem$ resolves
+      component.pdSlotEmitter.emit([{ name: 'mfe_product_name', displayName: 'MFE Product Display' }])
+      tick(0)
+
+      expect(dialogServiceSpy.openDialog).toHaveBeenCalledWith(
+        jasmine.anything(),
+        jasmine.objectContaining({
+          inputs: jasmine.objectContaining({ productDisplayName: 'MFE Product Display' })
+        }),
+        jasmine.anything(),
+        jasmine.anything(),
+        jasmine.anything()
+      )
+    }))
+
+    it('should use undefined as displayName when emitted products contain no matching product', fakeAsync(() => {
+      const appStateService = TestBed.inject(AppStateService)
+      spyOn(appStateService.currentPage$, 'asObservable').and.returnValue(of({ helpArticleId: 'article_id' }) as any)
+      spyOn(appStateService.currentMfe$, 'asObservable').and.returnValue(
+        of({ remoteBaseUrl: '', productName: 'mfe_product_name' }) as any
+      )
+      helpApiServiceSpy.searchHelps.and.returnValue(of({ totalElements: 0, stream: [] } as any).pipe(delay(0)))
+      dialogServiceSpy.openDialog.and.returnValue(of({ button: 'secondary' }) as any)
+
+      initTestComponent({ permissions: ['HELP#EDIT'], baseUrl: 'base_url' } as RemoteComponentConfig)
+      component.onEditHelpItem()
+      // Emit products where none match the helpItem's productName
+      component.pdSlotEmitter.emit([{ name: 'other_product', displayName: 'Other Product' }])
+      tick(0)
+
+      expect(dialogServiceSpy.openDialog).toHaveBeenCalledWith(
+        jasmine.anything(),
+        jasmine.objectContaining({
+          inputs: jasmine.objectContaining({ productDisplayName: undefined })
+        }),
+        jasmine.anything(),
+        jasmine.anything(),
+        jasmine.anything()
+      )
+    }))
+
     it('should display error if help item update failed', async () => {
       const appStateService = TestBed.inject(AppStateService)
       spyOn(appStateService.currentPage$, 'asObservable').and.returnValue(of({ helpArticleId: 'article_id' }) as any)
@@ -599,7 +646,6 @@ describe('OneCXHelpItemEditorComponent', () => {
         resourceUrl: 'result_resource_url',
         modificationCount: 1
       }
-      // eslint-disable-next-line deprecation/deprecation
       dialogServiceSpy.openDialog.and.returnValue(of({ button: 'primary', result: dialogResult }) as any)
       helpApiServiceSpy.updateHelp.and.returnValue(throwError(() => new HttpErrorResponse({ status: 404 })))
 

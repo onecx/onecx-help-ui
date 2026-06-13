@@ -3,7 +3,18 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { CommonModule, Location } from '@angular/common'
 import { Router } from '@angular/router'
 import { TranslateModule, TranslateService } from '@ngx-translate/core'
-import { BehaviorSubject, Observable, ReplaySubject, catchError, combineLatest, first, map, mergeMap, of } from 'rxjs'
+import {
+  BehaviorSubject,
+  Observable,
+  ReplaySubject,
+  catchError,
+  combineLatest,
+  first,
+  map,
+  mergeMap,
+  of,
+  startWith
+} from 'rxjs'
 import { PrimeIcons } from 'primeng/api'
 import { ButtonModule } from 'primeng/button'
 import { TooltipModule } from 'primeng/tooltip'
@@ -74,8 +85,8 @@ export class OneCXHelpItemEditorComponent implements ocxRemoteComponent, ocxRemo
   private readonly destroyRef = inject(DestroyRef)
   private readonly helpArticleId$: Observable<string> // picked from current page
   private readonly productName$: Observable<string> // name of the current product (from mfe)
-  //products$: Observable<Record<string, string>>
   private readonly helpDataItem$: Observable<Help>
+  public products$: Observable<Product[]>
   public permissions: string[] = []
   // slot configuration: get product data via remote component
   public pdSlotName = 'onecx-product-data'
@@ -83,7 +94,6 @@ export class OneCXHelpItemEditorComponent implements ocxRemoteComponent, ocxRemo
   public productData$ = new BehaviorSubject<Product[] | undefined>(undefined) // product infos
   public pdSlotEmitter = new EventEmitter<Product[]>()
   public pdComponentTrigger$ = new BehaviorSubject<void>(undefined) // trigger for getting data
-  private products: Product[] = []
 
   constructor(
     @Inject(REMOTE_COMPONENT_CONFIG) private readonly remoteComponentConfig: ReplaySubject<RemoteComponentConfig>,
@@ -99,32 +109,27 @@ export class OneCXHelpItemEditorComponent implements ocxRemoteComponent, ocxRemo
     this.userService.lang$
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((lang) => this.translateService.use(lang))
-    this.pdSlotEmitter
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe((products: Product[]) => (this.products = products))
+    // getting products via slot
+    this.pdIsComponentDefined$ = this.slotService.isSomeComponentDefinedForSlot(this.pdSlotName)
+    this.products$ = this.pdSlotEmitter.pipe(startWith([] as Product[]), takeUntilDestroyed(this.destroyRef))
+    // get app data
     this.helpArticleId$ = this.appStateService.currentPage$.asObservable().pipe(
       map((page) => {
         if (page?.helpArticleId) return page.helpArticleId
         if (page?.pageName) return page.pageName
-        return router.routerState.snapshot.url.split('#')[0]
+        return this.router.routerState.snapshot.url.split('#')[0]
       })
     )
     this.productName$ = combineLatest([this.appStateService.currentMfe$.asObservable()]).pipe(
-      map(([mfe]) => {
-        if (mfe.productName) return mfe.productName
-        return ''
-      })
+      map(([mfe]) => mfe.productName || '')
     )
     this.helpDataItem$ = combineLatest([this.productName$, this.helpArticleId$]).pipe(
       mergeMap(([productName, helpArticleId]) => {
         if (productName && helpArticleId) return this.loadHelpArticle(productName, helpArticleId)
         return of({} as Help)
       }),
-      catchError(() => {
-        return of({} as Help)
-      })
+      catchError(() => of({} as Help))
     )
-    this.pdIsComponentDefined$ = this.slotService.isSomeComponentDefinedForSlot(this.pdSlotName)
   }
 
   public ocxInitRemoteComponent(config: RemoteComponentConfig): void {
@@ -195,10 +200,10 @@ export class OneCXHelpItemEditorComponent implements ocxRemoteComponent, ocxRemo
 
   public onEditHelpItem(ev?: Event) {
     ev?.stopPropagation()
-    combineLatest([this.helpArticleId$, this.productName$, this.helpDataItem$])
+    combineLatest([this.helpArticleId$, this.productName$, this.helpDataItem$, this.products$])
       .pipe(
         first(),
-        mergeMap(([helpArticleId, productName, helpDataItem]) => {
+        mergeMap(([helpArticleId, productName, helpDataItem, products]) => {
           let isNewItem = false
           if (helpArticleId && productName) {
             if (!helpDataItem.itemId) {
@@ -207,8 +212,8 @@ export class OneCXHelpItemEditorComponent implements ocxRemoteComponent, ocxRemo
             }
             helpDataItem.productName = helpDataItem.productName ?? productName
             let productDisplayName: string | undefined = helpDataItem.productName
-            if (this.products && this.products?.length > 0) {
-              productDisplayName = this.products.find((p) => p.name === helpDataItem.productName)?.displayName
+            if (products && products.length > 0) {
+              productDisplayName = products.find((p) => p.name === helpDataItem.productName)?.displayName
             }
             return this.openHelpEditorDialog(helpDataItem, productDisplayName!).pipe(
               map((dialogState): [DialogState<Help>, boolean] => [dialogState, isNewItem])
