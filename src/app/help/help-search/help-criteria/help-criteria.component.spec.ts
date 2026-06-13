@@ -1,4 +1,4 @@
-import { NO_ERRORS_SCHEMA, EventEmitter } from '@angular/core'
+import { EventEmitter } from '@angular/core'
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing'
 import { provideHttpClient } from '@angular/common/http'
 import { provideHttpClientTesting } from '@angular/common/http/testing'
@@ -36,7 +36,6 @@ describe('HelpDetailComponent', () => {
           en: require('src/assets/i18n/en.json')
         }).withDefaultLanguage('en')
       ],
-      schemas: [NO_ERRORS_SCHEMA],
       providers: [provideHttpClient(), provideHttpClientTesting(), { provide: ActivatedRoute, useValue: {} }]
     }).compileComponents()
   }))

@@ -3,7 +3,6 @@ import { CommonModule } from '@angular/common'
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms'
 import { finalize } from 'rxjs'
 import { TranslateModule } from '@ngx-translate/core'
-import { errorTailorImports } from '@ngneat/error-tailor'
 
 import { AutoCompleteModule } from 'primeng/autocomplete'
 import { ButtonModule } from 'primeng/button'
@@ -38,7 +37,6 @@ export interface HelpDetailForm {
     CommonModule,
     ReactiveFormsModule,
     TranslateModule,
-    errorTailorImports,
     AutoCompleteModule,
     ButtonModule,
     CheckboxModule,

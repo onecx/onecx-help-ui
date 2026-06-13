@@ -1,17 +1,34 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core'
+import { CommonModule } from '@angular/common'
+import { FormsModule } from '@angular/forms'
+import { TranslateModule } from '@ngx-translate/core'
 import FileSaver from 'file-saver'
 
+import { ButtonModule } from 'primeng/button'
+import { DialogModule } from 'primeng/dialog'
+import { ListboxModule } from 'primeng/listbox'
+import { TooltipModule } from 'primeng/tooltip'
+
 import { PortalMessageService } from '@onecx/angular-integration-interface'
+import { AngularAcceleratorModule } from '@onecx/angular-accelerator'
 
 import { HelpsInternalAPIService } from 'src/app/shared/generated'
-import { SharedModule } from 'src/app/shared/shared.module'
 import { Product } from '../help-search/help-search.component'
 
 @Component({
   selector: 'app-help-export',
   templateUrl: './help-export.component.html',
   standalone: true,
-  imports: [SharedModule],
+  imports: [
+    AngularAcceleratorModule,
+    CommonModule,
+    ButtonModule,
+    DialogModule,
+    FormsModule,
+    ListboxModule,
+    TooltipModule,
+    TranslateModule
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class HelpExportComponent {
