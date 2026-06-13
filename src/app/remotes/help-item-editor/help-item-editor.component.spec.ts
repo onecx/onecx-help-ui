@@ -1,4 +1,3 @@
-import { NgModule } from '@angular/core'
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing'
 import { HttpErrorResponse, provideHttpClient } from '@angular/common/http'
 import { provideHttpClientTesting } from '@angular/common/http/testing'
@@ -7,7 +6,6 @@ import { Router } from '@angular/router'
 import { ReplaySubject, of, throwError } from 'rxjs'
 import { TranslateTestingModule } from 'ngx-translate-testing'
 
-import { IfPermissionDirective } from '@onecx/angular-accelerator'
 import { REMOTE_COMPONENT_CONFIG, RemoteComponentConfig } from '@onecx/angular-utils'
 import { SlotService } from '@onecx/angular-remote-components'
 import { AppStateService, PortalMessageService } from '@onecx/angular-integration-interface'
@@ -16,13 +14,6 @@ import { PortalDialogService, providePortalDialogService } from '@onecx/angular-
 import { Help, HelpsInternalAPIService } from 'src/app/shared/generated'
 import { OneCXHelpItemEditorComponent, Product, slotInitializer } from './help-item-editor.component'
 import { OneCXHelpItemEditorHarness } from './help-item-editor.harness'
-
-@NgModule({
-  imports: [],
-  declarations: [IfPermissionDirective],
-  exports: [IfPermissionDirective]
-})
-class PortalDependencyModule {}
 
 const product1: Product = { name: 'product1', displayName: 'Product 1' }
 const product2: Product = { name: 'product2', displayName: 'Product 2' }

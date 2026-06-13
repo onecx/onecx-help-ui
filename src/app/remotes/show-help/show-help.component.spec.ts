@@ -1,4 +1,3 @@
-import { NgModule } from '@angular/core'
 import { ComponentFixture, TestBed } from '@angular/core/testing'
 import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed'
 import { provideHttpClient } from '@angular/common/http'
@@ -7,7 +6,6 @@ import { Router } from '@angular/router'
 import { TranslateTestingModule } from 'ngx-translate-testing'
 import { ReplaySubject, of, throwError } from 'rxjs'
 
-import { IfPermissionDirective } from '@onecx/angular-accelerator'
 import { UserService } from '@onecx/angular-integration-interface'
 import { AppStateService, PortalMessageService } from '@onecx/angular-integration-interface'
 import { REMOTE_COMPONENT_CONFIG, RemoteComponentConfig } from '@onecx/angular-utils'
@@ -16,13 +14,6 @@ import { PortalDialogService } from '@onecx/angular-accelerator'
 import { Help, HelpsInternalAPIService } from 'src/app/shared/generated'
 import { OneCXShowHelpComponent } from './show-help.component'
 import { OneCXShowHelpHarness } from './show-help.harness'
-
-@NgModule({
-  imports: [],
-  declarations: [IfPermissionDirective],
-  exports: [IfPermissionDirective]
-})
-class PortalDependencyModule {}
 
 describe('OneCXShowHelpComponent', () => {
   let component: OneCXShowHelpComponent
