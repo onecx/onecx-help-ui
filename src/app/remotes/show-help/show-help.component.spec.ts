@@ -285,7 +285,7 @@ describe('OneCXShowHelpComponent', () => {
       initTestComponent({ permissions: ['HELP#VIEW'], baseUrl: 'base_url' } as RemoteComponentConfig)
 
       component['helpItem$']?.subscribe((item) => {
-        expect(item).toEqual({} as Help)
+        expect(item).toBeUndefined()
         expect(helpApiSpy.getHelpByProductNameItemId).toHaveBeenCalledTimes(0)
         done()
       })
@@ -303,7 +303,7 @@ describe('OneCXShowHelpComponent', () => {
       initTestComponent({ permissions: ['HELP#VIEW'], baseUrl: 'base_url' } as RemoteComponentConfig)
 
       component['helpItem$']?.subscribe((item) => {
-        expect(item).toEqual({} as Help)
+        expect(item).toBeUndefined()
         expect(helpApiSpy.getHelpByProductNameItemId).toHaveBeenCalled()
         done()
       })

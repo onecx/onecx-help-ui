@@ -50,7 +50,7 @@ export class OneCXShowHelpComponent implements ocxRemoteComponent, ocxRemoteWebc
   private readonly destroyRef = inject(DestroyRef)
   private readonly helpArticleId$: Observable<string>
   private readonly productName$: Observable<string>
-  private readonly helpItem$: Observable<Help> | undefined
+  private readonly helpItem$: Observable<Help | undefined>
   public permissions: string[] = []
 
   constructor(
@@ -83,9 +83,9 @@ export class OneCXShowHelpComponent implements ocxRemoteComponent, ocxRemoteWebc
             helpItemId: helpArticleId,
             productName: productName
           })
-        } else return of({} as Help)
+        } else return of(undefined)
       }),
-      catchError(() => of({} as Help))
+      catchError(() => of(undefined))
     )
   }
 
@@ -124,7 +124,7 @@ export class OneCXShowHelpComponent implements ocxRemoteComponent, ocxRemoteWebc
     })
   }
 
-  private openNoHelpItemDialog(helpItem: Help, articleId: string) {
+  private openNoHelpItemDialog(helpItem: Help | undefined, articleId: string) {
     const issueTypeKey = helpItem?.id ? 'MISSING_BASE_URL' : 'NO_HELP_ITEM'
     // call no-help dialog if item is missing or not usable
     this.portalDialogService
