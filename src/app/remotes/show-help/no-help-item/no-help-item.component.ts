@@ -1,21 +1,23 @@
 import { CommonModule } from '@angular/common'
 import { Component, Input } from '@angular/core'
 import { TranslateModule } from '@ngx-translate/core'
-import { DialogButtonClicked, DialogResult, DialogState } from '@onecx/angular-accelerator'
 import { DynamicDialogConfig, DynamicDialogModule, DynamicDialogRef } from 'primeng/dynamicdialog'
 import { Observable } from 'rxjs'
+
+import { DialogButtonClicked, DialogResult, DialogState } from '@onecx/angular-accelerator'
 
 @Component({
   selector: 'app-ocx-no-help-item',
   templateUrl: './no-help-item.component.html',
   styleUrls: ['./no-help-item.component.scss'],
+  standalone: true,
   imports: [CommonModule, DynamicDialogModule, TranslateModule]
 })
 export class NoHelpItemComponent implements DialogResult<NoHelpItemComponent>, DialogButtonClicked {
   @Input() helpArticleId!: string
   @Input() issueTypeKey: string = 'NO_HELP_ITEM'
 
-  dialogResult!: NoHelpItemComponent
+  public dialogResult!: NoHelpItemComponent
 
   constructor(
     public readonly config: DynamicDialogConfig,

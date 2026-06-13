@@ -1,8 +1,12 @@
 @use 'src/app/hm-mixins.scss' as *;
 
 @include word-break-all;
+@include danger-action;
 @include ocx-text-responsive;
 
-.info-button-text-color {
-  color: var(--info-button-bg);
+::ng-deep {
+  .p-dialog .p-dialog-content {
+    padding-top: 0.2rem;
+    padding-bottom: 0rem;
+  }
 }

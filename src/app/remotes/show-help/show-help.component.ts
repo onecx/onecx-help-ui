@@ -1,9 +1,12 @@
-import { Component, Inject, Input } from '@angular/core'
+import { Component, DestroyRef, inject, Inject, Input } from '@angular/core'
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { CommonModule, Location } from '@angular/common'
 import { Router } from '@angular/router'
 import { TranslateModule, TranslateService } from '@ngx-translate/core'
 import { Observable, ReplaySubject, catchError, combineLatest, first, map, mergeMap, of, withLatestFrom } from 'rxjs'
 import { PrimeIcons } from 'primeng/api'
+import { ButtonModule } from 'primeng/button'
+import { TooltipModule } from 'primeng/tooltip'
 
 import { getLocation } from '@onecx/accelerator'
 import {
@@ -22,7 +25,6 @@ import {
 
 import { Configuration, Help, HelpsInternalAPIService } from 'src/app/shared/generated'
 import { environment } from 'src/environments/environment'
-import { SharedModule } from 'src/app/shared/shared.module'
 
 import { NoHelpItemComponent } from './no-help-item/no-help-item.component'
 
@@ -30,17 +32,26 @@ import { NoHelpItemComponent } from './no-help-item/no-help-item.component'
   selector: 'app-ocx-show-help',
   templateUrl: './show-help.component.html',
   styleUrls: ['./show-help.component.scss'],
-  imports: [CommonModule, TranslateModule, SharedModule, AngularAcceleratorModule, AngularRemoteComponentsModule],
+  standalone: true,
+  imports: [
+    AngularAcceleratorModule,
+    AngularRemoteComponentsModule,
+    CommonModule,
+    ButtonModule,
+    TooltipModule,
+    TranslateModule
+  ],
   providers: [HelpsInternalAPIService, PortalMessageService, providePortalDialogService()]
 })
 export class OneCXShowHelpComponent implements ocxRemoteComponent, ocxRemoteWebcomponent {
   @Input() set ocxRemoteComponentConfig(config: RemoteComponentConfig) {
     this.ocxInitRemoteComponent(config)
   }
-  helpArticleId$: Observable<string>
-  productName$: Observable<string>
-  helpItem$: Observable<Help> | undefined
-  permissions: string[] = []
+  private readonly destroyRef = inject(DestroyRef)
+  private readonly helpArticleId$: Observable<string>
+  private readonly productName$: Observable<string>
+  private readonly helpItem$: Observable<Help | undefined>
+  public permissions: string[] = []
 
   constructor(
     @Inject(REMOTE_COMPONENT_CONFIG) private readonly remoteComponentConfig: ReplaySubject<RemoteComponentConfig>,
@@ -52,7 +63,9 @@ export class OneCXShowHelpComponent implements ocxRemoteComponent, ocxRemoteWebc
     private readonly portalMessageService: PortalMessageService,
     private readonly translateService: TranslateService
   ) {
-    this.userService.lang$.subscribe((lang) => this.translateService.use(lang))
+    this.userService.lang$
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((lang) => this.translateService.use(lang))
     this.helpArticleId$ = this.appStateService.currentPage$.asObservable().pipe(
       map((page) => {
         if (page?.helpArticleId) return page.helpArticleId
@@ -61,10 +74,7 @@ export class OneCXShowHelpComponent implements ocxRemoteComponent, ocxRemoteWebc
       })
     )
     this.productName$ = combineLatest([this.appStateService.currentMfe$.asObservable()]).pipe(
-      map(([mfe]) => {
-        if (mfe.productName) return mfe.productName
-        return ''
-      })
+      map(([mfe]) => mfe.productName ?? '')
     )
     this.helpItem$ = combineLatest([this.productName$, this.helpArticleId$]).pipe(
       mergeMap(([productName, helpArticleId]) => {
@@ -73,11 +83,9 @@ export class OneCXShowHelpComponent implements ocxRemoteComponent, ocxRemoteWebc
             helpItemId: helpArticleId,
             productName: productName
           })
-        } else return of({} as Help)
+        } else return of(undefined)
       }),
-      catchError(() => {
-        return of({} as Help)
-      })
+      catchError(() => of(undefined))
     )
   }
 
@@ -102,10 +110,11 @@ export class OneCXShowHelpComponent implements ocxRemoteComponent, ocxRemoteWebc
             currentLocation.deploymentPath
           )
           console.info(`navigate to help page: ${url.toString()}`)
+
           try {
             window.open(url, '_blank')?.focus()
           } catch (e) {
-            console.log(`Error opening help page URL`, e)
+            console.log('Error opening help page URL', e)
             this.portalMessageService.error({ summaryKey: 'SHOW_HELP.HELP_PAGE_ERROR' })
           }
         } else {
@@ -115,7 +124,7 @@ export class OneCXShowHelpComponent implements ocxRemoteComponent, ocxRemoteWebc
     })
   }
 
-  private openNoHelpItemDialog(helpItem: Help, articleId: string) {
+  private openNoHelpItemDialog(helpItem: Help | undefined, articleId: string) {
     const issueTypeKey = helpItem?.id ? 'MISSING_BASE_URL' : 'NO_HELP_ITEM'
     // call no-help dialog if item is missing or not usable
     this.portalDialogService
@@ -148,10 +157,16 @@ export class OneCXShowHelpComponent implements ocxRemoteComponent, ocxRemoteWebc
       .subscribe()
   }
 
+  /*
+    * Construct URL for help page:
+    - If helpUrl is absolute, use it as is
+    - If helpUrl is relative, combine it with current basePath and deploymentPath
+  */
   private constructUrl(helpUrl: string, basePath: string, deploymentPath: string): URL {
-    const isRelative = new URL(basePath).origin === new URL(helpUrl, basePath).origin
-    if (isRelative) return new URL(Location.joinWithSlash(deploymentPath, helpUrl), basePath)
-    return new URL(helpUrl)
+    if (helpUrl.startsWith('http://') || helpUrl.startsWith('https://')) {
+      return new URL(helpUrl)
+    }
+    return new URL(Location.joinWithSlash(deploymentPath, helpUrl), basePath)
   }
 
   /* Prepare the final URL as follow (#) = optional:

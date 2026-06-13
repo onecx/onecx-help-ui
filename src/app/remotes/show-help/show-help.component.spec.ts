@@ -1,4 +1,3 @@
-import { NgModule } from '@angular/core'
 import { ComponentFixture, TestBed } from '@angular/core/testing'
 import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed'
 import { provideHttpClient } from '@angular/common/http'
@@ -7,11 +6,6 @@ import { Router } from '@angular/router'
 import { TranslateTestingModule } from 'ngx-translate-testing'
 import { ReplaySubject, of, throwError } from 'rxjs'
 
-import { TooltipModule } from 'primeng/tooltip'
-import { RippleModule } from 'primeng/ripple'
-import { DynamicDialogModule } from 'primeng/dynamicdialog'
-
-import { IfPermissionDirective } from '@onecx/angular-accelerator'
 import { UserService } from '@onecx/angular-integration-interface'
 import { AppStateService, PortalMessageService } from '@onecx/angular-integration-interface'
 import { REMOTE_COMPONENT_CONFIG, RemoteComponentConfig } from '@onecx/angular-utils'
@@ -20,13 +14,6 @@ import { PortalDialogService } from '@onecx/angular-accelerator'
 import { Help, HelpsInternalAPIService } from 'src/app/shared/generated'
 import { OneCXShowHelpComponent } from './show-help.component'
 import { OneCXShowHelpHarness } from './show-help.harness'
-
-@NgModule({
-  imports: [],
-  declarations: [IfPermissionDirective],
-  exports: [IfPermissionDirective]
-})
-class PortalDependencyModule {}
 
 describe('OneCXShowHelpComponent', () => {
   let component: OneCXShowHelpComponent
@@ -72,7 +59,6 @@ describe('OneCXShowHelpComponent', () => {
     })
       .overrideComponent(OneCXShowHelpComponent, {
         set: {
-          imports: [PortalDependencyModule, TranslateTestingModule, TooltipModule, RippleModule, DynamicDialogModule],
           providers: [
             //{ provide: UserService, useValue: mockUserService },
             { provide: HelpsInternalAPIService, useValue: helpApiSpy },
@@ -160,7 +146,7 @@ describe('OneCXShowHelpComponent', () => {
 
       initTestComponent({ permissions: ['HELP#VIEW'], baseUrl: 'base_url' } as RemoteComponentConfig)
 
-      component.helpArticleId$?.subscribe((id) => {
+      component['helpArticleId$']?.subscribe((id) => {
         expect(id).toEqual('article_id')
         done()
       })
@@ -178,7 +164,7 @@ describe('OneCXShowHelpComponent', () => {
 
       initTestComponent({ permissions: ['HELP#VIEW'], baseUrl: 'base_url' } as RemoteComponentConfig)
 
-      component.helpArticleId$?.subscribe((id) => {
+      component['helpArticleId$']?.subscribe((id) => {
         expect(id).toEqual('page_name')
         done()
       })
@@ -192,7 +178,7 @@ describe('OneCXShowHelpComponent', () => {
 
       initTestComponent({ permissions: ['HELP#VIEW'], baseUrl: 'base_url' } as RemoteComponentConfig)
 
-      component.helpArticleId$?.subscribe((id) => {
+      component['helpArticleId$']?.subscribe((id) => {
         expect(id).toEqual('current_url/page')
         done()
       })
@@ -262,7 +248,7 @@ describe('OneCXShowHelpComponent', () => {
 
       initTestComponent({ permissions: ['HELP#VIEW'], baseUrl: 'base_url' } as RemoteComponentConfig)
 
-      component.productName$?.subscribe((id) => {
+      component['productName$']?.subscribe((id) => {
         expect(id).toEqual('product_name')
         done()
       })
@@ -284,7 +270,7 @@ describe('OneCXShowHelpComponent', () => {
 
       initTestComponent({ permissions: ['HELP#VIEW'], baseUrl: 'base_url' } as RemoteComponentConfig)
 
-      component.helpItem$?.subscribe((item) => {
+      component['helpItem$']?.subscribe((item) => {
         expect(item).toEqual(helpItem as Help)
         expect(helpApiSpy.getHelpByProductNameItemId).toHaveBeenCalled()
         done()
@@ -298,8 +284,8 @@ describe('OneCXShowHelpComponent', () => {
 
       initTestComponent({ permissions: ['HELP#VIEW'], baseUrl: 'base_url' } as RemoteComponentConfig)
 
-      component.helpItem$?.subscribe((item) => {
-        expect(item).toEqual({} as Help)
+      component['helpItem$']?.subscribe((item) => {
+        expect(item).toBeUndefined()
         expect(helpApiSpy.getHelpByProductNameItemId).toHaveBeenCalledTimes(0)
         done()
       })
@@ -316,8 +302,8 @@ describe('OneCXShowHelpComponent', () => {
 
       initTestComponent({ permissions: ['HELP#VIEW'], baseUrl: 'base_url' } as RemoteComponentConfig)
 
-      component.helpItem$?.subscribe((item) => {
-        expect(item).toEqual({} as Help)
+      component['helpItem$']?.subscribe((item) => {
+        expect(item).toBeUndefined()
         expect(helpApiSpy.getHelpByProductNameItemId).toHaveBeenCalled()
         done()
       })

@@ -1,35 +1,19 @@
-import { NgModule, NO_ERRORS_SCHEMA, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core'
-import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing'
+import { ComponentFixture, TestBed, fakeAsync, tick, waitForAsync } from '@angular/core/testing'
 import { HttpErrorResponse, provideHttpClient } from '@angular/common/http'
 import { provideHttpClientTesting } from '@angular/common/http/testing'
 import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed'
 import { Router } from '@angular/router'
-import { ReplaySubject, of, throwError } from 'rxjs'
+import { ReplaySubject, delay, of, throwError } from 'rxjs'
 import { TranslateTestingModule } from 'ngx-translate-testing'
 
-import { DynamicDialogModule } from 'primeng/dynamicdialog'
-import { TooltipModule } from 'primeng/tooltip'
-import { RippleModule } from 'primeng/ripple'
-import { PrimeIcons } from 'primeng/api'
-
-import { IfPermissionDirective } from '@onecx/angular-accelerator'
-import { REMOTE_COMPONENT_CONFIG, RemoteComponentConfig } from '@onecx/angular-utils'
 import { SlotService } from '@onecx/angular-remote-components'
-import { AppStateService, PortalMessageService, UserService } from '@onecx/angular-integration-interface'
+import { REMOTE_COMPONENT_CONFIG, RemoteComponentConfig } from '@onecx/angular-utils'
+import { AppStateService, PortalMessageService } from '@onecx/angular-integration-interface'
 import { PortalDialogService, providePortalDialogService } from '@onecx/angular-accelerator'
 
 import { Help, HelpsInternalAPIService } from 'src/app/shared/generated'
 import { OneCXHelpItemEditorComponent, Product, slotInitializer } from './help-item-editor.component'
 import { OneCXHelpItemEditorHarness } from './help-item-editor.harness'
-
-import { HelpItemEditorFormComponent } from './help-item-editor-form/help-item-editor-form.component'
-
-@NgModule({
-  imports: [],
-  declarations: [IfPermissionDirective],
-  exports: [IfPermissionDirective]
-})
-class PortalDependencyModule {}
 
 const product1: Product = { name: 'product1', displayName: 'Product 1' }
 const product2: Product = { name: 'product2', displayName: 'Product 2' }
@@ -40,10 +24,6 @@ describe('OneCXHelpItemEditorComponent', () => {
   let fixture: ComponentFixture<OneCXHelpItemEditorComponent>
   let oneCXHelpItemEditorHarness: OneCXHelpItemEditorHarness
 
-  const mockUserService = jasmine.createSpyObj<UserService>('UserService', ['hasPermission'])
-  mockUserService.hasPermission.and.callFake((permission: string) => {
-    return Promise.resolve(['HELP#EDIT', 'HELP#VIEW'].includes(permission))
-  })
   const helpApiServiceSpy = jasmine.createSpyObj<HelpsInternalAPIService>('HelpsInternalAPIService', [
     'searchHelps',
     'createNewHelp',
@@ -73,10 +53,10 @@ describe('OneCXHelpItemEditorComponent', () => {
       declarations: [],
       imports: [
         TranslateTestingModule.withTranslations({
+          de: require('src/assets/i18n/de.json'),
           en: require('src/assets/i18n/en.json')
         }).withDefaultLanguage('en')
       ],
-      schemas: [CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA],
       providers: [
         provideHttpClient(),
         provideHttpClientTesting(),
@@ -86,9 +66,7 @@ describe('OneCXHelpItemEditorComponent', () => {
     })
       .overrideComponent(OneCXHelpItemEditorComponent, {
         set: {
-          imports: [PortalDependencyModule, TranslateTestingModule, TooltipModule, RippleModule, DynamicDialogModule],
           providers: [
-            // { provide: UserService, useValue: mockUserService }
             { provide: SlotService, useValue: slotServiceSpy },
             { provide: HelpsInternalAPIService, useValue: helpApiServiceSpy },
             { provide: PortalDialogService, useValue: dialogServiceSpy },
@@ -102,9 +80,7 @@ describe('OneCXHelpItemEditorComponent', () => {
   }))
 
   afterEach(() => {
-    mockUserService.hasPermission.and.returnValue(Promise.resolve(true))
     // to spy data: reset
-    // eslint-disable-next-line deprecation/deprecation
     dialogServiceSpy.openDialog.calls.reset()
     slotServiceSpy.isSomeComponentDefinedForSlot.calls.reset()
 
@@ -133,6 +109,7 @@ describe('OneCXHelpItemEditorComponent', () => {
         permissions: ['HELP#VIEW'],
         baseUrl: 'base'
       }
+      initTestComponent()
       spyOn(component, 'ocxInitRemoteComponent')
 
       component.ocxRemoteComponentConfig = rcc
@@ -207,7 +184,7 @@ describe('OneCXHelpItemEditorComponent', () => {
 
       initTestComponent({ permissions: ['HELP#EDIT'], baseUrl: 'base_url' } as RemoteComponentConfig)
 
-      component.helpArticleId$?.subscribe((id) => {
+      component['helpArticleId$']?.subscribe((id) => {
         expect(id).toEqual('article_id')
         done()
       })
@@ -225,7 +202,7 @@ describe('OneCXHelpItemEditorComponent', () => {
 
       initTestComponent({ permissions: ['HELP#EDIT'], baseUrl: 'base_url' } as RemoteComponentConfig)
 
-      component.helpArticleId$?.subscribe((id) => {
+      component['helpArticleId$']?.subscribe((id) => {
         expect(id).toEqual('page_name')
         done()
       })
@@ -239,7 +216,7 @@ describe('OneCXHelpItemEditorComponent', () => {
 
       initTestComponent({ permissions: ['HELP#EDIT'], baseUrl: 'base_url' } as RemoteComponentConfig)
 
-      component.helpArticleId$?.subscribe((id) => {
+      component['helpArticleId$']?.subscribe((id) => {
         expect(id).toEqual('current_url/page')
         done()
       })
@@ -257,7 +234,7 @@ describe('OneCXHelpItemEditorComponent', () => {
 
       initTestComponent({ permissions: ['HELP#EDIT'], baseUrl: 'base_url' } as RemoteComponentConfig)
 
-      component.productName$?.subscribe((id) => {
+      component['productName$']?.subscribe((id) => {
         expect(id).toEqual('product_name')
         done()
       })
@@ -270,14 +247,14 @@ describe('OneCXHelpItemEditorComponent', () => {
 
       initTestComponent({ permissions: ['HELP#EDIT'], baseUrl: 'base_url' } as RemoteComponentConfig)
 
-      component.productName$?.subscribe((id) => {
+      component['productName$']?.subscribe((id) => {
         expect(id).toEqual('')
         done()
       })
     })
   })
 
-  describe('data', () => {
+  describe('load data', () => {
     it('should load help article when application and help item data are valid', (done: DoneFn) => {
       const helpItem: Help = { id: 'id', itemId: 'itemId', productName: 'product_name' }
       helpApiServiceSpy.searchHelps.and.returnValue(of({ totalElements: 1, stream: [helpItem] } as any))
@@ -294,7 +271,7 @@ describe('OneCXHelpItemEditorComponent', () => {
 
       initTestComponent({ permissions: ['HELP#EDIT'], baseUrl: 'base_url' } as RemoteComponentConfig)
 
-      component.helpDataItem$?.subscribe((item) => {
+      component['helpDataItem$']?.subscribe((item) => {
         expect(item).toEqual(helpItem)
         expect(helpApiServiceSpy.searchHelps).toHaveBeenCalledOnceWith({
           helpSearchCriteria: { itemId: helpItem.itemId, productName: helpItem.productName }
@@ -316,7 +293,7 @@ describe('OneCXHelpItemEditorComponent', () => {
 
       initTestComponent({ permissions: ['HELP#EDIT'], baseUrl: 'base_url' } as RemoteComponentConfig)
 
-      component.helpDataItem$?.subscribe((item) => {
+      component['helpDataItem$']?.subscribe((item) => {
         expect(item).toEqual({} as Help)
         done()
       })
@@ -334,8 +311,8 @@ describe('OneCXHelpItemEditorComponent', () => {
 
       initTestComponent({ permissions: ['HELP#EDIT'], baseUrl: 'base_url' } as RemoteComponentConfig)
 
-      component.helpDataItem$?.subscribe((item) => {
-        expect(item).toEqual({} as Help)
+      component['helpDataItem$']?.subscribe((item) => {
+        expect(item).toBeUndefined()
         expect(helpApiServiceSpy.searchHelps).toHaveBeenCalledOnceWith({
           helpSearchCriteria: { itemId: 'article_id', productName: 'mfe_product_name' }
         })
@@ -355,138 +332,15 @@ describe('OneCXHelpItemEditorComponent', () => {
 
       initTestComponent({ permissions: ['HELP#EDIT'], baseUrl: 'base_url' } as RemoteComponentConfig)
 
-      component.helpDataItem$?.subscribe((item) => {
-        expect(item).toEqual({} as Help)
+      component['helpDataItem$']?.subscribe((item) => {
+        expect(item).toBeUndefined()
         expect(helpApiServiceSpy.searchHelps).toHaveBeenCalledTimes(0)
         done()
       })
     })
   })
 
-  xdescribe('open dialog', () => {
-    // Reason: Seems a duplication
-    xit('should open help item editor dialog when article and application defined', async () => {
-      const appStateService = TestBed.inject(AppStateService)
-      spyOn(appStateService.currentPage$, 'asObservable').and.returnValue(of({ helpArticleId: 'article_id' }) as any)
-      spyOn(appStateService.currentMfe$, 'asObservable').and.returnValue(
-        of({ remoteBaseUrl: '', productName: 'mfe_product_name' }) as any
-      )
-      helpApiServiceSpy.searchHelps.calls.reset()
-      helpApiServiceSpy.searchHelps.and.returnValue(
-        of({
-          stream: [{ name: 'mfe_product_name', displayName: 'mfe_display_product_name' }]
-        } as any)
-      )
-      helpApiServiceSpy.searchHelps.and.returnValue(of({ totalElements: 0, stream: [] } as any))
-
-      initTestComponent({ permissions: ['HELP#EDIT'], baseUrl: 'base_url' } as RemoteComponentConfig)
-      await initHarness
-      await oneCXHelpItemEditorHarness.clickHelpEditorButton()
-
-      // eslint-disable-next-line deprecation/deprecation
-      expect(dialogServiceSpy.openDialog<Help>).toHaveBeenCalledOnceWith(
-        'HELP_ITEM_EDITOR.HEADER',
-        {
-          type: HelpItemEditorFormComponent,
-          inputs: {
-            helpItem: { productName: 'mfe_product_name', itemId: 'article_id' },
-            productDisplayName: 'mfe_display_product_name'
-          }
-        },
-        { key: 'HELP_ITEM_EDITOR.SAVE', icon: PrimeIcons.CHECK },
-        { key: 'HELP_ITEM_EDITOR.CANCEL', icon: PrimeIcons.TIMES },
-        false
-        //{ showXButton: true, draggable: true, resizable: true, width: '550px' }
-      )
-    })
-
-    // Reason: Seems a duplication
-    xit('should open help item editor dialog for new item', async () => {
-      const appStateService = TestBed.inject(AppStateService)
-      spyOn(appStateService.currentPage$, 'asObservable').and.returnValue(of({ helpArticleId: 'article_id' }) as any)
-      spyOn(appStateService.currentMfe$, 'asObservable').and.returnValue(
-        of({ remoteBaseUrl: '', productName: 'mfe_product_name' }) as any
-      )
-      helpApiServiceSpy.searchHelps.calls.reset()
-      helpApiServiceSpy.searchHelps.and.returnValue(
-        of({
-          stream: [
-            {
-              name: 'mfe_product_name',
-              displayName: 'mfe_display_product_name'
-            }
-          ]
-        } as any)
-      )
-      helpApiServiceSpy.searchHelps.and.returnValue(of({ totalElements: 0, stream: [] } as any))
-
-      initTestComponent({ permissions: ['HELP#EDIT'], baseUrl: 'base_url' } as RemoteComponentConfig)
-      await initHarness
-      await oneCXHelpItemEditorHarness.clickHelpEditorButton()
-
-      // eslint-disable-next-line deprecation/deprecation
-      expect(dialogServiceSpy.openDialog<Help>).toHaveBeenCalledOnceWith(
-        'HELP_ITEM_EDITOR.HEADER',
-        {
-          type: HelpItemEditorFormComponent,
-          inputs: {
-            helpItem: { productName: 'mfe_product_name', itemId: 'article_id' },
-            productDisplayName: 'mfe_display_product_name'
-          }
-        },
-        { key: 'HELP_ITEM_EDITOR.SAVE', icon: PrimeIcons.CHECK },
-        { key: 'HELP_ITEM_EDITOR.CANCEL', icon: PrimeIcons.TIMES },
-        false
-        //dialogStyle
-      )
-    })
-
-    // Reason: Seems a duplication
-    xit('should open help item editor dialog for existing item', async () => {
-      const appStateService = TestBed.inject(AppStateService)
-      spyOn(appStateService.currentPage$, 'asObservable').and.returnValue(of({ helpArticleId: 'article_id' }) as any)
-      spyOn(appStateService.currentMfe$, 'asObservable').and.returnValue(
-        of({ remoteBaseUrl: '', productName: 'mfe_product_name' }) as any
-      )
-      helpApiServiceSpy.searchHelps.calls.reset()
-      helpApiServiceSpy.searchHelps.and.returnValue(
-        of({
-          stream: [
-            {
-              name: 'mfe_product_name',
-              displayName: 'mfe_display_product_name'
-            },
-            {
-              name: 'product_name_1',
-              displayName: 'product_name_1_display'
-            }
-          ]
-        } as any)
-      )
-      // itemId and productName different only for testing purposes
-      const helpItem = { id: 'id_1', itemId: 'item_1', productName: 'product_name_1' }
-      helpApiServiceSpy.searchHelps.and.returnValue(of({ totalElements: 1, stream: [helpItem] } as any))
-
-      initTestComponent({ permissions: ['HELP#EDIT'], baseUrl: 'base_url' } as RemoteComponentConfig)
-      await initHarness()
-      await oneCXHelpItemEditorHarness.clickHelpEditorButton()
-
-      // eslint-disable-next-line deprecation/deprecation
-      expect(dialogServiceSpy.openDialog<Help>).toHaveBeenCalledOnceWith(
-        'HELP_ITEM_EDITOR.HEADER',
-        {
-          type: HelpItemEditorFormComponent,
-          inputs: { helpItem: helpItem, productDisplayName: 'product_name_1_display' }
-        },
-        { key: 'HELP_ITEM_EDITOR.SAVE', icon: PrimeIcons.CHECK },
-        { key: 'HELP_ITEM_EDITOR.CANCEL', icon: PrimeIcons.TIMES },
-        false
-        //dialogStyle
-      )
-    })
-  })
-
-  describe('create', () => {
+  describe('create item', () => {
     it('should be unable to create help item when article not defined', async () => {
       const appStateService = TestBed.inject(AppStateService)
       spyOn(appStateService.currentPage$, 'asObservable').and.returnValue(of({ helpArticleId: '' }) as any)
@@ -536,7 +390,6 @@ describe('OneCXHelpItemEditorComponent', () => {
         itemId: 'result_item_id',
         resourceUrl: 'result_resource_url'
       }
-      // eslint-disable-next-line deprecation/deprecation
       dialogServiceSpy.openDialog.and.returnValue(of({ button: 'primary', result: dialogResult }) as any)
 
       initTestComponent({ permissions: ['HELP#EDIT'], baseUrl: 'base_url' } as RemoteComponentConfig)
@@ -556,7 +409,6 @@ describe('OneCXHelpItemEditorComponent', () => {
         of({ remoteBaseUrl: '', productName: 'mfe_product_name' }) as any
       )
       helpApiServiceSpy.searchHelps.and.returnValue(of({ totalElements: 0, stream: [] } as any))
-      // eslint-disable-next-line deprecation/deprecation
       dialogServiceSpy.openDialog.and.returnValue(of({ button: 'secondary' }) as any)
 
       initTestComponent({ permissions: ['HELP#EDIT'], baseUrl: 'base_url' } as RemoteComponentConfig)
@@ -582,7 +434,6 @@ describe('OneCXHelpItemEditorComponent', () => {
         resourceUrl: 'result_resource_url',
         modificationCount: 1
       }
-      // eslint-disable-next-line deprecation/deprecation
       dialogServiceSpy.openDialog.and.returnValue(of({ button: 'primary', result: dialogResult }) as any)
 
       helpApiServiceSpy.createNewHelp.and.returnValue(throwError(() => new HttpErrorResponse({ status: 404 })))
@@ -598,7 +449,7 @@ describe('OneCXHelpItemEditorComponent', () => {
     })
   })
 
-  describe('update', () => {
+  describe('update item', () => {
     it('should update help item on primary button click', async () => {
       const appStateService = TestBed.inject(AppStateService)
       spyOn(appStateService.currentPage$, 'asObservable').and.returnValue(of({ helpArticleId: 'article_id' }) as any)
@@ -615,7 +466,6 @@ describe('OneCXHelpItemEditorComponent', () => {
         resourceUrl: 'result_resource_url',
         modificationCount: 1
       }
-      // eslint-disable-next-line deprecation/deprecation
       dialogServiceSpy.openDialog.and.returnValue(of({ button: 'primary', result: dialogResult }) as any)
 
       initTestComponent({ permissions: ['HELP#EDIT'], baseUrl: 'base_url' } as RemoteComponentConfig)
@@ -651,7 +501,6 @@ describe('OneCXHelpItemEditorComponent', () => {
         resourceUrl: 'result_resource_url',
         modificationCount: 1
       }
-      // eslint-disable-next-line deprecation/deprecation
       dialogServiceSpy.openDialog.and.returnValue(
         of({
           button: 'primary',
@@ -697,7 +546,6 @@ describe('OneCXHelpItemEditorComponent', () => {
         resourceUrl: 'result_resource_url',
         modificationCount: 1
       }
-      // eslint-disable-next-line deprecation/deprecation
       dialogServiceSpy.openDialog.and.returnValue(of({ button: 'primary', result: dialogResult }) as any)
 
       helpApiServiceSpy.createNewHelp.and.returnValue(
@@ -728,6 +576,60 @@ describe('OneCXHelpItemEditorComponent', () => {
       })
     })
 
+    it('should use product displayName when matching product is in the emitted list', fakeAsync(() => {
+      const appStateService = TestBed.inject(AppStateService)
+      spyOn(appStateService.currentPage$, 'asObservable').and.returnValue(of({ helpArticleId: 'article_id' }) as any)
+      spyOn(appStateService.currentMfe$, 'asObservable').and.returnValue(
+        of({ remoteBaseUrl: '', productName: 'mfe_product_name' }) as any
+      )
+      // Delay searchHelps so helpDataItem$ won't emit until after we call tick(0)
+      // This allows us to emit products via pdSlotEmitter before combineLatest fires
+      helpApiServiceSpy.searchHelps.and.returnValue(of({ totalElements: 0, stream: [] } as any).pipe(delay(0)))
+      dialogServiceSpy.openDialog.and.returnValue(of({ button: 'secondary' }) as any)
+
+      initTestComponent({ permissions: ['HELP#EDIT'], baseUrl: 'base_url' } as RemoteComponentConfig)
+      component.onEditHelpItem()
+      // Emit a matching product after combineLatest has subscribed but before helpDataItem$ resolves
+      component.pdSlotEmitter.emit([{ name: 'mfe_product_name', displayName: 'MFE Product Display' }])
+      tick(0)
+
+      expect(dialogServiceSpy.openDialog).toHaveBeenCalledWith(
+        jasmine.anything(),
+        jasmine.objectContaining({
+          inputs: jasmine.objectContaining({ productDisplayName: 'MFE Product Display' })
+        }),
+        jasmine.anything(),
+        jasmine.anything(),
+        jasmine.anything()
+      )
+    }))
+
+    it('should use undefined as displayName when emitted products contain no matching product', fakeAsync(() => {
+      const appStateService = TestBed.inject(AppStateService)
+      spyOn(appStateService.currentPage$, 'asObservable').and.returnValue(of({ helpArticleId: 'article_id' }) as any)
+      spyOn(appStateService.currentMfe$, 'asObservable').and.returnValue(
+        of({ remoteBaseUrl: '', productName: 'mfe_product_name' }) as any
+      )
+      helpApiServiceSpy.searchHelps.and.returnValue(of({ totalElements: 0, stream: [] } as any).pipe(delay(0)))
+      dialogServiceSpy.openDialog.and.returnValue(of({ button: 'secondary' }) as any)
+
+      initTestComponent({ permissions: ['HELP#EDIT'], baseUrl: 'base_url' } as RemoteComponentConfig)
+      component.onEditHelpItem()
+      // Emit products where none match the helpItem's productName
+      component.pdSlotEmitter.emit([{ name: 'other_product', displayName: 'Other Product' }])
+      tick(0)
+
+      expect(dialogServiceSpy.openDialog).toHaveBeenCalledWith(
+        jasmine.anything(),
+        jasmine.objectContaining({
+          inputs: jasmine.objectContaining({ productDisplayName: undefined })
+        }),
+        jasmine.anything(),
+        jasmine.anything(),
+        jasmine.anything()
+      )
+    }))
+
     it('should display error if help item update failed', async () => {
       const appStateService = TestBed.inject(AppStateService)
       spyOn(appStateService.currentPage$, 'asObservable').and.returnValue(of({ helpArticleId: 'article_id' }) as any)
@@ -744,7 +646,6 @@ describe('OneCXHelpItemEditorComponent', () => {
         resourceUrl: 'result_resource_url',
         modificationCount: 1
       }
-      // eslint-disable-next-line deprecation/deprecation
       dialogServiceSpy.openDialog.and.returnValue(of({ button: 'primary', result: dialogResult }) as any)
       helpApiServiceSpy.updateHelp.and.returnValue(throwError(() => new HttpErrorResponse({ status: 404 })))
 

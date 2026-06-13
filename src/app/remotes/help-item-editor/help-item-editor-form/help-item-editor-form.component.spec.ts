@@ -1,10 +1,12 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing'
 import { FormsModule, ReactiveFormsModule } from '@angular/forms'
-import { NoopAnimationsModule } from '@angular/platform-browser/animations'
-import { PortalMessageService } from '@onecx/angular-integration-interface'
-import { TranslateTestingModule } from 'ngx-translate-testing'
-import { HelpItemEditorFormComponent } from './help-item-editor-form.component'
 import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed'
+import { NoopAnimationsModule } from '@angular/platform-browser/animations'
+import { TranslateTestingModule } from 'ngx-translate-testing'
+
+import { PortalMessageService } from '@onecx/angular-integration-interface'
+
+import { HelpItemEditorFormComponent } from './help-item-editor-form.component'
 import { HelpItemEditorDialogHarness } from './help-item-editor-form.harness'
 
 describe('HelpItemEditorFormComponent', () => {
@@ -141,8 +143,8 @@ describe('HelpItemEditorFormComponent', () => {
     })
 
     it('should not allow to close dialog display if helpitem was not provided', () => {
-      component.formGroup.controls['helpItemId'].setValue('valid')
       component.formGroup.controls['productName'].setValue('valid')
+      component.formGroup.controls['itemId'].setValue('valid')
       component.formGroup.controls['baseUrl'].setValue('valid')
 
       const result = component.ocxDialogButtonClicked({ button: 'primary' } as any)

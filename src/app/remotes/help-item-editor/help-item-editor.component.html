@@ -1,25 +1,26 @@
-<div class="layout-topbar-item" *ocxIfPermission="'HELP#EDIT'; permissions: permissions">
+<!-- TOPBAR ITEM -->
+<div *ocxIfPermission="'HELP#EDIT'; permissions: permissions">
   <!-- slot getting data from product store: one time only -->
-  <ocx-slot
-    *ngIf="pdIsComponentDefined"
-    id="ocx_topbar_action_edit_help_item_slot_products"
-    [name]="pdSlotName"
-    [inputs]="{ dataType: 'products', logEnabled: false, logPrefix: 'help-editor' }"
-    [outputs]="{ products: pdSlotEmitter }"
-  >
-  </ocx-slot>
-  <button
+  @if (pdIsComponentDefined$ | async) {
+    <ocx-slot
+      id="ocx_topbar_action_edit_help_item_slot_products"
+      [name]="pdSlotName"
+      [inputs]="{ dataType: 'products', logEnabled: false, logPrefix: 'help-editor' }"
+      [outputs]="{ products: pdSlotEmitter }"
+    >
+    </ocx-slot>
+  }
+  <p-button
     id="ocx_topbar_action_edit_help_item"
-    class="layout-topbar-action"
+    class="ocx-topbar-action"
     pRipple
-    pButton
+    [rounded]="true"
+    icon="pi pi-pencil"
     (click)="onEditHelpItem($event)"
-    (keydown.enter.t)="onEditHelpItem($event)"
-    [attr.aria-label]="'HELP_ITEM_EDITOR.TOOLTIP' | translate"
+    (keydown.enter)="onEditHelpItem($event)"
+    [ariaLabel]="'HELP_ITEM_EDITOR.TOOLTIP' | translate"
     [pTooltip]="'HELP_ITEM_EDITOR.TOOLTIP' | translate"
     tooltipPosition="bottom"
     tooltipEvent="hover"
-  >
-    <i id="ocx_topbar_action_edit_help_item_icon" class="pi pi-pencil fs-xlarge" aria-hidden="true"></i>
-  </button>
+  />
 </div>

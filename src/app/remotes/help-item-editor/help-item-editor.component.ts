@@ -1,9 +1,23 @@
-import { Component, CUSTOM_ELEMENTS_SCHEMA, EventEmitter, Inject, Input, APP_INITIALIZER } from '@angular/core'
+import { Component, DestroyRef, EventEmitter, inject, Inject, Input } from '@angular/core'
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { CommonModule, Location } from '@angular/common'
 import { Router } from '@angular/router'
-import { TranslateService } from '@ngx-translate/core'
-import { BehaviorSubject, Observable, ReplaySubject, catchError, combineLatest, first, map, mergeMap, of } from 'rxjs'
+import { TranslateModule, TranslateService } from '@ngx-translate/core'
+import {
+  BehaviorSubject,
+  Observable,
+  ReplaySubject,
+  catchError,
+  combineLatest,
+  first,
+  map,
+  mergeMap,
+  of,
+  startWith
+} from 'rxjs'
 import { PrimeIcons } from 'primeng/api'
+import { ButtonModule } from 'primeng/button'
+import { TooltipModule } from 'primeng/tooltip'
 
 import { AppStateService, PortalMessageService, UserService } from '@onecx/angular-integration-interface'
 import {
@@ -22,7 +36,6 @@ import {
 import { REMOTE_COMPONENT_CONFIG, RemoteComponentConfig } from '@onecx/angular-utils'
 
 import { Configuration, Help, HelpsInternalAPIService } from 'src/app/shared/generated'
-import { SharedModule } from 'src/app/shared/shared.module'
 import { environment } from 'src/environments/environment'
 
 import { HelpItemEditorFormComponent } from './help-item-editor-form/help-item-editor-form.component'
@@ -49,10 +62,16 @@ export function slotInitializer(slotService: SlotService) {
   selector: 'app-ocx-help-item-editor',
   templateUrl: './help-item-editor.component.html',
   styleUrls: ['./help-item-editor.component.scss'],
-  imports: [CommonModule, SharedModule, AngularAcceleratorModule, AngularRemoteComponentsModule],
-  schemas: [CUSTOM_ELEMENTS_SCHEMA],
+  standalone: true,
+  imports: [
+    AngularAcceleratorModule,
+    AngularRemoteComponentsModule,
+    CommonModule,
+    ButtonModule,
+    TooltipModule,
+    TranslateModule
+  ],
   providers: [
-    { provide: APP_INITIALIZER, useFactory: slotInitializer, deps: [SLOT_SERVICE], multi: true },
     { provide: SLOT_SERVICE, useExisting: SlotService },
     HelpsInternalAPIService,
     PortalMessageService,
@@ -63,19 +82,18 @@ export class OneCXHelpItemEditorComponent implements ocxRemoteComponent, ocxRemo
   @Input() set ocxRemoteComponentConfig(config: RemoteComponentConfig) {
     this.ocxInitRemoteComponent(config)
   }
-  helpArticleId$: Observable<string> // picked from current page
-  productName$: Observable<string> // name of the current product (from mfe)
-  //products$: Observable<Record<string, string>>
-  helpDataItem$: Observable<Help>
-  permissions: string[] = []
+  private readonly destroyRef = inject(DestroyRef)
+  private readonly helpArticleId$: Observable<string> // picked from current page
+  private readonly productName$: Observable<string> // name of the current product (from mfe)
+  private readonly helpDataItem$: Observable<Help | undefined>
+  public products$: Observable<Product[]>
+  public permissions: string[] = []
   // slot configuration: get product data via remote component
   public pdSlotName = 'onecx-product-data'
-  public pdIsComponentDefined = false
   public pdIsComponentDefined$: Observable<boolean> | undefined // check
   public productData$ = new BehaviorSubject<Product[] | undefined>(undefined) // product infos
   public pdSlotEmitter = new EventEmitter<Product[]>()
   public pdComponentTrigger$ = new BehaviorSubject<void>(undefined) // trigger for getting data
-  private products: Product[] = []
 
   constructor(
     @Inject(REMOTE_COMPONENT_CONFIG) private readonly remoteComponentConfig: ReplaySubject<RemoteComponentConfig>,
@@ -88,33 +106,30 @@ export class OneCXHelpItemEditorComponent implements ocxRemoteComponent, ocxRemo
     private readonly portalDialogService: PortalDialogService,
     private readonly translateService: TranslateService
   ) {
-    this.userService.lang$.subscribe((lang) => this.translateService.use(lang))
+    this.userService.lang$
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((lang) => this.translateService.use(lang))
+    // getting products via slot
+    this.pdIsComponentDefined$ = this.slotService.isSomeComponentDefinedForSlot(this.pdSlotName)
+    this.products$ = this.pdSlotEmitter.pipe(startWith([] as Product[]), takeUntilDestroyed(this.destroyRef))
+    // get app data
     this.helpArticleId$ = this.appStateService.currentPage$.asObservable().pipe(
       map((page) => {
         if (page?.helpArticleId) return page.helpArticleId
         if (page?.pageName) return page.pageName
-        return router.routerState.snapshot.url.split('#')[0]
+        return this.router.routerState.snapshot.url.split('#')[0]
       })
     )
     this.productName$ = combineLatest([this.appStateService.currentMfe$.asObservable()]).pipe(
-      map(([mfe]) => {
-        if (mfe.productName) return mfe.productName
-        return ''
-      })
+      map(([mfe]) => mfe.productName || '')
     )
     this.helpDataItem$ = combineLatest([this.productName$, this.helpArticleId$]).pipe(
       mergeMap(([productName, helpArticleId]) => {
         if (productName && helpArticleId) return this.loadHelpArticle(productName, helpArticleId)
-        return of({} as Help)
+        return of(undefined)
       }),
-      catchError(() => {
-        return of({} as Help)
-      })
+      catchError(() => of(undefined))
     )
-    this.pdSlotEmitter.subscribe((products: Product[]) => (this.products = products))
-    this.slotService
-      .isSomeComponentDefinedForSlot(this.pdSlotName)
-      .subscribe((defined) => (this.pdIsComponentDefined = defined === true))
   }
 
   public ocxInitRemoteComponent(config: RemoteComponentConfig): void {
@@ -185,20 +200,22 @@ export class OneCXHelpItemEditorComponent implements ocxRemoteComponent, ocxRemo
 
   public onEditHelpItem(ev?: Event) {
     ev?.stopPropagation()
-    combineLatest([this.helpArticleId$, this.productName$, this.helpDataItem$])
+    combineLatest([this.helpArticleId$, this.productName$, this.helpDataItem$, this.products$])
       .pipe(
         first(),
-        mergeMap(([helpArticleId, productName, helpDataItem]) => {
+        mergeMap(([helpArticleId, productName, helpDataItem, products]) => {
           let isNewItem = false
           if (helpArticleId && productName) {
-            if (!helpDataItem.itemId) {
-              helpDataItem.itemId = helpArticleId
-              isNewItem = true
+            isNewItem = !helpDataItem?.itemId // new item if no id exists for current article/product
+            // prepare item
+            helpDataItem = {
+              ...helpDataItem,
+              productName: helpDataItem?.productName ?? productName,
+              itemId: helpDataItem?.itemId ?? helpArticleId
             }
-            helpDataItem.productName = helpDataItem.productName ?? productName
-            let productDisplayName: string | undefined = helpDataItem.productName
-            if (this.products && this.products?.length > 0) {
-              productDisplayName = this.products.find((p) => p.name === helpDataItem.productName)?.displayName
+            let productDisplayName: string | undefined = helpDataItem?.productName
+            if (products && products.length > 0) {
+              productDisplayName = products.find((p) => p.name === helpDataItem?.productName)?.displayName
             }
             return this.openHelpEditorDialog(helpDataItem, productDisplayName!).pipe(
               map((dialogState): [DialogState<Help>, boolean] => [dialogState, isNewItem])
