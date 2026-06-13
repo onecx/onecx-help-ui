@@ -185,7 +185,7 @@ describe('OneCXHelpItemEditorComponent', () => {
 
       initTestComponent({ permissions: ['HELP#EDIT'], baseUrl: 'base_url' } as RemoteComponentConfig)
 
-      component.helpArticleId$?.subscribe((id) => {
+      component['helpArticleId$']?.subscribe((id) => {
         expect(id).toEqual('article_id')
         done()
       })
@@ -203,7 +203,7 @@ describe('OneCXHelpItemEditorComponent', () => {
 
       initTestComponent({ permissions: ['HELP#EDIT'], baseUrl: 'base_url' } as RemoteComponentConfig)
 
-      component.helpArticleId$?.subscribe((id) => {
+      component['helpArticleId$']?.subscribe((id) => {
         expect(id).toEqual('page_name')
         done()
       })
@@ -217,7 +217,7 @@ describe('OneCXHelpItemEditorComponent', () => {
 
       initTestComponent({ permissions: ['HELP#EDIT'], baseUrl: 'base_url' } as RemoteComponentConfig)
 
-      component.helpArticleId$?.subscribe((id) => {
+      component['helpArticleId$']?.subscribe((id) => {
         expect(id).toEqual('current_url/page')
         done()
       })
@@ -235,7 +235,7 @@ describe('OneCXHelpItemEditorComponent', () => {
 
       initTestComponent({ permissions: ['HELP#EDIT'], baseUrl: 'base_url' } as RemoteComponentConfig)
 
-      component.productName$?.subscribe((id) => {
+      component['productName$']?.subscribe((id) => {
         expect(id).toEqual('product_name')
         done()
       })
@@ -248,7 +248,7 @@ describe('OneCXHelpItemEditorComponent', () => {
 
       initTestComponent({ permissions: ['HELP#EDIT'], baseUrl: 'base_url' } as RemoteComponentConfig)
 
-      component.productName$?.subscribe((id) => {
+      component['productName$']?.subscribe((id) => {
         expect(id).toEqual('')
         done()
       })
@@ -272,7 +272,7 @@ describe('OneCXHelpItemEditorComponent', () => {
 
       initTestComponent({ permissions: ['HELP#EDIT'], baseUrl: 'base_url' } as RemoteComponentConfig)
 
-      component.helpDataItem$?.subscribe((item) => {
+      component['helpDataItem$']?.subscribe((item) => {
         expect(item).toEqual(helpItem)
         expect(helpApiServiceSpy.searchHelps).toHaveBeenCalledOnceWith({
           helpSearchCriteria: { itemId: helpItem.itemId, productName: helpItem.productName }
@@ -294,7 +294,7 @@ describe('OneCXHelpItemEditorComponent', () => {
 
       initTestComponent({ permissions: ['HELP#EDIT'], baseUrl: 'base_url' } as RemoteComponentConfig)
 
-      component.helpDataItem$?.subscribe((item) => {
+      component['helpDataItem$']?.subscribe((item) => {
         expect(item).toEqual({} as Help)
         done()
       })
@@ -312,7 +312,7 @@ describe('OneCXHelpItemEditorComponent', () => {
 
       initTestComponent({ permissions: ['HELP#EDIT'], baseUrl: 'base_url' } as RemoteComponentConfig)
 
-      component.helpDataItem$?.subscribe((item) => {
+      component['helpDataItem$']?.subscribe((item) => {
         expect(item).toEqual({} as Help)
         expect(helpApiServiceSpy.searchHelps).toHaveBeenCalledOnceWith({
           helpSearchCriteria: { itemId: 'article_id', productName: 'mfe_product_name' }
@@ -333,7 +333,7 @@ describe('OneCXHelpItemEditorComponent', () => {
 
       initTestComponent({ permissions: ['HELP#EDIT'], baseUrl: 'base_url' } as RemoteComponentConfig)
 
-      component.helpDataItem$?.subscribe((item) => {
+      component['helpDataItem$']?.subscribe((item) => {
         expect(item).toEqual({} as Help)
         expect(helpApiServiceSpy.searchHelps).toHaveBeenCalledTimes(0)
         done()

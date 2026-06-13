@@ -1,4 +1,5 @@
-import { Component, EventEmitter, Inject, Input } from '@angular/core'
+import { Component, DestroyRef, EventEmitter, inject, Inject, Input } from '@angular/core'
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { CommonModule, Location } from '@angular/common'
 import { Router } from '@angular/router'
 import { TranslateModule, TranslateService } from '@ngx-translate/core'
@@ -70,11 +71,12 @@ export class OneCXHelpItemEditorComponent implements ocxRemoteComponent, ocxRemo
   @Input() set ocxRemoteComponentConfig(config: RemoteComponentConfig) {
     this.ocxInitRemoteComponent(config)
   }
-  helpArticleId$: Observable<string> // picked from current page
-  productName$: Observable<string> // name of the current product (from mfe)
+  private readonly destroyRef = inject(DestroyRef)
+  private readonly helpArticleId$: Observable<string> // picked from current page
+  private readonly productName$: Observable<string> // name of the current product (from mfe)
   //products$: Observable<Record<string, string>>
-  helpDataItem$: Observable<Help>
-  permissions: string[] = []
+  private readonly helpDataItem$: Observable<Help>
+  public permissions: string[] = []
   // slot configuration: get product data via remote component
   public pdSlotName = 'onecx-product-data'
   public pdIsComponentDefined$: Observable<boolean> | undefined // check
@@ -94,7 +96,12 @@ export class OneCXHelpItemEditorComponent implements ocxRemoteComponent, ocxRemo
     private readonly portalDialogService: PortalDialogService,
     private readonly translateService: TranslateService
   ) {
-    this.userService.lang$.subscribe((lang) => this.translateService.use(lang))
+    this.userService.lang$
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((lang) => this.translateService.use(lang))
+    this.pdSlotEmitter
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((products: Product[]) => (this.products = products))
     this.helpArticleId$ = this.appStateService.currentPage$.asObservable().pipe(
       map((page) => {
         if (page?.helpArticleId) return page.helpArticleId
@@ -117,7 +124,6 @@ export class OneCXHelpItemEditorComponent implements ocxRemoteComponent, ocxRemo
         return of({} as Help)
       })
     )
-    this.pdSlotEmitter.subscribe((products: Product[]) => (this.products = products))
     this.pdIsComponentDefined$ = this.slotService.isSomeComponentDefinedForSlot(this.pdSlotName)
   }
 

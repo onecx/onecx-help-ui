@@ -146,7 +146,7 @@ describe('OneCXShowHelpComponent', () => {
 
       initTestComponent({ permissions: ['HELP#VIEW'], baseUrl: 'base_url' } as RemoteComponentConfig)
 
-      component.helpArticleId$?.subscribe((id) => {
+      component['helpArticleId$']?.subscribe((id) => {
         expect(id).toEqual('article_id')
         done()
       })
@@ -164,7 +164,7 @@ describe('OneCXShowHelpComponent', () => {
 
       initTestComponent({ permissions: ['HELP#VIEW'], baseUrl: 'base_url' } as RemoteComponentConfig)
 
-      component.helpArticleId$?.subscribe((id) => {
+      component['helpArticleId$']?.subscribe((id) => {
         expect(id).toEqual('page_name')
         done()
       })
@@ -178,7 +178,7 @@ describe('OneCXShowHelpComponent', () => {
 
       initTestComponent({ permissions: ['HELP#VIEW'], baseUrl: 'base_url' } as RemoteComponentConfig)
 
-      component.helpArticleId$?.subscribe((id) => {
+      component['helpArticleId$']?.subscribe((id) => {
         expect(id).toEqual('current_url/page')
         done()
       })
@@ -248,7 +248,7 @@ describe('OneCXShowHelpComponent', () => {
 
       initTestComponent({ permissions: ['HELP#VIEW'], baseUrl: 'base_url' } as RemoteComponentConfig)
 
-      component.productName$?.subscribe((id) => {
+      component['productName$']?.subscribe((id) => {
         expect(id).toEqual('product_name')
         done()
       })
@@ -270,7 +270,7 @@ describe('OneCXShowHelpComponent', () => {
 
       initTestComponent({ permissions: ['HELP#VIEW'], baseUrl: 'base_url' } as RemoteComponentConfig)
 
-      component.helpItem$?.subscribe((item) => {
+      component['helpItem$']?.subscribe((item) => {
         expect(item).toEqual(helpItem as Help)
         expect(helpApiSpy.getHelpByProductNameItemId).toHaveBeenCalled()
         done()
@@ -284,7 +284,7 @@ describe('OneCXShowHelpComponent', () => {
 
       initTestComponent({ permissions: ['HELP#VIEW'], baseUrl: 'base_url' } as RemoteComponentConfig)
 
-      component.helpItem$?.subscribe((item) => {
+      component['helpItem$']?.subscribe((item) => {
         expect(item).toEqual({} as Help)
         expect(helpApiSpy.getHelpByProductNameItemId).toHaveBeenCalledTimes(0)
         done()
@@ -302,7 +302,7 @@ describe('OneCXShowHelpComponent', () => {
 
       initTestComponent({ permissions: ['HELP#VIEW'], baseUrl: 'base_url' } as RemoteComponentConfig)
 
-      component.helpItem$?.subscribe((item) => {
+      component['helpItem$']?.subscribe((item) => {
         expect(item).toEqual({} as Help)
         expect(helpApiSpy.getHelpByProductNameItemId).toHaveBeenCalled()
         done()

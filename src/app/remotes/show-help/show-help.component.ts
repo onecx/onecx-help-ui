@@ -1,4 +1,5 @@
-import { Component, Inject, Input } from '@angular/core'
+import { Component, DestroyRef, inject, Inject, Input } from '@angular/core'
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { CommonModule, Location } from '@angular/common'
 import { Router } from '@angular/router'
 import { TranslateModule, TranslateService } from '@ngx-translate/core'
@@ -46,10 +47,11 @@ export class OneCXShowHelpComponent implements ocxRemoteComponent, ocxRemoteWebc
   @Input() set ocxRemoteComponentConfig(config: RemoteComponentConfig) {
     this.ocxInitRemoteComponent(config)
   }
-  helpArticleId$: Observable<string>
-  productName$: Observable<string>
-  helpItem$: Observable<Help> | undefined
-  permissions: string[] = []
+  private readonly destroyRef = inject(DestroyRef)
+  private readonly helpArticleId$: Observable<string>
+  private readonly productName$: Observable<string>
+  private readonly helpItem$: Observable<Help> | undefined
+  public permissions: string[] = []
 
   constructor(
     @Inject(REMOTE_COMPONENT_CONFIG) private readonly remoteComponentConfig: ReplaySubject<RemoteComponentConfig>,
@@ -61,7 +63,9 @@ export class OneCXShowHelpComponent implements ocxRemoteComponent, ocxRemoteWebc
     private readonly portalMessageService: PortalMessageService,
     private readonly translateService: TranslateService
   ) {
-    this.userService.lang$.subscribe((lang) => this.translateService.use(lang))
+    this.userService.lang$
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((lang) => this.translateService.use(lang))
     this.helpArticleId$ = this.appStateService.currentPage$.asObservable().pipe(
       map((page) => {
         if (page?.helpArticleId) return page.helpArticleId
