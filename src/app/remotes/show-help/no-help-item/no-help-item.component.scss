@@ -1,6 +1,7 @@
 @use 'src/app/hm-mixins.scss' as *;
 
 @include word-break-all;
+@include danger-action;
 @include ocx-text-responsive;
 
 ::ng-deep {

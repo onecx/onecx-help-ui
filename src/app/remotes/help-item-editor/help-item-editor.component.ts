@@ -85,7 +85,7 @@ export class OneCXHelpItemEditorComponent implements ocxRemoteComponent, ocxRemo
   private readonly destroyRef = inject(DestroyRef)
   private readonly helpArticleId$: Observable<string> // picked from current page
   private readonly productName$: Observable<string> // name of the current product (from mfe)
-  private readonly helpDataItem$: Observable<Help>
+  private readonly helpDataItem$: Observable<Help | undefined>
   public products$: Observable<Product[]>
   public permissions: string[] = []
   // slot configuration: get product data via remote component
@@ -126,9 +126,9 @@ export class OneCXHelpItemEditorComponent implements ocxRemoteComponent, ocxRemo
     this.helpDataItem$ = combineLatest([this.productName$, this.helpArticleId$]).pipe(
       mergeMap(([productName, helpArticleId]) => {
         if (productName && helpArticleId) return this.loadHelpArticle(productName, helpArticleId)
-        return of({} as unknown as Help)
+        return of(undefined)
       }),
-      catchError(() => of({} as unknown as Help))
+      catchError(() => of(undefined))
     )
   }
 
@@ -206,14 +206,16 @@ export class OneCXHelpItemEditorComponent implements ocxRemoteComponent, ocxRemo
         mergeMap(([helpArticleId, productName, helpDataItem, products]) => {
           let isNewItem = false
           if (helpArticleId && productName) {
-            if (!helpDataItem.itemId) {
-              helpDataItem.itemId = helpArticleId
-              isNewItem = true
+            isNewItem = !helpDataItem?.itemId // new item if no id exists for current article/product
+            // prepare item
+            helpDataItem = {
+              ...helpDataItem,
+              productName: helpDataItem?.productName ?? productName,
+              itemId: helpDataItem?.itemId ?? helpArticleId
             }
-            helpDataItem.productName = helpDataItem.productName ?? productName
-            let productDisplayName: string | undefined = helpDataItem.productName
+            let productDisplayName: string | undefined = helpDataItem?.productName
             if (products && products.length > 0) {
-              productDisplayName = products.find((p) => p.name === helpDataItem.productName)?.displayName
+              productDisplayName = products.find((p) => p.name === helpDataItem?.productName)?.displayName
             }
             return this.openHelpEditorDialog(helpDataItem, productDisplayName!).pipe(
               map((dialogState): [DialogState<Help>, boolean] => [dialogState, isNewItem])

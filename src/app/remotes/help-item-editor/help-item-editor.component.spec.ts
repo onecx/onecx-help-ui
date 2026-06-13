@@ -312,7 +312,7 @@ describe('OneCXHelpItemEditorComponent', () => {
       initTestComponent({ permissions: ['HELP#EDIT'], baseUrl: 'base_url' } as RemoteComponentConfig)
 
       component['helpDataItem$']?.subscribe((item) => {
-        expect(item).toEqual({} as Help)
+        expect(item).toBeUndefined()
         expect(helpApiServiceSpy.searchHelps).toHaveBeenCalledOnceWith({
           helpSearchCriteria: { itemId: 'article_id', productName: 'mfe_product_name' }
         })
@@ -333,7 +333,7 @@ describe('OneCXHelpItemEditorComponent', () => {
       initTestComponent({ permissions: ['HELP#EDIT'], baseUrl: 'base_url' } as RemoteComponentConfig)
 
       component['helpDataItem$']?.subscribe((item) => {
-        expect(item).toEqual({} as Help)
+        expect(item).toBeUndefined()
         expect(helpApiServiceSpy.searchHelps).toHaveBeenCalledTimes(0)
         done()
       })
