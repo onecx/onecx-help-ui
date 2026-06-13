@@ -126,9 +126,9 @@ export class OneCXHelpItemEditorComponent implements ocxRemoteComponent, ocxRemo
     this.helpDataItem$ = combineLatest([this.productName$, this.helpArticleId$]).pipe(
       mergeMap(([productName, helpArticleId]) => {
         if (productName && helpArticleId) return this.loadHelpArticle(productName, helpArticleId)
-        return of({} as Help)
+        return of({} as unknown as Help)
       }),
-      catchError(() => of({} as Help))
+      catchError(() => of({} as unknown as Help))
     )
   }
 
