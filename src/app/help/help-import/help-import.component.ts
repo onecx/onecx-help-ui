@@ -4,8 +4,7 @@ import { TranslateModule } from '@ngx-translate/core'
 
 import { ButtonModule } from 'primeng/button'
 import { DialogModule } from 'primeng/dialog'
-import { FileSelectEvent } from 'primeng/fileupload'
-import { FileUploadModule } from 'primeng/fileupload'
+import { FileSelectEvent, FileUploadModule } from 'primeng/fileupload'
 import { FloatLabelModule } from 'primeng/floatlabel'
 import { TooltipModule } from 'primeng/tooltip'
 
