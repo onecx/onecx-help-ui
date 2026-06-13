@@ -110,10 +110,11 @@ export class OneCXShowHelpComponent implements ocxRemoteComponent, ocxRemoteWebc
             currentLocation.deploymentPath
           )
           console.info(`navigate to help page: ${url.toString()}`)
+
           try {
             window.open(url, '_blank')?.focus()
           } catch (e) {
-            console.log(`Error opening help page URL`, e)
+            console.log('Error opening help page URL', e)
             this.portalMessageService.error({ summaryKey: 'SHOW_HELP.HELP_PAGE_ERROR' })
           }
         } else {
@@ -156,10 +157,16 @@ export class OneCXShowHelpComponent implements ocxRemoteComponent, ocxRemoteWebc
       .subscribe()
   }
 
+  /*
+    * Construct URL for help page:
+    - If helpUrl is absolute, use it as is
+    - If helpUrl is relative, combine it with current basePath and deploymentPath
+  */
   private constructUrl(helpUrl: string, basePath: string, deploymentPath: string): URL {
-    const isRelative = new URL(basePath).origin === new URL(helpUrl, basePath).origin
-    if (isRelative) return new URL(Location.joinWithSlash(deploymentPath, helpUrl), basePath)
-    return new URL(helpUrl)
+    if (helpUrl.startsWith('http://') || helpUrl.startsWith('https://')) {
+      return new URL(helpUrl)
+    }
+    return new URL(Location.joinWithSlash(deploymentPath, helpUrl), basePath)
   }
 
   /* Prepare the final URL as follow (#) = optional:
