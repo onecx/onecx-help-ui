@@ -1,10 +1,8 @@
-import { NO_ERRORS_SCHEMA } from '@angular/core'
-import { CommonModule } from '@angular/common'
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing'
 import { provideHttpClient } from '@angular/common/http'
 import { provideHttpClientTesting } from '@angular/common/http/testing'
 import { FormControl, FormGroup } from '@angular/forms'
-import { TranslateModule } from '@ngx-translate/core'
+import { provideNoopAnimations } from '@angular/platform-browser/animations'
 import { TranslateTestingModule } from 'ngx-translate-testing'
 import { of, throwError } from 'rxjs'
 
@@ -58,13 +56,15 @@ describe('HelpDetailComponent', () => {
           en: require('src/assets/i18n/en.json')
         }).withDefaultLanguage(defaultLang)
       ],
-      schemas: [NO_ERRORS_SCHEMA],
-      providers: [provideHttpClient(), provideHttpClientTesting(), { provide: UserService, useValue: mockUserService }]
+      providers: [
+        { provide: UserService, useValue: mockUserService },
+        provideHttpClient(),
+        provideHttpClientTesting(),
+        provideNoopAnimations()
+      ]
     })
       .overrideComponent(HelpDetailComponent, {
         set: {
-          imports: [CommonModule, TranslateModule],
-          schemas: [NO_ERRORS_SCHEMA],
           providers: [
             { provide: HelpsInternalAPIService, useValue: apiServiceSpy },
             { provide: PortalMessageService, useValue: msgServiceSpy }
