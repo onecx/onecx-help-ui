@@ -7,7 +7,7 @@ import { ReplaySubject } from 'rxjs'
 import { AngularAuthModule } from '@onecx/angular-auth'
 import { bootstrapRemoteComponent } from '@onecx/angular-webcomponents'
 import { provideTranslateServiceForRoot } from '@onecx/angular-remote-components'
-import { AngularAcceleratorMissingTranslationHandler } from '@onecx/angular-accelerator'
+import { AngularAcceleratorModule, AngularAcceleratorMissingTranslationHandler } from '@onecx/angular-accelerator'
 import {
   REMOTE_COMPONENT_CONFIG,
   RemoteComponentConfig,
@@ -31,6 +31,6 @@ bootstrapRemoteComponent(OneCXHelpItemEditorComponent, 'ocx-help-item-editor-com
     }
   }),
   provideHttpClient(withInterceptorsFromDi()),
-  importProvidersFrom(AngularAuthModule, BrowserAnimationsModule),
+  importProvidersFrom(AngularAcceleratorModule, AngularAuthModule, BrowserAnimationsModule),
   provideThemeConfig()
 ])
