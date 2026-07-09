@@ -123,7 +123,7 @@ describe('HelpSearchComponent', () => {
       component.ngOnInit()
 
       component.actions$?.subscribe((action) => {
-        action[1].actionCallback()
+        action[1].actionCallback!()
       })
 
       expect(component.onExport).toHaveBeenCalled()
@@ -134,7 +134,7 @@ describe('HelpSearchComponent', () => {
 
       component.ngOnInit()
       component.actions$?.subscribe((action) => {
-        action[2].actionCallback()
+        action[2].actionCallback!()
       })
 
       expect(component.onImport).toHaveBeenCalled()
@@ -145,7 +145,7 @@ describe('HelpSearchComponent', () => {
 
       component.ngOnInit()
       component.actions$?.subscribe((action) => {
-        action[0].actionCallback()
+        action[0].actionCallback!()
       })
 
       expect(component.onDetail).toHaveBeenCalledWith(undefined, 'CREATE')
@@ -352,7 +352,7 @@ describe('HelpSearchComponent', () => {
     it('should call detail in COPY mode from copy additional action', () => {
       spyOn(component, 'onDetail')
 
-      component.interactiveAdditionalActions[0].callback(rowItems[0])
+      component.interactiveAdditionalActions[0].callback!(rowItems[0])
 
       expect(component.onDetail).toHaveBeenCalledWith(rowItems[0], 'COPY')
     })
