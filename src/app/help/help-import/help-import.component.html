@@ -8,7 +8,7 @@
   [resizable]="true"
   [dismissableMask]="true"
 >
-  <div class="flex flex-wrap column-gap-2 row-gap-1 justify-content-end">
+  <div class="flex flex-wrap flex-column row-gap-3">
     <p-fileUpload
       #fileUploader
       id="hm_import_file_upload"
@@ -49,6 +49,13 @@
         </div>
       </ng-template>
     </p-fileUpload>
+    @if (importError) {
+      <p-message
+        id="hm_import_parse_error"
+        severity="error"
+        [text]="'VALIDATION.ERRORS.IMPORT_PARSE_ERROR' | translate"
+      ></p-message>
+    }
   </div>
   <ng-template pTemplate="footer">
     <div class="flex flex-wrap justify-content-end column-gap-2 row-gap-1">

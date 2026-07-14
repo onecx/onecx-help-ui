@@ -84,7 +84,6 @@ describe('HelpImportComponent', () => {
       component.onImportSelectFile(event)
       await fixture.whenStable()
 
-      expect(msgServiceSpy.info).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.IMPORT.VALIDATION.OK' })
       expect(component.importError).toBeFalse()
     })
 
@@ -95,7 +94,7 @@ describe('HelpImportComponent', () => {
       component.onImportSelectFile(event)
       await fixture.whenStable()
 
-      expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.IMPORT.VALIDATION.NOK' })
+      expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'VALIDATION.ERRORS.IMPORT_PARSE_ERROR' })
       expect(console.error).toHaveBeenCalled()
       expect(component.importError).toBeTrue()
     })

@@ -62,10 +62,6 @@
       "MESSAGE": {
         "OK": "Die Hilfeartikel wurde erfolgreich importiert.",
         "NOK": "Ein Fehler ist aufgetreten. Die Hilfeartikel wurden nicht importiert."
-      },
-      "VALIDATION": {
-        "OK": "Die Datei wurde erfolgreich geprüft.",
-        "NOK": "Ein Fehler ist aufgetreten. Die Datei kann nicht importiert werden. Details in Console."
       }
     },
     "NAVIGATION": {
@@ -222,6 +218,7 @@
       "HELP_ITEM.MERGE_ENTITY_FAILED": "Ein Hilfeartikel mit dieser ID existiert bereits für das Produkt",
       "HELP_ITEM.OPTIMISTIC_LOCK": "Hilfeartikel wurde zwischenzeitlich verändert oder gelöscht.",
       "HELP_ITEM.FORM_INVALID": "Das Formular ist ungültig. Der Hilfeartikel kann so nicht gespeichert werden.",
+      "IMPORT_PARSE_ERROR": "Die enthaltene Struktur entspricht nicht dem erwarteten Format. Bitte prüfen Sie die Datei und versuchen Sie es erneut.",
       "INTERNAL_ERROR": "Interner Fehler",
       "EMPTY_REQUIRED_FIELD": "Dieses Feld ist ein Pflichtfeld.",
       "MAXIMUM_LENGTH": "Es sind nur {{chars}} Zeichen erlaubt.",

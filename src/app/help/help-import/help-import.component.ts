@@ -1,4 +1,12 @@
-import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core'
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  EventEmitter,
+  Input,
+  Output,
+  inject
+} from '@angular/core'
 import { CommonModule } from '@angular/common'
 import { TranslateModule } from '@ngx-translate/core'
 
@@ -6,38 +14,40 @@ import { ButtonModule } from 'primeng/button'
 import { DialogModule } from 'primeng/dialog'
 import { FileSelectEvent, FileUploadModule } from 'primeng/fileupload'
 import { FloatLabelModule } from 'primeng/floatlabel'
+import { MessageModule } from 'primeng/message'
 import { TooltipModule } from 'primeng/tooltip'
 
 import { PortalMessageService } from '@onecx/angular-integration-interface'
 
 import { HelpsInternalAPIService } from 'src/app/shared/generated'
+import { HelpSnapshot } from 'src/app/types/helpSnapshot'
 
 @Component({
   selector: 'app-help-import',
-  templateUrl: './help-import.component.html',
   standalone: true,
   imports: [
+    ButtonModule,
     CommonModule,
     DialogModule,
     FileUploadModule,
     FloatLabelModule,
-    ButtonModule,
+    MessageModule,
     TooltipModule,
     TranslateModule
   ],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  templateUrl: './help-import.component.html'
 })
 export class HelpImportComponent {
   @Input() visible = false
   @Output() visibleChange = new EventEmitter<boolean>()
 
+  private readonly cd = inject(ChangeDetectorRef)
+  private readonly msgService = inject(PortalMessageService)
+  private readonly helpApi = inject(HelpsInternalAPIService)
+
   public importError = false
   private importObject: object | undefined = undefined
-
-  constructor(
-    private readonly msgService: PortalMessageService,
-    private readonly helpApi: HelpsInternalAPIService
-  ) {}
 
   public onImportSelectFile(event: FileSelectEvent): void {
     event.files[0].text().then((text) => {
@@ -45,9 +55,20 @@ export class HelpImportComponent {
       this.importObject = undefined
       try {
         this.importObject = JSON.parse(text)
-        this.msgService.info({ summaryKey: 'ACTIONS.IMPORT.VALIDATION.OK' })
+        if (this.isHelpImportRequestDTO(this.importObject)) {
+          const helpSnapshot = this.importObject as HelpSnapshot
+          this.importError = false
+          if (helpSnapshot.helps) {
+            const key: string[] = Object.keys(helpSnapshot.helps)
+            // Do something with the helps if needed
+          }
+        } else {
+          console.error('Help Import Error: not valid data ')
+          this.importError = true
+        }
+        this.cd.markForCheck() // force change detection to update the view with the new properties
       } catch (err: any) {
-        this.msgService.error({ summaryKey: 'ACTIONS.IMPORT.VALIDATION.NOK' })
+        this.msgService.error({ summaryKey: 'VALIDATION.ERRORS.IMPORT_PARSE_ERROR' })
         console.error('Import parse error', err)
         this.importError = true
       }
@@ -90,5 +111,10 @@ export class HelpImportComponent {
     }
     const formatted = size < 10 ? Math.round(size * 10) / 10 : Math.round(size)
     return `${formatted}${units[unitIndex]}`
+  }
+
+  private isHelpImportRequestDTO(obj: unknown): obj is HelpSnapshot {
+    const dto = obj as HelpSnapshot
+    return !!(typeof dto === 'object' && dto?.helps)
   }
 }
