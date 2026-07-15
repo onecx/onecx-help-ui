@@ -59,17 +59,15 @@ export class HelpImportComponent {
           const helpSnapshot = this.importObject as HelpSnapshot
           this.importError = false
           if (helpSnapshot.helps) {
-            const key: string[] = Object.keys(helpSnapshot.helps)
-            // Do something with the helps if needed
+            // const keys: string[] = Object.keys(helpSnapshot.helps)
           }
         } else {
-          console.error('Help Import Error: not valid data ')
           this.importError = true
         }
         this.cd.markForCheck() // force change detection to update the view with the new properties
       } catch (err: any) {
         this.msgService.error({ summaryKey: 'VALIDATION.ERRORS.IMPORT_PARSE_ERROR' })
-        console.error('Import parse error', err)
+        console.error('Help import parse error: ', err)
         this.importError = true
       }
     })
