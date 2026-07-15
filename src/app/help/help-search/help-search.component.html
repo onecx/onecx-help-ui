@@ -35,143 +35,143 @@
             severity="info"
             [text]="'ACTIONS.SEARCH.IN_PROGRESS' | translate"
           ></p-message>
-        }
-        <ocx-interactive-data-view
-          *ngIf="!(searching || exceptionKey)"
-          id="hm_search_table"
-          styleClass="p-0"
-          [data]="filteredData ?? data"
-          [supportedViewLayouts]="['table']"
-          [layout]="'table'"
-          [columns]="interactiveColumns"
-          [displayedColumnKeys]="displayedColumnKeys"
-          [clientSideFiltering]="false"
-          [clientSideSorting]="true"
-          [sortField]="sortField"
-          [sortDirection]="sortDirection"
-          [tablePaginator]="true"
-          [pageSize]="10"
-          [pageSizes]="[10, 30, 100]"
-          [emptyResultsMessage]="'ACTIONS.SEARCH.NO_DATA' | translate"
-          [viewPermission]="'HELP#VIEW'"
-          [editPermission]="'HELP#EDIT'"
-          [deletePermission]="'HELP#DELETE'"
-          [additionalActions]="interactiveAdditionalActions"
-          [actionColumnPosition]="'left'"
-          (displayedColumnKeysChange)="onColumnsChange($event)"
-          (sorted)="onSortChange($event)"
-          (editItem)="onEditFromInteractive($event)"
-          (deleteItem)="onDeleteFromInteractive($event)"
-        >
-          <!-- TABLE HEADER -->
-          <ng-template #topCenter>
-            <p-inputgroup>
-              <p-inputgroup-addon>
-                <i class="pi pi-filter"></i>
-              </p-inputgroup-addon>
-              <p-floatlabel variant="on">
-                <input
-                  #globalFilterInput
-                  pInputText
-                  type="text"
-                  id="hm_search_table_global_filter"
-                  [value]="globalFilterValue"
-                  (input)="onGlobalFilter(globalFilterInput.value, data)"
-                  (focus)="globalFilterInput.classList.add('p-focus')"
-                  (blur)="globalFilterInput.classList.remove('p-focus')"
-                  [attr.aria-label]="
-                    ('DIALOG.DATAVIEW.FILTER_BY' | translate) +
-                    ('HELP_ITEM.PRODUCT_NAME' | translate) +
-                    ', ' +
-                    ('HELP_ITEM.ID' | translate)
-                  "
-                  [pTooltip]="
-                    ('DIALOG.DATAVIEW.FILTER_BY' | translate) +
-                    ('HELP_ITEM.PRODUCT_NAME' | translate) +
-                    ', ' +
-                    ('HELP_ITEM.ID' | translate)
-                  "
-                  tooltipPosition="top"
-                  tooltipEvent="hover"
-                />
-                <label for="hm_search_table_filter" aria-hidden="true">
-                  {{ 'DIALOG.DATAVIEW.FILTER_PLACEHOLDER' | translate }}
-                </label>
-              </p-floatlabel>
-              <p-inputgroup-addon>
-                <p-button
-                  id="hm_search_table_global_filter_clear"
-                  icon="pi pi-filter-slash"
-                  (onClick)="onClearGlobalFilter(globalFilterInput)"
-                  (onKeydown.enter)="onClearGlobalFilter(globalFilterInput)"
-                  [severity]="globalFilterInput.value !== '' ? 'primary' : 'secondary'"
-                  [disabled]="!globalFilterValue"
-                  [ariaLabel]="'DIALOG.DATAVIEW.FILTER_CLEAR' | translate"
-                  [pTooltip]="'DIALOG.DATAVIEW.FILTER_CLEAR' | translate"
-                  tooltipPosition="top"
-                  tooltipEvent="hover"
-                />
-              </p-inputgroup-addon>
-            </p-inputgroup>
-          </ng-template>
-          <!-- TABLE COLUMN HEADER -->
-          <ng-template
-            pTemplate="columnHeader"
-            let-col="column"
-            let-labelTemplate="labelTemplate"
-            let-sortTemplate="sortTemplate"
-            let-filterTemplate="filterTemplate"
+        } @else {
+          <ocx-interactive-data-view
+            id="hm_search_table"
+            styleClass="p-0"
+            [data]="filteredData ?? data"
+            [supportedViewLayouts]="['table']"
+            [layout]="'table'"
+            [columns]="interactiveColumns"
+            [displayedColumnKeys]="displayedColumnKeys"
+            [clientSideFiltering]="false"
+            [clientSideSorting]="true"
+            [sortField]="sortField"
+            [sortDirection]="sortDirection"
+            [tablePaginator]="true"
+            [pageSize]="10"
+            [pageSizes]="[10, 30, 100]"
+            [emptyResultsMessage]="'ACTIONS.SEARCH.NO_DATA' | translate"
+            [viewPermission]="'HELP#VIEW'"
+            [editPermission]="'HELP#EDIT'"
+            [deletePermission]="'HELP#DELETE'"
+            [additionalActions]="interactiveAdditionalActions"
+            [actionColumnPosition]="'left'"
+            (displayedColumnKeysChange)="onColumnsChange($event)"
+            (sorted)="onSortChange($event)"
+            (editItem)="onEditFromInteractive($event)"
+            (deleteItem)="onDeleteFromInteractive($event)"
           >
-            <div [class]="col.cssHeader">
-              <ng-container
-                [ngTemplateOutlet]="labelTemplate"
-                [ngTemplateOutletContext]="{ column: col }"
-              ></ng-container>
-              <ng-container
-                [ngTemplateOutlet]="filterTemplate"
-                [ngTemplateOutletContext]="{ column: col }"
-              ></ng-container>
-              <ng-container
-                [ngTemplateOutlet]="sortTemplate"
-                [ngTemplateOutletContext]="{ column: col }"
-              ></ng-container>
-            </div>
-          </ng-template>
-          <!-- TABLE BODY -->
-          <ng-template pTemplate="tableCell" let-item="rowObject" let-col="column">
-            @let colBodyCss = col.cssBody ?? '';
-            @switch (col.id) {
-              @case ('productName') {
-                @let displayName = getDisplayName(item.productName, metaData.allProducts);
-                <div
-                  [class]="colBodyCss + ' text-ellipsis-2-lines'"
-                  [pTooltip]="displayName ? '' : item.productName"
-                  tooltipPosition="top"
-                  tooltipEvent="hover"
-                >
-                  {{ displayName ?? ('HELP_ITEM.NOT_FOUND' | translate) }}
-                </div>
+            <!-- TABLE HEADER -->
+            <ng-template #topCenter>
+              <p-inputgroup>
+                <p-inputgroup-addon>
+                  <i class="pi pi-filter"></i>
+                </p-inputgroup-addon>
+                <p-floatlabel variant="on">
+                  <input
+                    #globalFilterInput
+                    pInputText
+                    type="text"
+                    id="hm_search_table_global_filter"
+                    [value]="globalFilterValue"
+                    (input)="onGlobalFilter(globalFilterInput.value, data)"
+                    (focus)="globalFilterInput.classList.add('p-focus')"
+                    (blur)="globalFilterInput.classList.remove('p-focus')"
+                    [ariaLabel]="
+                      ('DIALOG.DATAVIEW.FILTER_BY' | translate) +
+                      ('HELP_ITEM.PRODUCT_NAME' | translate) +
+                      ', ' +
+                      ('HELP_ITEM.ID' | translate)
+                    "
+                    [pTooltip]="
+                      ('DIALOG.DATAVIEW.FILTER_BY' | translate) +
+                      ('HELP_ITEM.PRODUCT_NAME' | translate) +
+                      ', ' +
+                      ('HELP_ITEM.ID' | translate)
+                    "
+                    tooltipPosition="top"
+                    tooltipEvent="hover"
+                  />
+                  <label for="hm_search_table_global_filter" aria-hidden="true">
+                    {{ 'DIALOG.DATAVIEW.FILTER_PLACEHOLDER' | translate }}
+                  </label>
+                </p-floatlabel>
+                <p-inputgroup-addon>
+                  <p-button
+                    id="hm_search_table_global_filter_clear"
+                    icon="pi pi-filter-slash"
+                    (onClick)="onClearGlobalFilter(globalFilterInput)"
+                    (onKeydown.enter)="onClearGlobalFilter(globalFilterInput)"
+                    [severity]="globalFilterInput.value !== '' ? 'primary' : 'secondary'"
+                    [disabled]="!globalFilterValue"
+                    [ariaLabel]="'DIALOG.DATAVIEW.FILTER_CLEAR' | translate"
+                    [pTooltip]="'DIALOG.DATAVIEW.FILTER_CLEAR' | translate"
+                    tooltipPosition="top"
+                    tooltipEvent="hover"
+                  />
+                </p-inputgroup-addon>
+              </p-inputgroup>
+            </ng-template>
+            <!-- TABLE COLUMN HEADER -->
+            <ng-template
+              pTemplate="columnHeader"
+              let-col="column"
+              let-labelTemplate="labelTemplate"
+              let-sortTemplate="sortTemplate"
+              let-filterTemplate="filterTemplate"
+            >
+              <div [class]="col.cssHeader">
+                <ng-container
+                  [ngTemplateOutlet]="labelTemplate"
+                  [ngTemplateOutletContext]="{ column: col }"
+                ></ng-container>
+                <ng-container
+                  [ngTemplateOutlet]="filterTemplate"
+                  [ngTemplateOutletContext]="{ column: col }"
+                ></ng-container>
+                <ng-container
+                  [ngTemplateOutlet]="sortTemplate"
+                  [ngTemplateOutletContext]="{ column: col }"
+                ></ng-container>
+              </div>
+            </ng-template>
+            <!-- TABLE BODY -->
+            <ng-template pTemplate="tableCell" let-item="rowObject" let-col="column">
+              @let colBodyCss = col.cssBody ?? '';
+              @switch (col.id) {
+                @case ('productName') {
+                  @let displayName = getDisplayName(item.productName, metaData.allProducts);
+                  <div
+                    [class]="colBodyCss + ' text-ellipsis-2-lines'"
+                    [pTooltip]="displayName ? '' : item.productName"
+                    tooltipPosition="top"
+                    tooltipEvent="hover"
+                  >
+                    {{ displayName ?? ('HELP_ITEM.NOT_FOUND' | translate) }}
+                  </div>
+                }
+                @case ('baseUrl') {
+                  <div [class]="colBodyCss + ' text-ellipsis-2-lines word-break-all'">
+                    {{ prepareUrl(item) }}
+                  </div>
+                }
+                @default {
+                  <div [class]="colBodyCss + ' text-ellipsis-2-lines word-break-all'">
+                    {{ item[col.id] }}
+                  </div>
+                }
               }
-              @case ('baseUrl') {
-                <div [class]="colBodyCss + ' text-ellipsis-2-lines word-break-all'">
-                  {{ prepareUrl(item) }}
-                </div>
-              }
-              @default {
-                <div [class]="colBodyCss + ' text-ellipsis-2-lines word-break-all'">
-                  {{ item[col.id] }}
-                </div>
-              }
-            }
-          </ng-template>
-        </ocx-interactive-data-view>
+            </ng-template>
+          </ocx-interactive-data-view>
 
-        <!-- DELETE -->
-        <app-help-delete
-          [helpItem]="item4Delete"
-          [visible]="displayDeleteDialog"
-          (visibleChange)="onDeleteConfirmed($event)"
-        ></app-help-delete>
+          <!-- DELETE -->
+          <app-help-delete
+            [helpItem]="item4Delete"
+            [visible]="displayDeleteDialog"
+            (visibleChange)="onDeleteConfirmed($event)"
+          ></app-help-delete>
+        }
       }
     </ocx-content>
 

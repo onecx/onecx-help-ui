@@ -1,61 +1,64 @@
-<p-dialog
-  *ngIf="helpItem"
-  [header]="'ACTIONS.DELETE.HEADER' | translate"
-  [visible]="visible"
-  (visibleChange)="visibleChange.emit(false)"
-  [modal]="true"
-  [closable]="true"
-  [draggable]="true"
-  [resizable]="false"
-  [dismissableMask]="true"
-  [style]="{ 'max-width': '500px' }"
->
-  <div class="flex column-gap-3 row-gap-1 justify-content-start align-items-center">
-    <div class="pi pi-question-circle text-3xl danger-action-text"></div>
-    <section class="w-11 flex flex-column row-gap-3 justify-content-start">
-      <div
-        id="hm_delete_message_text"
-        class="mr-3 font-bold"
-        [attr.aria-label]="'ACTIONS.CONFIRMATION.QUESTION' | translate"
-        role="note"
-      >
-        {{ 'ACTIONS.DELETE.TEXT' | translate }}
-      </div>
-      <div
-        id="hm_delete_menu_item_name"
-        class="text-center danger-action-text"
-        [attr.aria-label]="'HELP_ITEM.ID' | translate"
-        role="note"
-      >
-        {{ helpItem.itemId }}
-      </div>
-      <div *ngIf="helpItem.operator">{{ 'ACTIONS.DELETE.OPERATOR_TEXT' | translate }}</div>
-      <div class="white-space-nowrap">{{ 'ACTIONS.DELETE.NO_UNDO' | translate }}</div>
-    </section>
-  </div>
+@if (visible && helpItem) {
+  <p-dialog
+    [header]="'ACTIONS.DELETE.HEADER' | translate"
+    [visible]="true"
+    (visibleChange)="visibleChange.emit(false)"
+    [modal]="true"
+    [closable]="true"
+    [draggable]="true"
+    [resizable]="false"
+    [dismissableMask]="true"
+    [style]="{ 'max-width': '500px' }"
+  >
+    <div class="flex column-gap-3 row-gap-1 justify-content-start align-items-center">
+      <div class="pi pi-question-circle text-3xl danger-action-text"></div>
+      <section class="w-11 flex flex-column row-gap-3 justify-content-start">
+        <div
+          id="hm_delete_message_text"
+          class="mr-3 font-bold"
+          [attr.aria-label]="'ACTIONS.CONFIRMATION.QUESTION' | translate"
+          role="note"
+        >
+          {{ 'ACTIONS.DELETE.TEXT' | translate }}
+        </div>
+        <div
+          id="hm_delete_menu_item_name"
+          class="text-center danger-action-text"
+          [attr.aria-label]="'HELP_ITEM.ID' | translate"
+          role="note"
+        >
+          {{ helpItem.itemId }}
+        </div>
+        @if (helpItem.operator) {
+          <div>{{ 'ACTIONS.DELETE.OPERATOR_TEXT' | translate }}</div>
+        }
+        <div class="white-space-nowrap">{{ 'ACTIONS.DELETE.NO_UNDO' | translate }}</div>
+      </section>
+    </div>
 
-  <ng-template pTemplate="footer">
-    <footer class="flex flex-wrap justify-content-end column-gap-2 row-gap-1">
-      <p-button
-        id="hm_delete_action_no"
-        icon="pi pi-times"
-        (onClick)="visibleChange.emit(false)"
-        [label]="'ACTIONS.CONFIRMATION.NO' | translate"
-        [ariaLabel]="'ACTIONS.CONFIRMATION.NO.TOOLTIP' | translate"
-        [pTooltip]="'ACTIONS.CONFIRMATION.NO.TOOLTIP' | translate"
-        tooltipPosition="top"
-        tooltipEvent="hover"
-      ></p-button>
-      <p-button
-        id="hm_delete_action_yes"
-        icon="pi pi-check"
-        (onClick)="onDeleteConfirmation()"
-        [label]="'ACTIONS.CONFIRMATION.YES' | translate"
-        [ariaLabel]="'ACTIONS.CONFIRMATION.YES.TOOLTIP' | translate"
-        [pTooltip]="'ACTIONS.CONFIRMATION.YES.TOOLTIP' | translate"
-        tooltipPosition="top"
-        tooltipEvent="hover"
-      ></p-button>
-    </footer>
-  </ng-template>
-</p-dialog>
+    <ng-template pTemplate="footer">
+      <footer class="flex flex-wrap justify-content-end column-gap-2 row-gap-1">
+        <p-button
+          id="hm_delete_action_no"
+          icon="pi pi-times"
+          (onClick)="visibleChange.emit(false)"
+          [label]="'ACTIONS.CONFIRMATION.NO' | translate"
+          [ariaLabel]="'ACTIONS.CONFIRMATION.NO.TOOLTIP' | translate"
+          [pTooltip]="'ACTIONS.CONFIRMATION.NO.TOOLTIP' | translate"
+          tooltipPosition="top"
+          tooltipEvent="hover"
+        ></p-button>
+        <p-button
+          id="hm_delete_action_yes"
+          icon="pi pi-check"
+          (onClick)="onDeleteConfirmation()"
+          [label]="'ACTIONS.CONFIRMATION.YES' | translate"
+          [ariaLabel]="'ACTIONS.CONFIRMATION.YES.TOOLTIP' | translate"
+          [pTooltip]="'ACTIONS.CONFIRMATION.YES.TOOLTIP' | translate"
+          tooltipPosition="top"
+          tooltipEvent="hover"
+        ></p-button>
+      </footer>
+    </ng-template>
+  </p-dialog>
+}

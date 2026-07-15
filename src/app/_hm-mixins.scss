@@ -369,9 +369,12 @@
 }
 @mixin listbox-zebra-rows {
   :host ::ng-deep {
-    .p-listbox:not(.p-disabled) .p-listbox-item:not(.p-highlight):not(.p-disabled) {
+    .p-listbox-list:not(.p-disabled) .p-listbox-option:not(.p-highlight):not(.p-disabled):not(:hover) {
       &:nth-child(even) {
-        background-color: var(--table-body-row-even-bg);
+        background-color: var(
+          --onecx-help-onecx-help-ui-datatable-row-even-background,
+          var(--table-body-row-even-bg, rgba(0, 0, 0, 0.02))
+        );
       }
     }
   }
