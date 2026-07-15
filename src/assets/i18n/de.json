@@ -53,17 +53,6 @@
         "NOK": "Ein Fehler ist aufgetreten. Die Hilfeartikel wurden nicht exportiert."
       }
     },
-    "IMPORT": {
-      "LABEL": "Import",
-      "HEADER": "Hilfeartikel importieren",
-      "TOOLTIP": "Hilfeartikel importieren",
-      "CHOOSE": "Datei auswählen",
-      "UPLOAD": "Datei hochladen",
-      "MESSAGE": {
-        "OK": "Die Hilfeartikel wurde erfolgreich importiert.",
-        "NOK": "Ein Fehler ist aufgetreten. Die Hilfeartikel wurden nicht importiert."
-      }
-    },
     "NAVIGATION": {
       "CLOSE": "Schließen",
       "CLOSE.TOOLTIP": "Dialog schließen",
@@ -146,6 +135,19 @@
       },
       "CHARACTERS": "Noch mögliche Zeichen"
     },
+    "IMPORT": {
+      "LABEL": "Import",
+      "HEADER": "Hilfeartikel importieren",
+      "TOOLTIP": "Hilfeartikel importieren",
+      "CHOOSE": "Datei auswählen",
+      "UPLOAD": "Datei hochladen",
+      "PRODUCT.LIST": "Enthaltene Applikationen",
+      "MESSAGE": {
+        "OK": "Die Hilfeartikel wurde erfolgreich importiert.",
+        "NOK": "Ein Fehler ist aufgetreten. Die Hilfeartikel wurden nicht importiert.",
+        "HINT": "Wählen Sie zunächst eine Datei aus. Bei Fehlerfreiheit kann die Datei hochgeladen werden."
+      }
+    },
     "DATAVIEW": {
       "FILTER": "Filter",
       "FILTER_TOOLTIP": "...filtern",
@@ -218,7 +220,8 @@
       "HELP_ITEM.MERGE_ENTITY_FAILED": "Ein Hilfeartikel mit dieser ID existiert bereits für das Produkt",
       "HELP_ITEM.OPTIMISTIC_LOCK": "Hilfeartikel wurde zwischenzeitlich verändert oder gelöscht.",
       "HELP_ITEM.FORM_INVALID": "Das Formular ist ungültig. Der Hilfeartikel kann so nicht gespeichert werden.",
-      "IMPORT_PARSE_ERROR": "Die enthaltene Struktur entspricht nicht dem erwarteten Format. Bitte prüfen Sie die Datei und versuchen Sie es erneut.",
+      "IMPORT_GENERAL_ERROR": "Parserfehler: Der Dateiinhalt scheint nicht im JSON-Format zu sein. Bitte prüfen Sie die Datei und versuchen Sie es erneut.",
+      "IMPORT_CONTENT_ERROR": "Parserfehler: Die enthaltene Struktur entspricht nicht dem erwarteten Format. Bitte prüfen Sie die Datei und versuchen Sie es erneut.",
       "INTERNAL_ERROR": "Interner Fehler",
       "EMPTY_REQUIRED_FIELD": "Dieses Feld ist ein Pflichtfeld.",
       "MAXIMUM_LENGTH": "Es sind nur {{chars}} Zeichen erlaubt.",

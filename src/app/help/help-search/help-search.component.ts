@@ -197,10 +197,10 @@ export class HelpSearchComponent implements OnInit {
       .get([
         'ACTIONS.CREATE.LABEL',
         'ACTIONS.CREATE.TOOLTIP',
-        'ACTIONS.IMPORT.LABEL',
-        'ACTIONS.IMPORT.TOOLTIP',
         'ACTIONS.EXPORT.LABEL',
-        'ACTIONS.EXPORT.TOOLTIP'
+        'ACTIONS.EXPORT.TOOLTIP',
+        'DIALOG.IMPORT.LABEL',
+        'DIALOG.IMPORT.TOOLTIP'
       ])
       .pipe(
         map((data) => {
@@ -224,8 +224,8 @@ export class HelpSearchComponent implements OnInit {
               showCondition: this.dataAvailable
             },
             {
-              label: data['ACTIONS.IMPORT.LABEL'],
-              title: data['ACTIONS.IMPORT.TOOLTIP'],
+              label: data['DIALOG.IMPORT.LABEL'],
+              title: data['DIALOG.IMPORT.TOOLTIP'],
               actionCallback: () => this.onImport(),
               icon: 'pi pi-upload',
               show: 'always',

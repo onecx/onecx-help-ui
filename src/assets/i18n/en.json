@@ -53,17 +53,6 @@
         "NOK": "An error has occurred. Help Items were not exported."
       }
     },
-    "IMPORT": {
-      "LABEL": "Import",
-      "HEADER": "Import Help Items",
-      "TOOLTIP": "Import of Help Items",
-      "CHOOSE": "Choose file",
-      "UPLOAD": "Upload file",
-      "MESSAGE": {
-        "OK": "Help Items were imported successfully",
-        "NOK": "An error has occurred. Help Items were not imported."
-      }
-    },
     "NAVIGATION": {
       "CLOSE": "Close",
       "CLOSE.TOOLTIP": "Close dialog",
@@ -140,11 +129,24 @@
         "INTERN": "Internal",
         "TOOLTIPS": {
           "PROPS": "Base properties of the Help Item",
-          "CONTENT": "Titel and Content of the Help Item",
+          "CONTENT": "Title and Content of the Help Item",
           "INTERN": "Internal Properties"
         }
       },
       "CHARACTERS": "Still remaining characters"
+    },
+    "IMPORT": {
+      "LABEL": "Import",
+      "HEADER": "Import Help Items",
+      "TOOLTIP": "Import Help Items",
+      "CHOOSE": "Choose File",
+      "UPLOAD": "Upload File",
+      "PRODUCT.LIST": "Included Applications",
+      "MESSAGE": {
+        "OK": "The Help Items were successfully imported.",
+        "NOK": "An error occurred. The Help Items were not imported.",
+        "HINT": "First choose a file. If it is valid, it can be uploaded."
+      }
     },
     "DATAVIEW": {
       "FILTER": "Filter",
@@ -161,7 +163,7 @@
     "CONTEXT": "Context",
     "URL": "URL",
     "BASE_URL": "Base URL",
-    "RESOURCE_URL": "Resource Pfad",
+    "RESOURCE_URL": "Resource Path",
     "OPERATOR": "Created by automation",
     "NOT_FOUND": "- unknown -",
     "TOOLTIPS": {
@@ -218,8 +220,9 @@
       "HELP_ITEM.MERGE_ENTITY_FAILED": "A Help Item with this ID already exists for the Application.",
       "HELP_ITEM.OPTIMISTIC_LOCK": "Help Item was updated or deleted in the meantime.",
       "HELP_ITEM.FORM_INVALID": "The Help Item form is invalid. The Help Item cannot be saved this way.",
+      "IMPORT_GENERAL_ERROR": "Parser error: The file content does not seem to be in JSON format. Please check the file and try again.",
+      "IMPORT_CONTENT_ERROR": "Parser error: The contained structure does not match the expected format. Please check the file and try again.",
       "INTERNAL_ERROR": "Internal error",
-      "IMPORT_PARSE_ERROR": "The contained structure does not match the expected format. Please check the file and try again.",
       "EMPTY_REQUIRED_FIELD": "This field is required.",
       "MAXIMUM_LENGTH": "Only {{chars}} characters are allowed.",
       "MINIMUM_LENGTH": "At least {{chars}} characters are required.",

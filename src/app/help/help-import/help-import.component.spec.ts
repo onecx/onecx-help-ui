@@ -68,7 +68,7 @@ describe('HelpImportComponent', () => {
     })
   })
 
-  describe('onImportSelectFile', () => {
+  describe('select', () => {
     let file: File
     let event: FileSelectEvent
 
@@ -84,7 +84,17 @@ describe('HelpImportComponent', () => {
       component.onImportSelectFile(event)
       await fixture.whenStable()
 
-      expect(component.importError).toBeFalse()
+      expect(component.importError()).toBe('NONE')
+    })
+
+    it('should parse valid JSON but non-expected content', async () => {
+      const json = '{ "any-other-thing": { "product": {} } }'
+      spyOn(file, 'text').and.returnValue(Promise.resolve(json))
+
+      component.onImportSelectFile(event)
+      await fixture.whenStable()
+
+      expect(component.importError()).toBe('CONTENT')
     })
 
     it('should set importError and show error on invalid JSON', async () => {
@@ -96,13 +106,13 @@ describe('HelpImportComponent', () => {
 
       expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'VALIDATION.ERRORS.IMPORT_PARSE_ERROR' })
       expect(console.error).toHaveBeenCalled()
-      expect(component.importError).toBeTrue()
+      expect(component.importError()).toBe('GENERAL')
     })
   })
 
-  describe('onImportConfirmation', () => {
+  describe('import', () => {
     it('should do nothing if importObject is undefined', () => {
-      component['importObject'] = undefined
+      component.helpSnapshot = null
 
       component.onImportConfirmation()
 
@@ -111,56 +121,56 @@ describe('HelpImportComponent', () => {
 
     it('should import and emit true on success', async () => {
       apiServiceSpy.importHelps.and.returnValue(of({}))
-      component['importObject'] = { helps: {} }
+      component.helpSnapshot = { helps: {} }
       const visibleChangeSpy = spyOn(component.visibleChange, 'emit')
 
       component.onImportConfirmation()
       await fixture.whenStable()
 
       expect(apiServiceSpy.importHelps).toHaveBeenCalledWith({ body: { helps: {} } })
-      expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.IMPORT.MESSAGE.OK' })
-      expect(component.importError).toBeFalse()
-      expect(component['importObject']).toBeUndefined()
+      expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'DIALOG.IMPORT.MESSAGE.OK' })
+      expect(component.importError()).toBe('NONE')
+      expect(component.helpSnapshot).toBeNull()
       expect(visibleChangeSpy).toHaveBeenCalledWith(true)
     })
 
     it('should show error message and log on failure', async () => {
       const errorResponse = { status: 400, statusText: 'Cannot import ...' }
       apiServiceSpy.importHelps.and.returnValue(throwError(() => errorResponse))
-      component['importObject'] = { helps: {} }
+      component.helpSnapshot = { helps: {} }
       spyOn(console, 'error')
 
       component.onImportConfirmation()
       await fixture.whenStable()
 
-      expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.IMPORT.MESSAGE.NOK' })
+      expect(msgServiceSpy.error).toHaveBeenCalledWith({ summaryKey: 'DIALOG.IMPORT.MESSAGE.NOK' })
       expect(console.error).toHaveBeenCalledWith('importHelps', errorResponse)
     })
   })
 
   describe('onCloseDialog', () => {
     it('should clear import state and emit false', () => {
-      component.importError = true
-      component['importObject'] = { helps: {} }
+      component.importError.set('GENERAL')
+      component.helpSnapshot = { helps: {} }
       const visibleChangeSpy = spyOn(component.visibleChange, 'emit')
 
       component.onCloseDialog()
 
-      expect(component.importError).toBeFalse()
-      expect(component['importObject']).toBeUndefined()
+      expect(component.importError()).toBe('NONE')
+      expect(component.helpSnapshot).toBeNull()
       expect(visibleChangeSpy).toHaveBeenCalledWith(false)
     })
   })
 
-  describe('onImportClear', () => {
-    it('should reset importError and importObject', () => {
-      component.importError = true
-      component['importObject'] = { helps: {} }
+  describe('onChanges', () => {
+    it('should reset importError and helpSnapshot', () => {
+      component.importError.set('GENERAL')
+      component.helpSnapshot = { helps: {} }
 
-      component.onImportClear()
+      component.ngOnChanges()
 
-      expect(component.importError).toBeFalse()
-      expect(component['importObject']).toBeUndefined()
+      expect(component.importError()).toBe('NONE')
+      expect(component.helpSnapshot).toBeNull()
     })
   })
 
