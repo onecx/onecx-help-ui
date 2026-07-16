@@ -1,6 +1,6 @@
 import { Component, DestroyRef, EventEmitter, inject, Inject, Input } from '@angular/core'
+import { AsyncPipe, Location } from '@angular/common'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
-import { CommonModule, Location } from '@angular/common'
 import { Router } from '@angular/router'
 import { TranslateModule, TranslateService } from '@ngx-translate/core'
 import {
@@ -15,6 +15,7 @@ import {
   of,
   startWith
 } from 'rxjs'
+
 import { PrimeIcons } from 'primeng/api'
 import { ButtonModule } from 'primeng/button'
 import { TooltipModule } from 'primeng/tooltip'
@@ -60,13 +61,11 @@ export function slotInitializer(slotService: SlotService) {
 
 @Component({
   selector: 'app-ocx-help-item-editor',
-  templateUrl: './help-item-editor.component.html',
-  styleUrls: ['./help-item-editor.component.scss'],
   standalone: true,
   imports: [
     AngularAcceleratorModule,
     AngularRemoteComponentsModule,
-    CommonModule,
+    AsyncPipe,
     ButtonModule,
     TooltipModule,
     TranslateModule
@@ -76,7 +75,9 @@ export function slotInitializer(slotService: SlotService) {
     HelpsInternalAPIService,
     PortalMessageService,
     providePortalDialogService()
-  ]
+  ],
+  templateUrl: './help-item-editor.component.html',
+  styleUrl: './help-item-editor.component.scss'
 })
 export class OneCXHelpItemEditorComponent implements ocxRemoteComponent, ocxRemoteWebcomponent {
   @Input() set ocxRemoteComponentConfig(config: RemoteComponentConfig) {

@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core'
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core'
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms'
 import { TranslateModule } from '@ngx-translate/core'
 
@@ -19,8 +19,6 @@ export interface HelpCriteriaForm {
 
 @Component({
   selector: 'app-help-criteria',
-  templateUrl: './help-criteria.component.html',
-  styleUrls: ['./help-criteria.component.scss'],
   imports: [
     ReactiveFormsModule,
     TranslateModule,
@@ -29,7 +27,10 @@ export interface HelpCriteriaForm {
     InputTextModule,
     TooltipModule,
     AngularAcceleratorModule
-  ]
+  ],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  templateUrl: './help-criteria.component.html',
+  styleUrl: './help-criteria.component.scss'
 })
 export class HelpCriteriaComponent {
   @Input() public actions: Action[] = []
