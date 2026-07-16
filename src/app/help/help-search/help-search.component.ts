@@ -43,7 +43,6 @@ import { HelpDetailComponent } from '../help-detail/help-detail.component'
 import { HelpDeleteComponent } from '../help-delete/help-delete.component'
 import { HelpExportComponent } from '../help-export/help-export.component'
 import { HelpImportComponent } from '../help-import/help-import.component'
-import { F } from '@angular/cdk/scrolling-module.d-ud2XrbF8'
 
 export type ChangeMode = 'VIEW' | 'CREATE' | 'COPY' | 'EDIT'
 export type ExtendedColumn = {

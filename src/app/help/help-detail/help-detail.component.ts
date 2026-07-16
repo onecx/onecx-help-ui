@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output, OnChanges, ChangeDetectionStrategy } from '@angular/core'
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output, OnChanges } from '@angular/core'
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms'
 import { finalize } from 'rxjs'
 import { TranslateModule } from '@ngx-translate/core'
