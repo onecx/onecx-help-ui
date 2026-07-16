@@ -1,5 +1,4 @@
-import { Component, EventEmitter, Input, Output, OnChanges } from '@angular/core'
-import { CommonModule } from '@angular/common'
+import { Component, EventEmitter, Input, Output, OnChanges, ChangeDetectionStrategy } from '@angular/core'
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms'
 import { finalize } from 'rxjs'
 import { TranslateModule } from '@ngx-translate/core'
@@ -31,10 +30,7 @@ export interface HelpDetailForm {
 
 @Component({
   selector: 'app-help-detail',
-  templateUrl: './help-detail.component.html',
-  styleUrls: ['./help-detail.component.scss'],
   imports: [
-    CommonModule,
     ReactiveFormsModule,
     TranslateModule,
     AutoCompleteModule,
@@ -45,7 +41,10 @@ export interface HelpDetailForm {
     FloatLabelModule,
     InputTextModule,
     TooltipModule
-  ]
+  ],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  templateUrl: './help-detail.component.html',
+  styleUrl: './help-detail.component.scss'
 })
 export class HelpDetailComponent implements OnChanges {
   @Input() public displayDialog = false

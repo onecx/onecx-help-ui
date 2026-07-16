@@ -1,5 +1,4 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core'
-import { CommonModule } from '@angular/common'
 import { FormsModule } from '@angular/forms'
 import { TranslateModule } from '@ngx-translate/core'
 import FileSaver from 'file-saver'
@@ -17,11 +16,9 @@ import { Product } from '../help-search/help-search.component'
 
 @Component({
   selector: 'app-help-export',
-  templateUrl: './help-export.component.html',
   standalone: true,
   imports: [
     AngularAcceleratorModule,
-    CommonModule,
     ButtonModule,
     DialogModule,
     FormsModule,
@@ -29,7 +26,8 @@ import { Product } from '../help-search/help-search.component'
     TooltipModule,
     TranslateModule
   ],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  templateUrl: './help-export.component.html'
 })
 export class HelpExportComponent {
   @Input() visible = false

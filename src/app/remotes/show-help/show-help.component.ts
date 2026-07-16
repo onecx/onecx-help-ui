@@ -1,6 +1,6 @@
 import { Component, DestroyRef, inject, Inject, Input } from '@angular/core'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
-import { CommonModule, Location } from '@angular/common'
+import { Location } from '@angular/common'
 import { Router } from '@angular/router'
 import { TranslateModule, TranslateService } from '@ngx-translate/core'
 import { Observable, ReplaySubject, catchError, combineLatest, first, map, mergeMap, of, withLatestFrom } from 'rxjs'
@@ -30,18 +30,11 @@ import { NoHelpItemComponent } from './no-help-item/no-help-item.component'
 
 @Component({
   selector: 'app-ocx-show-help',
-  templateUrl: './show-help.component.html',
-  styleUrls: ['./show-help.component.scss'],
   standalone: true,
-  imports: [
-    AngularAcceleratorModule,
-    AngularRemoteComponentsModule,
-    CommonModule,
-    ButtonModule,
-    TooltipModule,
-    TranslateModule
-  ],
-  providers: [HelpsInternalAPIService, PortalMessageService, providePortalDialogService()]
+  imports: [AngularAcceleratorModule, AngularRemoteComponentsModule, ButtonModule, TooltipModule, TranslateModule],
+  providers: [HelpsInternalAPIService, PortalMessageService, providePortalDialogService()],
+  templateUrl: './show-help.component.html',
+  styleUrl: './show-help.component.scss'
 })
 export class OneCXShowHelpComponent implements ocxRemoteComponent, ocxRemoteWebcomponent {
   @Input() set ocxRemoteComponentConfig(config: RemoteComponentConfig) {

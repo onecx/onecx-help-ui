@@ -5,7 +5,6 @@ import { providePermissionService, PortalApiConfiguration } from '@onecx/angular
 import { AppStateService, ConfigurationService } from '@onecx/angular-integration-interface'
 
 import { Configuration } from 'src/app/shared/generated'
-import { SharedModule } from 'src/app/shared/shared.module'
 import { environment } from 'src/environments/environment'
 import { HelpSearchComponent } from './help-search/help-search.component'
 
@@ -22,14 +21,10 @@ const routes: Routes = [
 ]
 @NgModule({
   declarations: [],
-  imports: [HelpSearchComponent, SharedModule, RouterModule.forChild(routes)],
+  imports: [HelpSearchComponent, RouterModule.forChild(routes)],
   providers: [
     ...providePermissionService(),
     { provide: Configuration, useFactory: apiConfigProvider, deps: [ConfigurationService, AppStateService] }
   ]
 })
-export class HelpModule {
-  constructor() {
-    console.info('Help Module constructor')
-  }
-}
+export class HelpModule {}

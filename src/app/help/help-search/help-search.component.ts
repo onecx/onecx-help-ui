@@ -1,7 +1,7 @@
-import { Component, DestroyRef, EventEmitter, inject, OnInit } from '@angular/core'
+import { ChangeDetectionStrategy, Component, DestroyRef, EventEmitter, inject, OnInit } from '@angular/core'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
-import { Location } from '@angular/common'
-import { TranslateService } from '@ngx-translate/core'
+import { AsyncPipe, Location, NgTemplateOutlet } from '@angular/common'
+import { TranslateModule, TranslateService } from '@ngx-translate/core'
 import {
   BehaviorSubject,
   catchError,
@@ -15,9 +15,19 @@ import {
   tap
 } from 'rxjs'
 
+import { ButtonModule } from 'primeng/button'
+import { FloatLabelModule } from 'primeng/floatlabel'
+import { MessageModule } from 'primeng/message'
+import { InputGroupModule } from 'primeng/inputgroup'
+import { InputGroupAddonModule } from 'primeng/inputgroupaddon'
+import { InputTextModule } from 'primeng/inputtext'
+import { ToastModule } from 'primeng/toast'
+import { TooltipModule } from 'primeng/tooltip'
+
 import { PortalMessageService, UserService } from '@onecx/angular-integration-interface'
 import {
   Action,
+  AngularAcceleratorModule,
   ColumnType,
   DataAction,
   DataSortDirection,
@@ -27,13 +37,13 @@ import {
 import { PortalPageComponent } from '@onecx/angular-utils'
 import { SlotService } from '@onecx/angular-remote-components'
 
-import { SharedModule } from 'src/app/shared/shared.module'
 import { Help, HelpsInternalAPIService, HelpSearchCriteria, HelpProductNames } from 'src/app/shared/generated'
 import { HelpCriteriaComponent } from './help-criteria/help-criteria.component'
 import { HelpDetailComponent } from '../help-detail/help-detail.component'
 import { HelpDeleteComponent } from '../help-delete/help-delete.component'
 import { HelpExportComponent } from '../help-export/help-export.component'
 import { HelpImportComponent } from '../help-import/help-import.component'
+import { F } from '@angular/cdk/scrolling-module.d-ud2XrbF8'
 
 export type ChangeMode = 'VIEW' | 'CREATE' | 'COPY' | 'EDIT'
 export type ExtendedColumn = {
@@ -69,18 +79,31 @@ export type Product = {
 
 @Component({
   selector: 'app-help-search',
-  templateUrl: './help-search.component.html',
-  styleUrls: ['./help-search.component.scss'],
   standalone: true,
   imports: [
-    SharedModule,
+    AngularAcceleratorModule,
+    AsyncPipe,
+    NgTemplateOutlet,
+    InputTextModule,
+    InputGroupModule,
+    InputGroupAddonModule,
+    ButtonModule,
+    FloatLabelModule,
+    MessageModule,
+    ToastModule,
+    TooltipModule,
+    TranslateModule,
+    // Components
     PortalPageComponent,
     HelpCriteriaComponent,
     HelpDetailComponent,
     HelpDeleteComponent,
     HelpExportComponent,
     HelpImportComponent
-  ]
+  ],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  templateUrl: './help-search.component.html',
+  styleUrl: './help-search.component.scss'
 })
 export class HelpSearchComponent implements OnInit {
   // dialog
