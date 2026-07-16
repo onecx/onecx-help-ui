@@ -1,7 +1,6 @@
 import { Component, DestroyRef, EventEmitter, inject, Inject, Input } from '@angular/core'
-import { AsyncPipe } from '@angular/common'
+import { AsyncPipe, Location } from '@angular/common'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
-import { Location } from '@angular/common'
 import { Router } from '@angular/router'
 import { TranslateModule, TranslateService } from '@ngx-translate/core'
 import {
