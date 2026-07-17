@@ -1,12 +1,14 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing'
 import { provideHttpClient } from '@angular/common/http'
 import { provideHttpClientTesting } from '@angular/common/http/testing'
+import { provideNoopAnimations } from '@angular/platform-browser/animations'
+import { ActivatedRoute } from '@angular/router'
 import { TranslateTestingModule } from 'ngx-translate-testing'
-import { BehaviorSubject, of, throwError } from 'rxjs'
-import { take } from 'rxjs/operators'
+import { BehaviorSubject, of, take, throwError } from 'rxjs'
 
 import { PortalMessageService, UserService } from '@onecx/angular-integration-interface'
 import { DataSortDirection, RowListGridData } from '@onecx/angular-accelerator'
+import { providePermissionService } from '@onecx/angular-utils'
 
 import { HelpsInternalAPIService, Help } from 'src/app/shared/generated'
 import { ExtendedColumn, HelpSearchComponent } from './help-search.component'
@@ -31,7 +33,7 @@ describe('HelpSearchComponent', () => {
   const defaultLang = 'en'
   const langSubject = new BehaviorSubject<string>(defaultLang)
   const hasPermissionSpy = jasmine.createSpy('hasPermission').and.returnValue(Promise.resolve(true))
-  const mockUserService = {
+  const userServiceSpy = {
     lang$: langSubject.asObservable(),
     hasPermission: hasPermissionSpy
   }
@@ -61,15 +63,18 @@ describe('HelpSearchComponent', () => {
       providers: [
         provideHttpClient(),
         provideHttpClientTesting(),
-        { provide: UserService, useValue: mockUserService },
-        { provide: PortalMessageService, useValue: msgServiceSpy },
-        { provide: HelpsInternalAPIService, useValue: apiServiceSpy }
+        provideNoopAnimations(),
+        providePermissionService(),
+        { provide: ActivatedRoute, useValue: {} }
       ]
     })
       .overrideComponent(HelpSearchComponent, {
         set: {
-          template: '',
-          imports: []
+          providers: [
+            { provide: UserService, useValue: userServiceSpy },
+            { provide: HelpsInternalAPIService, useValue: apiServiceSpy },
+            { provide: PortalMessageService, useValue: msgServiceSpy }
+          ]
         }
       })
       .compileComponents()
@@ -83,8 +88,8 @@ describe('HelpSearchComponent', () => {
     langSubject.next(defaultLang)
     hasPermissionSpy.calls.reset()
     hasPermissionSpy.and.returnValue(Promise.resolve(true))
-    mockUserService.hasPermission.and.returnValue(Promise.resolve(false))
-    mockUserService.hasPermission.calls.reset()
+    userServiceSpy.hasPermission.and.returnValue(Promise.resolve(false))
+    userServiceSpy.hasPermission.calls.reset()
     // to spy data: reset
     msgServiceSpy.success.calls.reset()
     msgServiceSpy.error.calls.reset()
@@ -358,7 +363,7 @@ describe('HelpSearchComponent', () => {
     })
 
     it('should call detail in COPY mode from copy additional action', async () => {
-      mockUserService.hasPermission.and.returnValue(Promise.resolve(true))
+      userServiceSpy.hasPermission.and.returnValue(Promise.resolve(true))
       spyOn(component, 'onDetail')
 
       component.onCopyFromInteractive(rowItems[0])
@@ -368,7 +373,7 @@ describe('HelpSearchComponent', () => {
     })
 
     it('should call onDetail in VIEW mode from onViewItem', async () => {
-      mockUserService.hasPermission.and.returnValue(Promise.resolve(true))
+      userServiceSpy.hasPermission.and.returnValue(Promise.resolve(true))
       spyOn(component, 'onDetail')
 
       component.onViewFromInteractive(rowItems[0])
@@ -378,7 +383,7 @@ describe('HelpSearchComponent', () => {
     })
 
     it('should call onDetail in EDIT mode from onEditItem', async () => {
-      mockUserService.hasPermission.and.returnValue(Promise.resolve(true))
+      userServiceSpy.hasPermission.and.returnValue(Promise.resolve(true))
       spyOn(component, 'onDetail')
 
       component.onEditFromInteractive(rowItems[1])
@@ -388,7 +393,7 @@ describe('HelpSearchComponent', () => {
     })
 
     it('should call onDelete from onDeleteItem', async () => {
-      mockUserService.hasPermission.and.returnValue(Promise.resolve(true))
+      userServiceSpy.hasPermission.and.returnValue(Promise.resolve(true))
 
       component.onDeleteFromInteractive(rowItems[2])
       await fixture.whenStable()
@@ -397,7 +402,7 @@ describe('HelpSearchComponent', () => {
     })
 
     it('should prevent call onDelete from onDeleteItem', async () => {
-      mockUserService.hasPermission.and.returnValue(Promise.resolve(false))
+      userServiceSpy.hasPermission.and.returnValue(Promise.resolve(false))
 
       component.onDeleteFromInteractive(rowItems[2])
       await fixture.whenStable()
@@ -469,7 +474,7 @@ describe('HelpSearchComponent', () => {
     })
 
     it('should prepare the deletion of a item - ok', async () => {
-      mockUserService.hasPermission.and.returnValue(Promise.resolve(true))
+      userServiceSpy.hasPermission.and.returnValue(Promise.resolve(true))
 
       component.onDeleteFromInteractive(rowItems[2])
       await fixture.whenStable()
