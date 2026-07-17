@@ -69,7 +69,7 @@ describe('HelpSearchComponent', () => {
       ]
     })
       .overrideComponent(HelpSearchComponent, {
-        set: {
+        add: {
           providers: [
             { provide: UserService, useValue: userServiceSpy },
             { provide: HelpsInternalAPIService, useValue: apiServiceSpy },
