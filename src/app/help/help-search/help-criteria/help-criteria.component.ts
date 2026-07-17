@@ -20,13 +20,13 @@ export interface HelpCriteriaForm {
 @Component({
   selector: 'app-help-criteria',
   imports: [
-    ReactiveFormsModule,
-    TranslateModule,
+    AngularAcceleratorModule,
     AutoCompleteModule,
     FloatLabelModule,
     InputTextModule,
-    TooltipModule,
-    AngularAcceleratorModule
+    ReactiveFormsModule,
+    TranslateModule,
+    TooltipModule
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './help-criteria.component.html',
