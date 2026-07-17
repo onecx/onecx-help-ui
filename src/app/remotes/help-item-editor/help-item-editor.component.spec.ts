@@ -1,15 +1,15 @@
 import { ComponentFixture, TestBed, fakeAsync, tick, waitForAsync } from '@angular/core/testing'
+import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed'
 import { HttpErrorResponse, provideHttpClient } from '@angular/common/http'
 import { provideHttpClientTesting } from '@angular/common/http/testing'
-import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed'
 import { Router } from '@angular/router'
-import { ReplaySubject, delay, of, throwError } from 'rxjs'
 import { TranslateTestingModule } from 'ngx-translate-testing'
+import { ReplaySubject, delay, of, throwError } from 'rxjs'
 
 import { SlotService } from '@onecx/angular-remote-components'
-import { REMOTE_COMPONENT_CONFIG, RemoteComponentConfig } from '@onecx/angular-utils'
 import { AppStateService, PortalMessageService } from '@onecx/angular-integration-interface'
-import { PortalDialogService, providePortalDialogService } from '@onecx/angular-accelerator'
+import { REMOTE_COMPONENT_CONFIG, RemoteComponentConfig } from '@onecx/angular-utils'
+import { PortalDialogService } from '@onecx/angular-accelerator'
 
 import { Help, HelpsInternalAPIService } from 'src/app/shared/generated'
 import { OneCXHelpItemEditorComponent, Product, slotInitializer } from './help-item-editor.component'
@@ -24,7 +24,7 @@ describe('OneCXHelpItemEditorComponent', () => {
   let fixture: ComponentFixture<OneCXHelpItemEditorComponent>
   let oneCXHelpItemEditorHarness: OneCXHelpItemEditorHarness
 
-  const helpApiServiceSpy = jasmine.createSpyObj<HelpsInternalAPIService>('HelpsInternalAPIService', [
+  const helpApiSpy = jasmine.createSpyObj<HelpsInternalAPIService>('HelpsInternalAPIService', [
     'searchHelps',
     'createNewHelp',
     'updateHelp'
@@ -52,6 +52,7 @@ describe('OneCXHelpItemEditorComponent', () => {
     TestBed.configureTestingModule({
       declarations: [],
       imports: [
+        OneCXHelpItemEditorComponent,
         TranslateTestingModule.withTranslations({
           de: require('src/assets/i18n/de.json'),
           en: require('src/assets/i18n/en.json')
@@ -60,7 +61,6 @@ describe('OneCXHelpItemEditorComponent', () => {
       providers: [
         provideHttpClient(),
         provideHttpClientTesting(),
-        providePortalDialogService(),
         { provide: REMOTE_COMPONENT_CONFIG, useValue: baseUrlSubject }
       ]
     })
@@ -68,7 +68,7 @@ describe('OneCXHelpItemEditorComponent', () => {
         set: {
           providers: [
             { provide: SlotService, useValue: slotServiceSpy },
-            { provide: HelpsInternalAPIService, useValue: helpApiServiceSpy },
+            { provide: HelpsInternalAPIService, useValue: helpApiSpy },
             { provide: PortalDialogService, useValue: dialogServiceSpy },
             { provide: PortalMessageService, useValue: messageServiceSpy }
           ]
@@ -86,11 +86,11 @@ describe('OneCXHelpItemEditorComponent', () => {
 
     messageServiceSpy.error.calls.reset()
     messageServiceSpy.success.calls.reset()
-    helpApiServiceSpy.createNewHelp.calls.reset()
-    helpApiServiceSpy.searchHelps.calls.reset()
-    helpApiServiceSpy.updateHelp.calls.reset()
+    helpApiSpy.createNewHelp.calls.reset()
+    helpApiSpy.searchHelps.calls.reset()
+    helpApiSpy.updateHelp.calls.reset()
 
-    helpApiServiceSpy.searchHelps.and.returnValue(of({} as any))
+    helpApiSpy.searchHelps.and.returnValue(of({} as any))
   })
 
   describe('construction', () => {
@@ -123,7 +123,7 @@ describe('OneCXHelpItemEditorComponent', () => {
       component.ocxInitRemoteComponent(config)
 
       expect(component.permissions).toEqual(['HELP#EDIT'])
-      expect(helpApiServiceSpy.configuration.basePath).toEqual('base_url/bff')
+      expect(helpApiSpy.configuration.basePath).toEqual('base_url/bff')
       baseUrlSubject.asObservable().subscribe((item) => {
         expect(item).toEqual(config)
         done()
@@ -150,6 +150,7 @@ describe('OneCXHelpItemEditorComponent', () => {
     it('should not show button if permissions are not met', async () => {
       initTestComponent()
       await initHarness()
+
       expect(await oneCXHelpItemEditorHarness.getHelpEditorButton()).toBeNull()
     })
 
@@ -257,7 +258,7 @@ describe('OneCXHelpItemEditorComponent', () => {
   describe('load data', () => {
     it('should load help article when application and help item data are valid', (done: DoneFn) => {
       const helpItem: Help = { id: 'id', itemId: 'itemId', productName: 'product_name' }
-      helpApiServiceSpy.searchHelps.and.returnValue(of({ totalElements: 1, stream: [helpItem] } as any))
+      helpApiSpy.searchHelps.and.returnValue(of({ totalElements: 1, stream: [helpItem] } as any))
       const appStateService = TestBed.inject(AppStateService)
       spyOn(appStateService.currentPage$, 'asObservable').and.returnValue(of({ helpArticleId: helpItem.itemId }) as any)
       spyOn(appStateService.currentMfe$, 'asObservable').and.returnValue(
@@ -273,7 +274,7 @@ describe('OneCXHelpItemEditorComponent', () => {
 
       component['helpDataItem$']?.subscribe((item) => {
         expect(item).toEqual(helpItem)
-        expect(helpApiServiceSpy.searchHelps).toHaveBeenCalledOnceWith({
+        expect(helpApiSpy.searchHelps).toHaveBeenCalledOnceWith({
           helpSearchCriteria: { itemId: helpItem.itemId, productName: helpItem.productName }
         })
         done()
@@ -282,7 +283,7 @@ describe('OneCXHelpItemEditorComponent', () => {
 
     it('should return empty object if more then one article returned', (done: DoneFn) => {
       const helpItem: Help = { id: 'id', itemId: 'itemId', productName: 'product_name' }
-      helpApiServiceSpy.searchHelps.and.returnValue(of({ totalElements: 2, stream: [helpItem, helpItem] } as any))
+      helpApiSpy.searchHelps.and.returnValue(of({ totalElements: 2, stream: [helpItem, helpItem] } as any))
       const appStateService = TestBed.inject(AppStateService)
       spyOn(appStateService.currentPage$, 'asObservable').and.returnValue(of({ helpArticleId: helpItem.itemId }) as any)
       spyOn(appStateService.currentMfe$, 'asObservable').and.returnValue(
@@ -300,7 +301,7 @@ describe('OneCXHelpItemEditorComponent', () => {
     })
 
     it('should return empty object on failed article load', (done: DoneFn) => {
-      helpApiServiceSpy.searchHelps.and.returnValue(throwError(() => {}))
+      helpApiSpy.searchHelps.and.returnValue(throwError(() => {}))
 
       const appStateService = TestBed.inject(AppStateService)
       spyOn(appStateService.currentPage$, 'asObservable').and.returnValue(of({ helpArticleId: 'article_id' }) as any)
@@ -313,7 +314,7 @@ describe('OneCXHelpItemEditorComponent', () => {
 
       component['helpDataItem$']?.subscribe((item) => {
         expect(item).toBeUndefined()
-        expect(helpApiServiceSpy.searchHelps).toHaveBeenCalledOnceWith({
+        expect(helpApiSpy.searchHelps).toHaveBeenCalledOnceWith({
           helpSearchCriteria: { itemId: 'article_id', productName: 'mfe_product_name' }
         })
         done()
@@ -334,7 +335,7 @@ describe('OneCXHelpItemEditorComponent', () => {
 
       component['helpDataItem$']?.subscribe((item) => {
         expect(item).toBeUndefined()
-        expect(helpApiServiceSpy.searchHelps).toHaveBeenCalledTimes(0)
+        expect(helpApiSpy.searchHelps).toHaveBeenCalledTimes(0)
         done()
       })
     })
@@ -347,7 +348,7 @@ describe('OneCXHelpItemEditorComponent', () => {
       spyOn(appStateService.currentMfe$, 'asObservable').and.returnValue(
         of({ remoteBaseUrl: '', productName: 'mfe_product_name' }) as any
       )
-      helpApiServiceSpy.searchHelps.and.returnValue(of({ totalElements: 0, stream: [] } as any))
+      helpApiSpy.searchHelps.and.returnValue(of({ totalElements: 0, stream: [] } as any))
 
       initTestComponent({ permissions: ['HELP#EDIT'], baseUrl: 'base_url' } as RemoteComponentConfig)
       await initHarness()
@@ -356,15 +357,15 @@ describe('OneCXHelpItemEditorComponent', () => {
       expect(messageServiceSpy.error).toHaveBeenCalledOnceWith({
         summaryKey: 'HELP_ITEM_EDITOR.OPEN_HELP_PAGE_EDITOR_ERROR'
       })
-      expect(helpApiServiceSpy.createNewHelp).toHaveBeenCalledTimes(0)
-      expect(helpApiServiceSpy.updateHelp).toHaveBeenCalledTimes(0)
+      expect(helpApiSpy.createNewHelp).toHaveBeenCalledTimes(0)
+      expect(helpApiSpy.updateHelp).toHaveBeenCalledTimes(0)
     })
 
     it('should be unable to create help item when application not defined', async () => {
       const appStateService = TestBed.inject(AppStateService)
       spyOn(appStateService.currentPage$, 'asObservable').and.returnValue(of({ helpArticleId: 'article_id' }) as any)
       spyOn(appStateService.currentMfe$, 'asObservable').and.returnValue(of({ remoteBaseUrl: '' }) as any)
-      helpApiServiceSpy.searchHelps.and.returnValue(of({ totalElements: 0, stream: [] } as any))
+      helpApiSpy.searchHelps.and.returnValue(of({ totalElements: 0, stream: [] } as any))
 
       initTestComponent({ permissions: ['HELP#EDIT'], baseUrl: 'base_url' } as RemoteComponentConfig)
       await initHarness()
@@ -373,8 +374,8 @@ describe('OneCXHelpItemEditorComponent', () => {
       expect(messageServiceSpy.error).toHaveBeenCalledOnceWith({
         summaryKey: 'HELP_ITEM_EDITOR.OPEN_HELP_PAGE_EDITOR_ERROR'
       })
-      expect(helpApiServiceSpy.createNewHelp).toHaveBeenCalledTimes(0)
-      expect(helpApiServiceSpy.updateHelp).toHaveBeenCalledTimes(0)
+      expect(helpApiSpy.createNewHelp).toHaveBeenCalledTimes(0)
+      expect(helpApiSpy.updateHelp).toHaveBeenCalledTimes(0)
     })
 
     it('should create new help item on primary button click', async () => {
@@ -383,7 +384,7 @@ describe('OneCXHelpItemEditorComponent', () => {
       spyOn(appStateService.currentMfe$, 'asObservable').and.returnValue(
         of({ remoteBaseUrl: '', productName: 'mfe_product_name' }) as any
       )
-      helpApiServiceSpy.searchHelps.and.returnValue(of({ totalElements: 0, stream: [] } as any))
+      helpApiSpy.searchHelps.and.returnValue(of({ totalElements: 0, stream: [] } as any))
 
       const dialogResult = {
         productName: 'result_product_name',
@@ -396,10 +397,10 @@ describe('OneCXHelpItemEditorComponent', () => {
       await initHarness()
       await oneCXHelpItemEditorHarness.clickHelpEditorButton()
 
-      expect(helpApiServiceSpy.createNewHelp).toHaveBeenCalledOnceWith({
+      expect(helpApiSpy.createNewHelp).toHaveBeenCalledOnceWith({
         createHelp: dialogResult
       })
-      expect(helpApiServiceSpy.updateHelp).toHaveBeenCalledTimes(0)
+      expect(helpApiSpy.updateHelp).toHaveBeenCalledTimes(0)
     })
 
     it('should not react to secondary button click', async () => {
@@ -408,15 +409,15 @@ describe('OneCXHelpItemEditorComponent', () => {
       spyOn(appStateService.currentMfe$, 'asObservable').and.returnValue(
         of({ remoteBaseUrl: '', productName: 'mfe_product_name' }) as any
       )
-      helpApiServiceSpy.searchHelps.and.returnValue(of({ totalElements: 0, stream: [] } as any))
+      helpApiSpy.searchHelps.and.returnValue(of({ totalElements: 0, stream: [] } as any))
       dialogServiceSpy.openDialog.and.returnValue(of({ button: 'secondary' }) as any)
 
       initTestComponent({ permissions: ['HELP#EDIT'], baseUrl: 'base_url' } as RemoteComponentConfig)
       await initHarness()
       await oneCXHelpItemEditorHarness.clickHelpEditorButton()
 
-      expect(helpApiServiceSpy.createNewHelp).toHaveBeenCalledTimes(0)
-      expect(helpApiServiceSpy.updateHelp).toHaveBeenCalledTimes(0)
+      expect(helpApiSpy.createNewHelp).toHaveBeenCalledTimes(0)
+      expect(helpApiSpy.updateHelp).toHaveBeenCalledTimes(0)
     })
 
     it('should display error if new help item creation failed', async () => {
@@ -425,7 +426,7 @@ describe('OneCXHelpItemEditorComponent', () => {
       spyOn(appStateService.currentMfe$, 'asObservable').and.returnValue(
         of({ remoteBaseUrl: '', productName: 'mfe_product_name' }) as any
       )
-      helpApiServiceSpy.searchHelps.and.returnValue(of({ totalElements: 0, stream: [] } as any))
+      helpApiSpy.searchHelps.and.returnValue(of({ totalElements: 0, stream: [] } as any))
 
       const dialogResult = {
         id: 'result_id',
@@ -436,7 +437,7 @@ describe('OneCXHelpItemEditorComponent', () => {
       }
       dialogServiceSpy.openDialog.and.returnValue(of({ button: 'primary', result: dialogResult }) as any)
 
-      helpApiServiceSpy.createNewHelp.and.returnValue(throwError(() => new HttpErrorResponse({ status: 404 })))
+      helpApiSpy.createNewHelp.and.returnValue(throwError(() => new HttpErrorResponse({ status: 404 })))
 
       initTestComponent({ permissions: ['HELP#EDIT'], baseUrl: 'base_url' } as RemoteComponentConfig)
       await initHarness()
@@ -457,7 +458,7 @@ describe('OneCXHelpItemEditorComponent', () => {
         of({ remoteBaseUrl: '', productName: 'mfe_product_name' }) as any
       )
       const helpItem = { id: 'id_1', itemId: 'item_1', productName: 'product_name_1', modificationCount: 1 }
-      helpApiServiceSpy.searchHelps.and.returnValue(of({ totalElements: 1, stream: [helpItem] } as any))
+      helpApiSpy.searchHelps.and.returnValue(of({ totalElements: 1, stream: [helpItem] } as any))
 
       const dialogResult = {
         id: 'result_id',
@@ -472,7 +473,7 @@ describe('OneCXHelpItemEditorComponent', () => {
       await initHarness()
       await oneCXHelpItemEditorHarness.clickHelpEditorButton()
 
-      expect(helpApiServiceSpy.updateHelp).toHaveBeenCalledOnceWith({
+      expect(helpApiSpy.updateHelp).toHaveBeenCalledOnceWith({
         id: 'result_id',
         updateHelp: {
           id: 'result_id',
@@ -482,7 +483,7 @@ describe('OneCXHelpItemEditorComponent', () => {
           modificationCount: 1
         }
       } as any)
-      expect(helpApiServiceSpy.createNewHelp).toHaveBeenCalledTimes(0)
+      expect(helpApiSpy.createNewHelp).toHaveBeenCalledTimes(0)
     })
 
     it('should load updated help article and inform about successful update for existing item', async () => {
@@ -492,7 +493,7 @@ describe('OneCXHelpItemEditorComponent', () => {
         of({ remoteBaseUrl: '', productName: 'mfe_product_name' }) as any
       )
       const helpItem = { id: 'id_1', itemId: 'item_1', productName: 'product_name_1', modificationCount: 1 }
-      helpApiServiceSpy.searchHelps.and.returnValue(of({ totalElements: 1, stream: [helpItem] } as any))
+      helpApiSpy.searchHelps.and.returnValue(of({ totalElements: 1, stream: [helpItem] } as any))
 
       const dialogResult = {
         id: 'result_id',
@@ -508,7 +509,7 @@ describe('OneCXHelpItemEditorComponent', () => {
         }) as any
       )
 
-      helpApiServiceSpy.updateHelp.and.returnValue(of({} as any))
+      helpApiSpy.updateHelp.and.returnValue(of({} as any))
 
       initTestComponent({ permissions: ['HELP#EDIT'], baseUrl: 'base_url' } as RemoteComponentConfig)
       await initHarness()
@@ -517,13 +518,13 @@ describe('OneCXHelpItemEditorComponent', () => {
       expect(messageServiceSpy.success).toHaveBeenCalledOnceWith({
         summaryKey: 'HELP_ITEM_EDITOR.UPDATE_HELP_ARTICLE_INFO'
       })
-      expect(helpApiServiceSpy.searchHelps).toHaveBeenCalledWith({
+      expect(helpApiSpy.searchHelps).toHaveBeenCalledWith({
         helpSearchCriteria: {
           itemId: 'article_id',
           productName: 'mfe_product_name'
         }
       })
-      expect(helpApiServiceSpy.searchHelps).toHaveBeenCalledWith({
+      expect(helpApiSpy.searchHelps).toHaveBeenCalledWith({
         helpSearchCriteria: {
           itemId: 'result_item_id',
           productName: 'result_product_name'
@@ -537,7 +538,7 @@ describe('OneCXHelpItemEditorComponent', () => {
       spyOn(appStateService.currentMfe$, 'asObservable').and.returnValue(
         of({ remoteBaseUrl: '', productName: 'mfe_product_name' }) as any
       )
-      helpApiServiceSpy.searchHelps.and.returnValue(of({ totalElements: 0, stream: [] } as any))
+      helpApiSpy.searchHelps.and.returnValue(of({ totalElements: 0, stream: [] } as any))
 
       const dialogResult = {
         id: 'result_id',
@@ -548,7 +549,7 @@ describe('OneCXHelpItemEditorComponent', () => {
       }
       dialogServiceSpy.openDialog.and.returnValue(of({ button: 'primary', result: dialogResult }) as any)
 
-      helpApiServiceSpy.createNewHelp.and.returnValue(
+      helpApiSpy.createNewHelp.and.returnValue(
         of({
           itemId: 'result_item_id',
           productName: 'result_product_name'
@@ -562,13 +563,13 @@ describe('OneCXHelpItemEditorComponent', () => {
       expect(messageServiceSpy.success).toHaveBeenCalledOnceWith({
         summaryKey: 'HELP_ITEM_EDITOR.UPDATE_HELP_ARTICLE_INFO'
       })
-      expect(helpApiServiceSpy.searchHelps).toHaveBeenCalledWith({
+      expect(helpApiSpy.searchHelps).toHaveBeenCalledWith({
         helpSearchCriteria: {
           itemId: 'article_id',
           productName: 'mfe_product_name'
         }
       })
-      expect(helpApiServiceSpy.searchHelps).toHaveBeenCalledWith({
+      expect(helpApiSpy.searchHelps).toHaveBeenCalledWith({
         helpSearchCriteria: {
           itemId: 'result_item_id',
           productName: 'result_product_name'
@@ -584,7 +585,7 @@ describe('OneCXHelpItemEditorComponent', () => {
       )
       // Delay searchHelps so helpDataItem$ won't emit until after we call tick(0)
       // This allows us to emit products via pdSlotEmitter before combineLatest fires
-      helpApiServiceSpy.searchHelps.and.returnValue(of({ totalElements: 0, stream: [] } as any).pipe(delay(0)))
+      helpApiSpy.searchHelps.and.returnValue(of({ totalElements: 0, stream: [] } as any).pipe(delay(0)))
       dialogServiceSpy.openDialog.and.returnValue(of({ button: 'secondary' }) as any)
 
       initTestComponent({ permissions: ['HELP#EDIT'], baseUrl: 'base_url' } as RemoteComponentConfig)
@@ -610,7 +611,7 @@ describe('OneCXHelpItemEditorComponent', () => {
       spyOn(appStateService.currentMfe$, 'asObservable').and.returnValue(
         of({ remoteBaseUrl: '', productName: 'mfe_product_name' }) as any
       )
-      helpApiServiceSpy.searchHelps.and.returnValue(of({ totalElements: 0, stream: [] } as any).pipe(delay(0)))
+      helpApiSpy.searchHelps.and.returnValue(of({ totalElements: 0, stream: [] } as any).pipe(delay(0)))
       dialogServiceSpy.openDialog.and.returnValue(of({ button: 'secondary' }) as any)
 
       initTestComponent({ permissions: ['HELP#EDIT'], baseUrl: 'base_url' } as RemoteComponentConfig)
@@ -637,7 +638,7 @@ describe('OneCXHelpItemEditorComponent', () => {
         of({ remoteBaseUrl: '', productName: 'mfe_product_name' }) as any
       )
       const helpItem = { id: 'id_1', itemId: 'item_1', productName: 'product_name_1', modificationCount: 1 }
-      helpApiServiceSpy.searchHelps.and.returnValue(of({ totalElements: 1, stream: [helpItem] } as any))
+      helpApiSpy.searchHelps.and.returnValue(of({ totalElements: 1, stream: [helpItem] } as any))
 
       const dialogResult = {
         id: 'result_id',
@@ -647,7 +648,7 @@ describe('OneCXHelpItemEditorComponent', () => {
         modificationCount: 1
       }
       dialogServiceSpy.openDialog.and.returnValue(of({ button: 'primary', result: dialogResult }) as any)
-      helpApiServiceSpy.updateHelp.and.returnValue(throwError(() => new HttpErrorResponse({ status: 404 })))
+      helpApiSpy.updateHelp.and.returnValue(throwError(() => new HttpErrorResponse({ status: 404 })))
 
       initTestComponent({ permissions: ['HELP#EDIT'], baseUrl: 'base_url' } as RemoteComponentConfig)
       await initHarness()

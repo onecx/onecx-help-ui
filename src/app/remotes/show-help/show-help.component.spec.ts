@@ -1,12 +1,9 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing'
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing'
 import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed'
-import { provideHttpClient } from '@angular/common/http'
-import { provideHttpClientTesting } from '@angular/common/http/testing'
 import { Router } from '@angular/router'
 import { TranslateTestingModule } from 'ngx-translate-testing'
 import { ReplaySubject, of, throwError } from 'rxjs'
 
-import { UserService } from '@onecx/angular-integration-interface'
 import { AppStateService, PortalMessageService } from '@onecx/angular-integration-interface'
 import { REMOTE_COMPONENT_CONFIG, RemoteComponentConfig } from '@onecx/angular-utils'
 import { PortalDialogService } from '@onecx/angular-accelerator'
@@ -20,60 +17,53 @@ describe('OneCXShowHelpComponent', () => {
   let fixture: ComponentFixture<OneCXShowHelpComponent>
   let oneCXShowHelpHarness: OneCXShowHelpHarness
 
-  const mockUserService = jasmine.createSpyObj<UserService>('UserService', ['hasPermission'])
-  mockUserService.hasPermission.and.callFake((permission: string) => {
-    return Promise.resolve(['HELP#EDIT', 'HELP#VIEW'].includes(permission))
-  })
   const helpApiSpy = jasmine.createSpyObj<HelpsInternalAPIService>('HelpsInternalAPIService', [
     'getHelpByProductNameItemId'
   ])
   const messageServiceSpy = jasmine.createSpyObj<PortalMessageService>('PortalMessageService', ['error'])
-  const mockDialogService = { openDialog: jasmine.createSpy('openDialog').and.returnValue(of({})) }
+  const dialogServiceSpy = jasmine.createSpyObj<PortalDialogService>('PortalDialogService', ['openDialog'])
+  let baseUrlSubject: ReplaySubject<any>
 
   function initTestComponent(rcc?: RemoteComponentConfig) {
     fixture = TestBed.createComponent(OneCXShowHelpComponent)
     component = fixture.componentInstance
-    if (rcc) component.ocxInitRemoteComponent(rcc)
+    if (rcc) component.ocxRemoteComponentConfig = rcc
     fixture.detectChanges()
   }
   async function initHarness() {
     oneCXShowHelpHarness = await TestbedHarnessEnvironment.harnessForFixture(fixture, OneCXShowHelpHarness)
   }
-  let baseUrlSubject: ReplaySubject<any>
 
-  beforeEach(() => {
+  beforeEach(waitForAsync(() => {
     baseUrlSubject = new ReplaySubject<any>(1)
     TestBed.configureTestingModule({
       declarations: [],
       imports: [
+        OneCXShowHelpComponent,
         TranslateTestingModule.withTranslations({
           de: require('/src/assets/i18n/de.json'),
           en: require('/src/assets/i18n/en.json')
         }).withDefaultLanguage('en')
       ],
-      providers: [
-        provideHttpClient(),
-        provideHttpClientTesting(),
-        { provide: REMOTE_COMPONENT_CONFIG, useValue: baseUrlSubject }
-      ]
+      providers: [{ provide: REMOTE_COMPONENT_CONFIG, useValue: baseUrlSubject }]
     })
       .overrideComponent(OneCXShowHelpComponent, {
         set: {
           providers: [
-            //{ provide: UserService, useValue: mockUserService },
             { provide: HelpsInternalAPIService, useValue: helpApiSpy },
-            { provide: PortalDialogService, useValue: mockDialogService },
+            { provide: PortalDialogService, useValue: dialogServiceSpy },
             { provide: PortalMessageService, useValue: messageServiceSpy }
           ]
         }
       })
       .compileComponents()
+
     baseUrlSubject.next('base_url')
-  })
+  }))
 
   afterEach(() => {
-    mockUserService.hasPermission.and.returnValue(Promise.resolve(true))
     // to spy data: reset
+    dialogServiceSpy.openDialog.calls.reset()
     messageServiceSpy.error.calls.reset()
     helpApiSpy.getHelpByProductNameItemId.calls.reset()
     helpApiSpy.getHelpByProductNameItemId.and.returnValue(of({} as any))
@@ -89,22 +79,24 @@ describe('OneCXShowHelpComponent', () => {
 
   describe('initialize', () => {
     it('should call ocxInitRemoteComponent with the correct config', async () => {
-      const mockConfig: RemoteComponentConfig = {
+      const rcc: RemoteComponentConfig = {
         appId: 'appId',
         productName: 'prodName',
         permissions: ['HELP#VIEW'],
         baseUrl: 'base'
       }
+      initTestComponent()
       spyOn(component, 'ocxInitRemoteComponent')
 
-      component.ocxRemoteComponentConfig = mockConfig
+      component.ocxRemoteComponentConfig = rcc
 
-      expect(component.ocxInitRemoteComponent).toHaveBeenCalledWith(mockConfig)
+      expect(component.ocxInitRemoteComponent).toHaveBeenCalledWith(rcc)
     })
 
     it('should init remote component', (done: DoneFn) => {
       const config = { permissions: ['HELP#VIEW'], baseUrl: 'base_url' } as RemoteComponentConfig
       initTestComponent(config)
+      component.ocxInitRemoteComponent(config)
 
       expect(component.permissions).toEqual(['HELP#VIEW'])
       expect(helpApiSpy.configuration.basePath).toEqual('base_url/bff')
@@ -198,7 +190,7 @@ describe('OneCXShowHelpComponent', () => {
 
   describe('open no-help dialog', () => {
     it('should show dialog if help item does not exist - NO_HELP_ITEM', async () => {
-      mockDialogService.openDialog.and.returnValue(of({} as any))
+      dialogServiceSpy.openDialog.and.returnValue(of({} as any))
       helpApiSpy.getHelpByProductNameItemId.and.returnValue(of({} as any))
       const appStateService = TestBed.inject(AppStateService)
       spyOn(appStateService.currentPage$, 'asObservable').and.returnValue(of({ helpArticleId: 'article_id' }) as any)
@@ -210,12 +202,12 @@ describe('OneCXShowHelpComponent', () => {
       oneCXShowHelpHarness = await TestbedHarnessEnvironment.harnessForFixture(fixture, OneCXShowHelpHarness)
       await oneCXShowHelpHarness.onClickShowHelpButton()
 
-      expect(mockDialogService.openDialog).toHaveBeenCalled()
+      expect(dialogServiceSpy.openDialog).toHaveBeenCalled()
     })
 
     it('should show dialog if help item baseUrl not exists - MISSING_BASE_URL', async () => {
       // simulate the close event: return the state
-      mockDialogService.openDialog.and.returnValue(
+      dialogServiceSpy.openDialog.and.returnValue(
         of({ button: 'primary', id: 'PAGE_HELP_SEARCH', result: true } as any)
       )
       const helpItem: Help = {
@@ -234,7 +226,7 @@ describe('OneCXShowHelpComponent', () => {
       oneCXShowHelpHarness = await TestbedHarnessEnvironment.harnessForFixture(fixture, OneCXShowHelpHarness)
       await oneCXShowHelpHarness.onClickShowHelpButton()
 
-      expect(mockDialogService.openDialog).toHaveBeenCalled()
+      expect(dialogServiceSpy.openDialog).toHaveBeenCalled()
     })
   })
 

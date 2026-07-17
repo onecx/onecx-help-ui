@@ -1,5 +1,4 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing'
-import { FormsModule, ReactiveFormsModule } from '@angular/forms'
 import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed'
 import { NoopAnimationsModule } from '@angular/platform-browser/animations'
 import { TranslateTestingModule } from 'ngx-translate-testing'
@@ -14,35 +13,28 @@ describe('HelpItemEditorFormComponent', () => {
   let fixture: ComponentFixture<HelpItemEditorFormComponent>
   let helpItemEditorDialogHarness: HelpItemEditorDialogHarness
 
-  const portalMessageServiceSpy = jasmine.createSpyObj<PortalMessageService>('PortalMessageService', ['error'])
+  const messageServiceSpy = jasmine.createSpyObj<PortalMessageService>('PortalMessageService', ['error'])
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [],
       imports: [
         HelpItemEditorFormComponent,
-        FormsModule,
-        ReactiveFormsModule,
         NoopAnimationsModule,
         TranslateTestingModule.withTranslations({
-          en: require('src/assets/i18n/en.json'),
-          de: require('src/assets/i18n/de.json')
-        })
+          de: require('/src/assets/i18n/de.json'),
+          en: require('/src/assets/i18n/en.json')
+        }).withDefaultLanguage('en')
       ]
     })
       .overrideComponent(HelpItemEditorFormComponent, {
-        set: {
-          providers: [
-            {
-              provide: PortalMessageService,
-              useValue: portalMessageServiceSpy
-            }
-          ]
+        add: {
+          providers: [{ provide: PortalMessageService, useValue: messageServiceSpy }]
         }
       })
       .compileComponents()
 
-    portalMessageServiceSpy.error.calls.reset()
+    messageServiceSpy.error.calls.reset()
 
     fixture = TestBed.createComponent(HelpItemEditorFormComponent)
     component = fixture.componentInstance
@@ -137,7 +129,7 @@ describe('HelpItemEditorFormComponent', () => {
 
       const result = component.ocxDialogButtonClicked({ button: 'primary' } as any)
       expect(result).toBeFalse()
-      expect(portalMessageServiceSpy.error).toHaveBeenCalledOnceWith({
+      expect(messageServiceSpy.error).toHaveBeenCalledOnceWith({
         summaryKey: 'HELP_ITEM_EDITOR.SAVE_ERROR'
       })
     })
@@ -149,7 +141,7 @@ describe('HelpItemEditorFormComponent', () => {
 
       const result = component.ocxDialogButtonClicked({ button: 'primary' } as any)
       expect(result).toBeFalse()
-      expect(portalMessageServiceSpy.error).toHaveBeenCalledOnceWith({
+      expect(messageServiceSpy.error).toHaveBeenCalledOnceWith({
         summaryKey: 'HELP_ITEM_EDITOR.SAVE_ERROR'
       })
     })
