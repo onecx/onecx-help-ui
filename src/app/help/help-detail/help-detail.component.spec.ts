@@ -1,12 +1,10 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing'
-import { provideHttpClient } from '@angular/common/http'
-import { provideHttpClientTesting } from '@angular/common/http/testing'
 import { FormControl, FormGroup } from '@angular/forms'
 import { provideNoopAnimations } from '@angular/platform-browser/animations'
 import { TranslateTestingModule } from 'ngx-translate-testing'
 import { of, throwError } from 'rxjs'
 
-import { PortalMessageService, UserService } from '@onecx/angular-integration-interface'
+import { PortalMessageService } from '@onecx/angular-integration-interface'
 
 import { Help, HelpsInternalAPIService } from 'src/app/shared/generated'
 import { HelpDetailComponent } from './help-detail.component'
@@ -33,7 +31,6 @@ describe('HelpDetailComponent', () => {
   let fixture: ComponentFixture<HelpDetailComponent>
 
   const defaultLang = 'en'
-  const mockUserService = { lang$: { getValue: jasmine.createSpy('getValue') } }
   const msgServiceSpy = jasmine.createSpyObj<PortalMessageService>('PortalMessageService', ['success', 'error'])
   const apiServiceSpy = {
     getHelpById: jasmine.createSpy('getHelpById').and.returnValue(of({})),
@@ -56,15 +53,10 @@ describe('HelpDetailComponent', () => {
           en: require('src/assets/i18n/en.json')
         }).withDefaultLanguage(defaultLang)
       ],
-      providers: [
-        { provide: UserService, useValue: mockUserService },
-        provideHttpClient(),
-        provideHttpClientTesting(),
-        provideNoopAnimations()
-      ]
+      providers: [provideNoopAnimations()]
     })
       .overrideComponent(HelpDetailComponent, {
-        set: {
+        add: {
           providers: [
             { provide: HelpsInternalAPIService, useValue: apiServiceSpy },
             { provide: PortalMessageService, useValue: msgServiceSpy }
@@ -80,7 +72,6 @@ describe('HelpDetailComponent', () => {
 
   afterEach(() => {
     component.helpForm.reset()
-    mockUserService.lang$.getValue.and.returnValue(defaultLang)
     // to spy data: reset
     msgServiceSpy.success.calls.reset()
     msgServiceSpy.error.calls.reset()
