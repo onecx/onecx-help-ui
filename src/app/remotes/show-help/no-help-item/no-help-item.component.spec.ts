@@ -1,7 +1,8 @@
 import { ComponentFixture, TestBed, getTestBed } from '@angular/core/testing'
 import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed'
-import { DynamicDialogConfig, DynamicDialogRef } from 'primeng/dynamicdialog'
 import { TranslateTestingModule } from 'ngx-translate-testing'
+
+import { DynamicDialogConfig, DynamicDialogRef } from 'primeng/dynamicdialog'
 
 import { NoHelpItemComponent } from './no-help-item.component'
 import { NoHelpItemHarness } from './no-help-item.harness'
