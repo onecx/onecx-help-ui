@@ -6,8 +6,8 @@
     pRipple
     [rounded]="true"
     icon="pi pi-question-circle"
-    (click)="onOpenHelpPage($event)"
-    (keydown.enter)="onOpenHelpPage($event)"
+    (onClick)="onOpenHelpPage($event)"
+    (onKeydown)="onOpenHelpPage($event)"
     [ariaLabel]="'SHOW_HELP.LABEL' | translate"
     [pTooltip]="'SHOW_HELP.TOOLTIP' | translate"
     tooltipPosition="bottom"
