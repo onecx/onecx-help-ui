@@ -18,7 +18,7 @@
     "browser": "npx browserslist",
     "lint": "ng lint --cache=true && npx prettier -c --cache .",
     "eslint": "eslint --quiet --ext .js,.ts src",
-    "format": "ng lint --fix",
+    "format": "ng lint --fix && npx prettier --write .",
     "prepare": "husky || true",
     "start": "ng serve --configuration=development --proxy-config=proxy.conf.js",
     "test": "ng test",
@@ -55,10 +55,10 @@
     "@onecx/angular-auth": "^6.27.0",
     "@onecx/angular-integration-interface": "^6.27.0",
     "@onecx/angular-remote-components": "^6.27.0",
+    "@onecx/angular-standalone-shell": "^6.27.0",
     "@onecx/angular-testing": "^6.27.0",
     "@onecx/angular-utils": "^6.27.0",
     "@onecx/angular-webcomponents": "^6.27.0",
-    "@onecx/angular-standalone-shell": "^6.27.0",
     "@onecx/integration-interface": "^6.27.0",
     "@webcomponents/webcomponentsjs": "^2.8.0",
     "file-saver": "^2.0.5",
@@ -67,7 +67,8 @@
     "primeicons": "^7.0.0",
     "primeng": "^19.1.4",
     "rxjs": "7.8.1",
-    "tslib": "^2.8.1"
+    "tslib": "^2.8.1",
+    "zone.js": "^0.15.1"
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "^19.2.25",
@@ -87,7 +88,7 @@
     "@schematics/angular": "^19.2.25",
     "@types/file-saver": "^2.0.7",
     "@types/jasmine": "~5.1.4",
-    "@types/node": "22.14.0",
+    "@types/node": "~22.14.0",
     "@typescript-eslint/eslint-plugin": "^7.18.0",
     "@typescript-eslint/parser": "^7.18.0",
     "@typescript-eslint/utils": "^8.59.2",
@@ -131,6 +132,10 @@
     "minimatch": "^3.1.4",
     "fast-uri": "^3.1.2",
     "basic-ftp": "^5.3.1",
-    "@babel/plugin-transform-modules-systemjs": "^7.29.1"
+    "@babel/plugin-transform-modules-systemjs": "^7.29.1",
+    "piscina": "^5.1.4",
+    "sigstore": "^4.1.1",
+    "vite": "^7.3.1",
+    "ws": "^8.21.0"
   }
 }
