@@ -1,18 +1,6 @@
 {
   "extends": "./tsconfig.json",
-  "compilerOptions": {
-    "composite": false,
-    "declaration": false,
-    "declarationMap": false,
-    "inlineSources": true
-  },
-  "files": [
-    "src/main.ts",
-    "src/polyfills.ts",
-    "src/app/onecx-help-remote.module.ts",
-    "src/app/remotes/show-help/show-help.component.main.ts",
-    "src/app/remotes/help-item-editor/help-item-editor.component.main.ts"
-  ],
+  "compilerOptions": {},
   "include": ["src/**/*.ts"],
-  "exclude": ["src/test.ts", "src/**/*.spec.ts"]
+  "exclude": ["src/test.ts", "src/**/*.spec.ts", "src/**/*.harness.ts", "src/app/shared/mocks/**"]
 }
