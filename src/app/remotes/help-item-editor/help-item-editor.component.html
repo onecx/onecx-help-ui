@@ -16,8 +16,8 @@
     pRipple
     [rounded]="true"
     icon="pi pi-pencil"
-    (click)="onEditHelpItem($event)"
-    (keydown.enter)="onEditHelpItem($event)"
+    (onClick)="onEditHelpItem($event)"
+    (onKeydown)="onEditHelpItem($event)"
     [ariaLabel]="'HELP_ITEM_EDITOR.TOOLTIP' | translate"
     [pTooltip]="'HELP_ITEM_EDITOR.TOOLTIP' | translate"
     tooltipPosition="bottom"
