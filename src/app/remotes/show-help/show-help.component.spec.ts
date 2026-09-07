@@ -188,6 +188,74 @@ describe('OneCXShowHelpComponent', () => {
     })
   })
 
+  describe('document click handling', () => {
+    it('should close the panel when click happens outside the host while the panel is open', () => {
+      initTestComponent({ permissions: ['HELP#VIEW'], baseUrl: 'base_url' } as RemoteComponentConfig)
+      const host = document.createElement('div')
+      const outside = document.createElement('button')
+      document.body.appendChild(host)
+      document.body.appendChild(outside)
+      Object.defineProperty(component, 'showHelpHost', {
+        value: { nativeElement: host },
+        configurable: true,
+        writable: true
+      })
+
+      component['helpPanelCoordinatorService'].open('show')
+      component.ngAfterViewInit()
+
+      const event = new MouseEvent('click', { bubbles: true })
+      Object.defineProperty(event, 'target', { value: outside, configurable: true })
+      document.body.dispatchEvent(event)
+
+      expect(component['helpPanelCoordinatorService'].isOpen('show')).toBeFalse()
+      document.body.removeChild(host)
+      document.body.removeChild(outside)
+    })
+
+    it('should ignore document click when host element is missing', () => {
+      initTestComponent({ permissions: ['HELP#VIEW'], baseUrl: 'base_url' } as RemoteComponentConfig)
+      Object.defineProperty(component, 'showHelpHost', {
+        value: undefined,
+        configurable: true,
+        writable: true
+      })
+      component['helpPanelCoordinatorService'].open('show')
+
+      expect(() => {
+        component.ngAfterViewInit()
+        document.body.dispatchEvent(new MouseEvent('click', { bubbles: true }))
+      }).not.toThrow()
+    })
+
+    it('should close active portal dialog when panel closes', () => {
+      initTestComponent()
+      const dialogRef = { close: jasmine.createSpy('close') }
+      ;(component as any).portalDialogService = {
+        dialogService: {
+          dialogComponentRefMap: new Map<any, unknown>([
+            [dialogRef, 1],
+            [undefined, 2]
+          ])
+        }
+      }
+
+      component['closeActivePortalDialog']()
+
+      expect(dialogRef.close).toHaveBeenCalledTimes(1)
+    })
+
+    it('should close editor panel immediately when it is already open', () => {
+      initTestComponent({ permissions: ['HELP#VIEW'], baseUrl: 'base_url' } as RemoteComponentConfig)
+      const closeSpy = spyOn(component['helpPanelCoordinatorService'], 'close').and.callThrough()
+      component['helpPanelCoordinatorService'].open('show')
+
+      component.onOpenHelpPage()
+
+      expect(closeSpy).toHaveBeenCalledWith('show')
+    })
+  })
+
   describe('open no-help dialog', () => {
     it('should show dialog if help item does not exist - NO_HELP_ITEM', async () => {
       dialogServiceSpy.openDialog.and.returnValue(of({} as any))
@@ -203,6 +271,16 @@ describe('OneCXShowHelpComponent', () => {
       await oneCXShowHelpHarness.onClickShowHelpButton()
 
       expect(dialogServiceSpy.openDialog).toHaveBeenCalled()
+    })
+
+    it('should close the panel when dialog subscription errors', () => {
+      initTestComponent({ permissions: ['HELP#VIEW'], baseUrl: 'base_url' } as RemoteComponentConfig)
+      dialogServiceSpy.openDialog.and.returnValue(throwError(() => new Error('dialog error')))
+      const closeSpy = spyOn(component['helpPanelCoordinatorService'], 'close').and.callThrough()
+
+      component['openNoHelpItemDialog'](undefined, 'article_id')
+
+      expect(closeSpy).toHaveBeenCalledWith('show')
     })
 
     it('should show dialog if help item baseUrl not exists - MISSING_BASE_URL', async () => {

@@ -341,6 +341,74 @@ describe('OneCXHelpItemEditorComponent', () => {
     })
   })
 
+  describe('document click handling', () => {
+    it('should close the panel when click happens outside the host while the editor is open', () => {
+      initTestComponent({ permissions: ['HELP#EDIT'], baseUrl: 'base_url' } as RemoteComponentConfig)
+      const host = document.createElement('div')
+      const outside = document.createElement('button')
+      document.body.appendChild(host)
+      document.body.appendChild(outside)
+      Object.defineProperty(component, 'helpEditorHost', {
+        value: { nativeElement: host },
+        configurable: true,
+        writable: true
+      })
+
+      component['helpPanelCoordinatorService'].open('editor')
+      component.ngAfterViewInit()
+
+      const event = new MouseEvent('click', { bubbles: true })
+      Object.defineProperty(event, 'target', { value: outside, configurable: true })
+      document.body.dispatchEvent(event)
+
+      expect(component['helpPanelCoordinatorService'].isOpen('editor')).toBeFalse()
+      document.body.removeChild(host)
+      document.body.removeChild(outside)
+    })
+
+    it('should ignore document click when host element is missing', () => {
+      initTestComponent({ permissions: ['HELP#EDIT'], baseUrl: 'base_url' } as RemoteComponentConfig)
+      Object.defineProperty(component, 'helpEditorHost', {
+        value: undefined,
+        configurable: true,
+        writable: true
+      })
+      component['helpPanelCoordinatorService'].open('editor')
+
+      expect(() => {
+        component.ngAfterViewInit()
+        document.body.dispatchEvent(new MouseEvent('click', { bubbles: true }))
+      }).not.toThrow()
+    })
+
+    it('should close active portal dialog when editor panel closes', () => {
+      initTestComponent()
+      const dialogRef = { close: jasmine.createSpy('close') }
+      ;(component as any).portalDialogService = {
+        dialogService: {
+          dialogComponentRefMap: new Map<any, unknown>([
+            [dialogRef, 1],
+            [undefined, 2]
+          ])
+        }
+      }
+
+      component['closeActivePortalDialog']()
+
+      expect(dialogRef.close).toHaveBeenCalledTimes(1)
+    })
+
+    it('should close editor panel immediately when it is already open', () => {
+      initTestComponent({ permissions: ['HELP#EDIT'], baseUrl: 'base_url' } as RemoteComponentConfig)
+      const closeSpy = spyOn(component['helpPanelCoordinatorService'], 'close').and.callThrough()
+      component['helpPanelCoordinatorService'].open('editor')
+
+      component.onEditHelpItem()
+
+      expect(closeSpy).toHaveBeenCalledWith('editor')
+    })
+  })
+
   describe('create item', () => {
     it('should be unable to create help item when article not defined', async () => {
       const appStateService = TestBed.inject(AppStateService)

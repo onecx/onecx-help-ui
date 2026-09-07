@@ -12,9 +12,6 @@ export class HelpPanelCoordinatorService {
   }
 
   public open(panel: HelpPanelType): void {
-    if (this.currentPanel && this.currentPanel !== panel) {
-      this.closeHandlers.get(this.currentPanel)?.()
-    }
     this.currentPanel = panel
   }
 
