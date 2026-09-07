@@ -175,7 +175,7 @@ export class HelpSearchComponent implements OnInit {
       id: 'copy',
       labelKey: 'ACTIONS.COPY.LABEL',
       icon: 'pi pi-copy',
-      permission: 'HELP#EDIT',
+      permission: 'HELP#CREATE',
       classes: ['copyTableRowButton'],
       callback: (item: RowListGridData) => this.onDetail(item, 'COPY')
     }
