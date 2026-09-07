@@ -1,6 +1,18 @@
 import { Utils } from './utils'
 
 describe('Utils', () => {
+  describe('mapping_error_status', () => {
+    it('should map known status', () => {
+      const status = Utils.mapping_error_status(404)
+      expect(status).toEqual(404)
+    })
+
+    it('should map unknown status', () => {
+      const status = Utils.mapping_error_status(405)
+      expect(status).toEqual(0)
+    })
+  })
+
   describe('sortByLocale', () => {
     it('should return 0 when both strings are identical', () => {
       const result = Utils.sortByLocale('apple', 'apple')

@@ -37,6 +37,7 @@ import {
 import { PortalPageComponent } from '@onecx/angular-utils'
 import { SlotService } from '@onecx/angular-remote-components'
 
+import { Utils } from 'src/app/shared/utils'
 import { Help, HelpsInternalAPIService, HelpSearchCriteria, HelpProductNames } from 'src/app/shared/generated'
 import { HelpCriteriaComponent } from './help-criteria/help-criteria.component'
 import { HelpDetailComponent } from '../help-detail/help-detail.component'
@@ -358,7 +359,7 @@ export class HelpSearchComponent implements OnInit {
             return ul
           }),
           catchError((err) => {
-            this.exceptionKey = 'EXCEPTIONS.HTTP_STATUS_' + err.status + '.ASSIGNMENTS'
+            this.exceptionKey = 'EXCEPTIONS.HTTP_STATUS_' + Utils.mapping_error_status(err.status) + '.ASSIGNMENTS'
             console.error('getAllProductsWithHelpItems', err)
             return of([])
           })
@@ -408,7 +409,7 @@ export class HelpSearchComponent implements OnInit {
         }),
         map((data) => (data.stream as unknown[] as RowListGridData[]) ?? []),
         catchError((err) => {
-          this.exceptionKey = 'EXCEPTIONS.HTTP_STATUS_' + err.status + '.HELP_ITEM'
+          this.exceptionKey = 'EXCEPTIONS.HTTP_STATUS_' + Utils.mapping_error_status(err.status) + '.HELP_ITEM'
           this.msgService.error({ summaryKey: 'ACTIONS.SEARCH.MESSAGE.NOK' })
           console.error('searchHelps', err)
           return of([])

@@ -208,7 +208,7 @@ describe('HelpSearchComponent', () => {
     })
 
     it('should display an error message if the search fails', (done) => {
-      const errorResponse = { status: '403', statusText: 'Not authorized' }
+      const errorResponse = { status: 403, statusText: 'Not authorized' }
       apiServiceSpy.searchHelps.and.returnValue(throwError(() => errorResponse))
       spyOn(console, 'error')
       component.onSearch({})
@@ -282,7 +282,7 @@ describe('HelpSearchComponent', () => {
     })
 
     it('should get all items assigned to products', (done) => {
-      const errorResponse = { status: '404', statusText: 'An error occur' }
+      const errorResponse = { status: 404, statusText: 'An error occur' }
       apiServiceSpy.getAllProductsWithHelpItems.and.returnValue(throwError(() => errorResponse))
       spyOn(console, 'error')
 
@@ -351,7 +351,7 @@ describe('HelpSearchComponent', () => {
     it('should provide copy additional action', () => {
       expect(component.interactiveAdditionalActions.length).toBe(1)
       expect(component.interactiveAdditionalActions[0].id).toBe('copy')
-      expect(component.interactiveAdditionalActions[0].permission).toBe('HELP#EDIT')
+      expect(component.interactiveAdditionalActions[0].permission).toBe('HELP#CREATE')
     })
 
     it('should call detail in COPY mode from copy additional action', () => {
