@@ -14,7 +14,7 @@ import { TooltipModule } from 'primeng/tooltip'
 
 import { PortalMessageService } from '@onecx/angular-integration-interface'
 
-import { Utils } from 'src/app/shared/utils'
+import { Utils } from 'src/app/shared/utils/utils'
 import { HelpsInternalAPIService, Help, CreateHelp } from 'src/app/shared/generated'
 import { ChangeMode, Product } from '../help-search/help-search.component'
 

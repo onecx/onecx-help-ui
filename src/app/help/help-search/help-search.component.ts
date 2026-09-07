@@ -37,7 +37,7 @@ import {
 import { PortalPageComponent } from '@onecx/angular-utils'
 import { SlotService } from '@onecx/angular-remote-components'
 
-import { Utils } from 'src/app/shared/utils'
+import { Utils } from 'src/app/shared/utils/utils'
 import { Help, HelpsInternalAPIService, HelpSearchCriteria, HelpProductNames } from 'src/app/shared/generated'
 import { HelpCriteriaComponent } from './help-criteria/help-criteria.component'
 import { HelpDetailComponent } from '../help-detail/help-detail.component'
