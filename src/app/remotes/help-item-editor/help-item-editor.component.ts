@@ -1,4 +1,16 @@
-import { Component, DestroyRef, EventEmitter, inject, Inject, Input } from '@angular/core'
+import {
+  AfterViewInit,
+  Component,
+  DestroyRef,
+  ElementRef,
+  EventEmitter,
+  inject,
+  Inject,
+  Input,
+  OnDestroy,
+  Renderer2,
+  ViewChild
+} from '@angular/core'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { AsyncPipe, Location } from '@angular/common'
 import { Router } from '@angular/router'
@@ -37,6 +49,7 @@ import {
 import { REMOTE_COMPONENT_CONFIG, RemoteComponentConfig } from '@onecx/angular-utils'
 
 import { Configuration, Help, HelpsInternalAPIService } from 'src/app/shared/generated'
+import { HelpPanelCoordinatorService } from 'src/app/shared/utils/help-panel-coordinator.service'
 import { environment } from 'src/environments/environment'
 
 import { HelpItemEditorFormComponent } from './help-item-editor-form/help-item-editor-form.component'
@@ -79,16 +92,21 @@ export function slotInitializer(slotService: SlotService) {
   templateUrl: './help-item-editor.component.html',
   styleUrl: './help-item-editor.component.scss'
 })
-export class OneCXHelpItemEditorComponent implements ocxRemoteComponent, ocxRemoteWebcomponent {
+export class OneCXHelpItemEditorComponent
+  implements ocxRemoteComponent, ocxRemoteWebcomponent, AfterViewInit, OnDestroy
+{
   @Input() set ocxRemoteComponentConfig(config: RemoteComponentConfig) {
     this.ocxInitRemoteComponent(config)
   }
+  @ViewChild('helpEditorHost')
+  private readonly helpEditorHost!: ElementRef<HTMLElement>
   private readonly destroyRef = inject(DestroyRef)
   private readonly helpArticleId$: Observable<string> // picked from current page
   private readonly productName$: Observable<string> // name of the current product (from mfe)
   private readonly helpDataItem$: Observable<Help | undefined>
   public products$: Observable<Product[]>
   public permissions: string[] = []
+  private removeDocumentClickListener: (() => void) | undefined
   // slot configuration: get product data via remote component
   public pdSlotName = 'onecx-product-data'
   public pdIsComponentDefined$: Observable<boolean> | undefined // check
@@ -98,6 +116,7 @@ export class OneCXHelpItemEditorComponent implements ocxRemoteComponent, ocxRemo
 
   constructor(
     @Inject(REMOTE_COMPONENT_CONFIG) private readonly remoteComponentConfig: ReplaySubject<RemoteComponentConfig>,
+    private readonly renderer: Renderer2,
     private readonly router: Router,
     private readonly userService: UserService,
     private readonly slotService: SlotService,
@@ -105,8 +124,13 @@ export class OneCXHelpItemEditorComponent implements ocxRemoteComponent, ocxRemo
     private readonly helpApi: HelpsInternalAPIService,
     private readonly portalMessageService: PortalMessageService,
     private readonly portalDialogService: PortalDialogService,
-    private readonly translateService: TranslateService
+    private readonly translateService: TranslateService,
+    private readonly helpPanelCoordinatorService: HelpPanelCoordinatorService
   ) {
+    this.helpPanelCoordinatorService.register('editor', () => {
+      this.closeActivePortalDialog()
+    })
+
     this.userService.lang$
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((lang) => this.translateService.use(lang))
@@ -177,6 +201,39 @@ export class OneCXHelpItemEditorComponent implements ocxRemoteComponent, ocxRemo
     )
   }
 
+  ngAfterViewInit(): void {
+    this.removeDocumentClickListener = this.renderer.listen('body', 'click', (event: Event) => {
+      const target = event.target
+      const hostElement = this.helpEditorHost?.nativeElement
+
+      if (!(target instanceof Node) || !hostElement) {
+        return
+      }
+
+      const clickedInsideHost = hostElement.contains(target)
+      const clickedInsideDialog = target instanceof Element && !!target.closest('[role="dialog"], .p-dialog')
+
+      if (clickedInsideHost || clickedInsideDialog || !this.helpPanelCoordinatorService.isOpen('editor')) {
+        return
+      }
+
+      this.helpPanelCoordinatorService.close('editor')
+    })
+  }
+
+  ngOnDestroy(): void {
+    this.removeDocumentClickListener?.()
+  }
+
+  private closeActivePortalDialog(): void {
+    const dialogService = (this.portalDialogService as any).dialogService
+    if (dialogService?.dialogComponentRefMap) {
+      dialogService.dialogComponentRefMap.forEach((_: unknown, dialogRef: { close: () => void }) => {
+        dialogRef?.close?.()
+      })
+    }
+  }
+
   private udateHelpItem(
     dialogState: DialogState<Help>,
     isNewHelpItem: boolean
@@ -199,8 +256,14 @@ export class OneCXHelpItemEditorComponent implements ocxRemoteComponent, ocxRemo
       .pipe(map((): [string, string] => [dialogState.result!.itemId, dialogState.result!.productName!]))
   }
 
-  public onEditHelpItem(ev?: Event) {
-    ev?.stopPropagation()
+  public onEditHelpItem() {
+    if (this.helpPanelCoordinatorService.isOpen('editor')) {
+      this.helpPanelCoordinatorService.close('editor')
+      return
+    }
+
+    this.helpPanelCoordinatorService.open('editor')
+
     combineLatest([this.helpArticleId$, this.productName$, this.helpDataItem$, this.products$])
       .pipe(
         first(),
@@ -235,6 +298,7 @@ export class OneCXHelpItemEditorComponent implements ocxRemoteComponent, ocxRemo
       )
       .subscribe({
         next: ([itemId, productName]) => {
+          this.helpPanelCoordinatorService.close('editor')
           if (itemId && productName) {
             this.portalMessageService.success({
               summaryKey: 'HELP_ITEM_EDITOR.UPDATE_HELP_ARTICLE_INFO'
@@ -243,6 +307,7 @@ export class OneCXHelpItemEditorComponent implements ocxRemoteComponent, ocxRemo
           }
         },
         error: (error) => {
+          this.helpPanelCoordinatorService.close('editor')
           this.portalMessageService.error({
             summaryKey: 'HELP_ITEM_EDITOR.UPDATE_HELP_ARTICLE_ERROR',
             detailKey: `Server error: ${error.status}`

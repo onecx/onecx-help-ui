@@ -1,5 +1,5 @@
 <!-- TOPBAR ITEM -->
-<div *ocxIfPermission="'HELP#EDIT'; permissions: permissions">
+<div #helpEditorHost *ocxIfPermission="'HELP#EDIT'; permissions: permissions">
   <!-- slot getting data from product store: one time only -->
   @if (pdIsComponentDefined$ | async) {
     <ocx-slot
@@ -16,8 +16,8 @@
     pRipple
     [rounded]="true"
     icon="pi pi-pencil"
-    (onClick)="onEditHelpItem($event)"
-    (onKeydown)="onEditHelpItem($event)"
+    (onClick)="onEditHelpItem()"
+    (onKeydown)="onEditHelpItem()"
     [ariaLabel]="'HELP_ITEM_EDITOR.TOOLTIP' | translate"
     [pTooltip]="'HELP_ITEM_EDITOR.TOOLTIP' | translate"
     tooltipPosition="bottom"

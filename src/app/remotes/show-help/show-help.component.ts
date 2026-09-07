@@ -1,4 +1,15 @@
-import { Component, DestroyRef, inject, Inject, Input } from '@angular/core'
+import {
+  AfterViewInit,
+  Component,
+  DestroyRef,
+  ElementRef,
+  inject,
+  Inject,
+  Input,
+  OnDestroy,
+  Renderer2,
+  ViewChild
+} from '@angular/core'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { Location } from '@angular/common'
 import { Router } from '@angular/router'
@@ -25,6 +36,7 @@ import {
 } from '@onecx/angular-accelerator'
 
 import { Configuration, Help, HelpsInternalAPIService } from 'src/app/shared/generated'
+import { HelpPanelCoordinatorService } from 'src/app/shared/utils/help-panel-coordinator.service'
 import { environment } from 'src/environments/environment'
 
 import { NoHelpItemComponent } from './no-help-item/no-help-item.component'
@@ -37,26 +49,35 @@ import { NoHelpItemComponent } from './no-help-item/no-help-item.component'
   templateUrl: './show-help.component.html',
   styleUrl: './show-help.component.scss'
 })
-export class OneCXShowHelpComponent implements ocxRemoteComponent, ocxRemoteWebcomponent {
+export class OneCXShowHelpComponent implements ocxRemoteComponent, ocxRemoteWebcomponent, AfterViewInit, OnDestroy {
   @Input() set ocxRemoteComponentConfig(config: RemoteComponentConfig) {
     this.ocxInitRemoteComponent(config)
   }
+  @ViewChild('showHelpHost')
+  private readonly showHelpHost!: ElementRef<HTMLElement>
   private readonly destroyRef = inject(DestroyRef)
   private readonly helpArticleId$: Observable<string>
   private readonly productName$: Observable<string>
   private readonly helpItem$: Observable<Help | undefined>
   public permissions: string[] = []
+  private removeDocumentClickListener: (() => void) | undefined
 
   constructor(
     @Inject(REMOTE_COMPONENT_CONFIG) private readonly remoteComponentConfig: ReplaySubject<RemoteComponentConfig>,
+    private readonly renderer: Renderer2,
     private readonly appStateService: AppStateService,
     private readonly userService: UserService,
     private readonly router: Router,
     private readonly portalDialogService: PortalDialogService,
     private readonly helpApi: HelpsInternalAPIService,
     private readonly portalMessageService: PortalMessageService,
-    private readonly translateService: TranslateService
+    private readonly translateService: TranslateService,
+    private readonly helpPanelCoordinatorService: HelpPanelCoordinatorService
   ) {
+    this.helpPanelCoordinatorService.register('show', () => {
+      this.closeActivePortalDialog()
+    })
+
     this.userService.lang$
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((lang) => this.translateService.use(lang))
@@ -91,8 +112,47 @@ export class OneCXShowHelpComponent implements ocxRemoteComponent, ocxRemoteWebc
     })
   }
 
-  public onOpenHelpPage(ev: Event) {
-    ev.stopPropagation()
+  ngAfterViewInit(): void {
+    this.removeDocumentClickListener = this.renderer.listen('body', 'click', (event: Event) => {
+      const target = event.target
+      const hostElement = this.showHelpHost?.nativeElement
+
+      if (!(target instanceof Node) || !hostElement) {
+        return
+      }
+
+      const clickedInsideHost = hostElement.contains(target)
+      const clickedInsideDialog = target instanceof Element && !!target.closest('[role="dialog"], .p-dialog')
+
+      if (clickedInsideHost || clickedInsideDialog || !this.helpPanelCoordinatorService.isOpen('show')) {
+        return
+      }
+
+      this.helpPanelCoordinatorService.close('show')
+    })
+  }
+
+  ngOnDestroy(): void {
+    this.removeDocumentClickListener?.()
+  }
+
+  private closeActivePortalDialog(): void {
+    const dialogService = (this.portalDialogService as any).dialogService
+    if (dialogService?.dialogComponentRefMap) {
+      dialogService.dialogComponentRefMap.forEach((_: unknown, dialogRef: { close: () => void }) => {
+        dialogRef?.close?.()
+      })
+    }
+  }
+
+  public onOpenHelpPage() {
+    if (this.helpPanelCoordinatorService.isOpen('show')) {
+      this.helpPanelCoordinatorService.close('show')
+      return
+    }
+
+    this.helpPanelCoordinatorService.open('show')
+
     this.helpItem$?.pipe(withLatestFrom(this.helpArticleId$), first()).subscribe({
       next: ([helpItem, helpArticleId]) => {
         // if item exists with baseUrl: open URL in new TAB
@@ -148,7 +208,14 @@ export class OneCXShowHelpComponent implements ocxRemoteComponent, ocxRemoteWebc
         }
       )
       .pipe(map((dialogState): [DialogState<NoHelpItemComponent>] => [dialogState]))
-      .subscribe()
+      .subscribe({
+        next: () => {
+          this.helpPanelCoordinatorService.close('show')
+        },
+        error: () => {
+          this.helpPanelCoordinatorService.close('show')
+        }
+      })
   }
 
   /*
