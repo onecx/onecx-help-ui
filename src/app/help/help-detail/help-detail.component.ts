@@ -14,6 +14,7 @@ import { TooltipModule } from 'primeng/tooltip'
 
 import { PortalMessageService } from '@onecx/angular-integration-interface'
 
+import { Utils } from 'src/app/shared/utils'
 import { HelpsInternalAPIService, Help, CreateHelp } from 'src/app/shared/generated'
 import { ChangeMode, Product } from '../help-search/help-search.component'
 
@@ -134,7 +135,7 @@ export class HelpDetailComponent implements OnChanges {
         error: (err) => {
           this.helpForm.reset()
           this.helpForm.disable()
-          this.exceptionKey = 'EXCEPTIONS.HTTP_STATUS_' + err.status + '.HELP_ITEM'
+          this.exceptionKey = 'EXCEPTIONS.HTTP_STATUS_' + Utils.mapping_error_status(err.status) + '.HELP_ITEM'
           this.msgService.error({ summaryKey: this.exceptionKey })
           console.error('getHelpById', err)
         }
