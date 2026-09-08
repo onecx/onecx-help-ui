@@ -91,8 +91,7 @@ export class OneCXShowHelpComponent implements ocxRemoteComponent, ocxRemoteWebc
     })
   }
 
-  public onOpenHelpPage(ev: Event) {
-    ev.stopPropagation()
+  public onOpenHelpPage() {
     this.helpItem$?.pipe(withLatestFrom(this.helpArticleId$), first()).subscribe({
       next: ([helpItem, helpArticleId]) => {
         // if item exists with baseUrl: open URL in new TAB
