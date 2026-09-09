@@ -182,7 +182,7 @@ describe('OneCXShowHelpComponent', () => {
       initTestComponent({ permissions: ['HELP#VIEW'], baseUrl: 'base_url' } as RemoteComponentConfig)
       spyOn(component, 'onOpenHelpPage')
 
-      component.onOpenHelpPage(new MouseEvent('click'))
+      component.onOpenHelpPage()
 
       expect(component.onOpenHelpPage).toHaveBeenCalledTimes(1)
     })

@@ -199,8 +199,7 @@ export class OneCXHelpItemEditorComponent implements ocxRemoteComponent, ocxRemo
       .pipe(map((): [string, string] => [dialogState.result!.itemId, dialogState.result!.productName!]))
   }
 
-  public onEditHelpItem(ev?: Event) {
-    ev?.stopPropagation()
+  public onEditHelpItem() {
     combineLatest([this.helpArticleId$, this.productName$, this.helpDataItem$, this.products$])
       .pipe(
         first(),
