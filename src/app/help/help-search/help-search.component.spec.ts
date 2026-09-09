@@ -109,7 +109,7 @@ describe('HelpSearchComponent', () => {
     it('should call OnInit and keep default data view columns', () => {
       component.ngOnInit()
 
-      expect(component.dataViewColumns.length).toBe(3)
+      expect(component.dataViewColumns).toHaveSize(3)
       expect(component.displayedColumnKeys).toEqual(['productName', 'itemId', 'baseUrl'])
     })
 
@@ -181,7 +181,7 @@ describe('HelpSearchComponent', () => {
       component.data$!.pipe(take(1)).subscribe({
         next: (data) => {
           if (data) {
-            expect(data.length).toBe(1)
+            expect(data).toHaveSize(1)
             expect(data[0]).toEqual(rowItems[1])
           }
           component.onCriteriaReset()
@@ -198,7 +198,7 @@ describe('HelpSearchComponent', () => {
 
       component.data$!.subscribe({
         next: (data) => {
-          if (data) expect(data.length).toBe(0)
+          if (data) expect(data).toHaveSize(0)
           done()
         },
         error: done.fail
@@ -215,7 +215,7 @@ describe('HelpSearchComponent', () => {
 
       component.data$!.subscribe({
         next: (data) => {
-          if (data) expect(data.length).toBe(0)
+          if (data) expect(data).toHaveSize(0)
           done()
         },
         error: done.fail
@@ -312,7 +312,7 @@ describe('HelpSearchComponent', () => {
       component.metaData$.subscribe({
         next: (meta) => {
           if (meta) {
-            expect(meta.allProducts.length).toBe(1)
+            expect(meta.allProducts).toHaveSize(1)
             expect(meta.usedProducts?.length).toBe(2)
             expect(meta.usedProducts).toEqual([
               { name: 'product', displayName: 'Product' },
@@ -334,7 +334,7 @@ describe('HelpSearchComponent', () => {
       component.metaData$.subscribe({
         next: (meta) => {
           if (meta) {
-            expect(meta.allProducts.length).toBe(2) // take over the used products
+            expect(meta.allProducts).toHaveSize(2) // take over the used products
             expect(meta.usedProducts?.length).toBe(2)
             expect(meta.usedProducts).toEqual([
               { name: 'product', displayName: 'product' },
@@ -349,7 +349,7 @@ describe('HelpSearchComponent', () => {
 
   describe('UI actions', () => {
     it('should provide copy additional action', () => {
-      expect(component.interactiveAdditionalActions.length).toBe(1)
+      expect(component.interactiveAdditionalActions).toHaveSize(1)
       expect(component.interactiveAdditionalActions[0].id).toBe('copy')
       expect(component.interactiveAdditionalActions[0].permission).toBe('HELP#CREATE')
     })
@@ -503,7 +503,7 @@ describe('HelpSearchComponent', () => {
       expect(component.item4Delete).toBeUndefined()
       component.data$!.subscribe({
         next: (data) => {
-          expect(data!.length).toBe(0)
+          expect(data!).toHaveSize(0)
           done()
         },
         error: done.fail
@@ -522,7 +522,7 @@ describe('HelpSearchComponent', () => {
       expect(component.item4Delete).toBeUndefined()
       component.data$!.subscribe({
         next: (data) => {
-          expect(data!.length).toBe(3)
+          expect(data!).toHaveSize(3)
           done()
         },
         error: done.fail

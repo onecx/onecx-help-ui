@@ -209,7 +209,7 @@ describe('HelpDetailComponent', () => {
         component.ngOnChanges()
 
         expect(component.helpForm.enabled).toBeTrue()
-        expect(component.helpForm.controls['itemId'].value).toEqual(null)
+        expect(component.helpForm.controls['itemId'].value).toBeNull()
       })
 
       it('should prepare creating an item - start with empty form', () => {
@@ -220,7 +220,7 @@ describe('HelpDetailComponent', () => {
 
         expect(component.helpForm.reset).toHaveBeenCalled()
         expect(component.helpForm.enabled).toBeTrue()
-        expect(component.helpForm.controls['itemId'].value).toBe(null)
+        expect(component.helpForm.controls['itemId'].value).toBeNull()
       })
     })
 
