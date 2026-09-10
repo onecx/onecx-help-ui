@@ -137,6 +137,7 @@ export class OneCXShowHelpComponent implements ocxRemoteComponent, ocxRemoteWebc
         undefined, // no second button
         {
           width: '450px',
+          closable: true,
           draggable: true,
           resizable: false,
           showHeader: true,
