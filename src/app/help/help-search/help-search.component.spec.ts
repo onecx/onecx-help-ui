@@ -2,7 +2,7 @@ import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing'
 import { provideHttpClient } from '@angular/common/http'
 import { provideHttpClientTesting } from '@angular/common/http/testing'
 import { provideNoopAnimations } from '@angular/platform-browser/animations'
-import { ActivatedRoute } from '@angular/router'
+import { provideRouter } from '@angular/router'
 import { TranslateTestingModule } from 'ngx-translate-testing'
 import { BehaviorSubject, of, take, throwError } from 'rxjs'
 
@@ -65,7 +65,7 @@ describe('HelpSearchComponent', () => {
         provideHttpClientTesting(),
         provideNoopAnimations(),
         providePermissionService(),
-        { provide: ActivatedRoute, useValue: {} }
+        provideRouter([])
       ]
     })
       .overrideComponent(HelpSearchComponent, {
@@ -743,6 +743,64 @@ describe('HelpSearchComponent', () => {
       langSubject.next('de')
       initTestComponent()
       expect(component.datetimeFormat).toEqual('dd.MM.yyyy HH:mm')
+    })
+  })
+
+  describe('restoreStateFromQueryParams', () => {
+    it('should return false when query params are empty', () => {
+      ;(component as any).route.snapshot.queryParams = {}
+
+      const result = (component as any).restoreStateFromQueryParams()
+
+      expect(result).toBeFalse()
+    })
+
+    it('should restore criteria from query params and trigger search', () => {
+      spyOn(component, 'onSearch')
+
+      ;(component as any).route.snapshot.queryParams = {
+        itemId: 'item-1',
+        productName: 'product-1'
+      }
+
+      const result = (component as any).restoreStateFromQueryParams()
+
+      expect(result).toBeTrue()
+      expect(component.criteria).toEqual({
+        itemId: 'item-1',
+        productName: 'product-1'
+      })
+      expect(component.onSearch).toHaveBeenCalledWith(
+        {
+          itemId: 'item-1',
+          productName: 'product-1'
+        },
+        true
+      )
+    })
+
+    it('should map null values to undefined', () => {
+      spyOn(component, 'onSearch')
+
+      ;(component as any).route.snapshot.queryParams = {
+        itemId: null,
+        productName: null
+      }
+
+      const result = (component as any).restoreStateFromQueryParams()
+
+      expect(result).toBeTrue()
+      expect(component.criteria).toEqual({
+        itemId: undefined,
+        productName: undefined
+      })
+      expect(component.onSearch).toHaveBeenCalledWith(
+        {
+          itemId: undefined,
+          productName: undefined
+        },
+        true
+      )
     })
   })
 })

@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, DestroyRef, EventEmitter, inject, OnInit } from '@angular/core'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { AsyncPipe, Location, NgTemplateOutlet } from '@angular/common'
+import { Router, ActivatedRoute } from '@angular/router'
 import { TranslateModule, TranslateService } from '@ngx-translate/core'
 import {
   BehaviorSubject,
@@ -193,7 +194,9 @@ export class HelpSearchComponent implements OnInit {
     private readonly slotService: SlotService,
     private readonly translate: TranslateService,
     private readonly msgService: PortalMessageService,
-    private readonly helpApi: HelpsInternalAPIService
+    private readonly helpApi: HelpsInternalAPIService,
+    private readonly router: Router,
+    private readonly route: ActivatedRoute
   ) {
     this.interactiveColumns = this.createInteractiveColumns()
     this.pdIsComponentDefined$ = this.slotService.isSomeComponentDefinedForSlot(this.pdSlotName)
@@ -209,7 +212,8 @@ export class HelpSearchComponent implements OnInit {
     this.pdSlotEmitter.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(this.productData$)
     this.prepareActionButtons()
     this.loadMetaData()
-    this.onSearch({})
+    const restored = this.restoreStateFromQueryParams()
+    if (!restored) this.onSearch({})
   }
 
   /****************************************************************************
@@ -266,6 +270,7 @@ export class HelpSearchComponent implements OnInit {
     this.criteria = {}
     this.filteredSearchResults$.next([])
     this.dataAvailable = false
+    this.onSearch({})
   }
 
   public onColumnsChange(activeIds: string[]) {
@@ -394,6 +399,7 @@ export class HelpSearchComponent implements OnInit {
    */
   public onSearch(criteria: HelpSearchCriteria, reuseCriteria = false): void {
     if (!reuseCriteria) this.criteria = criteria
+    this.updateSearchParamsFromState()
     this.searching = true
     this.exceptionKey = undefined
     this.searchSubscription?.unsubscribe()
@@ -511,5 +517,34 @@ export class HelpSearchComponent implements OnInit {
     if (help.baseUrl && help.resourceUrl) {
       return Location.joinWithSlash(help.baseUrl, help.resourceUrl) + ctx
     } else return (help.baseUrl ?? '') + ctx
+  }
+
+  private updateSearchParamsFromState(): void {
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: {
+        itemId: this.criteria?.itemId,
+        productName: this.criteria?.productName
+      },
+      replaceUrl: true,
+      queryParamsHandling: 'merge'
+    })
+  }
+
+  private restoreStateFromQueryParams(): boolean {
+    const queryParams = this.route.snapshot.queryParams
+
+    if (!Object.keys(queryParams).length) {
+      return false
+    }
+
+    const criteria: HelpSearchCriteria = {
+      itemId: queryParams['itemId'] ?? undefined,
+      productName: queryParams['productName'] ?? undefined
+    }
+
+    this.criteria = criteria
+    this.onSearch(criteria, true)
+    return true
   }
 }

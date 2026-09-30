@@ -18,7 +18,6 @@ describe('HelpDetailComponent', () => {
   let component: HelpCriteriaComponent
   let fixture: ComponentFixture<HelpCriteriaComponent>
 
-  const formGroupSpy = jasmine.createSpyObj<FormGroup<HelpCriteriaForm>>('HelpCriteriaGroup', ['reset'])
   const criteriaEmitterSpy = jasmine.createSpyObj<EventEmitter<HelpSearchCriteria>>('EventEmitter', ['emit'])
 
   function initTestComponent() {
@@ -82,7 +81,7 @@ describe('HelpDetailComponent', () => {
     })
 
     it('should reset criteria', () => {
-      component.criteriaForm = formGroupSpy
+      spyOn(component.criteriaForm, 'reset')
 
       component.onResetCriteria()
 
