@@ -56,6 +56,7 @@ export class HelpCriteriaComponent {
 
   public onResetCriteria() {
     this.criteriaForm.reset()
+    this.onSearch()
   }
 
   public onFilterProducts(event: { query: string }) {
