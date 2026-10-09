@@ -15,6 +15,7 @@
     <app-help-criteria
       [actions]="(actions$ | async) ?? []"
       [usedProducts]="metaData.usedProducts"
+      [criteria]="criteria"
       (searchEmitter)="onSearch($event)"
       (resetSearchEmitter)="onCriteriaReset()"
     ></app-help-criteria>

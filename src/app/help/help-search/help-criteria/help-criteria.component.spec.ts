@@ -87,6 +87,31 @@ describe('HelpDetailComponent', () => {
 
       expect(component.criteriaForm.reset).toHaveBeenCalled()
     })
+
+    it('should restore selected criteria from query params to the form', () => {
+      component.usedProducts = products
+      component.criteria = { itemId: 'help-42', productName: product2.name }
+
+      component.ngOnChanges({
+        criteria: { currentValue: component.criteria, previousValue: {}, firstChange: true, isFirstChange: () => true },
+        usedProducts: { currentValue: products, previousValue: [], firstChange: true, isFirstChange: () => true }
+      })
+
+      expect(component.criteriaForm.get('itemId')?.value).toBe('help-42')
+      expect(component.criteriaForm.get('product')?.value).toEqual(product2)
+    })
+
+    it('should restore form when usedProducts change after criteria are already set', () => {
+      component.criteria = { itemId: 'help-42', productName: product2.name }
+      component.usedProducts = products
+
+      component.ngOnChanges({
+        usedProducts: { currentValue: products, previousValue: [], firstChange: false, isFirstChange: () => false }
+      })
+
+      expect(component.criteriaForm.get('itemId')?.value).toBe('help-42')
+      expect(component.criteriaForm.get('product')?.value).toEqual(product2)
+    })
   })
 
   it('should filter usedProducts', () => {
