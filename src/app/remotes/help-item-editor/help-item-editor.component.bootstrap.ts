@@ -33,4 +33,4 @@ bootstrapRemoteComponent(OneCXHelpItemEditorComponent, 'ocx-help-item-editor-com
   provideHttpClient(withInterceptorsFromDi()),
   importProvidersFrom(AngularAcceleratorModule, AngularAuthModule, BrowserAnimationsModule),
   provideThemeConfig()
-])
+]).catch((err) => console.error(err))

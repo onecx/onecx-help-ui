@@ -59,23 +59,26 @@ export class HelpImportComponent implements OnChanges {
 
   public onImportSelectFile(event: FileSelectEvent): void {
     this.onImportClear()
-    event.files[0].text().then((text) => {
-      try {
-        this.helpSnapshot = JSON.parse(text)
-        if (this.isHelpImportRequestDTO(this.helpSnapshot)) {
-          if (this.helpSnapshot.helps) {
-            this.productNames = Object.keys(this.helpSnapshot.helps)
+    event.files[0]
+      .text()
+      .then((text) => {
+        try {
+          this.helpSnapshot = JSON.parse(text)
+          if (this.isHelpImportRequestDTO(this.helpSnapshot)) {
+            if (this.helpSnapshot.helps) {
+              this.productNames = Object.keys(this.helpSnapshot.helps)
+            }
+          } else {
+            this.importError.set('CONTENT')
           }
-        } else {
-          this.importError.set('CONTENT')
+          this.cd.markForCheck() // force change detection to update the view with the new properties
+        } catch (err: any) {
+          this.msgService.error({ summaryKey: 'VALIDATION.ERRORS.IMPORT_PARSE_ERROR' })
+          console.error('Help import parse error: ', err)
+          this.importError.set('GENERAL')
         }
-        this.cd.markForCheck() // force change detection to update the view with the new properties
-      } catch (err: any) {
-        this.msgService.error({ summaryKey: 'VALIDATION.ERRORS.IMPORT_PARSE_ERROR' })
-        console.error('Help import parse error: ', err)
-        this.importError.set('GENERAL')
-      }
-    })
+      })
+      .catch((err) => console.error(err))
   }
 
   public onImportConfirmation(): void {
