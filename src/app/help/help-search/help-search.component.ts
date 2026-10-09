@@ -520,11 +520,14 @@ export class HelpSearchComponent implements OnInit {
   }
 
   private updateSearchParamsFromState(): void {
+    const itemId = this.criteria?.itemId?.trim() ? this.criteria.itemId : null
+    const productName = this.criteria?.productName?.trim() ? this.criteria.productName : null
+
     this.router.navigate([], {
       relativeTo: this.route,
       queryParams: {
-        itemId: this.criteria?.itemId,
-        productName: this.criteria?.productName
+        itemId,
+        productName
       },
       replaceUrl: true,
       queryParamsHandling: 'merge'

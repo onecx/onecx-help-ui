@@ -2,7 +2,7 @@ import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing'
 import { provideHttpClient } from '@angular/common/http'
 import { provideHttpClientTesting } from '@angular/common/http/testing'
 import { provideNoopAnimations } from '@angular/platform-browser/animations'
-import { provideRouter } from '@angular/router'
+import { provideRouter, Router } from '@angular/router'
 import { TranslateTestingModule } from 'ngx-translate-testing'
 import { BehaviorSubject, of, take, throwError } from 'rxjs'
 
@@ -233,6 +233,32 @@ describe('HelpSearchComponent', () => {
       component.onSearch(newCriteria, false)
 
       expect(component.criteria).toEqual(newCriteria)
+    })
+
+    it('should remove itemId from URL when criteria are cleared', () => {
+      const router = TestBed.inject(Router)
+      const navigateSpy = spyOn(router, 'navigate')
+
+      component.criteria = { productName: 'product 1', itemId: 'itemId 1' }
+      ;(component as any).updateSearchParamsFromState()
+
+      expect(navigateSpy).toHaveBeenCalledWith(
+        [],
+        jasmine.objectContaining({
+          queryParams: { itemId: 'itemId 1', productName: 'product 1' }
+        })
+      )
+
+      component.criteria = {}
+      ;(component as any).updateSearchParamsFromState()
+
+      const lastCall = navigateSpy.calls.mostRecent().args
+      expect(lastCall[0]).toEqual([])
+      expect(lastCall[1]).toEqual(
+        jasmine.objectContaining({
+          queryParams: { itemId: null, productName: null }
+        })
+      )
     })
 
     it('should search with wildcard * in title', (done) => {
