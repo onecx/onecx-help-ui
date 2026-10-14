@@ -103,6 +103,17 @@ describe('HelpImportComponent', () => {
       expect(console.error).toHaveBeenCalled()
       expect(component.importError()).toBe('GENERAL')
     })
+
+    it('should log error when file.text() rejects', async () => {
+      const error = new Error('read error')
+      spyOn(file, 'text').and.returnValue(Promise.reject(error))
+      spyOn(console, 'error')
+
+      component.onImportSelectFile(event)
+      await fixture.whenStable()
+
+      expect(console.error).toHaveBeenCalledWith(error)
+    })
   })
 
   describe('import', () => {

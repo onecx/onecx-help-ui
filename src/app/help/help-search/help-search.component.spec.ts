@@ -2,7 +2,7 @@ import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing'
 import { provideHttpClient } from '@angular/common/http'
 import { provideHttpClientTesting } from '@angular/common/http/testing'
 import { provideNoopAnimations } from '@angular/platform-browser/animations'
-import { ActivatedRoute } from '@angular/router'
+import { provideRouter, Router } from '@angular/router'
 import { TranslateTestingModule } from 'ngx-translate-testing'
 import { BehaviorSubject, of, take, throwError } from 'rxjs'
 
@@ -65,7 +65,7 @@ describe('HelpSearchComponent', () => {
         provideHttpClientTesting(),
         provideNoopAnimations(),
         providePermissionService(),
-        { provide: ActivatedRoute, useValue: {} }
+        provideRouter([])
       ]
     })
       .overrideComponent(HelpSearchComponent, {
@@ -233,6 +233,32 @@ describe('HelpSearchComponent', () => {
       component.onSearch(newCriteria, false)
 
       expect(component.criteria).toEqual(newCriteria)
+    })
+
+    it('should remove itemId from URL when criteria are cleared', () => {
+      const router = TestBed.inject(Router)
+      const navigateSpy = spyOn(router, 'navigate')
+
+      component.criteria = { productName: 'product 1', itemId: 'itemId 1' }
+      ;(component as any).updateSearchParamsFromState()
+
+      expect(navigateSpy).toHaveBeenCalledWith(
+        [],
+        jasmine.objectContaining({
+          queryParams: { itemId: 'itemId 1', productName: 'product 1' }
+        })
+      )
+
+      component.criteria = {}
+      ;(component as any).updateSearchParamsFromState()
+
+      const lastCall = navigateSpy.calls.mostRecent().args
+      expect(lastCall[0]).toEqual([])
+      expect(lastCall[1]).toEqual(
+        jasmine.objectContaining({
+          queryParams: { itemId: null, productName: null }
+        })
+      )
     })
 
     it('should search with wildcard * in title', (done) => {
@@ -743,6 +769,64 @@ describe('HelpSearchComponent', () => {
       langSubject.next('de')
       initTestComponent()
       expect(component.datetimeFormat).toEqual('dd.MM.yyyy HH:mm')
+    })
+  })
+
+  describe('restoreStateFromQueryParams', () => {
+    it('should return false when query params are empty', () => {
+      ;(component as any).route.snapshot.queryParams = {}
+
+      const result = (component as any).restoreStateFromQueryParams()
+
+      expect(result).toBeFalse()
+    })
+
+    it('should restore criteria from query params and trigger search', () => {
+      spyOn(component, 'onSearch')
+
+      ;(component as any).route.snapshot.queryParams = {
+        itemId: 'item-1',
+        productName: 'product-1'
+      }
+
+      const result = (component as any).restoreStateFromQueryParams()
+
+      expect(result).toBeTrue()
+      expect(component.criteria).toEqual({
+        itemId: 'item-1',
+        productName: 'product-1'
+      })
+      expect(component.onSearch).toHaveBeenCalledWith(
+        {
+          itemId: 'item-1',
+          productName: 'product-1'
+        },
+        true
+      )
+    })
+
+    it('should map null values to undefined', () => {
+      spyOn(component, 'onSearch')
+
+      ;(component as any).route.snapshot.queryParams = {
+        itemId: null,
+        productName: null
+      }
+
+      const result = (component as any).restoreStateFromQueryParams()
+
+      expect(result).toBeTrue()
+      expect(component.criteria).toEqual({
+        itemId: undefined,
+        productName: undefined
+      })
+      expect(component.onSearch).toHaveBeenCalledWith(
+        {
+          itemId: undefined,
+          productName: undefined
+        },
+        true
+      )
     })
   })
 })

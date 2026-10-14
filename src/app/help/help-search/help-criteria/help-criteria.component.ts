@@ -1,4 +1,12 @@
-import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core'
+import {
+  ChangeDetectionStrategy,
+  Component,
+  EventEmitter,
+  Input,
+  OnChanges,
+  Output,
+  SimpleChanges
+} from '@angular/core'
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms'
 import { TranslateModule } from '@ngx-translate/core'
 
@@ -32,9 +40,10 @@ export interface HelpCriteriaForm {
   templateUrl: './help-criteria.component.html',
   styleUrl: './help-criteria.component.scss'
 })
-export class HelpCriteriaComponent {
+export class HelpCriteriaComponent implements OnChanges {
   @Input() public actions: Action[] = []
   @Input() public usedProducts: Product[] = []
+  @Input() public criteria: HelpSearchCriteria = {}
   @Output() public searchEmitter = new EventEmitter<HelpSearchCriteria>()
   @Output() public resetSearchEmitter = new EventEmitter<boolean>()
 
@@ -48,6 +57,23 @@ export class HelpCriteriaComponent {
     })
   }
 
+  public ngOnChanges(changes: SimpleChanges): void {
+    if (changes['criteria'] || changes['usedProducts']) {
+      this.applyCriteriaToForm()
+    }
+  }
+
+  private applyCriteriaToForm(): void {
+    const selectedProduct = this.usedProducts.find((product) => product.name === this.criteria.productName) ?? null
+    this.criteriaForm.patchValue(
+      {
+        itemId: this.criteria.itemId ?? null,
+        product: selectedProduct
+      },
+      { emitEvent: false }
+    )
+  }
+
   public onSearch() {
     const criteria = { itemId: this.criteriaForm.get('itemId')?.value, productName: undefined } as HelpSearchCriteria
     if (this.criteriaForm.get('product')?.value) criteria.productName = this.criteriaForm.get('product')?.value?.name
@@ -56,6 +82,7 @@ export class HelpCriteriaComponent {
 
   public onResetCriteria() {
     this.criteriaForm.reset()
+    this.onSearch()
   }
 
   public onFilterProducts(event: { query: string }) {

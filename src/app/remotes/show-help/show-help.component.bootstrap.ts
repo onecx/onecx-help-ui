@@ -33,4 +33,4 @@ bootstrapRemoteComponent(OneCXShowHelpComponent, 'ocx-show-help-component', envi
   provideHttpClient(withInterceptorsFromDi()),
   importProvidersFrom(AngularAcceleratorModule, AngularAuthModule, BrowserAnimationsModule),
   provideThemeConfig()
-])
+]).catch((err) => console.error(err))

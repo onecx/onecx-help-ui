@@ -18,7 +18,6 @@ describe('HelpDetailComponent', () => {
   let component: HelpCriteriaComponent
   let fixture: ComponentFixture<HelpCriteriaComponent>
 
-  const formGroupSpy = jasmine.createSpyObj<FormGroup<HelpCriteriaForm>>('HelpCriteriaGroup', ['reset'])
   const criteriaEmitterSpy = jasmine.createSpyObj<EventEmitter<HelpSearchCriteria>>('EventEmitter', ['emit'])
 
   function initTestComponent() {
@@ -82,11 +81,36 @@ describe('HelpDetailComponent', () => {
     })
 
     it('should reset criteria', () => {
-      component.criteriaForm = formGroupSpy
+      spyOn(component.criteriaForm, 'reset')
 
       component.onResetCriteria()
 
       expect(component.criteriaForm.reset).toHaveBeenCalled()
+    })
+
+    it('should restore selected criteria from query params to the form', () => {
+      component.usedProducts = products
+      component.criteria = { itemId: 'help-42', productName: product2.name }
+
+      component.ngOnChanges({
+        criteria: { currentValue: component.criteria, previousValue: {}, firstChange: true, isFirstChange: () => true },
+        usedProducts: { currentValue: products, previousValue: [], firstChange: true, isFirstChange: () => true }
+      })
+
+      expect(component.criteriaForm.get('itemId')?.value).toBe('help-42')
+      expect(component.criteriaForm.get('product')?.value).toEqual(product2)
+    })
+
+    it('should restore form when usedProducts change after criteria are already set', () => {
+      component.criteria = { itemId: 'help-42', productName: product2.name }
+      component.usedProducts = products
+
+      component.ngOnChanges({
+        usedProducts: { currentValue: products, previousValue: [], firstChange: false, isFirstChange: () => false }
+      })
+
+      expect(component.criteriaForm.get('itemId')?.value).toBe('help-42')
+      expect(component.criteriaForm.get('product')?.value).toEqual(product2)
     })
   })
 
