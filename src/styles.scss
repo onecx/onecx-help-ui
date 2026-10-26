@@ -12,13 +12,13 @@
 */
 // disable default settings of dialogs created by portal dialog service
 .buttonDialogScrollableContent {
-  max-height: unset !important;
-  margin-bottom: 0rem !important;
+  max-height: unset;
+  margin-bottom: 0rem;
 }
 
 .p-select-option,
 .p-listbox-option {
-  padding: 0.5rem 1rem !important;
+  padding: 0.5rem 1rem;
 }
 /* ZEBRA rows on dropdown */
 .p-select-overlay .p-select-list *:nth-child(even) .p-select-option {
