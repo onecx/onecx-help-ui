@@ -523,15 +523,17 @@ export class HelpSearchComponent implements OnInit {
     const itemId = this.criteria?.itemId?.trim() ? this.criteria.itemId : null
     const productName = this.criteria?.productName?.trim() ? this.criteria.productName : null
 
-    this.router.navigate([], {
-      relativeTo: this.route,
-      queryParams: {
-        itemId,
-        productName
-      },
-      replaceUrl: true,
-      queryParamsHandling: 'merge'
-    })
+    this.router
+      .navigate([], {
+        relativeTo: this.route,
+        queryParams: {
+          itemId,
+          productName
+        },
+        replaceUrl: true,
+        queryParamsHandling: 'merge'
+      })
+      .catch((err) => console.error(err))
   }
 
   private restoreStateFromQueryParams(): boolean {

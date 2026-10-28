@@ -237,7 +237,7 @@ describe('HelpSearchComponent', () => {
 
     it('should remove itemId from URL when criteria are cleared', () => {
       const router = TestBed.inject(Router)
-      const navigateSpy = spyOn(router, 'navigate')
+      const navigateSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true))
 
       component.criteria = { productName: 'product 1', itemId: 'itemId 1' }
       ;(component as any).updateSearchParamsFromState()
@@ -259,6 +259,20 @@ describe('HelpSearchComponent', () => {
           queryParams: { itemId: null, productName: null }
         })
       )
+    })
+
+    it('should log an error when URL update navigation rejects', async () => {
+      const router = TestBed.inject(Router)
+      const consoleSpy = spyOn(console, 'error')
+      const error = new Error('navigate failed')
+      spyOn(router, 'navigate').and.returnValue(Promise.reject(error))
+
+      component.criteria = { productName: 'product 1', itemId: 'itemId 1' }
+      ;(component as any).updateSearchParamsFromState()
+
+      await fixture.whenStable()
+
+      expect(consoleSpy).toHaveBeenCalledWith(error)
     })
 
     it('should search with wildcard * in title', (done) => {
