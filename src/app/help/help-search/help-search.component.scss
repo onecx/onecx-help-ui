@@ -3,6 +3,7 @@
 @include danger-action;
 @include word-break-all;
 @include ocx-text-responsive;
+@include ocx-content;
 @include ocx-p-inputgroup;
 @include ocx-p-message;
 @include ocx-interactive-data-view-fixes;
@@ -15,10 +16,6 @@
 @include dialog-non-full-size-modal;
 
 :host ::ng-deep {
-  .ocx-content > div {
-    margin-bottom: 0;
-  }
-
   .p-datatable {
     --table-zebra-first-column-even-bg: inherit;
 
