@@ -1,5 +1,5 @@
 <!-- TOPBAR ITEM -->
-<div *ocxIfPermission="'HELP#VIEW'; permissions: permissions">
+@if (permissions.includes('HELP#VIEW')) {
   <p-button
     id="ocx_topbar_action_show_help_item"
     class="ocx-topbar-action"
@@ -13,4 +13,4 @@
     tooltipPosition="bottom"
     tooltipEvent="hover"
   />
-</div>
+}

@@ -1,10 +1,10 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing'
 import { FormControl, FormGroup } from '@angular/forms'
 import { provideNoopAnimations } from '@angular/platform-browser/animations'
-import { TranslateTestingModule } from 'ngx-translate-testing'
 import { of, throwError } from 'rxjs'
 
 import { PortalMessageService } from '@onecx/angular-integration-interface'
+import { provideTranslateTestingService } from '@onecx/angular-testing'
 
 import { Help, HelpsInternalAPIService } from 'src/app/shared/generated'
 import { HelpDetailComponent } from './help-detail.component'
@@ -30,7 +30,6 @@ describe('HelpDetailComponent', () => {
   let component: HelpDetailComponent
   let fixture: ComponentFixture<HelpDetailComponent>
 
-  const defaultLang = 'en'
   const msgServiceSpy = jasmine.createSpyObj<PortalMessageService>('PortalMessageService', ['success', 'error'])
   const apiServiceSpy = {
     getHelpById: jasmine.createSpy('getHelpById').and.returnValue(of({})),
@@ -46,20 +45,18 @@ describe('HelpDetailComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      imports: [
-        HelpDetailComponent,
-        TranslateTestingModule.withTranslations({
-          de: require('src/assets/i18n/de.json'),
-          en: require('src/assets/i18n/en.json')
-        }).withDefaultLanguage(defaultLang)
-      ],
+      imports: [HelpDetailComponent],
       providers: [provideNoopAnimations()]
     })
       .overrideComponent(HelpDetailComponent, {
         add: {
           providers: [
             { provide: HelpsInternalAPIService, useValue: apiServiceSpy },
-            { provide: PortalMessageService, useValue: msgServiceSpy }
+            { provide: PortalMessageService, useValue: msgServiceSpy },
+            provideTranslateTestingService({
+              de: require('/src/assets/i18n/de.json'),
+              en: require('/src/assets/i18n/en.json')
+            })
           ]
         }
       })

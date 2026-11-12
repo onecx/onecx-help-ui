@@ -1,9 +1,9 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing'
 import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed'
 import { NoopAnimationsModule } from '@angular/platform-browser/animations'
-import { TranslateTestingModule } from 'ngx-translate-testing'
 
 import { PortalMessageService } from '@onecx/angular-integration-interface'
+import { provideTranslateTestingService } from '@onecx/angular-testing'
 
 import { HelpItemEditorFormComponent } from './help-item-editor-form.component'
 import { HelpItemEditorDialogHarness } from './help-item-editor-form.harness'
@@ -18,18 +18,17 @@ describe('HelpItemEditorFormComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [],
-      imports: [
-        HelpItemEditorFormComponent,
-        NoopAnimationsModule,
-        TranslateTestingModule.withTranslations({
-          de: require('/src/assets/i18n/de.json'),
-          en: require('/src/assets/i18n/en.json')
-        }).withDefaultLanguage('en')
-      ]
+      imports: [HelpItemEditorFormComponent, NoopAnimationsModule]
     })
       .overrideComponent(HelpItemEditorFormComponent, {
         add: {
-          providers: [{ provide: PortalMessageService, useValue: messageServiceSpy }]
+          providers: [
+            { provide: PortalMessageService, useValue: messageServiceSpy },
+            provideTranslateTestingService({
+              de: require('/src/assets/i18n/de.json'),
+              en: require('/src/assets/i18n/en.json')
+            })
+          ]
         }
       })
       .compileComponents()

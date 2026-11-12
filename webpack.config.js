@@ -1,3 +1,4 @@
+const webpack = require('webpack')
 const { ModifyEntryPlugin } = require('@angular-architects/module-federation/src/utils/modify-entry-plugin')
 const { share, withModuleFederationPlugin } = require('@angular-architects/module-federation/webpack')
 const { ModifySourcePlugin, ReplaceOperation } = require('modify-source-webpack-plugin')
@@ -18,6 +19,7 @@ const config = withModuleFederationPlugin({
     '@angular/platform-browser': { requiredVersion: 'auto', includeSecondaries: true },
     '@angular/router': { requiredVersion: 'auto', includeSecondaries: true },
     '@ngx-translate/core': { requiredVersion: 'auto' },
+    '@ngx-translate/http-loader': { requiredVersion: 'auto' },
     primeng: { requiredVersion: 'auto', includeSecondaries: true },
     rxjs: { requiredVersion: 'auto', includeSecondaries: true },
     '@onecx/accelerator': { requiredVersion: 'auto', includeSecondaries: true },
@@ -73,9 +75,15 @@ const modifyMaterialPlugin = new ModifySourcePlugin({
   ]
 })
 
+const isProduction = process.env.NODE_ENV === 'production'
 module.exports = {
   ...config,
-  plugins: [...plugins, modifyPrimeNgPlugin, modifyMaterialPlugin],
+  plugins: [
+    new webpack.DefinePlugin({ ngDevMode: JSON.stringify(!isProduction) }),
+    ...plugins,
+    modifyPrimeNgPlugin,
+    modifyMaterialPlugin
+  ],
   module: { parser: { javascript: { importMeta: false } } },
   output: { uniqueName: 'onecx-help-ui', publicPath: 'auto' },
   experiments: { ...config.experiments, topLevelAwait: true },

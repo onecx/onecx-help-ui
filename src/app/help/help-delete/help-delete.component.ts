@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core'
+import { ChangeDetectionStrategy, Component, EventEmitter, inject, Input, Output } from '@angular/core'
 import { TranslateModule } from '@ngx-translate/core'
 
 import { ButtonModule } from 'primeng/button'
@@ -21,10 +21,8 @@ export class HelpDeleteComponent {
   @Input() visible = false
   @Output() visibleChange = new EventEmitter<boolean>()
 
-  constructor(
-    private readonly msgService: PortalMessageService,
-    private readonly helpApi: HelpsInternalAPIService
-  ) {}
+  private readonly msgService = inject(PortalMessageService)
+  private readonly helpApi = inject(HelpsInternalAPIService)
 
   public onDeleteConfirmation(): void {
     if (!this.helpItem?.id) return

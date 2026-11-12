@@ -137,8 +137,14 @@ export class HelpSearchComponent implements OnInit {
   public item4Detail: Help | undefined // used on detail
   public item4Delete: Help | undefined // used on deletion
 
-  public displayedColumnKeys: string[] = ['productName', 'itemId', 'baseUrl']
   private readonly filteredSearchResults$ = new BehaviorSubject<Help[]>([])
+  private readonly user = inject(UserService)
+  private readonly slotService = inject(SlotService)
+  private readonly translate = inject(TranslateService)
+  private readonly msgService = inject(PortalMessageService)
+  private readonly helpApi = inject(HelpsInternalAPIService)
+  private readonly router = inject(Router)
+  private readonly route = inject(ActivatedRoute)
   public dataViewColumns: ExtendedColumn[] = [
     {
       field: 'productName',
@@ -171,7 +177,7 @@ export class HelpSearchComponent implements OnInit {
       cssBody: 'hidden md:table-cell py-0 px-3'
     }
   ]
-  public interactiveColumns: DataTableColumn[] = []
+  public interactiveColumns: DataTableColumn[] = this.createInteractiveColumns()
   public interactiveAdditionalActions: DataAction[] = [
     {
       id: 'copy',
@@ -185,23 +191,10 @@ export class HelpSearchComponent implements OnInit {
 
   // slot configuration: get product data via remote component
   public pdSlotName = 'onecx-product-data'
-  public pdIsComponentDefined$: Observable<boolean> | undefined // check
+  public pdIsComponentDefined$ = this.slotService.isSomeComponentDefinedForSlot(this.pdSlotName) // check
   public productData$ = new BehaviorSubject<Product[] | undefined>(undefined) // product infos
   public pdSlotEmitter = new EventEmitter<Product[]>()
-
-  constructor(
-    private readonly user: UserService,
-    private readonly slotService: SlotService,
-    private readonly translate: TranslateService,
-    private readonly msgService: PortalMessageService,
-    private readonly helpApi: HelpsInternalAPIService,
-    private readonly router: Router,
-    private readonly route: ActivatedRoute
-  ) {
-    this.interactiveColumns = this.createInteractiveColumns()
-    this.pdIsComponentDefined$ = this.slotService.isSomeComponentDefinedForSlot(this.pdSlotName)
-    this.displayedColumnKeys = this.dataViewColumns.filter((a) => a.active === true).map((col) => col.field)
-  }
+  public displayedColumnKeys: string[] = this.dataViewColumns.filter((a) => a.active === true).map((col) => col.field)
 
   public ngOnInit(): void {
     this.user.lang$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe({

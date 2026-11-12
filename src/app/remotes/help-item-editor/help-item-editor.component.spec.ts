@@ -3,13 +3,13 @@ import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed'
 import { HttpErrorResponse, provideHttpClient } from '@angular/common/http'
 import { provideHttpClientTesting } from '@angular/common/http/testing'
 import { Router } from '@angular/router'
-import { TranslateTestingModule } from 'ngx-translate-testing'
 import { ReplaySubject, delay, of, throwError } from 'rxjs'
 
-import { SlotService } from '@onecx/angular-remote-components'
-import { AppStateService, PortalMessageService } from '@onecx/angular-integration-interface'
-import { REMOTE_COMPONENT_CONFIG, RemoteComponentConfig } from '@onecx/angular-utils'
 import { PortalDialogService } from '@onecx/angular-accelerator'
+import { AppStateService, PortalMessageService } from '@onecx/angular-integration-interface'
+import { SlotService } from '@onecx/angular-remote-components'
+import { provideTranslateTestingService } from '@onecx/angular-testing'
+import { REMOTE_COMPONENT_CONFIG, RemoteComponentConfig } from '@onecx/angular-utils'
 
 import { Help, HelpsInternalAPIService } from 'src/app/shared/generated'
 import { OneCXHelpItemEditorComponent, Product, slotInitializer } from './help-item-editor.component'
@@ -51,17 +51,15 @@ describe('OneCXHelpItemEditorComponent', () => {
     baseUrlSubject = new ReplaySubject<any>(1)
     TestBed.configureTestingModule({
       declarations: [],
-      imports: [
-        OneCXHelpItemEditorComponent,
-        TranslateTestingModule.withTranslations({
-          de: require('src/assets/i18n/de.json'),
-          en: require('src/assets/i18n/en.json')
-        }).withDefaultLanguage('en')
-      ],
+      imports: [OneCXHelpItemEditorComponent],
       providers: [
         provideHttpClient(),
         provideHttpClientTesting(),
-        { provide: REMOTE_COMPONENT_CONFIG, useValue: baseUrlSubject }
+        { provide: REMOTE_COMPONENT_CONFIG, useValue: baseUrlSubject },
+        provideTranslateTestingService({
+          de: require('/src/assets/i18n/de.json'),
+          en: require('/src/assets/i18n/en.json')
+        })
       ]
     })
       .overrideComponent(OneCXHelpItemEditorComponent, {

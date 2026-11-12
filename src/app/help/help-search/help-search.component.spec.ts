@@ -3,11 +3,11 @@ import { provideHttpClient } from '@angular/common/http'
 import { provideHttpClientTesting } from '@angular/common/http/testing'
 import { provideNoopAnimations } from '@angular/platform-browser/animations'
 import { provideRouter, Router } from '@angular/router'
-import { TranslateTestingModule } from 'ngx-translate-testing'
 import { BehaviorSubject, of, take, throwError } from 'rxjs'
 
-import { PortalMessageService, UserService } from '@onecx/angular-integration-interface'
 import { DataSortDirection, RowListGridData } from '@onecx/angular-accelerator'
+import { PortalMessageService, UserService } from '@onecx/angular-integration-interface'
+import { provideTranslateTestingService } from '@onecx/angular-testing'
 import { providePermissionService } from '@onecx/angular-utils'
 
 import { HelpsInternalAPIService, Help } from 'src/app/shared/generated'
@@ -53,19 +53,17 @@ describe('HelpSearchComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      imports: [
-        HelpSearchComponent,
-        TranslateTestingModule.withTranslations({
-          de: require('src/assets/i18n/de.json'),
-          en: require('src/assets/i18n/en.json')
-        }).withDefaultLanguage(defaultLang)
-      ],
+      imports: [HelpSearchComponent],
       providers: [
         provideHttpClient(),
         provideHttpClientTesting(),
         provideNoopAnimations(),
         providePermissionService(),
-        provideRouter([])
+        provideRouter([]),
+        provideTranslateTestingService({
+          de: require('/src/assets/i18n/de.json'),
+          en: require('/src/assets/i18n/en.json')
+        })
       ]
     })
       .overrideComponent(HelpSearchComponent, {

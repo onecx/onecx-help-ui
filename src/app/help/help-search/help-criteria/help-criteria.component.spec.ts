@@ -4,7 +4,8 @@ import { provideHttpClient } from '@angular/common/http'
 import { provideHttpClientTesting } from '@angular/common/http/testing'
 import { FormGroup, FormControl } from '@angular/forms'
 import { ActivatedRoute } from '@angular/router'
-import { TranslateTestingModule } from 'ngx-translate-testing'
+
+import { provideTranslateTestingService } from '@onecx/angular-testing'
 
 import { HelpSearchCriteria } from 'src/app/shared/generated'
 import { HelpCriteriaComponent, HelpCriteriaForm } from './help-criteria.component'
@@ -28,14 +29,16 @@ describe('HelpDetailComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      imports: [
-        HelpCriteriaComponent,
-        TranslateTestingModule.withTranslations({
-          de: require('src/assets/i18n/de.json'),
-          en: require('src/assets/i18n/en.json')
-        }).withDefaultLanguage('en')
-      ],
-      providers: [provideHttpClient(), provideHttpClientTesting(), { provide: ActivatedRoute, useValue: {} }]
+      imports: [HelpCriteriaComponent],
+      providers: [
+        provideHttpClient(),
+        provideHttpClientTesting(),
+        { provide: ActivatedRoute, useValue: {} },
+        provideTranslateTestingService({
+          de: require('/src/assets/i18n/de.json'),
+          en: require('/src/assets/i18n/en.json')
+        })
+      ]
     }).compileComponents()
   }))
 

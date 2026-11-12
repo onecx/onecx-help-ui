@@ -1,4 +1,4 @@
-import { Component, DestroyRef, inject, Inject, Input } from '@angular/core'
+import { Component, DestroyRef, inject, Input } from '@angular/core'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { Location } from '@angular/common'
 import { Router } from '@angular/router'
@@ -17,12 +17,7 @@ import {
 } from '@onecx/angular-remote-components'
 import { REMOTE_COMPONENT_CONFIG, RemoteComponentConfig } from '@onecx/angular-utils'
 import { AppStateService, PortalMessageService, UserService } from '@onecx/angular-integration-interface'
-import {
-  AngularAcceleratorModule,
-  PortalDialogService,
-  providePortalDialogService,
-  DialogState
-} from '@onecx/angular-accelerator'
+import { PortalDialogService, providePortalDialogService, DialogState } from '@onecx/angular-accelerator'
 
 import { Configuration, Help, HelpsInternalAPIService } from 'src/app/shared/generated'
 import { environment } from 'src/environments/environment'
@@ -32,7 +27,7 @@ import { NoHelpItemComponent } from './no-help-item/no-help-item.component'
 @Component({
   selector: 'app-ocx-show-help',
   standalone: true,
-  imports: [AngularAcceleratorModule, AngularRemoteComponentsModule, ButtonModule, TooltipModule, TranslateModule],
+  imports: [AngularRemoteComponentsModule, ButtonModule, TooltipModule, TranslateModule],
   providers: [HelpsInternalAPIService, PortalMessageService, providePortalDialogService()],
   templateUrl: './show-help.component.html',
   styleUrl: './show-help.component.scss'
@@ -47,16 +42,16 @@ export class OneCXShowHelpComponent implements ocxRemoteComponent, ocxRemoteWebc
   private readonly helpItem$: Observable<Help | undefined>
   public permissions: string[] = []
 
-  constructor(
-    @Inject(REMOTE_COMPONENT_CONFIG) private readonly remoteComponentConfig: ReplaySubject<RemoteComponentConfig>,
-    private readonly appStateService: AppStateService,
-    private readonly userService: UserService,
-    private readonly router: Router,
-    private readonly portalDialogService: PortalDialogService,
-    private readonly helpApi: HelpsInternalAPIService,
-    private readonly portalMessageService: PortalMessageService,
-    private readonly translateService: TranslateService
-  ) {
+  private readonly remoteComponentConfig = inject<ReplaySubject<RemoteComponentConfig>>(REMOTE_COMPONENT_CONFIG)
+  private readonly appStateService = inject(AppStateService)
+  private readonly userService: UserService = inject(UserService)
+  private readonly router = inject(Router)
+  private readonly portalDialogService = inject(PortalDialogService)
+  private readonly helpApi = inject(HelpsInternalAPIService)
+  private readonly portalMessageService = inject(PortalMessageService)
+  private readonly translateService: TranslateService = inject(TranslateService)
+
+  constructor() {
     this.userService.lang$
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((lang) => this.translateService.use(lang))
@@ -64,7 +59,7 @@ export class OneCXShowHelpComponent implements ocxRemoteComponent, ocxRemoteWebc
       map((page) => {
         if (page?.helpArticleId) return page.helpArticleId
         if (page?.pageName) return page.pageName
-        return router.routerState.snapshot.url.split('#')[0]
+        return this.router.routerState.snapshot.url.split('#')[0]
       })
     )
     this.productName$ = combineLatest([this.appStateService.currentMfe$.asObservable()]).pipe(
@@ -147,7 +142,7 @@ export class OneCXShowHelpComponent implements ocxRemoteComponent, ocxRemoteWebc
           closeAriaLabel: 'ACTIONS.NAVIGATION.CLOSE.TOOLTIP'
         }
       )
-      .pipe(map((dialogState): [DialogState<NoHelpItemComponent>] => [dialogState]))
+      .pipe(map((dialogState): [DialogState<NoHelpItemComponent> | null] => [dialogState]))
       .subscribe()
   }
 

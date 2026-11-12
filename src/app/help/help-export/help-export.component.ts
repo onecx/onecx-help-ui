@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core'
+import { ChangeDetectionStrategy, Component, EventEmitter, inject, Input, Output } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { TranslateModule } from '@ngx-translate/core'
 import FileSaver from 'file-saver'
@@ -36,10 +36,8 @@ export class HelpExportComponent {
 
   public exportProductList: string[] = []
 
-  constructor(
-    private readonly msgService: PortalMessageService,
-    private readonly helpApi: HelpsInternalAPIService
-  ) {}
+  private readonly msgService = inject(PortalMessageService)
+  private readonly helpApi = inject(HelpsInternalAPIService)
 
   public onExportConfirmation(): void {
     if (this.exportProductList.length === 0) return

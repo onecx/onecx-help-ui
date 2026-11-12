@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output, OnChanges } from '@angular/core'
+import { ChangeDetectionStrategy, Component, EventEmitter, inject, Input, Output, OnChanges } from '@angular/core'
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms'
 import { finalize } from 'rxjs'
 import { TranslateModule } from '@ngx-translate/core'
@@ -59,24 +59,20 @@ export class HelpDetailComponent implements OnChanges {
 
   public loading = false
   public exceptionKey: string | undefined = undefined
-  public helpForm: FormGroup
+  public helpForm: FormGroup = new FormGroup<HelpDetailForm>({
+    modificationCount: new FormControl(null),
+    product: new FormControl(null),
+    productName: new FormControl(null, [Validators.required]),
+    itemId: new FormControl(null, [Validators.required, Validators.minLength(2), Validators.maxLength(255)]),
+    baseUrl: new FormControl(null, [Validators.required, Validators.maxLength(255)]),
+    resourceUrl: new FormControl(null, [Validators.maxLength(255)]),
+    context: new FormControl(null, [Validators.maxLength(255)]),
+    operator: new FormControl(false)
+  })
   public productsFiltered: Product[] = []
 
-  constructor(
-    private readonly helpApi: HelpsInternalAPIService,
-    private readonly msgService: PortalMessageService
-  ) {
-    this.helpForm = new FormGroup<HelpDetailForm>({
-      modificationCount: new FormControl(null),
-      product: new FormControl(null),
-      productName: new FormControl(null, [Validators.required]),
-      itemId: new FormControl(null, [Validators.required, Validators.minLength(2), Validators.maxLength(255)]),
-      baseUrl: new FormControl(null, [Validators.required, Validators.maxLength(255)]),
-      resourceUrl: new FormControl(null, [Validators.maxLength(255)]),
-      context: new FormControl(null, [Validators.maxLength(255)]),
-      operator: new FormControl(false)
-    })
-  }
+  private readonly helpApi = inject(HelpsInternalAPIService)
+  private readonly msgService = inject(PortalMessageService)
 
   public ngOnChanges() {
     if (!this.displayDialog) return

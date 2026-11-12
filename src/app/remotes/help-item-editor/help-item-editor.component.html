@@ -1,5 +1,5 @@
 <!-- TOPBAR ITEM -->
-<div *ocxIfPermission="'HELP#EDIT'; permissions: permissions">
+@if (permissions.includes('HELP#EDIT')) {
   <!-- slot getting data from product store: one time only -->
   @if (pdIsComponentDefined$ | async) {
     <ocx-slot
@@ -23,4 +23,4 @@
     tooltipPosition="bottom"
     tooltipEvent="hover"
   />
-</div>
+}

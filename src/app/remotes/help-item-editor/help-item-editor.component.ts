@@ -1,4 +1,4 @@
-import { Component, DestroyRef, EventEmitter, inject, Inject, Input } from '@angular/core'
+import { Component, DestroyRef, EventEmitter, inject, Input } from '@angular/core'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { AsyncPipe, Location } from '@angular/common'
 import { Router } from '@angular/router'
@@ -21,12 +21,7 @@ import { ButtonModule } from 'primeng/button'
 import { TooltipModule } from 'primeng/tooltip'
 
 import { AppStateService, PortalMessageService, UserService } from '@onecx/angular-integration-interface'
-import {
-  AngularAcceleratorModule,
-  DialogState,
-  PortalDialogService,
-  providePortalDialogService
-} from '@onecx/angular-accelerator'
+import { DialogState, PortalDialogService, providePortalDialogService } from '@onecx/angular-accelerator'
 import {
   AngularRemoteComponentsModule,
   ocxRemoteComponent,
@@ -62,14 +57,7 @@ export function slotInitializer(slotService: SlotService) {
 @Component({
   selector: 'app-ocx-help-item-editor',
   standalone: true,
-  imports: [
-    AngularAcceleratorModule,
-    AngularRemoteComponentsModule,
-    AsyncPipe,
-    ButtonModule,
-    TooltipModule,
-    TranslateModule
-  ],
+  imports: [AngularRemoteComponentsModule, AsyncPipe, ButtonModule, TooltipModule, TranslateModule],
   providers: [
     { provide: SLOT_SERVICE, useExisting: SlotService },
     HelpsInternalAPIService,
@@ -96,17 +84,17 @@ export class OneCXHelpItemEditorComponent implements ocxRemoteComponent, ocxRemo
   public pdSlotEmitter = new EventEmitter<Product[]>()
   public pdComponentTrigger$ = new BehaviorSubject<void>(undefined) // trigger for getting data
 
-  constructor(
-    @Inject(REMOTE_COMPONENT_CONFIG) private readonly remoteComponentConfig: ReplaySubject<RemoteComponentConfig>,
-    private readonly router: Router,
-    private readonly userService: UserService,
-    private readonly slotService: SlotService,
-    private readonly appStateService: AppStateService,
-    private readonly helpApi: HelpsInternalAPIService,
-    private readonly portalMessageService: PortalMessageService,
-    private readonly portalDialogService: PortalDialogService,
-    private readonly translateService: TranslateService
-  ) {
+  private readonly remoteComponentConfig = inject<ReplaySubject<RemoteComponentConfig>>(REMOTE_COMPONENT_CONFIG)
+  private readonly router = inject(Router)
+  private readonly userService = inject(UserService)
+  private readonly slotService = inject(SlotService)
+  private readonly appStateService = inject(AppStateService)
+  private readonly helpApi = inject(HelpsInternalAPIService)
+  private readonly portalMessageService = inject(PortalMessageService)
+  private readonly portalDialogService = inject(PortalDialogService)
+  private readonly translateService = inject(TranslateService)
+
+  constructor() {
     this.userService.lang$
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((lang) => this.translateService.use(lang))
@@ -152,7 +140,7 @@ export class OneCXHelpItemEditorComponent implements ocxRemoteComponent, ocxRemo
     )
   }
 
-  private openHelpEditorDialog(helpItem: Help, productDisplayName: string): Observable<DialogState<Help>> {
+  private openHelpEditorDialog(helpItem: Help, productDisplayName: string): Observable<DialogState<Help> | null> {
     return this.portalDialogService.openDialog<Help>(
       'HELP_ITEM_EDITOR.HEADER',
       {
@@ -218,7 +206,7 @@ export class OneCXHelpItemEditorComponent implements ocxRemoteComponent, ocxRemo
               productDisplayName = products.find((p) => p.name === helpDataItem?.productName)?.displayName
             }
             return this.openHelpEditorDialog(helpDataItem, productDisplayName!).pipe(
-              map((dialogState): [DialogState<Help>, boolean] => [dialogState, isNewItem])
+              map((dialogState): [DialogState<Help> | null, boolean] => [dialogState, isNewItem])
             )
           } else {
             this.portalMessageService.error({ summaryKey: 'HELP_ITEM_EDITOR.OPEN_HELP_PAGE_EDITOR_ERROR' })

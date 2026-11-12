@@ -1,12 +1,12 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing'
 import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed'
 import { Router } from '@angular/router'
-import { TranslateTestingModule } from 'ngx-translate-testing'
 import { ReplaySubject, of, throwError } from 'rxjs'
 
 import { AppStateService, PortalMessageService } from '@onecx/angular-integration-interface'
 import { REMOTE_COMPONENT_CONFIG, RemoteComponentConfig } from '@onecx/angular-utils'
 import { PortalDialogService } from '@onecx/angular-accelerator'
+import { provideTranslateTestingService } from '@onecx/angular-testing'
 
 import { Help, HelpsInternalAPIService } from 'src/app/shared/generated'
 import { OneCXShowHelpComponent } from './show-help.component'
@@ -38,14 +38,14 @@ describe('OneCXShowHelpComponent', () => {
     baseUrlSubject = new ReplaySubject<any>(1)
     TestBed.configureTestingModule({
       declarations: [],
-      imports: [
-        OneCXShowHelpComponent,
-        TranslateTestingModule.withTranslations({
+      imports: [OneCXShowHelpComponent],
+      providers: [
+        { provide: REMOTE_COMPONENT_CONFIG, useValue: baseUrlSubject },
+        provideTranslateTestingService({
           de: require('/src/assets/i18n/de.json'),
           en: require('/src/assets/i18n/en.json')
-        }).withDefaultLanguage('en')
-      ],
-      providers: [{ provide: REMOTE_COMPONENT_CONFIG, useValue: baseUrlSubject }]
+        })
+      ]
     })
       .overrideComponent(OneCXShowHelpComponent, {
         set: {

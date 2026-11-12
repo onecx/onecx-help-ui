@@ -1,8 +1,8 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing'
-import { TranslateTestingModule } from 'ngx-translate-testing'
 import { of, throwError } from 'rxjs'
 
 import { PortalMessageService } from '@onecx/angular-integration-interface'
+import { provideTranslateTestingService } from '@onecx/angular-testing'
 
 import { Help, HelpsInternalAPIService } from 'src/app/shared/generated'
 import { HelpDeleteComponent } from './help-delete.component'
@@ -31,20 +31,18 @@ describe('HelpDeleteComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      imports: [
-        HelpDeleteComponent,
-        TranslateTestingModule.withTranslations({
-          de: require('src/assets/i18n/de.json'),
-          en: require('src/assets/i18n/en.json')
-        }).withDefaultLanguage('en')
-      ],
+      imports: [HelpDeleteComponent],
       providers: []
     })
       .overrideComponent(HelpDeleteComponent, {
         add: {
           providers: [
             { provide: HelpsInternalAPIService, useValue: apiServiceSpy },
-            { provide: PortalMessageService, useValue: msgServiceSpy }
+            { provide: PortalMessageService, useValue: msgServiceSpy },
+            provideTranslateTestingService({
+              de: require('/src/assets/i18n/de.json'),
+              en: require('/src/assets/i18n/en.json')
+            })
           ]
         }
       })

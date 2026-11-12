@@ -1,8 +1,11 @@
-import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing'
-import { TranslateTestingModule } from 'ngx-translate-testing'
+import { ComponentFixture, TestBed, fakeAsync, waitForAsync } from '@angular/core/testing'
+import { provideHttpClient } from '@angular/common/http'
+import { provideHttpClientTesting } from '@angular/common/http/testing'
 import { of, throwError } from 'rxjs'
+import FileSaver from 'file-saver'
 
 import { PortalMessageService } from '@onecx/angular-integration-interface'
+import { provideTranslateTestingService } from '@onecx/angular-testing'
 
 import { HelpsInternalAPIService } from 'src/app/shared/generated'
 import { Product } from '../help-search/help-search.component'
@@ -16,9 +19,7 @@ describe('HelpExportComponent', () => {
   let fixture: ComponentFixture<HelpExportComponent>
 
   const msgServiceSpy = jasmine.createSpyObj<PortalMessageService>('PortalMessageService', ['success', 'error'])
-  const apiServiceSpy = {
-    exportHelps: jasmine.createSpy('exportHelps').and.returnValue(of({}))
-  }
+  const apiServiceSpy = jasmine.createSpyObj<HelpsInternalAPIService>('HelpsInternalAPIService', ['exportHelps'])
 
   function initTestComponent() {
     fixture = TestBed.createComponent(HelpExportComponent)
@@ -28,17 +29,18 @@ describe('HelpExportComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      imports: [
-        HelpExportComponent,
-        TranslateTestingModule.withTranslations({
-          de: require('src/assets/i18n/de.json'),
-          en: require('src/assets/i18n/en.json')
-        }).withDefaultLanguage('en')
-      ],
-      providers: []
+      imports: [HelpExportComponent],
+      providers: [
+        provideHttpClient(),
+        provideHttpClientTesting(),
+        provideTranslateTestingService({
+          de: require('/src/assets/i18n/de.json'),
+          en: require('/src/assets/i18n/en.json')
+        })
+      ]
     })
       .overrideComponent(HelpExportComponent, {
-        add: {
+        set: {
           providers: [
             { provide: HelpsInternalAPIService, useValue: apiServiceSpy },
             { provide: PortalMessageService, useValue: msgServiceSpy }
@@ -49,6 +51,7 @@ describe('HelpExportComponent', () => {
   }))
 
   beforeEach(() => {
+    apiServiceSpy.exportHelps.and.returnValue(of({}) as any)
     initTestComponent()
   })
 
@@ -56,7 +59,7 @@ describe('HelpExportComponent', () => {
     msgServiceSpy.success.calls.reset()
     msgServiceSpy.error.calls.reset()
     apiServiceSpy.exportHelps.calls.reset()
-    apiServiceSpy.exportHelps.and.returnValue(of({}))
+    apiServiceSpy.exportHelps.and.returnValue(of({}) as any)
   })
 
   describe('construction', () => {
@@ -75,23 +78,35 @@ describe('HelpExportComponent', () => {
     })
 
     it('should export help items, reset list and emit visibleChange on success', () => {
-      apiServiceSpy.exportHelps.and.returnValue(of({}))
+      apiServiceSpy.exportHelps.and.returnValue(of({}) as any)
       component.exportProductList = [product1.name]
       const visibleChangeSpy = spyOn(component.visibleChange, 'emit')
+      const saveAsSpy = spyOn(FileSaver, 'saveAs')
 
       component.onExportConfirmation()
 
       expect(apiServiceSpy.exportHelps).toHaveBeenCalledWith({
         exportHelpsRequest: { productNames: [product1.name] }
       })
+      expect(saveAsSpy).toHaveBeenCalled()
       expect(msgServiceSpy.success).toHaveBeenCalledWith({ summaryKey: 'ACTIONS.EXPORT.MESSAGE.OK' })
       expect(visibleChangeSpy).toHaveBeenCalled()
       expect(component.exportProductList).toEqual([])
     })
 
+    it('should generate the export file name using the current date and time', fakeAsync(() => {
+      jasmine.clock().install()
+      jasmine.clock().mockDate(new Date(2025, 0, 2, 3, 4, 5))
+
+      const result = component['getCurrentDateTime']()
+
+      expect(result).toBe('2025-01-02_030405')
+      jasmine.clock().uninstall()
+    }))
+
     it('should show error message and log on failure', () => {
       const errorResponse = { status: 400, statusText: 'Cannot export ...' }
-      apiServiceSpy.exportHelps.and.returnValue(throwError(() => errorResponse))
+      apiServiceSpy.exportHelps.and.returnValue(throwError(() => errorResponse) as any)
       component.exportProductList = [product1.name, product2.name]
       spyOn(console, 'error')
 
