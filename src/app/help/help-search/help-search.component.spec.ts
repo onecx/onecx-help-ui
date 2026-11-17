@@ -1,7 +1,6 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing'
 import { provideHttpClient } from '@angular/common/http'
 import { provideHttpClientTesting } from '@angular/common/http/testing'
-import { provideNoopAnimations } from '@angular/platform-browser/animations'
 import { provideRouter, Router } from '@angular/router'
 import { BehaviorSubject, of, take, throwError } from 'rxjs'
 
@@ -57,7 +56,6 @@ describe('HelpSearchComponent', () => {
       providers: [
         provideHttpClient(),
         provideHttpClientTesting(),
-        provideNoopAnimations(),
         providePermissionService(),
         provideRouter([]),
         provideTranslateTestingService({

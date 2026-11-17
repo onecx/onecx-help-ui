@@ -1,6 +1,5 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing'
 import { FormControl, FormGroup } from '@angular/forms'
-import { provideNoopAnimations } from '@angular/platform-browser/animations'
 import { of, throwError } from 'rxjs'
 
 import { PortalMessageService } from '@onecx/angular-integration-interface'
@@ -45,8 +44,7 @@ describe('HelpDetailComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      imports: [HelpDetailComponent],
-      providers: [provideNoopAnimations()]
+      imports: [HelpDetailComponent]
     })
       .overrideComponent(HelpDetailComponent, {
         add: {

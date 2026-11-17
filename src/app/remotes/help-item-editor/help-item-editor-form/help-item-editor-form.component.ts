@@ -3,7 +3,6 @@ import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } 
 import { TranslateModule } from '@ngx-translate/core'
 import { Observable } from 'rxjs'
 
-import { FieldsetModule } from 'primeng/fieldset'
 import { FloatLabelModule } from 'primeng/floatlabel'
 import { InputTextModule } from 'primeng/inputtext'
 import { TooltipModule } from 'primeng/tooltip'
@@ -16,7 +15,7 @@ import { Help } from 'src/app/shared/generated'
 @Component({
   selector: 'app-ocx-help-item-editor',
   standalone: true,
-  imports: [FieldsetModule, FloatLabelModule, InputTextModule, ReactiveFormsModule, TranslateModule, TooltipModule],
+  imports: [FloatLabelModule, InputTextModule, ReactiveFormsModule, TranslateModule, TooltipModule],
   templateUrl: './help-item-editor-form.component.html',
   styleUrl: './help-item-editor-form.component.scss'
 })

@@ -36,17 +36,15 @@
     </label>
   </p-floatlabel>
 
-  <p-fieldset [toggleable]="false" [collapsed]="false" styleClass="surface-50 pb-3 px-2">
-    <ng-template pTemplate="header">
-      <span
-        [attr.aria-label]="'HELP_DETAIL.URL.TOOLTIP' | translate"
-        [pTooltip]="'HELP_DETAIL.URL.TOOLTIP' | translate"
-        tooltipPosition="top"
-        tooltipEvent="hover"
-      >
-        {{ 'HELP_DETAIL.URL' | translate }}
-      </span>
-    </ng-template>
+  <fieldset class="ocx-url-section" aria-label="{{ 'HELP_DETAIL.URL' | translate }}">
+    <legend
+      [attr.aria-label]="'HELP_DETAIL.URL.TOOLTIP' | translate"
+      [pTooltip]="'HELP_DETAIL.URL.TOOLTIP' | translate"
+      tooltipPosition="top"
+      tooltipEvent="hover"
+    >
+      {{ 'HELP_DETAIL.URL' | translate }}
+    </legend>
 
     <!-- CONTENT -->
     <div class="flex flex-wrap flex-column gap-4 justify-content-between mt-2">
@@ -101,5 +99,5 @@
         </label>
       </p-floatlabel>
     </div>
-  </p-fieldset>
+  </fieldset>
 </form>

@@ -1,6 +1,5 @@
 import { importProvidersFrom } from '@angular/core'
 import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http'
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations'
 import { provideMissingTranslationHandler, provideTranslateLoader, provideTranslateService } from '@ngx-translate/core'
 import { ReplaySubject } from 'rxjs'
 
@@ -28,6 +27,6 @@ bootstrapRemoteComponent(OneCXHelpItemEditorComponent, 'ocx-help-item-editor-com
     missingTranslationHandler: provideMissingTranslationHandler(MultiLanguageMissingTranslationHandler)
   }),
   provideHttpClient(withInterceptorsFromDi()),
-  importProvidersFrom(AngularAcceleratorModule, AngularAuthModule, BrowserAnimationsModule),
+  importProvidersFrom(AngularAcceleratorModule, AngularAuthModule),
   provideThemeConfig()
 ]).catch((err) => console.error(err))

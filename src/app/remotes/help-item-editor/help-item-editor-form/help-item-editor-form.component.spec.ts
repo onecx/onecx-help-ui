@@ -1,6 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing'
 import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed'
-import { NoopAnimationsModule } from '@angular/platform-browser/animations'
 
 import { PortalMessageService } from '@onecx/angular-integration-interface'
 import { provideTranslateTestingService } from '@onecx/angular-testing'
@@ -18,7 +17,7 @@ describe('HelpItemEditorFormComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [],
-      imports: [HelpItemEditorFormComponent, NoopAnimationsModule]
+      imports: [HelpItemEditorFormComponent]
     })
       .overrideComponent(HelpItemEditorFormComponent, {
         add: {

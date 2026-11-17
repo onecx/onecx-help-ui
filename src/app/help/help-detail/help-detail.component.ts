@@ -7,7 +7,6 @@ import { AutoCompleteModule } from 'primeng/autocomplete'
 import { ButtonModule } from 'primeng/button'
 import { CheckboxModule } from 'primeng/checkbox'
 import { DialogModule } from 'primeng/dialog'
-import { FieldsetModule } from 'primeng/fieldset'
 import { FloatLabelModule } from 'primeng/floatlabel'
 import { InputTextModule } from 'primeng/inputtext'
 import { TooltipModule } from 'primeng/tooltip'
@@ -38,7 +37,6 @@ export interface HelpDetailForm {
     ButtonModule,
     CheckboxModule,
     DialogModule,
-    FieldsetModule,
     FloatLabelModule,
     InputTextModule,
     TooltipModule
