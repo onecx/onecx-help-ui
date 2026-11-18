@@ -17,6 +17,21 @@
   }
 }
 
+@mixin ocx-fieldset {
+  fieldset {
+    border: 1px solid var(--onecx-help-onecx-help-ui-dialog-border-color);
+    border-radius: 0.5rem;
+    background: var(--onecx-help-onecx-help-ui-inputtext-filled-hover-background);
+    padding: 0.5rem 0.75rem 1rem 0.75rem;
+    margin: 0;
+
+    legend {
+      background-color: transparent;
+      padding: 0.3rem 0.4rem;
+    }
+  }
+}
+
 @mixin ocx-required-label {
   // Keep a visible required marker even when external theme styles are missing.
   .p-floatlabel > label.ocx-required-label::after {

@@ -6,18 +6,4 @@
 @include ocx-required-label;
 @include correct-autocomplete;
 @include autocomplete-zebra-rows;
-
-:host {
-  .ocx-url-section {
-    border: 1px solid #dfe7ef;
-    border-radius: 0.75rem;
-    background: #f7f8f9;
-    padding: 0.5rem 0.75rem 1rem 0.75rem;
-    margin: 0;
-
-    legend {
-      background-color: transparent;
-      padding: 0.3rem 0.4rem;
-    }
-  }
-}
+@include ocx-fieldset;
