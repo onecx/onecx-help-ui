@@ -5,6 +5,6 @@
     "useDefineForClassFields": false
   },
   "files": ["src/test.ts", "src/polyfills.ts"],
-  "include": ["src/app/**/*.spec.ts", "src/**/*.d.ts"],
+  "include": ["src/app/**/*.spec.ts", "src/**/*.d.ts", "src/**/*.harness.ts"],
   "exclude": ["src/app/shared/generated/**/*"]
 }
